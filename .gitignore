@@ -1,0 +1,15 @@
+target-idea/
+target-test/
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/lib_managed
+project/plugins/project
+project/plugins/src_managed
+project/plugins/target
+scct-root.iws
+.idea/workspace.xml
+sbt-test/project/boot
+sbt-test/project/build/target
+sbt-test/project/plugins/project
