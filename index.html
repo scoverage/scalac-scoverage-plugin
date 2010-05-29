@@ -16,7 +16,7 @@
 		h1 a { text-decoration: none; color: #000; }
 		pre { width: 50em; border: 1px solid #cca; margin: 5px; padding: 0.5em; color: #000; background: #fafafa; font-size: 11px; font-family: 'Courier New', 'Monaco', monospace; }
 		a:link, a:visited { color: #99a; }
-		.h { margin: 0.2em 0; font-family: 'Courier New', 'Monaco', monospace; }
+		.h { margin: 0.2em 0; font-family: 'Courier New', 'Monaco', monospace; text-align: right; }
 		h1 { font-size: 55px;  }
 		p { margin: 8px 0 5px 5px; }
     #beef { padding: 1em; border-left: 1px dashed #cca; }
@@ -61,8 +61,9 @@ class MyProject(i: ProjectInfo) extends DefaultProject(i) with ScctProject {
   // ...
 }
 		</pre>
-		<p>Run tests:</p><pre>$ sbt test-coverage</pre>
+		<p>Run your unit tests with:</p><pre>$ sbt test-coverage</pre>
 		<p>Then open:</p><pre>./target/scala_2.7.7/coverage-report/index.html</pre>
+		<p>Enjoy.</p>
 		<h2>Download the source</h2>
 		<a href="http://github.com/mtkopone/scct/zipball/master"><img border="0" width="50" src="http://github.com/images/modules/download/zip.png"></a>
     <a href="http://github.com/mtkopone/scct/tarball/master"><img border="0" width="50" src="http://github.com/images/modules/download/tar.png"></a>
