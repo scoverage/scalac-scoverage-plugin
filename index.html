@@ -14,7 +14,6 @@
     }
     h1, h2, h3, h4, h5, h6 { font-weight: 100; color: #b78e68; }
 		h1 a { text-decoration: none; color: #000; }
-		img { border: 1px solid #cca; }
 		pre { width: 50em; border: 1px solid #cca; margin: 5px; padding: 0.5em; color: #000; background: #fafafa; font-size: 11px; font-family: 'Courier New', 'Monaco', monospace; }
 		a:link, a:visited { color: #99a; }
 		.h { margin: 0.2em 0; font-family: 'Courier New', 'Monaco', monospace; }
@@ -23,6 +22,7 @@
     #beef { padding: 1em; border-left: 1px dashed #cca; }
     #foot { padding: 1em 0 0 0; margin: 5px; font-size: 10px; color: #bbc; }
 		.mono { margin: 0 0.3em; font-family: 'Courier New', monospace; color: #777; }
+		.screenshot { border: 1px solid #cca; }
 	</style>
 </head>
 <body>
@@ -40,9 +40,12 @@
 		<img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" />
 	</a>
   <div id="container">
+		<h2>Eh?</h2>
+		<p><span class="mono">scct</span> is a code coverage tool for Scala. It's beta.</p>
 		<h2>What's it look like?</h2>
-		<p><a href="report/index.html" target="_blank"><img src="screenshot.png" alt="scct-screenshot"/></a></p>
-		<h2>Use with sbt</h2>
+		<p><a href="report/index.html" target="_blank"><img src="screenshot.png" alt="scct-screenshot" class="screenshot"/></a></p>
+		<h2>How to use with sbt</h2>
+		<p><span class="mono">scct</span> has only tested with scala 2.7.7 and sbt 0.7.3.</p>
 		<p>Add the following to <span class="mono">project/plugins/Plugins.scala</span>:</p>
 		<pre>
 import sbt._
@@ -60,10 +63,10 @@ class MyProject(i: ProjectInfo) extends DefaultProject(i) with ScctProject {
 		</pre>
 		<p>Run tests:</p><pre>$ sbt test-coverage</pre>
 		<p>Then open:</p><pre>./target/scala_2.7.7/coverage-report/index.html</pre>
-		<h2>Download the Source</h2>
+		<h2>Download the source</h2>
 		<a href="http://github.com/mtkopone/scct/zipball/master"><img border="0" width="50" src="http://github.com/images/modules/download/zip.png"></a>
     <a href="http://github.com/mtkopone/scct/tarball/master"><img border="0" width="50" src="http://github.com/images/modules/download/tar.png"></a>
-		<h2>Clone the Repository</h2>
+		<h2>Clone the git repo</h2>
 		<pre>$ git clone git://github.com/mtkopone/scct</pre>
   </div>
 	<div id="foot">
