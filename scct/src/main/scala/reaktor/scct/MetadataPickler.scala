@@ -14,8 +14,8 @@ object MetadataPickler {
     }
   }
 
-  def fromFile(f: File): List[CoveredBlock] = {
-    fromInputStream(new FileInputStream(f))
+  def load: List[CoveredBlock] = {
+    fromInputStream(getClass.getResourceAsStream("/coverage.data"))
   }
 
   private def fromInputStream(in: InputStream) = {

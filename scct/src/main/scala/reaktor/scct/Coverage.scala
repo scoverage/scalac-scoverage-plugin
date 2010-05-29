@@ -15,7 +15,7 @@ object Coverage {
 
   private def readMetadata = {
     try {
-      val values = MetadataPickler.fromFile(new File("/coverage.data"))
+      val values = MetadataPickler.load
       Map(values.map(x => (x.id, x)) :_*)
     } catch {
       case e => {
