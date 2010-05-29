@@ -1,6 +1,8 @@
 import sbt._
 
 class ScctBuild(info: ProjectInfo) extends ParentProject(info) with IdeaPlugin {
+	override def managedStyle = ManagedStyle.Maven
+	lazy val publishTo = Resolver.file("github-pages-repo", new java.io.File("./maven-repo/"))
 
   lazy val scct = project("scct", "scct", new DefaultProject(_) with IdeaPlugin { //with reaktor.scct.ScctProject {
     //override def coverageSelfTest = true
