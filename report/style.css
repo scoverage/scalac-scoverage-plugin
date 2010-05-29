@@ -1,0 +1,26 @@
+body { color: #444; font-family: monospace; font-size: 11px; }
+h1 { color: #2F4F4F; }
+table { width: 98%; }
+td { color: #444; padding: 2px; }
+img { border-style: none; margin: 5px 5px 0 5px; }
+a { text-decoration: none; color: #444; }
+a:hover { text-decoration: underline; }
+td.barContainerRight { width: 210px; }
+td.barContainerLeft { text-align: right; }
+.source td { font-size: 11px; white-space: nowrap; }
+.header { font-size: 22px; }
+.green { color: #0b0; background-color: #eee; }
+.yellow { color: yellow; background-color: #eee; }
+.red { color: red; background-color: #eee; }
+.black { color: #222; background-color: #eee; }
+.non { background-color: #F08080; padding: 3px; }
+.percentages { float: right; }
+.bar { border: 1px solid #666; font-size: 22px; width: 200px; background-color: #eee; }
+.percentage { float:left; margin-left: 5px; padding: 2px; position: absolute; }
+.greenBar { background-color: #3c3; padding: 2px 0 2px 0; }
+.pkgRow { color: #444; padding: 2px; white-space: nowrap; }
+.pkgRow .pkgRow { margin-left: 20px; }
+.pkgLink { font-size: 16px; }
+.pkgContent { display: none; }
+.summary { font-weight: bold; font-size: 120%; }
+.selected { text-decoration: underline; }
