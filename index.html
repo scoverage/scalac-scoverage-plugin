@@ -66,6 +66,14 @@ class MyProject(i: ProjectInfo) extends DefaultProject(i) with ScctProject {
 		<p>Run your unit tests with:</p><pre>$ sbt test-coverage</pre>
 		<p>Then open:</p><pre>./target/scala_2.7.7/coverage-report/index.html</pre>
 		<p>Enjoy.</p>
+		<h2>How to use standalone</h2>
+		<p>Download <a href="http://mtkopone.github.com/scct/scct-latest.jar">scct</a>
+	  <p>Compile and instrument your source:</p>
+		<pre>$ scalac -Xplugin:scct-latest.jar \
+    -classpath .:scct-latest.jar Test.scala</pre>
+		<p>Run something:</p>
+		<pre>$ scala -classpath .:scct-latest.jar Test</pre>
+		<p>Then open:</p><pre>./index.html</pre>
 		<h2>Download the source</h2>
 		<a href="http://github.com/mtkopone/scct/zipball/master"><img border="0" width="50" src="http://github.com/images/modules/download/zip.png"></a>
     <a href="http://github.com/mtkopone/scct/tarball/master"><img border="0" width="50" src="http://github.com/images/modules/download/tar.png"></a>
