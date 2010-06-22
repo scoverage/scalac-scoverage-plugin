@@ -20,22 +20,13 @@ trait InstrumentationSpec extends Specification {
 
   def createSettings = {
     val settings = new Settings
-    // NOTE: fixme, hardcoded paths
-    val root = "/Users/mtkopone/projects/scct"
-    val scalaLibs = root + "/project/boot/scala-2.8.0.RC6/lib"
-    val classDir = if (System.getProperty("java.class.path").contains("sbt-launch")) {
-      root + "/scct/target/scala_2.8.0.RC6/classes"
+    val scalaJars = List("/scala-compiler.jar", "/scala-library.jar")
+    val classPath = if (System.getProperty("java.class.path").contains("sbt-launch")) {
+      "./target/scala_2.8.0.RC6/classes" :: scalaJars.map("./project/boot/scala-2.8.0.RC6/lib"+_)
     } else {
-      root + "/out/production/scct"
+      "./out/production/scct" :: scalaJars.map("./scct/project/boot/scala-2.8.0.RC6/lib"+_)
     }
-    settings.classpath.value = List(classDir, scalaLibs+"/scala-compiler.jar", scalaLibs+"/scala-library.jar").mkString(":")
-    /*
-    if (System.getProperty("java.class.path").contains("sbt-launch")) {
-      val classDir = if (System.getProperty("scct-self-test", "false").toBoolean) "coverage-classes" else "classes"
-      settings.classpath.value = "project/boot/scala-2.8.0.RC6/lib/scala-library.jar:scct/target/scala_2.8.0.RC6/"+classDir
-    }
-    */
-    //println("CompilerCP:\n"+settings.classpath.value.toString.split(":").mkString("\n"))
+    settings.classpath.value = classPath.mkString(":")
     settings
   }
 
