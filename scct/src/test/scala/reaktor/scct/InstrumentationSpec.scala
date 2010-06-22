@@ -12,7 +12,7 @@ trait InstrumentationSpec extends Specification {
   def compileFile(file: String) = compileFiles(Seq(file) :_*)
   def compileFiles(args: String*) = {
     val settings = createSettings
-    val command = new CompilerCommand(args.toList, settings, println, false)
+    val command = new CompilerCommand(args.toList, settings)
     val runner = new PluginRunner(settings)
     (new runner.Run).compile(command.files)
     runner.scctComponent
@@ -20,10 +20,22 @@ trait InstrumentationSpec extends Specification {
 
   def createSettings = {
     val settings = new Settings
+    // NOTE: fixme, hardcoded paths
+    val root = "/Users/mtkopone/projects/scct"
+    val scalaLibs = root + "/project/boot/scala-2.8.0.RC6/lib"
+    val classDir = if (System.getProperty("java.class.path").contains("sbt-launch")) {
+      root + "/scct/target/scala_2.8.0.RC6/classes"
+    } else {
+      root + "/out/production/scct"
+    }
+    settings.classpath.value = List(classDir, scalaLibs+"/scala-compiler.jar", scalaLibs+"/scala-library.jar").mkString(":")
+    /*
     if (System.getProperty("java.class.path").contains("sbt-launch")) {
       val classDir = if (System.getProperty("scct-self-test", "false").toBoolean) "coverage-classes" else "classes"
-      settings.classpath.value = "project/boot/scala-2.7.7/lib/scala-library.jar:scct/target/scala_2.7.7/"+classDir
+      settings.classpath.value = "project/boot/scala-2.8.0.RC6/lib/scala-library.jar:scct/target/scala_2.8.0.RC6/"+classDir
     }
+    */
+    //println("CompilerCP:\n"+settings.classpath.value.toString.split(":").mkString("\n"))
     settings
   }
 
@@ -37,17 +49,17 @@ trait InstrumentationSpec extends Specification {
     f.getAbsolutePath
   }
 
-  def sort(data: List[CoveredBlock]) = data.sort { (a,b) =>
+  def sort(data: List[CoveredBlock]) = data.sortWith { (a,b) =>
     if (a.name.sourceFile == b.name.sourceFile) {
       a.offset < b.offset
     } else a.name.sourceFile < b.name.sourceFile
   }
 
   def classOffsetsMatch(s: String) {
-    offsetsMatch("class @Foo(x: Int) {\n  "+s+"\n}")
+    offsetsMatch("class Foo@(x: Int) {\n  "+s+"\n}")
   }
   def defOffsetsMatch(s: String) {
-    offsetsMatch("class @Foo(x: Int) {\n  def foo {\n    "+s+"\n  }\n}")
+    offsetsMatch("class Foo@(x: Int) {\n  def foo {\n    "+s+"\n  }\n}")
   }
   def offsetsMatch(s: String) {
     offsetsMatch(parse(0, s, InstrumentationSpec("", Nil)), false)
@@ -138,7 +150,14 @@ class PluginRunner(settings: Settings) extends Global(settings, new ConsoleRepor
     scctTransformer.saveData = false
     scctTransformer
   }
-  override def computePhaseDescriptors: List[SubComponent] = {
-    List[SubComponent](syntaxAnalyzer, analyzer.namerFactory, analyzer.typerFactory, superAccessors, pickler, refchecks, scctComponent)
+  override def computeInternalPhases() {
+    phasesSet += syntaxAnalyzer
+    phasesSet += analyzer.namerFactory
+    phasesSet += analyzer.packageObjects
+    phasesSet += analyzer.typerFactory
+    phasesSet += superAccessors
+    phasesSet += pickler
+    phasesSet += refchecks
+    phasesSet += scctComponent
   }
 }

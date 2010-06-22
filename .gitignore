@@ -1,5 +1,4 @@
-target-idea/
-target-test/
+out/
 target/
 lib_managed/
 src_managed/

@@ -1,20 +1,17 @@
 import sbt._
 
-class ScctBuild(info: ProjectInfo) extends ParentProject(info) with IdeaPlugin {
+class ScctBuild(info: ProjectInfo) extends ParentProject(info) with IdeaProject {
 	override def managedStyle = ManagedStyle.Maven
 	lazy val publishTo = Resolver.file("github-pages-repo", new java.io.File("./maven-repo/"))
 
-  lazy val scct = project("scct", "scct", new DefaultProject(_) with IdeaPlugin { //with reaktor.scct.ScctProject {
+  lazy val scct = project("scct", "scct", new DefaultProject(_) with IdeaProject { //with reaktor.scct.ScctProject {
     //override def coverageSelfTest = true
-    override def filterScalaJars = false
     val junit = "junit" % "junit" % "4.7" % "test" withSources
-    val scalaTest = "org.scalatest" % "scalatest" % "1.0" % "test" withSources
-    val mockito = "org.mockito" % "mockito-all" % "1.8.0" % "test" withSources
-    val scalaCheck = "org.scala-tools.testing" % "scalacheck" % "1.6" % "test" withSources
-    val scalaSpecs = "org.scala-tools.testing" % "specs" % "1.6.0" % "test" withSources
-    val scalaCompiler = "org.scala-lang" % "scala-compiler" % "2.7.7" % "test"
+    val mockito = "org.mockito" % "mockito-all" % "1.8.5" % "test" withSources
+    val scalaSpecs = "org.scala-tools.testing" % "specs_2.8.0.RC1" % "1.6.5-SNAPSHOT" % "test" withSources
   })
 
-  lazy val sbtPlugin = project("sbt-scct", "sbt-scct", new PluginProject(_) with IdeaPlugin, scct)
+  lazy val sbtPlugin = project("sbt-scct", "sbt-scct", new PluginProject(_) with IdeaProject, scct)
 
+  val snapshots = ScalaToolsSnapshots
 }

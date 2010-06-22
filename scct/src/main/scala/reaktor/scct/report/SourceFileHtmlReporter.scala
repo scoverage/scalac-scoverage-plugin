@@ -44,7 +44,7 @@ class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoade
         val maxOffset = offset + line.length
         val (currBlocks, nextBlocks) = blocks.partition(_.offset < maxOffset)
         val lineHtml = formatLine(line, offset, currBlocks.filter(!_.placeHolder))
-        val newName = currBlocks.firstOption.map(_.name).getOrElse(currentName)
+        val newName = currBlocks.headOption.map(_.name).getOrElse(currentName)
         val classId = if (currentName != newName) Some(Text(toHtmlId(newName))) else None
         val rowHtml =
           <tr id={classId}>

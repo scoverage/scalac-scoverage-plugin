@@ -9,16 +9,15 @@ import tools.nsc.symtab.Flags
 class ScctInstrumentPlugin(val global: Global) extends Plugin {
   val name = "scct"
   val description = "Scala code coverage instrumentation plugin."
-  val runsAfter = "refchecks"
+  val runsAfter = List("refchecks")
   val components = List(new ScctTransformComponent(global))
 }
 
 class ScctTransformComponent(val global: Global) extends PluginComponent with TypingTransformers with Transform {
   import global._
-  import posAssigner.atPos
 
   val phaseName = "ScctTransformComponent"
-  val runsAfter = "refchecks"
+  val runsAfter = List("refchecks")
   lazy val coverageFile = new File(global.settings.outdir.value, "coverage.data")
 
   var saveData = true
@@ -78,7 +77,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
     }
 
     private def placeHolderize(t: Tree) = t match {
-      case template:Template => addPlaceHolder(template)
+      case classDef:ClassDef if !t.symbol.hasFlag(Flags.SYNTHETIC) => addPlaceHolder(classDef)
       case _ => t
     }
 
@@ -88,7 +87,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
       } else {
         val s = t.symbol
         def isGenerated = (s.hasFlag(Flags.STABLE) && !s.hasFlag(Flags.LAZY)) || (s.hasFlag(Flags.SYNTHETIC) && !s.isAnonymousFunction)
-        def isGeneratedCaseClassMethod = s.isMethod && !s.isConstructor && t.pos.offset == currentClass.pos.offset
+        def isGeneratedCaseClassMethod = s.isMethod && !s.isConstructor && t.pos.point == currentClass.pos.point
         def isObjectConstructor = s.isConstructor && currentClass.isModuleClass
         def isNonLazyAccessor = !s.hasFlag(Flags.LAZY) && s.hasFlag(Flags.ACCESSOR | Flags.PARAMACCESSOR)
         def hasSkipAnnotation = t match {
@@ -117,42 +116,43 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
       // Don't place instrumentation before super call in constructors:
       // TODO: check if this is actually a constructor, currently it hits e.g. "try { super.hashCode } catch { ... }"
       case Block(stats @ List(Apply(Select(Super(_,_),_), args)), expr @ Literal(Constant(()))) =>
-        copy.Block(tree, stats ::: List(coverageCall(tree)), expr)
+        treeCopy.Block(tree, stats ::: List(coverageCall(tree)), expr)
 
       // Skip generated lazy def accessor, since later phases assume { x = <rhs>; x }-tree-structure
       case Block(List(a @ Assign(lhs @ Select(_, _), rhs)), expr: Select) if state.isLazyDef => {
         val newAssign = fitIntoTree(a, Assign(lhs, instrumentBody(rhs)))
-        copy.Block(tree, List(newAssign), expr)
+        treeCopy.Block(tree, List(newAssign), expr)
       }
       case Block(List(a @ Assign(lhs @ Ident(_), rhs)), expr: Ident) if state.isLazyDef => {
         val newAssign = fitIntoTree(a, Assign(lhs, instrumentBody(rhs)))
-        copy.Block(tree, List(newAssign), expr)
+        treeCopy.Block(tree, List(newAssign), expr)
       }
       // Skip empty block in e.g. Some("foo").map(System.getProperty)
       case Block(Nil, Function(_,_)) =>
         tree
       case Block(stats, expr) => {
         val instrumentedBlock = instrumentBlockStats(stats) ::: instrumentBlockExpr(expr)
-        copy.Block(tree, instrumentedBlock, expr)
+        treeCopy.Block(tree, instrumentedBlock, expr)
       }
       // Skip generated ifs in do {} while's
       case If(cond, thenp @ Apply(i @ Ident(_), Nil), elsep @ Literal(Constant(()))) if i.symbol.isLabel =>
         tree
       case If(cond, thenp, elsep) =>
-        copy.If(tree, cond, instrumentBody(thenp), instrumentBody(elsep))
+        treeCopy.If(tree, cond, instrumentBody(thenp), instrumentBody(elsep))
       case Function(vparams, body) =>
-        copy.Function(tree, vparams, instrumentBody(body))
+        treeCopy.Function(tree, vparams, instrumentBody(body))
       case Try(block, catches, finalizer) =>
-        copy.Try(tree, instrumentBody(block), catches, instrumentBody(finalizer))
+        treeCopy.Try(tree, instrumentBody(block), catches, instrumentBody(finalizer))
       case CaseDef(pat, guard, body) =>
-        copy.CaseDef(tree, pat, guard, instrumentBody(body))
+        treeCopy.CaseDef(tree, pat, guard, instrumentBody(body))
       case ValDef(mods, name, tpt, rhs) =>
-        copy.ValDef(tree, mods, name, tpt, instrumentBody(rhs))
+        treeCopy.ValDef(tree, mods, name, tpt, instrumentBody(rhs))
       case DefDef(mods, name, tparams, vparamss, tpt, rhs) =>
-        copy.DefDef(tree, mods, name, tparams, vparamss, tpt, instrumentBody(rhs))
+        treeCopy.DefDef(tree, mods, name, tparams, vparamss, tpt, instrumentBody(rhs))
+      case classDef: ClassDef =>
+        addPlaceHolder(classDef)
       case template @ Template(parents, self, body) => {
-        addPlaceHolder(template)
-        copy.Template(tree, parents, self, body.map(instrumentBody))
+        treeCopy.Template(tree, parents, self, body.map(instrumentBody))
       }
       case _ => tree
     }
@@ -161,6 +161,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
       case Literal(Constant(())) => Nil
       case _:LabelDef => Nil
       case _:Block => Nil
+      case Apply(Ident(_), Nil) => Nil
       case _ => List[Tree](coverageCall(expr))
     }
 
@@ -187,12 +188,12 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
     }
 
     private def instrumentedBlock(t: Tree) = {
-      copy.Block(t, List(coverageCall(t)), t)
+      treeCopy.Block(t, List(coverageCall(t)), t)
     }
 
-    private def addPlaceHolder(template: Template) = {
-      if (!currentOwner.hasFlag(Flags.SYNTHETIC)) register(newId, template, true)
-      template
+    private def addPlaceHolder(classDef: ClassDef) = {
+      if (!currentOwner.hasFlag(Flags.SYNTHETIC)) register(newId, classDef, true)
+      classDef
     }
 
     private def coverageCall(tree: Tree) = {
@@ -220,7 +221,8 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
     }
 
     private def register(id: String, tree: Tree, placeHolder: Boolean) {
-      val fileName = tree.pos.source.get.file.file.getAbsolutePath
+      //if (!placeHolder) println("\n\nregistering "+tree.pos.point+" -> "+findMinOffset(tree)+":\n"+tree)
+      val fileName = tree.pos.source.file.file.getAbsolutePath
       val name = Name(fileName, classType, packageName, className(currentClass))
       data = new CoveredBlock(id, name, findMinOffset(tree), placeHolder) :: data
     }
@@ -238,7 +240,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
     }
 
     private def packageName = {
-      if (currentOwner.isRoot) "<root>" else currentPackage.fullNameString
+      if (currentOwner.isRoot) "<root>" else currentPackage.nameString
     }
 
     private def className(curr: Symbol): String =
@@ -254,8 +256,9 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
   class MinimumOffsetFinder extends Traverser {
     var min = Integer.MAX_VALUE
     override def traverse(tree: Tree) {
-      tree.pos.offset.foreach { current =>
-        if (current < min) min = current
+      if (tree.pos.isDefined) {
+        val curr = tree.pos.startOrPoint
+        if (curr < min) min = curr
       }
       super.traverse(tree)
     }

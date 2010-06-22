@@ -12,7 +12,7 @@ class ScctInstrumentPluginSpec extends Specification with Mockito {
       sut.description mustEqual "Scala code coverage instrumentation plugin."
     }
     "run after refchecks" in {
-      sut.runsAfter mustEqual "refchecks"
+      sut.runsAfter mustEqual List("refchecks")
     }
     "only contain the transformer component" in {
       val components = sut.components

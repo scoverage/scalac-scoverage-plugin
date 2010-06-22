@@ -3,23 +3,24 @@ package reaktor.scct
 class BasicClassInstrumentationSpec extends InstrumentationSpec {
   "Basic template instrumentation" should instrument {
     "basic class" in {
-      offsetsMatch("class @Foo {}")
-      offsetsMatch("class @Foo(x: Int) {}")
-      offsetsMatch("class @Foo(val x: Int) {}")
-      offsetsMatch("class @Foo(var x: Int) {}")
+      offsetsMatch("class Fo@o") // TODO: how is the offset there?
+      offsetsMatch("class Foo @{}")
+      offsetsMatch("class Foo@(x: Int) {}")
+      offsetsMatch("class Foo@(val x: Int) {}")
+      offsetsMatch("class Foo@(var x: Int) {}")
     }
     "sealed class" in {
-      offsetsMatch("sealed class @Foo {}")
-      offsetsMatch("sealed class @Foo(x: Int) {}")
-      offsetsMatch("sealed class @Foo(val x: Int) {}")
+      offsetsMatch("sealed class Foo @{}")
+      offsetsMatch("sealed class Foo@(x: Int) {}")
+      offsetsMatch("sealed class Foo@(val x: Int) {}")
     }
     "basic case class" in {
-      offsetsMatch("case class @Foo {}")
-      offsetsMatch("case class @Foo(x: Int) {}")
+      offsetsMatch("case class Foo @{}")
+      offsetsMatch("case class Foo@(x: Int) {}")
     }
     "sealed case class" in {
-      offsetsMatch("sealed case class @Foo {}")
-      offsetsMatch("sealed case class @Foo(x: Int) {}")
+      offsetsMatch("sealed case class Foo @{}")
+      offsetsMatch("sealed case class Foo@(x: Int) {}")
     }
     "basic object" in {
       offsetsMatch("object Foo {}")
@@ -28,7 +29,7 @@ class BasicClassInstrumentationSpec extends InstrumentationSpec {
       offsetsMatch("case object Foo {}")
     }
     "annotation" in {
-      offsetsMatch("class @MyAnnotation extends StaticAnnotation")
+      offsetsMatch("class MyAnnotation @extends StaticAnnotation")
     }
   }
 
@@ -76,7 +77,7 @@ class BasicClassInstrumentationSpec extends InstrumentationSpec {
       classOffsetsMatch("""{ @println("1"); @println("2") }""")
     }
     "inner classes" in {
-      classOffsetsMatch("""class @Inner { @println("1") }""")
+      classOffsetsMatch("""class Inner @{ @println("1") }""")
     }
     "method bodys" in {
       classOffsetsMatch("def foo = @12")
@@ -92,7 +93,7 @@ class BasicClassInstrumentationSpec extends InstrumentationSpec {
       classOffsetsMatch("def foo { @12; @hashCode; @System.currentTimeMillis }")
     }
     "body content" in {
-      offsetsMatch("""|class @Foo(x: Boolean) {
+      offsetsMatch("""|class Foo@(x: Boolean) {
                             |  val y = @12
                             |  def z = @12
                             |  def defWithVal = {
@@ -111,7 +112,7 @@ class BasicClassInstrumentationSpec extends InstrumentationSpec {
 
   "Case class instrumentation" should instrument {
     "overriden generated methods" in {
-      offsetsMatch("case class @Foo { override def hashCode = @999 }")
+      offsetsMatch("case class Foo @{ override def hashCode = @999 }")
     }
   }
 
@@ -125,18 +126,18 @@ class BasicClassInstrumentationSpec extends InstrumentationSpec {
 
   "Case class generated methods" should {
     "not instrument generated apply/unapply" in {
-      offsetsMatch("object Foo { def x = @12 }\n\ncase class @Foo(y: Boolean) { def z = @11 }")
+      offsetsMatch("object Foo { def x = @12 }\n\ncase class Foo@(y: Boolean) { def z = @11 }")
     }
   }
 
   "Types nested in a class" should {
     "instrument nested class" in {
-      classOffsetsMatch("class @Bar")
-      classOffsetsMatch("class @Bar(z: Int) {}")
+      offsetsMatch("class Foo @{ class Bar @}") // TODO: how is the offset there?
+      classOffsetsMatch("class Bar@(z: Int) {}")
     }
     "instrument nested case class" in {
-      classOffsetsMatch("case class @Bar")
-      classOffsetsMatch("case class @Bar(z: Int) {}")
+      offsetsMatch("class Foo @{ case class Bar @}") // TODO: how is the offset there?
+      classOffsetsMatch("case class Bar@(z: Int) {}")
     }
     "not instrument nested object" in {
       classOffsetsMatch("object Bar")
