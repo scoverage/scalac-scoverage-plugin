@@ -1,5 +1,5 @@
 IN PROGRESS
--
+* scala 2.8 support
 
 BACKLOG
 * sbt-multiproject support
@@ -9,7 +9,6 @@ BACKLOG
 * sbt incremental build support? "conditional coverage datafile updating"
 * scala-code html highlighting?
 * multi-threading support?
-* scala 2.8 support
 * idea plugin
 * eclipse plugin
 
