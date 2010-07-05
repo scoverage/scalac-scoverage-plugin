@@ -1,5 +1,8 @@
 IN PROGRESS
 * scala 2.8 support
+** self-test
+** package root is always shown in report - empty package-objects are created?
+** rewrite intrumentation plugin, something filterChain-like mabbe.
 
 BACKLOG
 * sbt-multiproject support
@@ -13,6 +16,8 @@ BACKLOG
 * eclipse plugin
 
 DONE
+* 2.8: fix tab positioning
+* 2.8: fix annotations
 * improve loading of coverage.data file
 * check: class uncovered extends StaticAnnotation
 * check: @serializable sealed abstract class ClassType - ok, caused by selfinstrumentation starting after class creation.

@@ -41,7 +41,7 @@ class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoade
     lines match {
       case Nil => acc
       case line :: tail => {
-        val maxOffset = offset + line.length
+        val maxOffset = offset + line.length + 1 // (+1 for newline at end)
         val (currBlocks, nextBlocks) = blocks.partition(_.offset < maxOffset)
         val lineHtml = formatLine(line, offset, currBlocks.filter(!_.placeHolder))
         val newName = currBlocks.headOption.map(_.name).getOrElse(currentName)

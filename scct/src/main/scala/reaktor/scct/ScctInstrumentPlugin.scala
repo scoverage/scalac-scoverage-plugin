@@ -90,13 +90,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
         def isGeneratedCaseClassMethod = s.isMethod && !s.isConstructor && t.pos.point == currentClass.pos.point
         def isObjectConstructor = s.isConstructor && currentClass.isModuleClass
         def isNonLazyAccessor = !s.hasFlag(Flags.LAZY) && s.hasFlag(Flags.ACCESSOR | Flags.PARAMACCESSOR)
-        def hasSkipAnnotation = t match {
-          case memberDef: MemberDef => {
-            val annots = memberDef.mods.annotations
-            annots.exists(_.tpe.safeToString == classOf[uncovered].getName)
-          }
-          case _ => false
-        }
+        def hasSkipAnnotation = s.hasAnnotation(definitions.getClass("reaktor.scct.uncovered"))
         def isLazyDef = t match {
           case d:DefDef => s.isMethod && s.hasFlag(Flags.LAZY)
           case _ => false
@@ -161,7 +155,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
       case Literal(Constant(())) => Nil
       case _:LabelDef => Nil
       case _:Block => Nil
-      case Apply(Ident(_), Nil) => Nil
+      // TODO: No good, but need to fix while's somehow: case Apply(Ident(_), Nil) => Nil
       case _ => List[Tree](coverageCall(expr))
     }
 

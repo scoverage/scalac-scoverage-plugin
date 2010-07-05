@@ -42,8 +42,9 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
 
   "While/doWhile instrumentation" should instrument {
     "basic while" in {
-      defOffsetsMatch("var z = @0; while (z < 5) @z += 1")
-      defOffsetsMatch("var z = @0; while (z < 5) { @println(z); @z += 1 }")
+      // TODO: should skip the block after while?
+      defOffsetsMatch("var z = @0; while (z < 5) @z @+= 1")
+      defOffsetsMatch("var z = @0; while (z < 5) @{ @println(z); @z += 1 }")
     }
     "basic do - while" in {
       classOffsetsMatch("var z = @0; @do @z += 1 while (z < 5)")
