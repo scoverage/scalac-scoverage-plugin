@@ -1,7 +1,9 @@
 package reaktor.scct
 
 class DebugInstrumentationSpec extends InstrumentationSpec {
-  "debug" in {
-    offsetsMatch("class Foo @{ class Bar @}")
+  //override def debug = true
+
+  "debug instrumentation" in {
+    classOffsetsMatch("@Some(\"foo\").map(@System.getProperty)")
   }
 }

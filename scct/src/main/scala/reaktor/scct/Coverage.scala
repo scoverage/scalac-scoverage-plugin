@@ -46,6 +46,7 @@ object ClassTypes {
   @serializable case object Class extends ClassType
   @serializable case object Trait extends ClassType
   @serializable case object Object extends ClassType
+  @serializable case object Package extends ClassType
   @serializable case object Root extends ClassType
 }
 
@@ -55,6 +56,7 @@ object ClassTypes {
     lazy val classTypeDiff = classType.toString.compareTo(other.classType.toString)
     if (classNameDiff != 0) classNameDiff else classTypeDiff
   }
+  override def toString = packageName+"/"+className+":"+sourceFile
 }
 @serializable case class CoveredBlock(id: String, name: Name, offset: Int, placeHolder: Boolean) {
   def this(id: String, name: Name, offset: Int)  = this(id, name, offset, false)

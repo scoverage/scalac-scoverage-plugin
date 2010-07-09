@@ -7,13 +7,14 @@ import org.specs.matcher.Matcher
 import org.specs.Specification
 
 trait InstrumentationSpec extends Specification {
+  def debug = false
   def instrument = addToSusVerb("instrument")
 
   def compileFile(file: String) = compileFiles(Seq(file) :_*)
   def compileFiles(args: String*) = {
     val settings = createSettings
     val command = new CompilerCommand(args.toList, settings)
-    val runner = new PluginRunner(settings)
+    val runner = new PluginRunner(settings, debug)
     (new runner.Run).compile(command.files)
     runner.scctComponent
   }
@@ -135,9 +136,10 @@ trait InstrumentationSpec extends Specification {
   }
 }
 
-class PluginRunner(settings: Settings) extends Global(settings, new ConsoleReporter(settings)) {
+class PluginRunner(settings: Settings, debug: Boolean) extends Global(settings, new ConsoleReporter(settings)) {
   lazy val scctComponent = {
     val scctTransformer = new ScctTransformComponent(this)
+    scctTransformer.debug = debug
     scctTransformer.saveData = false
     scctTransformer
   }

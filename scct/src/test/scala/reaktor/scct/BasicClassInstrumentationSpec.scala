@@ -92,6 +92,9 @@ class BasicClassInstrumentationSpec extends InstrumentationSpec {
     "unit method bodys" in {
       classOffsetsMatch("def foo { @12; @hashCode; @System.currentTimeMillis }")
     }
+    "nested blocks" in {
+      classOffsetsMatch("def z = { @1; { @2; @3; { @4; @5; }; @6; }; @7 }")      
+    }
     "body content" in {
       offsetsMatch("""|class Foo@(x: Boolean) {
                             |  val y = @12

@@ -11,18 +11,18 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
       defOffsetsMatch("if (false) println(x)")
     }
     "basic if's" in {
-      classOffsetsMatch("if (x > 2) @println(x.toString)")
-      classOffsetsMatch("if (x > 2) @println(x.toString) else @println(x.toString)")
-      classOffsetsMatch("if (x > 2) { @999; @println(x.toString) } else { @888; @println(x.toString) }")
+      classOffsetsMatch("if (@x > 2) @println(x.toString)")
+      classOffsetsMatch("if (@x > 2) @println(x.toString) else @println(x.toString)")
+      classOffsetsMatch("if (@x > 2) { @999; @println(x.toString) } else { @888; @println(x.toString) }")
     }
     "conditional if necessary" in {
-      classOffsetsMatch("if (Some(x).map(@_*10).map(@_ > 20).getOrElse(false)) @println(x.toString)")
+      classOffsetsMatch("if (@Some(x).map(@_*10).map(@_ > 20).getOrElse(false)) @println(x.toString)")
     }
     "isInstanceOf in conditional" in {
-      classOffsetsMatch("""def foo(z: Any) = if (z.isInstanceOf[String]) @"string" else @"not" """)
+      classOffsetsMatch("""def foo(z: Any) = if (@z.isInstanceOf[String]) @"string" else @"not" """)
     }
     "many else's" in {
-      classOffsetsMatch("""val z = if (x % 2 == 0) @"first" else if (x % 3 == 1) @"second" else @"third";""")
+      classOffsetsMatch("""val z = if (@x % 2 == 0) @"first" else if (@x % 3 == 1) @"second" else @"third";""")
     }
   }
 
@@ -32,35 +32,40 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
     }
 
     "return from if" in {
-      classOffsetsMatch("def foo(z: Int): Boolean = if (z % 2 == 0) @return true else @return false")
-      classOffsetsMatch("def foo(z: Int): Boolean = if (z % 2 == 0) @return true else @false")
+      classOffsetsMatch("def foo(z: Int): Boolean = if (@z % 2 == 0) @return true else @return false")
+      classOffsetsMatch("def foo(z: Int): Boolean = if (@z % 2 == 0) @return true else @false")
     }
     "return from case" in {
-      classOffsetsMatch("def foo(z: Int): Boolean = z match { case 2 => @return true; case _ => @return false } ")
+      classOffsetsMatch("def foo(z: Int): Boolean = @z match { case 2 => @return true; case _ => @return false } ")
     }
   }
 
   "While/doWhile instrumentation" should instrument {
     "basic while" in {
-      // TODO: should skip the block after while?
-      defOffsetsMatch("var z = @0; while (z < 5) @z @+= 1")
-      defOffsetsMatch("var z = @0; while (z < 5) @{ @println(z); @z += 1 }")
+      classOffsetsMatch("var z = @0; while (@z < 5) @z += 1")
+      classOffsetsMatch("var z = @0; while (@z < 5) { @println(z); @z += 1 }")
+      defOffsetsMatch("var z = @0; while (@z < 5) @z += 1")
+      defOffsetsMatch("var z = @0; while (@z < 5) { @println(z); @z += 1 }")
     }
     "basic do - while" in {
-      classOffsetsMatch("var z = @0; @do @z += 1 while (z < 5)")
-      classOffsetsMatch("var z = @0; @do { @println(z); @z += 1 } while (z < 5)")
+      classOffsetsMatch("var z = @0; do @z += 1 while (@z < 5)")
+      classOffsetsMatch("var z = @0; do { @println(z); @z += 1 } while (@z < 5)")
     }
   }
 
   "Match/case instrumentation" should instrument {
     "basic match" in {
-      classOffsetsMatch("""val z = x match { case 1 => @"one"; case 2 => @"two"; case _ => @throw new Exception() }""")
+      classOffsetsMatch("""val z = @x match { case 1 => @"one"; case 2 => @"two"; case _ => @throw new Exception() }""")
     }
+    "matching result of expression" in {
+      classOffsetsMatch("""val z = @Some(x).map(@_ * 1000) match { case Some(1) => @"one"; case _ => }""")
+    }
+
     "match with guard" in {
-      classOffsetsMatch("""val z = x match { case 1 if (x % 2 == 0) => @"one"; case _ => @"other" }""")
+      classOffsetsMatch("""val z = @x match { case 1 if (@x % 2 == 0) => @"one"; case _ => @"other" }""")
     }
     "case sequence" in {
-      classOffsetsMatch("""val z: Option[Int] => Int = { case Some(q) => @q; case None => @0 }""")
+      classOffsetsMatch("""val z: Option[Int] => Int = @{ case Some(q) => @q; case None => @0 }""")
     }
   }
 
@@ -114,8 +119,15 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
       classOffsetsMatch("val z = @'sym")
     }
     "list concatenation" in {
-      // TODO: compiler doesn't have an offset prior to the :::
+      // TODO: can't find an offset prior to the :::
       defOffsetsMatch("List(1) @::: List(2)")
+    }
+    "variable incrementation" in {
+      classOffsetsMatch("var z = @0; @z += 1;")
+    }
+    "function block that doesn't use input" in {
+      classOffsetsMatch("@Some(\"foo\").map(@System.getProperty)")
+      defOffsetsMatch("@Some(\"foo\").map(@System.getProperty)")
     }
   }
 
