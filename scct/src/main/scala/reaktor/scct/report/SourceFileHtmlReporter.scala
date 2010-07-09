@@ -14,7 +14,7 @@ class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoade
   val sourceReferenceDir = System.getProperty("scct.src.reference.dir", "")
 
   def report = {
-    sourceFileHeader ++ sourceFileContent
+    <div class="content">{ sourceFileHeader ++ sourceFileContent }</div>
   }
 
   def sourceFileHeader = {

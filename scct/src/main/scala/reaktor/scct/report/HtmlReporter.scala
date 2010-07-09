@@ -57,6 +57,7 @@ object HtmlReporter {
       case ClassTypes.Trait => "trait.png"
       case ClassTypes.Class => "class.png"
       case ClassTypes.Root => "package.png"
+      case ClassTypes.Package => "package.png"
     }
     <img src={img}/> ++ Text(name.className)
   }
@@ -102,7 +103,12 @@ class HtmlReporter(data: CoverageData, writer: HtmlReportWriter) {
     val head = <script src="http://code.jquery.com/jquery-1.4.2.min.js"></script> ++
                <script src="packageListReport.js"></script>
     val html =
-      <div>
+      <div class="content">
+        <div class="filterContainer">
+          <span class="pre"/>
+          <input id="filter" type="text"/>
+          <span class="post"/>
+        </div>
         <div class="pkgRow header">
           <a href={files.summary} target="detail">Summary { format(data.percentage) }</a>
         </div>
@@ -117,7 +123,7 @@ class HtmlReporter(data: CoverageData, writer: HtmlReportWriter) {
               { for ((clazz, classData) <- packageData.forClasses) yield
                   <div class="pkgRow">
                     <a href={ classHref(clazz) } target="detail">
-                      { classNameHeader(clazz) }&nbsp;{ format(classData.percentage) }
+                      <span class="className">{ classNameHeader(clazz) }</span>&nbsp;{ format(classData.percentage) }
                     </a>
                   </div>
               }
@@ -137,7 +143,7 @@ class HtmlReporter(data: CoverageData, writer: HtmlReportWriter) {
   }
 
   def resources {
-    val rs = List("class.png", "object.png", "package.png", "trait.png", "style.css", "packageListReport.js")
+    val rs = List("class.png", "object.png", "package.png", "trait.png", "filter_box_left.png", "filter_box_right.png", "style.css", "packageListReport.js")
     rs.foreach { name =>
       writer.write(name, IO.readResourceBytes("/html-reporting/"+name))
     }

@@ -1,12 +1,11 @@
 IN PROGRESS
-* scala 2.8 support
-** self-test
-** package root is always shown in report - empty package-objects are created?
+* reporting: jquery-search by classname?
 
 BACKLOG
+* scala 2.8 support: test with another codebase
 * sbt-multiproject support
+* maven plugin
 * memory usage optimizations: load coverage data only for report generation?
-* reporting: jquery-search by classname?
 * fold imports in source view?
 * sbt incremental build support? "conditional coverage datafile updating"
 * scala-code html highlighting?
@@ -15,6 +14,8 @@ BACKLOG
 * eclipse plugin
 
 DONE
+* 2.8: self-test
+* 2.8: package root is always shown in report - empty package-objects are created?
 * 2.8: rewrite intrumentation plugin to pretransform instead of posttransform
 * 2.8: fix package naming
 * 2.8: fix tab positioning
