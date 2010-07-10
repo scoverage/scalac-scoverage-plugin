@@ -3,7 +3,7 @@ $(document).ready(function() {
     var height = $(window).height();
     $("#overview").height(height);
     $("#detail").height(height);
-    $("#packages").height(height - 40);
+    $("#packages").height(height - 60);
   }).resize();
   $("a").live("click", function() {
     var $this = $(this);
