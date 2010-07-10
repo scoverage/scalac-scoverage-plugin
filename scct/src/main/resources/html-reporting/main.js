@@ -1,8 +1,22 @@
-$(document).ready(function(){
-  $(".pkgLink").click(function() {
-    $(this).next().slideToggle();
-    return true;
+$(document).ready(function() {
+  $(window).resize(function() {
+    var height = $(window).height();
+    $("#overview").height(height);
+    $("#detail").height(height);
+    $("#packages").height(height - 40);
+  }).resize();
+  $("a").live("click", function() {
+    var $this = $(this);
+    if ($this.parent().hasClass("pkgLink")) {
+      $(this).parent().next().slideToggle();
+    }
+    var href = $this.attr("href");
+    $("#detail").empty().load(href.replace(/#.*/, ''));
+    return false;
   });
+  $("#packages").load("packages.html");
+  $("#detail").load("summary.html");
+
   $(".filterContainer .post").click(filterCleared);
   $("#filter").keyup(function(evt) {
     var filterText = $("#filter").val();
@@ -24,7 +38,7 @@ $(document).ready(function(){
           }
         });
         if (shown) {
-          $content.show().removeClass("disabled");
+          $content.show().prev().removeClass("disabled");
         } else {
           $content.hide().prev().addClass("disabled");
         }
@@ -34,8 +48,8 @@ $(document).ready(function(){
 });
 
 function filterCleared() {
-  $(".pkgContent").hide();
-  $(".pkgRow,.pkgLink").show();
+  $(".pkgLink,.pkgRow").show();
   $(".pkgLink").removeClass("disabled");
+  $(".pkgContent").hide();
   $("#filter").val("").focus();
 }

@@ -14,13 +14,13 @@ class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoade
   val sourceReferenceDir = System.getProperty("scct.src.reference.dir", "")
 
   def report = {
-    <div class="content">{ sourceFileHeader ++ sourceFileContent }</div>
+    sourceFileHeader ++ sourceFileContent
   }
 
   def sourceFileHeader = {
     val header = itemRow(formatSourceFileName(sourceFile), data.percentage, "#")
     val classRows = classItemRows(data)
-    table(header, classRows)
+    <table class="classes"><tbody>{ header }{ classRows }</tbody></table>
   }
 
   def formatSourceFileName(sourceFile: String) = {

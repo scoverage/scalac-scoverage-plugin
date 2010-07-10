@@ -71,11 +71,9 @@ class HtmlReporter(data: CoverageData, writer: HtmlReportWriter) {
   object files {
     val packages = "packages.html"
     val summary = "summary.html"
-    val index = "index.html"
   }
 
   def report = {
-    indexReport
     summaryReport
     packageListReport
     packageReports
@@ -83,46 +81,30 @@ class HtmlReporter(data: CoverageData, writer: HtmlReportWriter) {
     resources
   }
 
-  def indexReport {
-    val html =
-      <frameset cols="30%,70%">
-        <frame name="overview" src={files.packages}/>
-        <frame name="detail" scrolling="yes" src={files.summary}/>
-      </frameset>
-    writer.writeTemplate(files.index, html, NodeSeq.Empty)
-  }
-
   def summaryReport {
     val header = headerRow("Total", data.percentage)
     val items = for ((name, packageData) <- data.forPackages) yield
       itemRow(name, packageData.percentage, packageReportFileName(name))
-    writer.writeBody(files.summary, table(header, items.toList))
+    writer.write(files.summary, table(header, items.toList))
   }
 
   def packageListReport {
-    val head = <script src="http://code.jquery.com/jquery-1.4.2.min.js"></script> ++
-               <script src="packageListReport.js"></script>
     val html =
       <div class="content">
-        <div class="filterContainer">
-          <span class="pre"/>
-          <input id="filter" type="text"/>
-          <span class="post"/>
-        </div>
         <div class="pkgRow header">
-          <a href={files.summary} target="detail">Summary { format(data.percentage) }</a>
+          <a href={files.summary}>Summary { format(data.percentage) }</a>
         </div>
         {
           for ((pkg, packageData) <- data.forPackages) yield {
             <div class="pkgRow pkgLink">
-              <a href={packageReportFileName(pkg)} target="detail">
+              <a href={packageReportFileName(pkg)}>
                 { pkg }&nbsp;{ format(packageData.percentage) }
               </a>
             </div> ++
             <div class="pkgRow pkgContent">
               { for ((clazz, classData) <- packageData.forClasses) yield
                   <div class="pkgRow">
-                    <a href={ classHref(clazz) } target="detail">
+                    <a href={ classHref(clazz) }>
                       <span class="className">{ classNameHeader(clazz) }</span>&nbsp;{ format(classData.percentage) }
                     </a>
                   </div>
@@ -131,19 +113,20 @@ class HtmlReporter(data: CoverageData, writer: HtmlReportWriter) {
           }
         }
       </div>
-    writer.writeBody(files.packages, html, head)
+    writer.write(files.packages, html)
   }
 
   def packageReports {
     for ((pkg, packageData) <- data.forPackages) {
       val header = headerRow(pkg, packageData.percentage)
       val items = classItemRows(packageData)
-      writer.writeBody(packageReportFileName(pkg), table(header, items))
+      writer.write(packageReportFileName(pkg), table(header, items))
     }
   }
 
   def resources {
-    val rs = List("class.png", "object.png", "package.png", "trait.png", "filter_box_left.png", "filter_box_right.png", "style.css", "packageListReport.js")
+    val rs = List("class.png", "object.png", "package.png", "trait.png", "filter_box_left.png", "filter_box_right.png",
+      "jquery-1.4.2.min.js", "style.css", "main.js", "index.html")
     rs.foreach { name =>
       writer.write(name, IO.readResourceBytes("/html-reporting/"+name))
     }
@@ -151,7 +134,7 @@ class HtmlReporter(data: CoverageData, writer: HtmlReportWriter) {
   def sourceFileReports {
     for ((sourceFile, sourceData) <- data.forSourceFiles) {
       val report = SourceFileHtmlReporter.report(sourceFile, sourceData)
-      writer.writeBody(sourceReportFileName(sourceFile), report)
+      writer.write(sourceReportFileName(sourceFile), report)
     }
   }
 
