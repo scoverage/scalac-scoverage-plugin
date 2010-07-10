@@ -1,5 +1,4 @@
 IN PROGRESS
-* reporting: jquery-search by classname?
 
 BACKLOG
 * scala 2.8 support: test with another codebase
@@ -14,6 +13,7 @@ BACKLOG
 * eclipse plugin
 
 DONE
+* reporting: jquery-search by classname?
 * 2.8: self-test
 * 2.8: package root is always shown in report - empty package-objects are created?
 * 2.8: rewrite intrumentation plugin to pretransform instead of posttransform
