@@ -2,6 +2,7 @@ IN PROGRESS
 * reporting: scroll to selected class on click.
 
 BACKLOG
+* 2.8: sbt-plugin fixes
 * scala 2.8 support: test with another codebase
 * sbt-multiproject support
 * maven plugin
