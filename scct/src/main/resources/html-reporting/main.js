@@ -11,7 +11,9 @@ $(document).ready(function() {
       $(this).parent().next().slideToggle();
     }
     var href = $this.attr("href");
-    $("#detail").empty().load(href.replace(/#.*/, ''));
+    if (href != "#") {
+      $("#detail").empty().load(href.replace(/#.*/, ''));
+    }
     return false;
   });
   $("#packages").load("packages.html");

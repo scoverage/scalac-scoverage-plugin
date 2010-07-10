@@ -1,4 +1,5 @@
 IN PROGRESS
+* reporting: scroll to selected class on click.
 
 BACKLOG
 * scala 2.8 support: test with another codebase
