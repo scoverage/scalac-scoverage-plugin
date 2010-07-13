@@ -1,8 +1,12 @@
 IN PROGRESS
-* reporting: scroll to selected class on click.
+* sbt-plugin: cleanup and fix scctJar location (buildScala/defScala?).
 
 BACKLOG
-* 2.8: sbt-plugin fixes
+* smoke-test: build all --> run in test project --> show report)
+* backport 2.8 changes to 2.7.7 branch?
+* reinstall maven repo usage (earlier, it broke ivy caching somehow....)
+* reporting pages are broken on non-FF browsers.
+* reporting: scroll to selected class on click.
 * scala 2.8 support: test with another codebase
 * sbt-multiproject support
 * maven plugin
@@ -15,6 +19,7 @@ BACKLOG
 * eclipse plugin
 
 DONE
+* 2.8: sbt-plugin fixes
 * reporting: jquery-search by classname?
 * 2.8: self-test
 * 2.8: package root is always shown in report - empty package-objects are created?
