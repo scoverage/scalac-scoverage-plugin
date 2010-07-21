@@ -25,5 +25,16 @@ class ConstructorInstrumentationSpec extends InstrumentationSpec {
     "extending class constructors" in {
       offsetsMatch("class Foo@(x: Int)\nclass Bar@(x: Int, y: Int) extends Foo(x)")
     }
+    "multiline constructors" in {
+       offsetsMatch("""|class Example@(val id: String) {
+                       |  def this(id:String, other:String) = @{
+                       |    this(id);
+                       |    @setOther(other)
+                       |  }
+                       |  def setOther(s: String) {
+                       |    @println(s);
+                       |  }
+                       |}""".stripMargin)
+     }
   }
 }

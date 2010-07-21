@@ -75,8 +75,12 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
       case dd: DefDef if isGeneratedMethod(dd) => (false, t)
 
       case dd: DefDef if (t.symbol.isConstructor) => {
-        val block @ Block(List(apply @ Apply(fun, args)), expr @ Literal(_)) = dd.rhs
-        val newRhs = treeCopy.Block(block, treeCopy.Apply(apply, fun, super.transformTrees(args)) :: List(coverageCall(block)), expr)
+        val block @ Block(list, expr @ Literal(_)) = dd.rhs
+        val (head:Apply) :: tail = list
+        val newTail: List[Tree] = instrument(super.transformStats(tail, currentOwner)) ::: List(coverageCall(block))
+        val newApply: Apply = treeCopy.Apply(head, head.fun, super.transformTrees(head.args))
+        val newStats: List[Tree] = newApply :: newTail
+        val newRhs = treeCopy.Block(block, newStats, expr)
         (false, treeCopy.DefDef(t, dd.mods, dd.name, dd.tparams, dd.vparamss, dd.tpt, newRhs))
       }
       case dd @ DefDef(_,_,_,_,_,b @ Block(List(a @ Assign(lhs,rhs)), _)) if (t.symbol.isLazy) => {
