@@ -12,9 +12,6 @@ class NameParsingInstrumentationSpec extends InstrumentationSpec {
     "handle declared packages" in {
       packagesOf("package foo.bar; class X {}") mustEqual List("foo.bar")
     }
-    "handle package objects" in {
-      packagesOf("package foo; package object bar { class X {} }") mustEqual List("foo.bar")
-    }
   }
 
   "class name assignment" should {
@@ -28,7 +25,7 @@ class NameParsingInstrumentationSpec extends InstrumentationSpec {
       classesOf("class X { class Y }") mustEqual List("X", "X.Y")
     }
     "handle classes nested inside methods" in {
-      classesOf("class X { def method { class Y } }") mustEqual List("X", "X.Y")      
+      classesOf("class X { def method { class Y; 1 } }") mustEqual List("X.Y", "X")
     }
     "skip anonymous classes" in {
       classesOf("class X { def go = 1 }; class Y { new X { override def go = 2 } }") mustEqual List("X", "Y")
@@ -39,11 +36,6 @@ class NameParsingInstrumentationSpec extends InstrumentationSpec {
     "handle nested classes in anonymous classes" in {
       classesOf("class AnonX; class Holder { new AnonX { class Inner {} } }") mustEqual List("AnonX", "Holder", "Holder.Inner")
     }
-    "handle classes in package objects" in {
-      // TODO: placeholders of package objects currently have an empty class name ... that's probably ok?
-      classesOf("package object foo { class X }") mustEqual List("", "X")
-      classesOf("package object foo { def method { class X } }") mustEqual List("", "X")
-    }
   }
 
   "type assignment" should {
@@ -51,11 +43,10 @@ class NameParsingInstrumentationSpec extends InstrumentationSpec {
       typesOf("class X") mustEqual List(ClassTypes.Class)
       typesOf("trait X") mustEqual List(ClassTypes.Trait)
       typesOf("object X") mustEqual List(ClassTypes.Object)
-      typesOf("package object X") mustEqual List(ClassTypes.Package)
     }
   }
 
-  private def packagesOf(s: String) = compile(s).map(_.name.packageName).distinct
-  private def classesOf(s: String) = compile(s).map(_.name.className).distinct
-  private def typesOf(s: String) = compile(s).map(_.name.classType).distinct
+  private def packagesOf(s: String) = compile(s).map(_.name.packageName).removeDuplicates
+  private def classesOf(s: String) = compile(s).map(_.name.className).removeDuplicates
+  private def typesOf(s: String) = compile(s).map(_.name.classType).removeDuplicates
 }

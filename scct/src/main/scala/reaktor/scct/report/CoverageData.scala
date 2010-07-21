@@ -6,10 +6,10 @@ import reaktor.scct.{CoveredBlock, Name}
 class CoverageData(val blocks: List[CoveredBlock]) {
 
   private def forSourceFile(sourceFile: String) =
-    new CoverageData(blocks.filter(_.name.sourceFile == sourceFile).sortWith(_.offset < _.offset))
+    new CoverageData(blocks.filter(_.name.sourceFile == sourceFile).sort(_.offset < _.offset))
 
   def forSourceFiles: Map[String, CoverageData] = {
-    val names = blocks.map(_.name.sourceFile).distinct
+    val names = blocks.map(_.name.sourceFile).removeDuplicates
     names.foldLeft(stringMap) { (map, n) => map + (n -> forSourceFile(n)) }
   }
 
@@ -17,7 +17,7 @@ class CoverageData(val blocks: List[CoveredBlock]) {
     new CoverageData(blocks.filter(_.name == name))
 
   def forClasses: Map[Name, CoverageData] = {
-    val names = blocks.map(_.name).distinct
+    val names = blocks.map(_.name).removeDuplicates
     names.foldLeft(nameMap) { (map, n) => map + (n -> forClass(n)) }
   }
 
@@ -25,7 +25,7 @@ class CoverageData(val blocks: List[CoveredBlock]) {
     new CoverageData(blocks.filter(_.name.packageName == packageName))
 
   def forPackages: Map[String, CoverageData] = {
-    val names = blocks.map(_.name.packageName).distinct
+    val names = blocks.map(_.name.packageName).removeDuplicates
     names.foldLeft(stringMap) { (map, n) => map + (n -> forPackage(n)) }
   }
 

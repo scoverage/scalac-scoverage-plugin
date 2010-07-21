@@ -6,5 +6,6 @@ import tools.nsc.symtab.Flags
 class DebugFlagsSpec extends Specification {
   "what are these" in {
     println("Flags: "+Flags.flagsToString(131136))
+    1 mustEqual 1
   }
 }

@@ -13,7 +13,7 @@ trait InstrumentationSpec extends Specification {
   def compileFile(file: String) = compileFiles(Seq(file) :_*)
   def compileFiles(args: String*) = {
     val settings = createSettings
-    val command = new CompilerCommand(args.toList, settings)
+    val command = new CompilerCommand(args.toList, settings, println, false)
     val runner = new PluginRunner(settings, debug)
     (new runner.Run).compile(command.files)
     runner.scctComponent
@@ -23,9 +23,9 @@ trait InstrumentationSpec extends Specification {
     val settings = new Settings
     val scalaJars = List("scala-compiler.jar", "scala-library.jar")
     val classPath = if (System.getProperty("java.class.path").contains("sbt-launch")) {
-      "./target/scala_2.8.0.RC7/classes" :: scalaJars.map("./project/boot/scala-2.8.0.RC7/lib/"+_)
+      "./target/scala_2.7.7/classes" :: scalaJars.map("./project/boot/scala-2.7.7/lib/"+_)
     } else {
-      "./out/production/scct" :: scalaJars.map("./scct/project/boot/scala-2.8.0.RC7/lib/"+_)
+      "./out/production/scct" :: scalaJars.map("./project/boot/scala-2.7.7/lib/"+_)
     }
     settings.classpath.value = classPath.mkString(":")
     settings
@@ -41,17 +41,17 @@ trait InstrumentationSpec extends Specification {
     f.getAbsolutePath
   }
 
-  def sort(data: List[CoveredBlock]) = data.sortWith { (a,b) =>
+  def sort(data: List[CoveredBlock]) = data.sort { (a,b) =>
     if (a.name.sourceFile == b.name.sourceFile) {
       a.offset < b.offset
     } else a.name.sourceFile < b.name.sourceFile
   }
 
   def classOffsetsMatch(s: String) {
-    offsetsMatch("class Foo@(x: Int) {\n  "+s+"\n}")
+    offsetsMatch("class @Foo(x: Int) {\n  "+s+"\n}")
   }
   def defOffsetsMatch(s: String) {
-    offsetsMatch("class Foo@(x: Int) {\n  def foo {\n    "+s+"\n  }\n}")
+    offsetsMatch("class @Foo(x: Int) {\n  def foo {\n    "+s+"\n  }\n}")
   }
   def offsetsMatch(s: String) {
     offsetsMatch(parse(0, s, InstrumentationSpec("", Nil)), false)
@@ -143,14 +143,7 @@ class PluginRunner(settings: Settings, debug: Boolean) extends Global(settings, 
     scctTransformer.saveData = false
     scctTransformer
   }
-  override def computeInternalPhases() {
-    phasesSet += syntaxAnalyzer
-    phasesSet += analyzer.namerFactory
-    phasesSet += analyzer.packageObjects
-    phasesSet += analyzer.typerFactory
-    phasesSet += superAccessors
-    phasesSet += pickler
-    phasesSet += refchecks
-    phasesSet += scctComponent
+  override def computePhaseDescriptors: List[SubComponent] = {
+    List[SubComponent](syntaxAnalyzer, analyzer.namerFactory, analyzer.typerFactory, superAccessors, pickler, refchecks, scctComponent)
   }
 }
