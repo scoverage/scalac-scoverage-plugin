@@ -1,13 +1,14 @@
 IN PROGRESS
-* sbt-plugin: cleanup and fix scctJar location (buildScala/defScala?).
+* scala 2.8 support: test with another codebase
 
 BACKLOG
-* smoke-test: build all --> run in test project --> show report)
-* backport 2.8 changes to 2.7.7 branch?
-* reinstall maven repo usage (earlier, it broke ivy caching somehow....)
+* Use scala 2.8 final 
 * reporting pages are broken on non-FF browsers.
+* reconfigure sbt root project instead of 2 separate projects.
+* sbt-plugin: cleanup and fix scctJar location (buildScala/defScala?).
+* smoke-test: build all --> run in test project --> show report)
+* reinstall maven repo usage (earlier, it broke ivy caching somehow....)
 * reporting: scroll to selected class on click.
-* scala 2.8 support: test with another codebase
 * sbt-multiproject support
 * maven plugin
 * memory usage optimizations: load coverage data only for report generation?
@@ -19,6 +20,7 @@ BACKLOG
 * eclipse plugin
 
 DONE
+* backport 2.8 changes to 2.7.7 branch?
 * 2.8: sbt-plugin fixes
 * reporting: jquery-search by classname?
 * 2.8: self-test
