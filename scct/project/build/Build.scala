@@ -8,7 +8,7 @@ class Build(info: ProjectInfo) extends DefaultProject(info) with IdeaProject {
 
   val junit = "junit" % "junit" % "4.7" % "test" withSources
   val mockito = "org.mockito" % "mockito-all" % "1.8.5" % "test" withSources
-  val scalaSpecs = "org.scala-tools.testing" % "specs_2.8.0.RC1" % "1.6.5-SNAPSHOT" % "test" withSources
+  val scalaSpecs = "org.scala-tools.testing" % "specs_2.8.0" % "1.6.5" % "test" withSources
   val snapshots = ScalaToolsSnapshots
 
   // Self-test
