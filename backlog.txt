@@ -3,7 +3,7 @@ IN PROGRESS
 
 BACKLOG
 * Use scala 2.8 final 
-* reporting pages are broken on non-FF browsers.
+* reporting pages are broken on non-FF browsers: need break-hints on dir "/"'s on source file name in detail view.
 * reconfigure sbt root project instead of 2 separate projects.
 * sbt-plugin: cleanup and fix scctJar location (buildScala/defScala?).
 * smoke-test: build all --> run in test project --> show report)

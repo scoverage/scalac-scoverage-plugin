@@ -1,7 +1,7 @@
 package reaktor.scct.report
 
-import xml.{NodeSeq, Text}
 import reaktor.scct.{ClassTypes, Name, CoveredBlock}
+import xml.{Unparsed, NodeSeq, Text}
 
 object SourceFileHtmlReporter {
   def report(sourceFile: String, data: CoverageData) =
@@ -24,7 +24,7 @@ class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoade
   }
 
   def formatSourceFileName(sourceFile: String) = {
-    val name = Some(sourceFile).map(_.replaceFirst(sourceReferenceDir, "")).map(s => if (s.startsWith("/")) s.substring(1) else s).get
+    val name = sourceFile.replaceFirst(sourceReferenceDir, "").replaceAll("//", "/")
     name.lastIndexOf('/') match {
       case -1 => <span class="header">{ name }</span>
       case idx => Text(name.substring(0, idx+1)) ++ <span class="header">{ name.substring(idx+1) }</span>

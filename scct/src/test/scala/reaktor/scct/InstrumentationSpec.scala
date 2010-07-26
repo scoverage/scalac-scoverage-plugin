@@ -6,9 +6,30 @@ import java.io.{File, FileOutputStream}
 import org.specs.matcher.Matcher
 import org.specs.Specification
 
-trait InstrumentationSpec extends Specification {
-  def debug = false
+trait InstrumentationSpec extends Specification with InstrumentationSupport {
   def instrument = addToSusVerb("instrument")
+
+  def classOffsetsMatch(s: String) {
+    offsetsMatch("class Foo@(x: Int) {\n  "+s+"\n}")
+  }
+  def defOffsetsMatch(s: String) {
+    offsetsMatch("class Foo@(x: Int) {\n  def foo {\n    "+s+"\n  }\n}")
+  }
+  def offsetsMatch(s: String) {
+    offsetsMatch(parse(0, s, InstrumentationSpec("", Nil)), false)
+  }
+  def placeHoldersMatch(s: String) {
+    offsetsMatch(parse(0, s, InstrumentationSpec("", Nil)), true)
+  }
+  def offsetsMatch(spec: InstrumentationSpec, placeHoldersOnly: Boolean) {
+    val resultOffsets = compile(spec.source).filter(x => placeHoldersOnly == x.placeHolder).map(_.offset)
+    resultOffsets must matchSpec(spec)
+  }
+
+}
+
+trait InstrumentationSupport {
+  def debug = false
 
   def compileFile(file: String) = compileFiles(Seq(file) :_*)
   def compileFiles(args: String*) = {
@@ -47,24 +68,7 @@ trait InstrumentationSpec extends Specification {
     } else a.name.sourceFile < b.name.sourceFile
   }
 
-  def classOffsetsMatch(s: String) {
-    offsetsMatch("class Foo@(x: Int) {\n  "+s+"\n}")
-  }
-  def defOffsetsMatch(s: String) {
-    offsetsMatch("class Foo@(x: Int) {\n  def foo {\n    "+s+"\n  }\n}")
-  }
-  def offsetsMatch(s: String) {
-    offsetsMatch(parse(0, s, InstrumentationSpec("", Nil)), false)
-  }
-  def placeHoldersMatch(s: String) {
-    offsetsMatch(parse(0, s, InstrumentationSpec("", Nil)), true)
-  }
-  def offsetsMatch(spec: InstrumentationSpec, placeHoldersOnly: Boolean) {
-    val resultOffsets = compile(spec.source).filter(x => placeHoldersOnly == x.placeHolder).map(_.offset)
-    resultOffsets must matchSpec(spec)
-  }
-
-  private def parse(current: Int, s: String, acc: InstrumentationSpec): InstrumentationSpec = {
+  def parse(current: Int, s: String, acc: InstrumentationSpec): InstrumentationSpec = {
     val (curr, next) = splitAtMark(s)
     if (next.length > 0) {
       val newAcc = acc + (curr, current + curr.length)
