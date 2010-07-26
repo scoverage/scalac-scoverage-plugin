@@ -2,10 +2,8 @@ IN PROGRESS
 
 BACKLOG
 * sbt-multiproject support
-* Use scala 2.8 final 
 * scala 2.8 support: test with another codebase
 * reporting pages are broken on non-FF browsers: need break-hints on dir "/"'s on source file name in detail view.
-* reconfigure sbt root project instead of 2 separate projects, prob. impossible until sbt plugin can use 2.8.
 * smoke-test: build all --> run in test project --> show report)
 * reinstall maven repo usage (earlier, it broke ivy caching somehow....)
 * reporting: scroll to selected class on click.
@@ -19,8 +17,10 @@ BACKLOG
 * eclipse plugin
 
 BLOCK
+* reconfigure sbt root project instead of 2 separate projects, prob. impossible until sbt plugin can use 2.8.
 
 DONE
+* Use scala 2.8 final
 * sbt-plugin: cleanup and fix scctJar location (=defScalaVersion.value)
 * backport 2.8 changes to 2.7.7 branch?
 * 2.8: sbt-plugin fixes
