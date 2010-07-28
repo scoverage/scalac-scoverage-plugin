@@ -1,9 +1,11 @@
 IN PROGRESS
+* sbt merge reports plugin
 
 BACKLOG
-* sbt-multiproject support
+* reporting: if only 1 package, open it automatically
 * scala 2.8 support: test with another codebase
 * reporting pages are broken on non-FF browsers: need break-hints on dir "/"'s on source file name in detail view.
+** zerowhitespace: &#x200B; or &#8203;
 * smoke-test: build all --> run in test project --> show report)
 * reinstall maven repo usage (earlier, it broke ivy caching somehow....)
 * reporting: scroll to selected class on click.
@@ -20,6 +22,7 @@ BLOCK
 * reconfigure sbt root project instead of 2 separate projects, prob. impossible until sbt plugin can use 2.8.
 
 DONE
+* sbt-multiproject support: need to read all req. props on startup -> Env -kinda class
 * Use scala 2.8 final
 * sbt-plugin: cleanup and fix scctJar location (=defScalaVersion.value)
 * backport 2.8 changes to 2.7.7 branch?

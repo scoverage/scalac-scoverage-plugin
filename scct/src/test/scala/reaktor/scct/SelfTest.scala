@@ -8,10 +8,13 @@ object SelfTest extends InstrumentationSupport {
   def main(args: Array[String]) = {
     val src = findSources(new File("src/main/scala"))
     val plugin = compileFiles(src :_*)
-    System.setProperty("scct.src.reference.dir", "src/main/scala")
-    val reportDir = new File("self-report")
-    reportDir.mkdir
-    HtmlReporter.report(plugin.data, reportDir)
+    val env = new Env {
+      override val sourceDir = new File("src/main/scala")
+      override val reportDir = new File("self-report")
+    }
+    env.reportDir.mkdir
+    HtmlReporter.report(plugin.data, env)
+    println("file://"+env.reportDir.getAbsolutePath+"/index.html")
   }
 
   private def findSources(dir: File): List[String] = findSources(dir, dir)
