@@ -1,7 +1,7 @@
 body { color: #444; font-family: monospace; font-size: 11px; margin: 0px;}
 h1 { color: #2F4F4F; }
 #overview { width: 300px; float: left; border-right: 1px solid #aaa; }
-#detail { margin-left: 300px; overflow: scroll; }
+#detail { overflow: scroll; }
 #packages { overflow: scroll; }
 table { width: 99%; margin-top: 5px; }
 td { color: #444; padding: 2px; }
@@ -29,7 +29,7 @@ td.barContainerLeft { text-align: right; }
 .summary { font-weight: bold; font-size: 120%; }
 .selected { text-decoration: underline; }
 .filterContainer { background-color: #B78E99; padding: 10px; height: 40px; }
-.filterContainer input { border: 0; color: #993300; float: left; display: block; height: 18px; width: 240px; }
+.filterContainer input { border: 0; color: #993300; float: left; display: block; height: 18px; width: 220px; }
 .filterContainer .pre { background: url('filter_box_left.png'); float: left; display: block; height: 20px; width: 20px; }
 .filterContainer .post { background: url('filter_box_right.png'); float: left; display: block; height: 20px; width: 20px; cursor: pointer; }
 .classes { border-bottom: 1px solid #aaa; }

@@ -1,36 +1,44 @@
 package reaktor.scct.report
 
-import xml.{NodeSeq, Text}
-import reaktor.scct.{ClassTypes, Name, CoveredBlock}
+import xml.{Unparsed, NodeSeq, Text}
+import reaktor.scct.{Env, ClassTypes, Name, CoveredBlock}
 
 object SourceFileHtmlReporter {
-  def report(sourceFile: String, data: CoverageData) =
-    new SourceFileHtmlReporter(sourceFile, data, new SourceLoader).report
+  def report(sourceFile: String, data: CoverageData, env: Env) =
+    new SourceFileHtmlReporter(sourceFile, data, new SourceLoader(env), env).report
 }
 
-class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoader: SourceLoader) {
+class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoader: SourceLoader, env: Env) {
   import HtmlReporter._
 
-  val sourceReferenceDir = System.getProperty("scct.src.reference.dir", "")
+  val sourcePath = env.sourceDir.getAbsolutePath
 
   def report = {
-    sourceFileHeader ++ sourceFileContent
+    sourceFileTableHeader ++ sourceFileTableContent
   }
 
-  def sourceFileHeader = {
-    val header = itemRow(formatSourceFileName(sourceFile), data.percentage, "#")
+  def sourceFileTableHeader = {
+    val header = itemRow(sourceFileHeader(sourceFile), data.percentage, "#")
     val classRows = classItemRows(data)
     <table class="classes"><tbody>{ header }{ classRows }</tbody></table>
   }
 
-  def formatSourceFileName(sourceFile: String) = {
-    val name = Some(sourceFile).map(_.replaceFirst(sourceReferenceDir, "")).map(s => if (s.startsWith("/")) s.substring(1) else s).get
+  def sourceFileHeader(sourceFile: String) = {
+    val name = formatSourceFileName(sourceFile)
     name.lastIndexOf('/') match {
       case -1 => <span class="header">{ name }</span>
       case idx => Text(name.substring(0, idx+1)) ++ <span class="header">{ name.substring(idx+1) }</span>
     }
   }
-  def sourceFileContent =
+  def formatSourceFileName(sourceFile: String) = {
+    def trimRoot(s: String) = s.indexOf(sourcePath) match {
+      case -1 => s
+      case idx => s.substring(sourcePath.length + idx)
+    }
+    Some(sourceFile).map(trimRoot).map(_.replaceAll("//", "/")).map(s => if (s.startsWith("/")) s.substring(1) else s).get
+  }
+
+  def sourceFileTableContent =
     <table class="source"><tbody>{ sourceLines(sourceFile, data) }</tbody></table>
 
   def sourceLines(sourceFile: String, data: CoverageData): NodeSeq = {

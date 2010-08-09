@@ -38,6 +38,5 @@ class ConstructorInstrumentationSpec extends InstrumentationSpec {
                       |  }
                       |}""".stripMargin)
     }
-
   }
 }

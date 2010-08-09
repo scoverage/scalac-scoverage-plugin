@@ -6,11 +6,8 @@ class Build(info: ProjectInfo) extends DefaultProject(info) with IdeaProject {
 	//override def managedStyle = ManagedStyle.Maven
 	//lazy val publishTo = Resolver.file("github-pages-repo", new java.io.File("../maven-repo/"))
   val junit = "junit" % "junit" % "4.7" % "test" withSources
-  //val scalaTest = "org.scalatest" % "scalatest" % "1.0" % "test" withSources
-  val mockito = "org.mockito" % "mockito-all" % "1.8.0" % "test" withSources
-  //val scalaCheck = "org.scala-tools.testing" % "scalacheck" % "1.6" % "test" withSources
+  val mockito = "org.mockito" % "mockito-all" % "1.8.5" % "test" withSources
   val scalaSpecs = "org.scala-tools.testing" % "specs" % "1.6.0" % "test" withSources
-  //val scalaCompiler = "org.scala-lang" % "scala-compiler" % "2.7.7" % "test"
 
   // Self-test
 

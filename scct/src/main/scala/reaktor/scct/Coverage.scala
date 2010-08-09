@@ -2,10 +2,15 @@ package reaktor.scct
 
 import report.HtmlReporter
 import java.io.File
+import java.util.concurrent.{Executors, TimeUnit}
 
 object Coverage {
   var active = false
-  setupShutdownHook
+  val env = new Env
+  env.reportHook match {
+    case "system.property" => setupSystemPropertyHook
+    case _ => setupShutdownHook
+  }
   val data = readMetadata
   active = true
 
@@ -27,7 +32,7 @@ object Coverage {
   }
 
   def report = {
-    HtmlReporter.report(data.values.toList, new File(System.getProperty("scct.report.dir", ".")))
+    HtmlReporter.report(data.values.toList, env)
   }
 
   private def setupShutdownHook {
@@ -38,6 +43,18 @@ object Coverage {
         report
       }
     })
+  }
+  private def setupSystemPropertyHook {
+    val prop = "scct.%s.fire.report".format(env.projectId)
+    new Thread {
+      override def run = {
+        while (System.getProperty(prop, "") != "true") Thread.sleep(200)
+        Coverage.active = false
+        println("scct: Generating coverage report.")
+        report
+        System.setProperty(prop, "done")
+      }
+    }.start
   }
 }
 
@@ -65,3 +82,13 @@ object ClassTypes {
 }
 
 class uncovered extends StaticAnnotation
+
+class Env {
+  val projectId = System.getProperty("scct.project.name", "default")
+  val reportHook = System.getProperty("scct.report.hook", "shutdown")
+  val reportDir = new File(System.getProperty("scct.report.dir", "."))
+  /** Where the source files actually start from, so e.g. $PROJECTHOME/src/main/scala/ */
+  val sourceDir = new File(System.getProperty("scct.source.dir", "."))
+  /** Where the source files are referenced from by the compiler, probably the root of the file system */
+  val sourceBaseDir = new File(System.getProperty("scct.source.base.dir", ""))
+}

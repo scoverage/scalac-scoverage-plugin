@@ -1,14 +1,15 @@
 package reaktor.scct.report
 
 import org.specs.Specification
-import reaktor.scct.{ClassTypes, Name, CoveredBlock}
 import xml.Text
 import org.specs.matcher.XmlMatchers
+import reaktor.scct.{Env, ClassTypes, Name, CoveredBlock}
 
 class SourceFileHtmlReporterSpec extends Specification with XmlMatchers {
 
   "Single line formatting" should {
-    val sut = new SourceFileHtmlReporter("src", new CoverageData(Nil), new SourceLoader)
+    val env = new Env
+    val sut = new SourceFileHtmlReporter("src", new CoverageData(Nil), new SourceLoader(env), env)
 
     "format covered line" in {
       sut.formatLine("my line", 0, blocks((0, true))) must equalIgnoreSpace(Text("my line"))

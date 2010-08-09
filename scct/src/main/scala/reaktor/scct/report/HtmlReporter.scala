@@ -6,8 +6,8 @@ import xml.{Text, Node, NodeSeq}
 import reaktor.scct._
 
 object HtmlReporter {
-  def report(blocks: List[CoveredBlock], outputDir: File) =
-    new HtmlReporter(new CoverageData(blocks), new HtmlReportWriter(outputDir)).report
+  def report(blocks: List[CoveredBlock], env: Env) =
+    new HtmlReporter(new CoverageData(blocks), new HtmlReportWriter(env.reportDir), env).report
 
   def packageReportFileName(name: String) = toFileName("pkg", name)
   def sourceReportFileName(name: String) = toFileName("src", name)
@@ -65,7 +65,7 @@ object HtmlReporter {
     n.classType.toString + "_" + n.packageName.replace(".", "_") + "_" + n.className.replace(".", "_")
 }
 
-class HtmlReporter(data: CoverageData, writer: HtmlReportWriter) {
+class HtmlReporter(data: CoverageData, writer: HtmlReportWriter, env: Env) {
   import HtmlReporter._
 
   object files {
@@ -133,7 +133,7 @@ class HtmlReporter(data: CoverageData, writer: HtmlReportWriter) {
   }
   def sourceFileReports {
     for ((sourceFile, sourceData) <- data.forSourceFiles) {
-      val report = SourceFileHtmlReporter.report(sourceFile, sourceData)
+      val report = SourceFileHtmlReporter.report(sourceFile, sourceData, env)
       writer.write(sourceReportFileName(sourceFile), report)
     }
   }
