@@ -16,7 +16,7 @@ $(document).ready(function() {
     }
     return false;
   });
-  $("#packages").load("packages.html");
+  $("#packages").load("packages.html", resetPackageLinks);
   $("#detail").load("summary.html");
 
   $(".filterContainer .post").click(filterCleared);
@@ -53,5 +53,13 @@ function filterCleared() {
   $(".pkgLink,.pkgRow").show();
   $(".pkgLink").removeClass("disabled");
   $(".pkgContent").hide();
+  resetPackageLinks();
   $("#filter").val("").focus();
+}
+
+function resetPackageLinks() {
+  var pkgContents = $(".pkgContent");
+  if (pkgContents.size() == 1) {
+    pkgContents.show();
+  }
 }
