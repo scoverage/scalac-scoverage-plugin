@@ -1,12 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-  <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link rel="stylesheet" type="text/css" href="style.css" />
-    
-  </head>
-  <body><table><tbody><tr>
-      <td class="barContainerLeft"><a href="#">reaktor/scct/report/<span class="header">HtmlReportWriter.scala</span></a></td>
+<table class="classes"><tbody><tr>
+      <td class="barContainerLeft"><a href="#">Users/mtkopone/projects/scct/scct/src/main/scala/reaktor/scct/report/<span class="header">HtmlReportWriter.scala</span></a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
         <div class="percentage">0 %</div>
@@ -50,76 +43,47 @@
             <td>class <span class="non">HtmlReportWriter(outputDir: File) {
 </span></td>
           </tr><tr >
-            <td class="red">8</td>
-            <td>  lazy val template = <span class="non">IO.readResource(&quot;/html-reporting/template.html&quot;)
-</span></td>
-          </tr><tr >
-            <td class="black">9</td>
+            <td class="black">8</td>
             <td>
 </td>
           </tr><tr >
-            <td class="black">10</td>
-            <td>  def writeBody(fileName: String, body: NodeSeq) {
+            <td class="black">9</td>
+            <td>  def write(fileName: String, nodes: NodeSeq) {
 </td>
           </tr><tr >
-            <td class="red">11</td>
-            <td>    <span class="non">writeBody(fileName, body, NodeSeq.Empty)
+            <td class="red">10</td>
+            <td>    <span class="non">write(fileName, nodes.toString)
 </span></td>
+          </tr><tr >
+            <td class="black">11</td>
+            <td>  }
+</td>
           </tr><tr >
             <td class="black">12</td>
-            <td>  }
-</td>
-          </tr><tr >
-            <td class="black">13</td>
-            <td>  def writeBody(fileName: String, body: NodeSeq, head: NodeSeq) {
-</td>
-          </tr><tr >
-            <td class="red">14</td>
-            <td>    <span class="non">writeTemplate(fileName, &lt;body&gt;{body}&lt;/body&gt;, head)
-</span></td>
-          </tr><tr >
-            <td class="black">15</td>
-            <td>  }
-</td>
-          </tr><tr >
-            <td class="black">16</td>
-            <td>  def writeTemplate(fileName: String, body: NodeSeq, head: NodeSeq) {
-</td>
-          </tr><tr >
-            <td class="red">17</td>
-            <td>    <span class="non">write(fileName, template.replace(&quot;&lt;!-- @BODY@ --&gt;&quot;, body.toString).replace(&quot;&lt;!-- @HEAD@ --&gt;&quot;, head.toString))
-</span></td>
-          </tr><tr >
-            <td class="black">18</td>
-            <td>  }
-</td>
-          </tr><tr >
-            <td class="black">19</td>
             <td>  def write(fileName: String, content: String) {
 </td>
           </tr><tr >
-            <td class="red">20</td>
+            <td class="red">13</td>
             <td>    <span class="non">write(fileName, content.getBytes(&quot;utf-8&quot;))
 </span></td>
           </tr><tr >
-            <td class="black">21</td>
+            <td class="black">14</td>
             <td>  }
 </td>
           </tr><tr >
-            <td class="black">22</td>
+            <td class="black">15</td>
             <td>  def write(fileName: String, bytes: Array[Byte]) {
 </td>
           </tr><tr >
-            <td class="red">23</td>
+            <td class="red">16</td>
             <td>    <span class="non">IO.write(new File(outputDir, fileName), bytes)
 </span></td>
           </tr><tr >
-            <td class="black">24</td>
+            <td class="black">17</td>
             <td>  }
 </td>
           </tr><tr >
-            <td class="black">25</td>
+            <td class="black">18</td>
             <td>}
 </td>
-          </tr></tbody></table></body>
-</html>
+          </tr></tbody></table>

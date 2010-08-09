@@ -1,16 +1,9 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-  <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link rel="stylesheet" type="text/css" href="style.css" />
-    
-  </head>
-  <body><table><tbody><tr>
-      <td class="barContainerLeft"><a href="#">reaktor/scct/<span class="header">ScctInstrumentPlugin.scala</span></a></td>
+<table class="classes"><tbody><tr>
+      <td class="barContainerLeft"><a href="#">Users/mtkopone/projects/scct/scct/src/main/scala/reaktor/scct/<span class="header">ScctInstrumentPlugin.scala</span></a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
-        <div class="percentage">93 %</div>
-        <div class="greenBar" style="width:186px;">&nbsp;</div>
+        <div class="percentage">91 %</div>
+        <div class="greenBar" style="width:182px;">&nbsp;</div>
       </div>
     </div></td>
     </tr><tr>
@@ -25,12 +18,12 @@
       <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct_scct_src_main_scala_reaktor_scct_ScctInstrumentPlugin.scala.html#Class_reaktor_scct_ScctTransformComponent"><img src="class.png"></img>ScctTransformComponent</a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
-        <div class="percentage">84 %</div>
-        <div class="greenBar" style="width:168px;">&nbsp;</div>
+        <div class="percentage">80 %</div>
+        <div class="greenBar" style="width:160px;">&nbsp;</div>
       </div>
     </div></td>
     </tr><tr>
-      <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct_scct_src_main_scala_reaktor_scct_ScctInstrumentPlugin.scala.html#Class_reaktor_scct_ScctTransformComponent_MinimumOffsetFinder"><img src="class.png"></img>ScctTransformComponent.MinimumOffsetFinder</a></td>
+      <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct_scct_src_main_scala_reaktor_scct_ScctInstrumentPlugin.scala.html#Class_reaktor_scct_ScctTransformComponent_ClassRegisterer"><img src="class.png"></img>ScctTransformComponent.ClassRegisterer</a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
         <div class="percentage">100 %</div>
@@ -38,15 +31,15 @@
       </div>
     </div></td>
     </tr><tr>
-      <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct_scct_src_main_scala_reaktor_scct_ScctInstrumentPlugin.scala.html#Class_reaktor_scct_ScctTransformComponent_ScctTransformer"><img src="class.png"></img>ScctTransformComponent.ScctTransformer</a></td>
+      <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct_scct_src_main_scala_reaktor_scct_ScctInstrumentPlugin.scala.html#Class_reaktor_scct_ScctTransformComponent_Instrumenter"><img src="class.png"></img>ScctTransformComponent.Instrumenter</a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
-        <div class="percentage">93 %</div>
-        <div class="greenBar" style="width:186px;">&nbsp;</div>
+        <div class="percentage">96 %</div>
+        <div class="greenBar" style="width:192px;">&nbsp;</div>
       </div>
     </div></td>
     </tr><tr>
-      <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct_scct_src_main_scala_reaktor_scct_ScctInstrumentPlugin.scala.html#Class_reaktor_scct_ScctTransformComponent_ScctTransformer_TreeState"><img src="class.png"></img>ScctTransformComponent.ScctTransformer.TreeState</a></td>
+      <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct_scct_src_main_scala_reaktor_scct_ScctInstrumentPlugin.scala.html#Class_reaktor_scct_ScctTransformComponent_MinimumOffsetFinder"><img src="class.png"></img>ScctTransformComponent.MinimumOffsetFinder</a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
         <div class="percentage">100 %</div>
@@ -67,19 +60,19 @@
 </td>
           </tr><tr >
             <td class="black">4</td>
-            <td>import tools.nsc.{Phase, Global}
-</td>
-          </tr><tr >
-            <td class="black">5</td>
             <td>import java.io.File
 </td>
           </tr><tr >
-            <td class="black">6</td>
+            <td class="black">5</td>
             <td>import tools.nsc.transform.{Transform, TypingTransformers}
 </td>
           </tr><tr >
-            <td class="black">7</td>
+            <td class="black">6</td>
             <td>import tools.nsc.symtab.Flags
+</td>
+          </tr><tr >
+            <td class="black">7</td>
+            <td>import tools.nsc.{Phase, Global}
 </td>
           </tr><tr >
             <td class="black">8</td>
@@ -123,23 +116,23 @@
 </td>
           </tr><tr >
             <td class="black">18</td>
-            <td>  import posAssigner.atPos
+            <td>  import global.definitions._
 </td>
           </tr><tr >
             <td class="black">19</td>
-            <td>
+            <td>  import posAssigner.atPos
 </td>
           </tr><tr >
             <td class="green">20</td>
-            <td>  val phaseName = &quot;ScctTransformComponent&quot;
-</td>
-          </tr><tr >
-            <td class="green">21</td>
             <td>  val runsAfter = &quot;refchecks&quot;
 </td>
           </tr><tr >
+            <td class="green">21</td>
+            <td>  val phaseName = &quot;scctInstrumentation&quot;
+</td>
+          </tr><tr >
             <td class="green">22</td>
-            <td>  lazy val coverageFile = new File(global.settings.outdir.value, &quot;coverage.data&quot;)
+            <td>  def newTransformer(unit: CompilationUnit) = new Instrumenter(unit)
 </td>
           </tr><tr >
             <td class="black">23</td>
@@ -147,128 +140,128 @@
 </td>
           </tr><tr >
             <td class="green">24</td>
-            <td>  var saveData = true
+            <td>  var debug = false
 </td>
           </tr><tr >
             <td class="green">25</td>
-            <td>  var counter = 0L
+            <td>  var saveData = true  
 </td>
           </tr><tr >
             <td class="green">26</td>
+            <td>  var counter = 0L
+</td>
+          </tr><tr >
+            <td class="green">27</td>
             <td>  var data: List[CoveredBlock] = Nil
 </td>
           </tr><tr >
-            <td class="black">27</td>
-            <td>
-</td>
-          </tr><tr >
             <td class="green">28</td>
-            <td>  def newTransformer(unit: CompilationUnit) = new ScctTransformer(unit)
+            <td>  lazy val coverageFile = new File(global.settings.outdir.value, &quot;coverage.data&quot;)
 </td>
           </tr><tr >
-            <td class="black">29</td>
+            <td class="green">29</td>
+            <td>  def newId = { counter += 1; counter.toString }
+</td>
+          </tr><tr >
+            <td class="black">30</td>
             <td>
 </td>
           </tr><tr >
-            <td class="green">30</td>
+            <td class="green">31</td>
             <td>  override def newPhase(prev: scala.tools.nsc.Phase): StdPhase = new Phase(prev) {
 </td>
           </tr><tr >
-            <td class="black">31</td>
+            <td class="black">32</td>
             <td>    override def run {
 </td>
           </tr><tr >
-            <td class="green">32</td>
+            <td class="green">33</td>
             <td>      clearMetadata
 </td>
           </tr><tr >
-            <td class="green">33</td>
+            <td class="green">34</td>
             <td>      super.run
 </td>
           </tr><tr >
-            <td class="green">34</td>
+            <td class="green">35</td>
             <td>      saveMetadata
 </td>
           </tr><tr >
-            <td class="black">35</td>
+            <td class="black">36</td>
             <td>    }
 </td>
           </tr><tr >
-            <td class="black">36</td>
+            <td class="black">37</td>
             <td>    private def clearMetadata {
 </td>
           </tr><tr >
-            <td class="red">37</td>
+            <td class="yellow">38</td>
             <td>      if (coverageFile.exists) <span class="non">coverageFile.delete
 </span></td>
           </tr><tr >
-            <td class="black">38</td>
-            <td>    }
-</td>
-          </tr><tr >
             <td class="black">39</td>
-            <td>    private def saveMetadata {
+            <td>    }
 </td>
           </tr><tr >
             <td class="black">40</td>
+            <td>    private def saveMetadata {
+</td>
+          </tr><tr >
+            <td class="green">41</td>
             <td>      if (saveData) {
 </td>
           </tr><tr >
-            <td class="red">41</td>
+            <td class="red">42</td>
             <td>        <span class="non">println(&quot;scct: Saving coverage data.&quot;)
 </span></td>
           </tr><tr >
-            <td class="red">42</td>
+            <td class="red">43</td>
             <td>        <span class="non">MetadataPickler.toFile(data, coverageFile)
 </span></td>
           </tr><tr >
-            <td class="black">43</td>
+            <td class="black">44</td>
             <td>      }
 </td>
           </tr><tr >
-            <td class="black">44</td>
+            <td class="black">45</td>
             <td>    }
 </td>
           </tr><tr >
-            <td class="black">45</td>
+            <td class="black">46</td>
             <td>  }
 </td>
           </tr><tr >
-            <td class="black">46</td>
+            <td class="black">47</td>
             <td>
 </td>
-          </tr><tr >
-            <td class="green">47</td>
-            <td>  def newId = { counter = counter + 1; counter.toString }
+          </tr><tr id="Class_reaktor_scct_ScctTransformComponent_Instrumenter">
+            <td class="green">48</td>
+            <td>  class Instrumenter(unit: CompilationUnit) extends TypingTransformer(unit) {
 </td>
           </tr><tr >
-            <td class="black">48</td>
+            <td class="black">49</td>
             <td>
-</td>
-          </tr><tr id="Class_reaktor_scct_ScctTransformComponent_ScctTransformer">
-            <td class="green">49</td>
-            <td>  class ScctTransformer(unit: CompilationUnit) extends TypingTransformer(unit) {
 </td>
           </tr><tr >
             <td class="black">50</td>
             <td>    override def transformUnit(unit: CompilationUnit) {
 </td>
           </tr><tr >
-            <td class="black">51</td>
-            <td>      //treeBrowser.browse(List(unit))
-</td>
+            <td class="yellow">51</td>
+            <td>      if (debug) <span class="non">treeBrowser.browse(List(unit))
+</span></td>
           </tr><tr >
             <td class="green">52</td>
+            <td>      registerClasses(unit.body)
+</td>
+          </tr><tr >
+            <td class="green">53</td>
             <td>      super.transformUnit(unit)
 </td>
           </tr><tr >
-            <td class="black">53</td>
-            <td>      //treeBrowser.browse(List(unit))
-</td>
-          </tr><tr >
-            <td class="green">54</td>
-            <td>      maybeDebug(unit)
-</td>
+            <td class="yellow">54</td>
+            <td>      if (debug) <span class="non">treeBrowser.browse(List(unit))
+</span></td>
           </tr><tr >
             <td class="black">55</td>
             <td>    }
@@ -279,858 +272,765 @@
 </td>
           </tr><tr >
             <td class="black">57</td>
-            <td>    private def maybeDebug(unit: CompilationUnit) {
+            <td>    override def transform(tree: Tree) = {
 </td>
           </tr><tr >
             <td class="green">58</td>
-            <td>      val debug = System.getProperty(&quot;coverage.debug&quot;)
+            <td>      val (continue, result) = preprocess(tree)
 </td>
           </tr><tr >
             <td class="green">59</td>
-            <td>      if (debug != null &amp;&amp; (debug.equals(&quot;true&quot;) || unit.source.file.path.endsWith(debug))) {
+            <td>      if (continue) super.transform(result) else result
 </td>
           </tr><tr >
-            <td class="red">60</td>
-            <td>        <span class="non">treeBrowser.browse(List(unit))
-</span></td>
-          </tr><tr >
-            <td class="black">61</td>
-            <td>      }
-</td>
-          </tr><tr >
-            <td class="black">62</td>
+            <td class="black">60</td>
             <td>    }
 </td>
           </tr><tr >
-            <td class="black">63</td>
+            <td class="black">61</td>
             <td>
 </td>
-          </tr><tr id="Class_reaktor_scct_ScctTransformComponent_ScctTransformer_TreeState">
+          </tr><tr >
+            <td class="green">62</td>
+            <td>    private def hasSkipAnnotation(md: MemberDef) = md.mods.annotations.exists(_.tpe.safeToString == classOf[uncovered].getName)
+</td>
+          </tr><tr >
+            <td class="green">63</td>
+            <td>    private def isSynthetic(t: Tree) = t.hasSymbol &amp;&amp; t.symbol.hasFlag(Flags.SYNTHETIC) &amp;&amp; !t.symbol.isAnonymousFunction
+</td>
+          </tr><tr >
             <td class="green">64</td>
-            <td>    case class TreeState(skip: Boolean, isLazyDef: Boolean) {
+            <td>    private def isObjectOrTraitConstructor(s: Symbol) = s.isConstructor &amp;&amp; (currentClass.isModuleClass || currentClass.isTrait)
 </td>
           </tr><tr >
             <td class="green">65</td>
-            <td>      def toSkip = TreeState(true, isLazyDef)
+            <td>    private def isGeneratedMethod(t: DefDef) = !t.symbol.isConstructor &amp;&amp; t.pos.offset == currentClass.pos.offset
 </td>
           </tr><tr >
             <td class="green">66</td>
-            <td>      def toLazyDef = TreeState(skip, true)
+            <td>    private def isAbstractMethod(t: DefDef) = t.symbol.isDeferred
 </td>
           </tr><tr >
-            <td class="black">67</td>
-            <td>    }
+            <td class="green">67</td>
+            <td>    private def isNonLazyStableMethodOrAccessor(t: DefDef) = !t.symbol.hasFlag(Flags.LAZY) &amp;&amp; (t.symbol.hasFlag(Flags.STABLE | Flags.ACCESSOR | Flags.PARAMACCESSOR))
 </td>
           </tr><tr >
             <td class="black">68</td>
             <td>
 </td>
-          </tr><tr id="Class_reaktor_scct_ScctTransformComponent_ScctTransformer">
+          </tr><tr >
             <td class="green">69</td>
-            <td>    var state = TreeState(false, false)
+            <td>    def preprocess(t: Tree): Tuple2[Boolean, Tree] = t match {
 </td>
           </tr><tr >
-            <td class="black">70</td>
-            <td>
+            <td class="green">70</td>
+            <td>      case _ if isSynthetic(t) =&gt; (false, t)
 </td>
           </tr><tr >
-            <td class="black">71</td>
-            <td>    override def transform(t: Tree): Tree = {
+            <td class="green">71</td>
+            <td>      case md: MemberDef if hasSkipAnnotation(md) =&gt; (false, t)
 </td>
           </tr><tr >
             <td class="green">72</td>
-            <td>      val prevState = state
+            <td>      case dd: DefDef if isNonLazyStableMethodOrAccessor(dd) =&gt; (false, t)
 </td>
           </tr><tr >
             <td class="green">73</td>
-            <td>      state = checkTreeState(t)
+            <td>      case dd: DefDef if isAbstractMethod(dd) =&gt; (false, t)
 </td>
           </tr><tr >
             <td class="green">74</td>
-            <td>      val tree = super.transform(t)
+            <td>      case dd: DefDef if isObjectOrTraitConstructor(t.symbol) =&gt; (false, t)
 </td>
           </tr><tr >
             <td class="green">75</td>
-            <td>      val result = if (state.skip) placeHolderize(tree) else instrument(tree)
+            <td>      case dd: DefDef if isGeneratedMethod(dd) =&gt; (false, t)
 </td>
           </tr><tr >
-            <td class="green">76</td>
-            <td>      state = prevState
+            <td class="black">76</td>
+            <td>
 </td>
           </tr><tr >
             <td class="green">77</td>
-            <td>      result
+            <td>      case dd: DefDef if (t.symbol.isConstructor) =&gt; {
 </td>
           </tr><tr >
-            <td class="black">78</td>
-            <td>    }
+            <td class="green">78</td>
+            <td>        val block @ Block(list, expr @ Literal(_)) = dd.rhs
 </td>
           </tr><tr >
-            <td class="black">79</td>
-            <td>
+            <td class="green">79</td>
+            <td>        val (head:Apply) :: tail = list
 </td>
           </tr><tr >
-            <td class="black">80</td>
-            <td>    private def placeHolderize(t: Tree) = t match {
+            <td class="green">80</td>
+            <td>        val newTail: List[Tree] = instrument(super.transformStats(tail, currentOwner)) ::: List(coverageCall(block))
 </td>
           </tr><tr >
             <td class="green">81</td>
-            <td>      case template:Template =&gt; addPlaceHolder(template)
+            <td>        val newApply: Apply = copy.Apply(head, head.fun, super.transformTrees(head.args))
 </td>
           </tr><tr >
             <td class="green">82</td>
-            <td>      case _ =&gt; t
+            <td>        val newStats: List[Tree] = newApply :: newTail
 </td>
           </tr><tr >
-            <td class="black">83</td>
-            <td>    }
+            <td class="green">83</td>
+            <td>        val newRhs = copy.Block(block, newStats, expr)
 </td>
           </tr><tr >
-            <td class="black">84</td>
-            <td>
+            <td class="green">84</td>
+            <td>        (false, copy.DefDef(t, dd.mods, dd.name, dd.tparams, dd.vparamss, dd.tpt, newRhs))
 </td>
           </tr><tr >
             <td class="black">85</td>
-            <td>    private def checkTreeState(t: Tree): TreeState = {
+            <td>      }
 </td>
           </tr><tr >
-            <td class="black">86</td>
-            <td>      if (!t.hasSymbol) {
+            <td class="green">86</td>
+            <td>      case dd @ DefDef(_,_,_,_,_,b @ Block(List(a @ Assign(lhs,rhs)), _)) if (t.symbol.hasFlag(Flags.LAZY)) =&gt; {
 </td>
           </tr><tr >
             <td class="green">87</td>
-            <td>        state
+            <td>        val newAssign = copy.Assign(a, lhs, recurse(rhs))
 </td>
           </tr><tr >
-            <td class="black">88</td>
-            <td>      } else {
+            <td class="green">88</td>
+            <td>        val newBlock = copy.Block(b, List(newAssign), b.expr)
 </td>
           </tr><tr >
             <td class="green">89</td>
-            <td>        val s = t.symbol
+            <td>        (false, copy.DefDef(t, dd.mods, dd.name, dd.tparams, dd.vparamss, dd.tpt, newBlock))
 </td>
           </tr><tr >
-            <td class="green">90</td>
-            <td>        def isGenerated = (s.hasFlag(Flags.STABLE) &amp;&amp; !s.hasFlag(Flags.LAZY)) || (s.hasFlag(Flags.SYNTHETIC) &amp;&amp; !s.isAnonymousFunction)
+            <td class="black">90</td>
+            <td>      }
 </td>
           </tr><tr >
-            <td class="green">91</td>
-            <td>        def isGeneratedCaseClassMethod = s.isMethod &amp;&amp; !s.isConstructor &amp;&amp; t.pos.offset == currentClass.pos.offset
+            <td class="black">91</td>
+            <td>      case dd: DefDef =&gt; {
 </td>
           </tr><tr >
             <td class="green">92</td>
-            <td>        def isObjectConstructor = s.isConstructor &amp;&amp; currentClass.isModuleClass
+            <td>        (false, copy.DefDef(t, dd.mods, dd.name, dd.tparams, dd.vparamss, dd.tpt, recurse(dd.rhs)))
 </td>
           </tr><tr >
-            <td class="green">93</td>
-            <td>        def isNonLazyAccessor = !s.hasFlag(Flags.LAZY) &amp;&amp; s.hasFlag(Flags.ACCESSOR | Flags.PARAMACCESSOR)
+            <td class="black">93</td>
+            <td>      }
 </td>
           </tr><tr >
-            <td class="black">94</td>
-            <td>        def hasSkipAnnotation = t match {
+            <td class="green">94</td>
+            <td>      case vd: ValDef if (vd.symbol.hasFlag(Flags.ACCESSOR | Flags.PARAMACCESSOR)) =&gt; {
 </td>
           </tr><tr >
-            <td class="black">95</td>
-            <td>          case memberDef: MemberDef =&gt; {
+            <td class="green">95</td>
+            <td>        (false, t)
 </td>
           </tr><tr >
-            <td class="green">96</td>
-            <td>            val annots = memberDef.mods.annotations
+            <td class="black">96</td>
+            <td>      }
 </td>
           </tr><tr >
-            <td class="green">97</td>
-            <td>            annots.exists(_.tpe.safeToString == classOf[uncovered].getName)
+            <td class="black">97</td>
+            <td>      case vd: ValDef =&gt; {
 </td>
           </tr><tr >
-            <td class="black">98</td>
-            <td>          }
+            <td class="green">98</td>
+            <td>        (false, copy.ValDef(t, vd.mods, vd.name, vd.tpt, recurse(vd.rhs)))
 </td>
           </tr><tr >
-            <td class="green">99</td>
-            <td>          case _ =&gt; false
+            <td class="black">99</td>
+            <td>      }
 </td>
           </tr><tr >
             <td class="black">100</td>
-            <td>        }
+            <td>      case Template(parents, self, body) =&gt; {
 </td>
           </tr><tr >
-            <td class="black">101</td>
-            <td>        def isLazyDef = t match {
+            <td class="green">101</td>
+            <td>        (false, copy.Template(t, parents, self, instrument(super.transformStats(body, t.symbol))))
 </td>
           </tr><tr >
-            <td class="green">102</td>
-            <td>          case d:DefDef =&gt; s.isMethod &amp;&amp; s.hasFlag(Flags.LAZY)
+            <td class="black">102</td>
+            <td>      }
 </td>
           </tr><tr >
-            <td class="green">103</td>
-            <td>          case _ =&gt; false
+            <td class="black">103</td>
+            <td>      case If(cond, thenp, elsep) =&gt; {
 </td>
           </tr><tr >
-            <td class="black">104</td>
-            <td>        }
+            <td class="green">104</td>
+            <td>        (false, copy.If(t, recurse(cond), recurse(thenp), recurse(elsep)))
 </td>
           </tr><tr >
             <td class="black">105</td>
-            <td>
+            <td>      }
 </td>
           </tr><tr >
-            <td class="green">106</td>
-            <td>        if (isGenerated || hasSkipAnnotation || isNonLazyAccessor || isGeneratedCaseClassMethod || isObjectConstructor) {
+            <td class="black">106</td>
+            <td>      case Function(vparams, body) =&gt; {
 </td>
           </tr><tr >
             <td class="green">107</td>
-            <td>          state.toSkip
+            <td>        (false, copy.Function(t, vparams, recurse(body)))
 </td>
           </tr><tr >
             <td class="black">108</td>
-            <td>        } else if (isLazyDef) {
+            <td>      }
 </td>
           </tr><tr >
-            <td class="green">109</td>
-            <td>          state.toLazyDef
+            <td class="black">109</td>
+            <td>      case Match(selector, cases) =&gt; {
 </td>
           </tr><tr >
-            <td class="black">110</td>
-            <td>        } else {
+            <td class="green">110</td>
+            <td>        (false, copy.Match(t, recurse(selector), super.transformCaseDefs(cases)))
 </td>
           </tr><tr >
-            <td class="green">111</td>
-            <td>          state
+            <td class="black">111</td>
+            <td>      }
 </td>
           </tr><tr >
             <td class="black">112</td>
-            <td>        }
+            <td>      case CaseDef(pat, guard, body) =&gt; {
 </td>
           </tr><tr >
-            <td class="black">113</td>
-            <td>      }
+            <td class="green">113</td>
+            <td>        (false, copy.CaseDef(t, pat, recurse(guard), recurse(body)))
 </td>
           </tr><tr >
             <td class="black">114</td>
-            <td>    }
+            <td>      }
 </td>
           </tr><tr >
             <td class="black">115</td>
-            <td>
+            <td>      case Try(block, catches, finalizer) =&gt; {
 </td>
           </tr><tr >
-            <td class="black">116</td>
-            <td>    private def instrument(tree: Tree) = tree match {
+            <td class="green">116</td>
+            <td>        (false, copy.Try(t, recurse(block), super.transformCaseDefs(catches), recurse(finalizer)))
 </td>
           </tr><tr >
             <td class="black">117</td>
-            <td>      // Don't place instrumentation before super call in constructors:
+            <td>      }
 </td>
           </tr><tr >
-            <td class="black">118</td>
-            <td>      // TODO: check if this is actually a constructor, currently it hits e.g. &quot;try { super.hashCode } catch { ... }&quot;
+            <td class="green">118</td>
+            <td>      case LabelDef(name1, List(), i @ If(_, b @ Block(_, Apply(Ident(name2), List())), Literal(Constant(())))) if (name1 == name2 &amp;&amp; name1.startsWith(&quot;while&quot;)) =&gt; {
 </td>
           </tr><tr >
-            <td class="black">119</td>
-            <td>      case Block(stats @ List(Apply(Select(Super(_,_),_), args)), expr @ Literal(Constant(()))) =&gt;
+            <td class="green">119</td>
+            <td>        val newBlock = copy.Block(b, instrument(super.transformStats(b.stats, currentOwner)), b.expr)
 </td>
           </tr><tr >
             <td class="green">120</td>
-            <td>        copy.Block(tree, stats ::: List(coverageCall(tree)), expr)
+            <td>        val newIf = copy.If(i, recurse(i.cond), newBlock, i.elsep)
 </td>
           </tr><tr >
-            <td class="black">121</td>
-            <td>
+            <td class="green">121</td>
+            <td>        (false, copy.LabelDef(t, name1, List(), newIf))
 </td>
           </tr><tr >
             <td class="black">122</td>
-            <td>      // Skip generated lazy def accessor, since later phases assume { x = &lt;rhs&gt;; x }-tree-structure
+            <td>      }
 </td>
           </tr><tr >
-            <td class="black">123</td>
-            <td>      case Block(List(a @ Assign(lhs @ Select(_, _), rhs)), expr: Select) if state.isLazyDef =&gt; {
+            <td class="green">123</td>
+            <td>      case LabelDef(name1, List(), b @ Block(stats, i @ If(cond, Apply(Ident(name2), List()), Literal(Constant(()))))) if (name1 == name2 &amp;&amp; name1.startsWith(&quot;doWhile&quot;)) =&gt; {
 </td>
           </tr><tr >
             <td class="green">124</td>
-            <td>        val newAssign = fitIntoTree(a, Assign(lhs, instrumentBody(rhs)))
+            <td>        val newIf = copy.If(i, recurse(i.cond), i.thenp, i.elsep)
 </td>
           </tr><tr >
             <td class="green">125</td>
-            <td>        copy.Block(tree, List(newAssign), expr)
+            <td>        val newBlock = copy.Block(b, instrument(super.transformStats(b.stats, currentOwner)), newIf)
 </td>
           </tr><tr >
-            <td class="black">126</td>
-            <td>      }
+            <td class="green">126</td>
+            <td>        (false, copy.LabelDef(t, name1, List(), newBlock))
 </td>
           </tr><tr >
             <td class="black">127</td>
-            <td>      case Block(List(a @ Assign(lhs @ Ident(_), rhs)), expr: Ident) if state.isLazyDef =&gt; {
+            <td>      }
 </td>
           </tr><tr >
-            <td class="green">128</td>
-            <td>        val newAssign = fitIntoTree(a, Assign(lhs, instrumentBody(rhs)))
+            <td class="black">128</td>
+            <td>      case b: Block =&gt; {
 </td>
           </tr><tr >
             <td class="green">129</td>
-            <td>        copy.Block(tree, List(newAssign), expr)
+            <td>        val originalStats = instrument(super.transformStats(b.stats, currentOwner))
 </td>
           </tr><tr >
-            <td class="black">130</td>
+            <td class="green">130</td>
+            <td>        val stats = originalStats ::: (if (shouldInstrument(b.expr)) List(coverageCall(b.expr)) else List())
+</td>
+          </tr><tr >
+            <td class="green">131</td>
+            <td>        val expr = transform(b.expr)
+</td>
+          </tr><tr >
+            <td class="green">132</td>
+            <td>        (false, copy.Block(b, stats, expr))
+</td>
+          </tr><tr >
+            <td class="black">133</td>
             <td>      }
 </td>
           </tr><tr >
-            <td class="black">131</td>
-            <td>      // Skip empty block in e.g. Some(&quot;foo&quot;).map(System.getProperty)
+            <td class="green">134</td>
+            <td>      case _ =&gt; (true, t)
 </td>
           </tr><tr >
-            <td class="black">132</td>
-            <td>      case Block(Nil, Function(_,_)) =&gt;
+            <td class="black">135</td>
+            <td>    }
 </td>
           </tr><tr >
-            <td class="green">133</td>
-            <td>        tree
+            <td class="black">136</td>
+            <td>
 </td>
           </tr><tr >
-            <td class="black">134</td>
-            <td>      case Block(stats, expr) =&gt; {
-</td>
-          </tr><tr >
-            <td class="green">135</td>
-            <td>        val instrumentedBlock = instrumentBlockStats(stats) ::: instrumentBlockExpr(expr)
-</td>
-          </tr><tr >
-            <td class="green">136</td>
-            <td>        copy.Block(tree, instrumentedBlock, expr)
-</td>
-          </tr><tr >
-            <td class="black">137</td>
-            <td>      }
+            <td class="green">137</td>
+            <td>    def recurse(t: Tree) = if (shouldInstrument(t)) instrument(transform(t)) else transform(t)
 </td>
           </tr><tr >
             <td class="black">138</td>
-            <td>      // Skip generated ifs in do {} while's
+            <td>
 </td>
           </tr><tr >
-            <td class="black">139</td>
-            <td>      case If(cond, thenp @ Apply(i @ Ident(_), Nil), elsep @ Literal(Constant(()))) if i.symbol.isLabel =&gt;
+            <td class="green">139</td>
+            <td>    def shouldInstrument(t: Tree) = t match {
 </td>
           </tr><tr >
             <td class="green">140</td>
-            <td>        tree
+            <td>      case _:ClassDef =&gt; false
 </td>
           </tr><tr >
-            <td class="black">141</td>
-            <td>      case If(cond, thenp, elsep) =&gt;
-</td>
+            <td class="red">141</td>
+            <td>      case _:Template =&gt; <span class="non">false
+</span></td>
           </tr><tr >
             <td class="green">142</td>
-            <td>        copy.If(tree, cond, instrumentBody(thenp), instrumentBody(elsep))
+            <td>      case _:TypeDef =&gt; false
 </td>
           </tr><tr >
-            <td class="black">143</td>
-            <td>      case Function(vparams, body) =&gt;
+            <td class="green">143</td>
+            <td>      case _:DefDef =&gt; false
 </td>
           </tr><tr >
             <td class="green">144</td>
-            <td>        copy.Function(tree, vparams, instrumentBody(body))
+            <td>      case _:ValDef =&gt; false
 </td>
           </tr><tr >
-            <td class="black">145</td>
-            <td>      case Try(block, catches, finalizer) =&gt;
+            <td class="green">145</td>
+            <td>      case _:Block =&gt; false
 </td>
           </tr><tr >
             <td class="green">146</td>
-            <td>        copy.Try(tree, instrumentBody(block), catches, instrumentBody(finalizer))
+            <td>      case _:If =&gt; false
 </td>
           </tr><tr >
-            <td class="black">147</td>
-            <td>      case CaseDef(pat, guard, body) =&gt;
+            <td class="green">147</td>
+            <td>      case _:Function =&gt; false
 </td>
           </tr><tr >
             <td class="green">148</td>
-            <td>        copy.CaseDef(tree, pat, guard, instrumentBody(body))
+            <td>      case _:Match =&gt; false
 </td>
           </tr><tr >
-            <td class="black">149</td>
-            <td>      case ValDef(mods, name, tpt, rhs) =&gt;
-</td>
+            <td class="red">149</td>
+            <td>      case _:CaseDef =&gt; <span class="non">false
+</span></td>
           </tr><tr >
             <td class="green">150</td>
-            <td>        copy.ValDef(tree, mods, name, tpt, instrumentBody(rhs))
+            <td>      case _:Try =&gt; false
 </td>
           </tr><tr >
-            <td class="black">151</td>
-            <td>      case DefDef(mods, name, tparams, vparamss, tpt, rhs) =&gt;
+            <td class="green">151</td>
+            <td>      case _:LabelDef =&gt; false
 </td>
           </tr><tr >
             <td class="green">152</td>
-            <td>        copy.DefDef(tree, mods, name, tparams, vparamss, tpt, instrumentBody(rhs))
+            <td>      case EmptyTree =&gt; false
 </td>
           </tr><tr >
-            <td class="black">153</td>
-            <td>      case template @ Template(parents, self, body) =&gt; {
+            <td class="green">153</td>
+            <td>      case Literal(Constant(())) =&gt; false
 </td>
           </tr><tr >
             <td class="green">154</td>
-            <td>        addPlaceHolder(template)
+            <td>      case _ =&gt; true
 </td>
           </tr><tr >
-            <td class="green">155</td>
-            <td>        copy.Template(tree, parents, self, body.map(instrumentBody))
+            <td class="black">155</td>
+            <td>    }
 </td>
           </tr><tr >
             <td class="black">156</td>
-            <td>      }
+            <td>
 </td>
           </tr><tr >
             <td class="green">157</td>
-            <td>      case _ =&gt; tree
+            <td>    def instrument(t: Tree): Tree = copy.Block(t, List(coverageCall(t)), t)
 </td>
           </tr><tr >
             <td class="black">158</td>
-            <td>    }
-</td>
-          </tr><tr >
-            <td class="black">159</td>
             <td>
 </td>
           </tr><tr >
-            <td class="black">160</td>
-            <td>    private def instrumentBlockExpr(expr: Tree) = expr match {
+            <td class="green">159</td>
+            <td>    def instrument(statements: List[Tree]): List[Tree] = statements.foldLeft(List[Tree]()) { (list, stat) =&gt;
 </td>
           </tr><tr >
-            <td class="green">161</td>
-            <td>      case Literal(Constant(())) =&gt; Nil
+            <td class="green">160</td>
+            <td>      if (shouldInstrument(stat)) list ::: List(coverageCall(stat), stat) else list ::: List(stat)
 </td>
           </tr><tr >
-            <td class="green">162</td>
-            <td>      case _:LabelDef =&gt; Nil
-</td>
-          </tr><tr >
-            <td class="green">163</td>
-            <td>      case _:Block =&gt; Nil
-</td>
-          </tr><tr >
-            <td class="green">164</td>
-            <td>      case _ =&gt; List[Tree](coverageCall(expr))
-</td>
-          </tr><tr >
-            <td class="black">165</td>
+            <td class="black">161</td>
             <td>    }
 </td>
           </tr><tr >
-            <td class="black">166</td>
+            <td class="black">162</td>
             <td>
 </td>
           </tr><tr >
-            <td class="green">167</td>
-            <td>    private def instrumentBlockStats(stats: List[Tree]) = stats.foldLeft(List[Tree]()) { (list, stat) =&gt;
-</td>
-          </tr><tr >
-            <td class="black">168</td>
-            <td>      stat match {
-</td>
-          </tr><tr >
-            <td class="green">169</td>
-            <td>        case _:ValDef =&gt; list ::: List(stat)
-</td>
-          </tr><tr >
-            <td class="green">170</td>
-            <td>        case _:DefDef =&gt; list ::: List(stat)
-</td>
-          </tr><tr >
-            <td class="red">171</td>
-            <td>        case _:LabelDef =&gt; list <span class="non">::: List(stat)
-</span></td>
-          </tr><tr >
-            <td class="green">172</td>
-            <td>        case _:Block =&gt; list ::: List(stat)
-</td>
-          </tr><tr >
-            <td class="green">173</td>
-            <td>        case _ =&gt; list ::: List(coverageCall(stat), stat)
-</td>
-          </tr><tr >
-            <td class="black">174</td>
-            <td>      }
-</td>
-          </tr><tr >
-            <td class="black">175</td>
-            <td>    }
-</td>
-          </tr><tr >
-            <td class="black">176</td>
-            <td>
-</td>
-          </tr><tr >
-            <td class="black">177</td>
-            <td>    private def instrumentBody(t: Tree) = t match {
-</td>
-          </tr><tr >
-            <td class="green">178</td>
-            <td>      case Select(_,_) =&gt; instrumentedBlock(t)
-</td>
-          </tr><tr >
-            <td class="green">179</td>
-            <td>      case Apply(_,_) =&gt; instrumentedBlock(t)
-</td>
-          </tr><tr >
-            <td class="green">180</td>
-            <td>      case TypeApply(_,_) =&gt; instrumentedBlock(t)
-</td>
-          </tr><tr >
-            <td class="green">181</td>
-            <td>      case Literal(Constant(())) =&gt; t
-</td>
-          </tr><tr >
-            <td class="green">182</td>
-            <td>      case Literal(_) =&gt; instrumentedBlock(t)
-</td>
-          </tr><tr >
-            <td class="green">183</td>
-            <td>      case Ident(_) =&gt; instrumentedBlock(t)
-</td>
-          </tr><tr >
-            <td class="green">184</td>
-            <td>      case Throw(_) =&gt; instrumentedBlock(t)
-</td>
-          </tr><tr >
-            <td class="green">185</td>
-            <td>      case Return(_) =&gt; instrumentedBlock(t)
-</td>
-          </tr><tr >
-            <td class="green">186</td>
-            <td>      case _ =&gt; t
-</td>
-          </tr><tr >
-            <td class="black">187</td>
-            <td>    }
-</td>
-          </tr><tr >
-            <td class="black">188</td>
-            <td>
-</td>
-          </tr><tr >
-            <td class="black">189</td>
-            <td>    private def instrumentedBlock(t: Tree) = {
-</td>
-          </tr><tr >
-            <td class="green">190</td>
-            <td>      copy.Block(t, List(coverageCall(t)), t)
-</td>
-          </tr><tr >
-            <td class="black">191</td>
-            <td>    }
-</td>
-          </tr><tr >
-            <td class="black">192</td>
-            <td>
-</td>
-          </tr><tr >
-            <td class="black">193</td>
-            <td>    private def addPlaceHolder(template: Template) = {
-</td>
-          </tr><tr >
-            <td class="green">194</td>
-            <td>      if (!currentOwner.hasFlag(Flags.SYNTHETIC)) register(newId, template, true)
-</td>
-          </tr><tr >
-            <td class="green">195</td>
-            <td>      template
-</td>
-          </tr><tr >
-            <td class="black">196</td>
-            <td>    }
-</td>
-          </tr><tr >
-            <td class="black">197</td>
-            <td>
-</td>
-          </tr><tr >
-            <td class="black">198</td>
+            <td class="black">163</td>
             <td>    private def coverageCall(tree: Tree) = {
 </td>
           </tr><tr >
-            <td class="green">199</td>
+            <td class="green">164</td>
             <td>      val id = newId
 </td>
           </tr><tr >
-            <td class="green">200</td>
-            <td>      register(id, tree, false)
+            <td class="green">165</td>
+            <td>      data = CoveredBlock(id, createName(currentOwner, tree), minOffset(tree), false) :: data
 </td>
           </tr><tr >
-            <td class="green">201</td>
+            <td class="green">166</td>
             <td>      fitIntoTree(tree, rawCoverageCall(id))
 </td>
           </tr><tr >
-            <td class="black">202</td>
+            <td class="black">167</td>
             <td>    }
 </td>
           </tr><tr >
-            <td class="black">203</td>
+            <td class="black">168</td>
             <td>
 </td>
           </tr><tr >
-            <td class="black">204</td>
+            <td class="black">169</td>
             <td>    private def fitIntoTree(orig: Tree, newTree: Tree) = {
 </td>
           </tr><tr >
-            <td class="green">205</td>
+            <td class="green">170</td>
             <td>      localTyper.typed(atPos(orig.pos)(newTree))
 </td>
           </tr><tr >
-            <td class="black">206</td>
+            <td class="black">171</td>
             <td>    }
 </td>
           </tr><tr >
-            <td class="black">207</td>
+            <td class="black">172</td>
             <td>
 </td>
           </tr><tr >
-            <td class="black">208</td>
+            <td class="black">173</td>
             <td>    private def rawCoverageCall(id: String) = {
 </td>
           </tr><tr >
-            <td class="green">209</td>
-            <td>      val fun = Select(
+            <td class="green">174</td>
+            <td>      val fun = Select( Select( Select(Ident(&quot;reaktor&quot;), newTermName(&quot;scct&quot;) ), newTermName(&quot;Coverage&quot;) ), newTermName(&quot;invoked&quot;) )
 </td>
           </tr><tr >
-            <td class="black">210</td>
-            <td>        Select(
-</td>
-          </tr><tr >
-            <td class="black">211</td>
-            <td>          Select(
-</td>
-          </tr><tr >
-            <td class="black">212</td>
-            <td>            Ident(&quot;reaktor&quot;),
-</td>
-          </tr><tr >
-            <td class="black">213</td>
-            <td>            newTermName(&quot;scct&quot;)
-</td>
-          </tr><tr >
-            <td class="black">214</td>
-            <td>          ),
-</td>
-          </tr><tr >
-            <td class="black">215</td>
-            <td>          newTermName(&quot;Coverage&quot;)
-</td>
-          </tr><tr >
-            <td class="black">216</td>
-            <td>        ),
-</td>
-          </tr><tr >
-            <td class="black">217</td>
-            <td>        newTermName(&quot;invoked&quot;)
-</td>
-          </tr><tr >
-            <td class="black">218</td>
-            <td>      )
-</td>
-          </tr><tr >
-            <td class="green">219</td>
+            <td class="green">175</td>
             <td>      Apply(fun, List(Literal(id)))
 </td>
           </tr><tr >
-            <td class="black">220</td>
+            <td class="black">176</td>
             <td>    }
 </td>
           </tr><tr >
-            <td class="black">221</td>
+            <td class="black">177</td>
+            <td>  }
+</td>
+          </tr><tr >
+            <td class="black">178</td>
             <td>
 </td>
           </tr><tr >
-            <td class="black">222</td>
-            <td>    private def register(id: String, tree: Tree, placeHolder: Boolean) {
+            <td class="black">179</td>
+            <td>  private def createName(owner: Symbol, tree: Tree) =
+</td>
+          </tr><tr id="Class_reaktor_scct_ScctTransformComponent">
+            <td class="green">180</td>
+            <td>    Name(tree.pos.source.get.file.file.getAbsolutePath, classType(owner), packageName(tree, owner), className(tree, owner))
 </td>
           </tr><tr >
-            <td class="green">223</td>
-            <td>      val fileName = tree.pos.source.get.file.file.getAbsolutePath
-</td>
-          </tr><tr >
-            <td class="green">224</td>
-            <td>      val name = Name(fileName, classType, packageName, className(currentClass))
-</td>
-          </tr><tr >
-            <td class="green">225</td>
-            <td>      data = new CoveredBlock(id, name, findMinOffset(tree), placeHolder) :: data
-</td>
-          </tr><tr >
-            <td class="black">226</td>
-            <td>    }
-</td>
-          </tr><tr >
-            <td class="black">227</td>
+            <td class="black">181</td>
             <td>
 </td>
           </tr><tr >
-            <td class="green">228</td>
-            <td>    private def findMinOffset(tree: Tree) = new MinimumOffsetFinder().offsetFor(tree)
+            <td class="black">182</td>
+            <td>  def className(tree: Tree, owner: Symbol): String = {
 </td>
           </tr><tr >
-            <td class="black">229</td>
-            <td>
+            <td class="black">183</td>
+            <td>    def fromSymbol(s: Symbol): String = {
 </td>
           </tr><tr >
-            <td class="black">230</td>
-            <td>    private def classType = {
+            <td class="green">184</td>
+            <td>      def parent = s.owner.enclClass
 </td>
           </tr><tr >
-            <td class="black">231</td>
-            <td>      if (currentOwner.isRoot)
-</td>
-          </tr><tr >
-            <td class="red">232</td>
-            <td>        <span class="non">ClassTypes.Root
+            <td class="yellow">185</td>
+            <td>      if (s.isPackageClass) <span class="non">&quot;&quot;
 </span></td>
           </tr><tr >
-            <td class="black">233</td>
-            <td>      else if (currentClass.isModule || currentClass.isModuleClass)
+            <td class="green">186</td>
+            <td>        else if (s.isAnonymousClass) fromSymbol(parent)
 </td>
           </tr><tr >
-            <td class="green">234</td>
-            <td>        ClassTypes.Object
+            <td class="green">187</td>
+            <td>        else if (parent.isPackageClass) s.simpleName.toString
 </td>
           </tr><tr >
-            <td class="black">235</td>
-            <td>      else if (currentClass.isTrait)
+            <td class="green">188</td>
+            <td>        else fromSymbol(parent) + &quot;.&quot; + s.simpleName
 </td>
           </tr><tr >
-            <td class="green">236</td>
-            <td>        ClassTypes.Trait
+            <td class="black">189</td>
+            <td>    }
 </td>
           </tr><tr >
-            <td class="green">237</td>
+            <td class="green">190</td>
+            <td>    tree match {
+</td>
+          </tr><tr >
+            <td class="green">191</td>
+            <td>      case cd: ClassDef =&gt; fromSymbol(cd.symbol)
+</td>
+          </tr><tr >
+            <td class="green">192</td>
+            <td>      case _ =&gt; fromSymbol(owner.enclClass)
+</td>
+          </tr><tr >
+            <td class="black">193</td>
+            <td>    }
+</td>
+          </tr><tr >
+            <td class="black">194</td>
+            <td>  }
+</td>
+          </tr><tr >
+            <td class="black">195</td>
+            <td>
+</td>
+          </tr><tr >
+            <td class="green">196</td>
+            <td>  def packageName(tree: Tree, owner: Symbol): String = tree match {
+</td>
+          </tr><tr >
+            <td class="red">197</td>
+            <td>    case pd: PackageDef if <span class="non">pd.symbol.isEmptyPackage =&gt; &quot;&lt;root&gt;&quot;
+</span></td>
+          </tr><tr >
+            <td class="red">198</td>
+            <td>    case pd: PackageDef =&gt; <span class="non">pd.symbol.fullNameString
+</span></td>
+          </tr><tr >
+            <td class="yellow">199</td>
+            <td>    case _ =&gt; if (owner.isEmptyPackageClass || owner.isEmptyPackage) <span class="non">&quot;&lt;root&gt;&quot;
+</span></td>
+          </tr><tr >
+            <td class="yellow">200</td>
+            <td>                else if (owner.isPackage || owner.isPackageClass) <span class="non">owner.fullNameString
+</span></td>
+          </tr><tr >
+            <td class="yellow">201</td>
+            <td>                else if (owner.toplevelClass == NoSymbol) <span class="non">&quot;&lt;root&gt;&quot;
+</span></td>
+          </tr><tr >
+            <td class="green">202</td>
+            <td>                else if (owner.toplevelClass.owner.isEmptyPackageClass) &quot;&lt;root&gt;&quot;
+</td>
+          </tr><tr >
+            <td class="green">203</td>
+            <td>                else owner.toplevelClass.owner.fullNameString
+</td>
+          </tr><tr >
+            <td class="black">204</td>
+            <td>  }
+</td>
+          </tr><tr >
+            <td class="black">205</td>
+            <td>
+</td>
+          </tr><tr >
+            <td class="black">206</td>
+            <td>
+</td>
+          </tr><tr >
+            <td class="black">207</td>
+            <td>  def classType(s: Symbol) = {
+</td>
+          </tr><tr >
+            <td class="yellow">208</td>
+            <td>    if (s.isRoot) <span class="non">ClassTypes.Root
+</span></td>
+          </tr><tr >
+            <td class="green">209</td>
+            <td>      else if (s.isModule || s.isModuleClass) ClassTypes.Object
+</td>
+          </tr><tr >
+            <td class="green">210</td>
+            <td>      else if (s.isTrait) ClassTypes.Trait
+</td>
+          </tr><tr >
+            <td class="green">211</td>
             <td>      else ClassTypes.Class
 </td>
           </tr><tr >
-            <td class="black">238</td>
-            <td>    }
-</td>
-          </tr><tr >
-            <td class="black">239</td>
-            <td>
-</td>
-          </tr><tr >
-            <td class="black">240</td>
-            <td>    private def packageName = {
-</td>
-          </tr><tr >
-            <td class="yellow">241</td>
-            <td>      if (currentOwner.isRoot) <span class="non">&quot;&lt;root&gt;&quot; else </span>currentPackage.fullNameString
-</td>
-          </tr><tr >
-            <td class="black">242</td>
-            <td>    }
-</td>
-          </tr><tr >
-            <td class="black">243</td>
-            <td>
-</td>
-          </tr><tr >
-            <td class="black">244</td>
-            <td>    private def className(curr: Symbol): String =
-</td>
-          </tr><tr >
-            <td class="black">245</td>
-            <td>      if (curr.isRoot)
-</td>
-          </tr><tr >
-            <td class="red">246</td>
-            <td>        <span class="non">&quot;&lt;root&gt;&quot;
-</span></td>
-          </tr><tr >
-            <td class="black">247</td>
-            <td>      else if (curr.isAnonymousClass)
-</td>
-          </tr><tr >
-            <td class="red">248</td>
-            <td>        <span class="non">className(curr.owner.enclClass)
-</span></td>
-          </tr><tr >
-            <td class="black">249</td>
-            <td>      else if (curr.owner.isPackageClass)
-</td>
-          </tr><tr >
-            <td class="green">250</td>
-            <td>        curr.simpleName.toString
-</td>
-          </tr><tr >
-            <td class="green">251</td>
-            <td>      else className(curr.owner.enclClass) + &quot;.&quot; + curr.simpleName.toString //owner.fullNameString
-</td>
-          </tr><tr >
-            <td class="black">252</td>
+            <td class="black">212</td>
             <td>  }
 </td>
           </tr><tr >
-            <td class="black">253</td>
+            <td class="black">213</td>
+            <td>
+</td>
+          </tr><tr >
+            <td class="black">214</td>
+            <td>
+</td>
+          </tr><tr >
+            <td class="green">215</td>
+            <td>  def minOffset(t: Tree) = new MinimumOffsetFinder().offsetFor(t)
+</td>
+          </tr><tr >
+            <td class="black">216</td>
             <td>
 </td>
           </tr><tr id="Class_reaktor_scct_ScctTransformComponent_MinimumOffsetFinder">
-            <td class="green">254</td>
+            <td class="green">217</td>
             <td>  class MinimumOffsetFinder extends Traverser {
 </td>
           </tr><tr >
-            <td class="green">255</td>
+            <td class="green">218</td>
             <td>    var min = Integer.MAX_VALUE
 </td>
           </tr><tr >
-            <td class="black">256</td>
-            <td>    override def traverse(tree: Tree) {
+            <td class="black">219</td>
+            <td>    override def traverse(t: Tree) {
 </td>
           </tr><tr >
-            <td class="green">257</td>
-            <td>      tree.pos.offset.foreach { current =&gt;
+            <td class="green">220</td>
+            <td>      t.pos.offset.foreach { curr =&gt;
 </td>
           </tr><tr >
-            <td class="green">258</td>
-            <td>        if (current &lt; min) min = current
+            <td class="green">221</td>
+            <td>        if (curr &lt; min) min = curr
 </td>
           </tr><tr >
-            <td class="black">259</td>
+            <td class="black">222</td>
             <td>      }
 </td>
           </tr><tr >
-            <td class="green">260</td>
-            <td>      super.traverse(tree)
+            <td class="green">223</td>
+            <td>      super.traverse(t)
 </td>
           </tr><tr >
-            <td class="black">261</td>
+            <td class="black">224</td>
             <td>    }
 </td>
           </tr><tr >
-            <td class="black">262</td>
-            <td>     
-</td>
-          </tr><tr >
-            <td class="black">263</td>
-            <td>    def offsetFor(tree: Tree): Int = {
-</td>
-          </tr><tr >
-            <td class="green">264</td>
-            <td>      min = Integer.MAX_VALUE
-</td>
-          </tr><tr >
-            <td class="green">265</td>
-            <td>      super.apply(tree)
-</td>
-          </tr><tr >
-            <td class="green">266</td>
-            <td>      min
-</td>
-          </tr><tr >
-            <td class="black">267</td>
-            <td>    }
-</td>
-          </tr><tr >
-            <td class="black">268</td>
-            <td>  }
-</td>
-          </tr><tr >
-            <td class="black">269</td>
+            <td class="black">225</td>
             <td>
 </td>
           </tr><tr >
-            <td class="black">270</td>
+            <td class="black">226</td>
+            <td>    def offsetFor(t: Tree): Int = {
+</td>
+          </tr><tr >
+            <td class="green">227</td>
+            <td>      min = Integer.MAX_VALUE
+</td>
+          </tr><tr >
+            <td class="green">228</td>
+            <td>      super.apply(t)
+</td>
+          </tr><tr >
+            <td class="green">229</td>
+            <td>      min
+</td>
+          </tr><tr >
+            <td class="black">230</td>
+            <td>    }
+</td>
+          </tr><tr >
+            <td class="black">231</td>
+            <td>  }
+</td>
+          </tr><tr >
+            <td class="black">232</td>
+            <td>
+</td>
+          </tr><tr >
+            <td class="black">233</td>
+            <td>
+</td>
+          </tr><tr id="Class_reaktor_scct_ScctTransformComponent">
+            <td class="green">234</td>
+            <td>  def registerClasses(t: Tree) = new ClassRegisterer().apply(t)
+</td>
+          </tr><tr >
+            <td class="black">235</td>
+            <td>
+</td>
+          </tr><tr id="Class_reaktor_scct_ScctTransformComponent_ClassRegisterer">
+            <td class="green">236</td>
+            <td>  class ClassRegisterer extends Traverser {
+</td>
+          </tr><tr >
+            <td class="black">237</td>
+            <td>    override def traverse(t: Tree) = {
+</td>
+          </tr><tr >
+            <td class="green">238</td>
+            <td>      t match {
+</td>
+          </tr><tr >
+            <td class="green">239</td>
+            <td>        case cd: ClassDef if (!cd.symbol.hasFlag(Flags.SYNTHETIC)) =&gt; {
+</td>
+          </tr><tr >
+            <td class="green">240</td>
+            <td>          data = CoveredBlock(newId, createName(cd.symbol, t), minOffset(t), true) :: data
+</td>
+          </tr><tr >
+            <td class="black">241</td>
+            <td>        }
+</td>
+          </tr><tr >
+            <td class="black">242</td>
+            <td>        case _ =&gt;
+</td>
+          </tr><tr >
+            <td class="black">243</td>
+            <td>      }
+</td>
+          </tr><tr >
+            <td class="green">244</td>
+            <td>      super.traverse(t)
+</td>
+          </tr><tr >
+            <td class="black">245</td>
+            <td>    }
+</td>
+          </tr><tr >
+            <td class="black">246</td>
+            <td>  }
+</td>
+          </tr><tr >
+            <td class="black">247</td>
             <td>}</td>
-          </tr></tbody></table></body>
-</html>
+          </tr></tbody></table>

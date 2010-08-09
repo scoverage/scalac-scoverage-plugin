@@ -1,24 +1,17 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-  <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link rel="stylesheet" type="text/css" href="style.css" />
-    
-  </head>
-  <body><table><tbody><tr>
-      <td class="barContainerLeft"><a href="#">reaktor/scct/report/<span class="header">SourceLoader.scala</span></a></td>
+<table class="classes"><tbody><tr>
+      <td class="barContainerLeft"><a href="#">Users/mtkopone/projects/scct/scct/src/main/scala/reaktor/scct/report/<span class="header">SourceLoader.scala</span></a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
-        <div class="percentage">66 %</div>
-        <div class="greenBar" style="width:132px;">&nbsp;</div>
+        <div class="percentage">50 %</div>
+        <div class="greenBar" style="width:100px;">&nbsp;</div>
       </div>
     </div></td>
     </tr><tr>
       <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct_scct_src_main_scala_reaktor_scct_report_SourceLoader.scala.html#Class_reaktor_scct_report_SourceLoader"><img src="class.png"></img>SourceLoader</a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
-        <div class="percentage">66 %</div>
-        <div class="greenBar" style="width:132px;">&nbsp;</div>
+        <div class="percentage">50 %</div>
+        <div class="greenBar" style="width:100px;">&nbsp;</div>
       </div>
     </div></td>
     </tr></tbody></table><table class="source"><tbody><tr >
@@ -39,19 +32,19 @@
 </td>
           </tr><tr >
             <td class="black">5</td>
+            <td>import reaktor.scct.Env
+</td>
+          </tr><tr >
+            <td class="black">6</td>
             <td>
 </td>
           </tr><tr id="Class_reaktor_scct_report_SourceLoader">
-            <td class="green">6</td>
-            <td>class SourceLoader {
-</td>
-          </tr><tr >
             <td class="green">7</td>
-            <td>  val sourceRoot = new File(System.getProperty(&quot;scct.source.dir&quot;, &quot;&quot;))
+            <td>class SourceLoader(env: Env) {
 </td>
           </tr><tr >
             <td class="red">8</td>
-            <td>  def linesFor(sourceFile: String) = <span class="non">Source.fromFile(new File(sourceRoot, sourceFile)).getLines.toList
+            <td>  def linesFor(sourceFile: String) = <span class="non">Source.fromFile(new File(env.sourceBaseDir, sourceFile)).getLines.toList
 </span></td>
           </tr><tr >
             <td class="black">9</td>
@@ -61,5 +54,4 @@
             <td class="black">10</td>
             <td>
 </td>
-          </tr></tbody></table></body>
-</html>
+          </tr></tbody></table>

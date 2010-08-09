@@ -1,12 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
   <head>
+     <title>scct - Coverage Report</title>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link rel="stylesheet" type="text/css" href="style.css" />
-    
+    <script src="jquery-1.4.2.min.js" type="text/javascript"></script>
+    <script src="main.js" type="text/javascript"></script>
   </head>
-  <frameset cols="30%,70%">
-        <frame src="packages.html" name="overview"></frame>
-        <frame src="summary.html" scrolling="yes" name="detail"></frame>
-      </frameset>
+  <body>
+    <div id="overview">
+      <div class="filterContainer">
+        <span class="pre"></span>
+        <input id="filter" type="text"/>
+        <span class="post"></span>
+      </div>
+      <div id="packages"></div>
+    </div>
+    <div id="detail"></div>
+  </body>
 </html>

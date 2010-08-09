@@ -1,16 +1,9 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-  <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
-    <link rel="stylesheet" type="text/css" href="style.css" />
-    
-  </head>
-  <body><table><tbody><tr>
-      <td class="barContainerLeft"><a href="#">reaktor/scct/<span class="header">Coverage.scala</span></a></td>
+<table class="classes"><tbody><tr>
+      <td class="barContainerLeft"><a href="#">Users/mtkopone/projects/scct/scct/src/main/scala/reaktor/scct/<span class="header">Coverage.scala</span></a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
-        <div class="percentage">34 %</div>
-        <div class="greenBar" style="width:68px;">&nbsp;</div>
+        <div class="percentage">33 %</div>
+        <div class="greenBar" style="width:66px;">&nbsp;</div>
       </div>
     </div></td>
     </tr><tr>
@@ -46,6 +39,14 @@
       </div>
     </div></td>
     </tr><tr>
+      <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct_scct_src_main_scala_reaktor_scct_Coverage.scala.html#Object_reaktor_scct_ClassTypes_Package"><img src="object.png"></img>ClassTypes.Package</a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr><tr>
       <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct_scct_src_main_scala_reaktor_scct_Coverage.scala.html#Object_reaktor_scct_ClassTypes_Root"><img src="object.png"></img>ClassTypes.Root</a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
@@ -65,8 +66,8 @@
       <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct_scct_src_main_scala_reaktor_scct_Coverage.scala.html#Class_reaktor_scct_Coverage"><img src="class.png"></img>Coverage</a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
-        <div class="percentage">25 %</div>
-        <div class="greenBar" style="width:50px;">&nbsp;</div>
+        <div class="percentage">7 %</div>
+        <div class="greenBar" style="width:14px;">&nbsp;</div>
       </div>
     </div></td>
     </tr><tr>
@@ -86,11 +87,19 @@
       </div>
     </div></td>
     </tr><tr>
-      <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct_scct_src_main_scala_reaktor_scct_Coverage.scala.html#Class_reaktor_scct_Name"><img src="class.png"></img>Name</a></td>
+      <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct_scct_src_main_scala_reaktor_scct_Coverage.scala.html#Class_reaktor_scct_Env"><img src="class.png"></img>Env</a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
         <div class="percentage">100 %</div>
         <div class="greenBar" style="width:200px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr><tr>
+      <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct_scct_src_main_scala_reaktor_scct_Coverage.scala.html#Class_reaktor_scct_Name"><img src="class.png"></img>Name</a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">85 %</div>
+        <div class="greenBar" style="width:170px;">&nbsp;</div>
       </div>
     </div></td>
     </tr><tr>
@@ -119,247 +128,361 @@
 </td>
           </tr><tr >
             <td class="black">5</td>
+            <td>import java.util.concurrent.{Executors, TimeUnit}
+</td>
+          </tr><tr >
+            <td class="black">6</td>
             <td>
 </td>
           </tr><tr id="Object_reaktor_scct_Coverage">
-            <td class="black">6</td>
+            <td class="black">7</td>
             <td>object Coverage {
 </td>
           </tr><tr >
-            <td class="red">7</td>
+            <td class="red">8</td>
             <td>  var active = <span class="non">false
 </span></td>
           </tr><tr >
-            <td class="red">8</td>
-            <td>  <span class="non">setupShutdownHook
+            <td class="red">9</td>
+            <td>  val env = <span class="non">new Env
+</span></td>
+          </tr><tr id="Class_reaktor_scct_Coverage">
+            <td class="red">10</td>
+            <td>  <span class="non">env.reportHook match {
 </span></td>
           </tr><tr >
-            <td class="red">9</td>
+            <td class="red">11</td>
+            <td>    case &quot;system.property&quot; =&gt; <span class="non">setupSystemPropertyHook
+</span></td>
+          </tr><tr >
+            <td class="red">12</td>
+            <td>    case _ =&gt; <span class="non">setupShutdownHook
+</span></td>
+          </tr><tr >
+            <td class="black">13</td>
+            <td>  }
+</td>
+          </tr><tr id="Object_reaktor_scct_Coverage">
+            <td class="red">14</td>
             <td>  val data = <span class="non">readMetadata
 </span></td>
           </tr><tr >
-            <td class="red">10</td>
+            <td class="red">15</td>
             <td>  <span class="non">active = true
 </span></td>
           </tr><tr >
-            <td class="black">11</td>
-            <td>
-</td>
-          </tr><tr >
-            <td class="black">12</td>
-            <td>  @uncovered def invoked(id: String) {
-</td>
-          </tr><tr >
-            <td class="black">13</td>
-            <td>    if (active) data.get(id).foreach { _.increment }
-</td>
-          </tr><tr >
-            <td class="black">14</td>
-            <td>  }
-</td>
-          </tr><tr >
-            <td class="black">15</td>
-            <td>
-</td>
-          </tr><tr >
             <td class="black">16</td>
-            <td>  private def readMetadata = {
+            <td>
 </td>
           </tr><tr >
             <td class="black">17</td>
-            <td>    try {
+            <td>  @uncovered def invoked(id: String) {
 </td>
           </tr><tr >
-            <td class="red">18</td>
-            <td>      val values = <span class="non">MetadataPickler.load
-</span></td>
+            <td class="black">18</td>
+            <td>    if (active) data.get(id).foreach { _.increment }
+</td>
           </tr><tr >
-            <td class="red">19</td>
-            <td>      <span class="non">Map(values.map(x =&gt; (x.id, x)) :_*)
-</span></td>
+            <td class="black">19</td>
+            <td>  }
+</td>
           </tr><tr >
             <td class="black">20</td>
-            <td>    } catch {
+            <td>
 </td>
           </tr><tr >
             <td class="black">21</td>
-            <td>      case e =&gt; {
+            <td>  private def readMetadata = {
 </td>
           </tr><tr >
-            <td class="red">22</td>
-            <td>        <span class="non">System.err.println(&quot;Fail: &quot;+e)
-</span></td>
+            <td class="black">22</td>
+            <td>    try {
+</td>
           </tr><tr >
             <td class="red">23</td>
-            <td>        <span class="non">e.printStackTrace
+            <td>      val values = <span class="non">MetadataPickler.load
 </span></td>
           </tr><tr >
             <td class="red">24</td>
-            <td>        <span class="non">throw e
+            <td>      <span class="non">Map(values.map(x =&gt; (x.id, x)) :_*)
 </span></td>
           </tr><tr >
             <td class="black">25</td>
-            <td>      }
+            <td>    } catch {
 </td>
           </tr><tr >
             <td class="black">26</td>
-            <td>    }
+            <td>      case e =&gt; {
 </td>
           </tr><tr >
-            <td class="black">27</td>
-            <td>  }
-</td>
-          </tr><tr >
-            <td class="black">28</td>
-            <td>
-</td>
-          </tr><tr >
-            <td class="black">29</td>
-            <td>  def report = {
-</td>
-          </tr><tr >
-            <td class="red">30</td>
-            <td>    <span class="non">HtmlReporter.report(data.values.toList, new File(System.getProperty(&quot;scct.report.dir&quot;, &quot;.&quot;)))
+            <td class="red">27</td>
+            <td>        <span class="non">System.err.println(&quot;Fail: &quot;+e)
 </span></td>
           </tr><tr >
-            <td class="black">31</td>
-            <td>  }
-</td>
-          </tr><tr >
-            <td class="black">32</td>
-            <td>
-</td>
-          </tr><tr >
-            <td class="black">33</td>
-            <td>  private def setupShutdownHook {
-</td>
-          </tr><tr >
-            <td class="red">34</td>
-            <td>    <span class="non">Runtime.getRuntime.addShutdownHook(new Thread {
+            <td class="red">28</td>
+            <td>        <span class="non">e.printStackTrace
 </span></td>
           </tr><tr >
-            <td class="black">35</td>
-            <td>      override def run = {
-</td>
-          </tr><tr id="Class_reaktor_scct_Coverage">
-            <td class="green">36</td>
-            <td>        Coverage.active = false
-</td>
-          </tr><tr >
-            <td class="red">37</td>
-            <td>        <span class="non">println(&quot;scct: Generating coverage report.&quot;)
+            <td class="red">29</td>
+            <td>        <span class="non">throw e
 </span></td>
           </tr><tr >
-            <td class="red">38</td>
-            <td>        <span class="non">report
-</span></td>
-          </tr><tr >
-            <td class="black">39</td>
+            <td class="black">30</td>
             <td>      }
 </td>
           </tr><tr >
+            <td class="black">31</td>
+            <td>    }
+</td>
+          </tr><tr >
+            <td class="black">32</td>
+            <td>  }
+</td>
+          </tr><tr >
+            <td class="black">33</td>
+            <td>
+</td>
+          </tr><tr >
+            <td class="black">34</td>
+            <td>  def report = {
+</td>
+          </tr><tr >
+            <td class="red">35</td>
+            <td>    <span class="non">HtmlReporter.report(data.values.toList, env)
+</span></td>
+          </tr><tr >
+            <td class="black">36</td>
+            <td>  }
+</td>
+          </tr><tr >
+            <td class="black">37</td>
+            <td>
+</td>
+          </tr><tr >
+            <td class="black">38</td>
+            <td>  private def setupShutdownHook {
+</td>
+          </tr><tr >
+            <td class="red">39</td>
+            <td>    <span class="non">Runtime.getRuntime.addShutdownHook(new Thread {
+</span></td>
+          </tr><tr >
             <td class="black">40</td>
+            <td>      override def run = {
+</td>
+          </tr><tr id="Class_reaktor_scct_Coverage">
+            <td class="green">41</td>
+            <td>        Coverage.active = false
+</td>
+          </tr><tr >
+            <td class="red">42</td>
+            <td>        <span class="non">println(&quot;scct: Generating coverage report.&quot;)
+</span></td>
+          </tr><tr >
+            <td class="red">43</td>
+            <td>        <span class="non">report
+</span></td>
+          </tr><tr >
+            <td class="black">44</td>
+            <td>      }
+</td>
+          </tr><tr >
+            <td class="black">45</td>
             <td>    })
 </td>
           </tr><tr >
-            <td class="black">41</td>
+            <td class="black">46</td>
             <td>  }
 </td>
           </tr><tr >
-            <td class="black">42</td>
-            <td>}
-</td>
-          </tr><tr >
-            <td class="black">43</td>
-            <td>
-</td>
-          </tr><tr id="Object_reaktor_scct_ClassTypes">
-            <td class="black">44</td>
-            <td>object ClassTypes {
-</td>
-          </tr><tr id="Class_reaktor_scct_ClassTypes_ClassType">
-            <td class="red">45</td>
-            <td>  @serializable sealed abstract class <span class="non">ClassType
-</span></td>
-          </tr><tr id="Object_reaktor_scct_ClassTypes_Class">
-            <td class="black">46</td>
-            <td>  @serializable case object Class extends ClassType
-</td>
-          </tr><tr id="Object_reaktor_scct_ClassTypes_Trait">
             <td class="black">47</td>
-            <td>  @serializable case object Trait extends ClassType
+            <td>  private def setupSystemPropertyHook {
 </td>
-          </tr><tr id="Object_reaktor_scct_ClassTypes_Object">
-            <td class="black">48</td>
-            <td>  @serializable case object Object extends ClassType
-</td>
-          </tr><tr id="Object_reaktor_scct_ClassTypes_Root">
-            <td class="black">49</td>
-            <td>  @serializable case object Root extends ClassType
-</td>
+          </tr><tr id="Object_reaktor_scct_Coverage">
+            <td class="red">48</td>
+            <td>    val prop = <span class="non">&quot;scct.%s.fire.report&quot;.format(env.projectId)
+</span></td>
+          </tr><tr >
+            <td class="red">49</td>
+            <td>    <span class="non">new Thread {
+</span></td>
           </tr><tr >
             <td class="black">50</td>
-            <td>}
+            <td>      override def run = {
 </td>
+          </tr><tr id="Class_reaktor_scct_Coverage">
+            <td class="red">51</td>
+            <td>        while (<span class="non">System.getProperty(prop, &quot;&quot;) != &quot;true&quot;) Thread.sleep(200)
+</span></td>
           </tr><tr >
-            <td class="black">51</td>
-            <td>
-</td>
-          </tr><tr id="Class_reaktor_scct_Name">
-            <td class="green">52</td>
-            <td>@serializable case class Name(sourceFile: String, classType: ClassTypes.ClassType, packageName: String, className: String) extends Ordered[Name] {
-</td>
+            <td class="red">52</td>
+            <td>        <span class="non">Coverage.active = false
+</span></td>
           </tr><tr >
-            <td class="black">53</td>
-            <td>  def compare(other: Name) = {
-</td>
+            <td class="red">53</td>
+            <td>        <span class="non">println(&quot;scct: Generating coverage report.&quot;)
+</span></td>
           </tr><tr >
-            <td class="green">54</td>
-            <td>    lazy val classNameDiff = className.compareTo(other.className)
-</td>
+            <td class="red">54</td>
+            <td>        <span class="non">report
+</span></td>
           </tr><tr >
-            <td class="green">55</td>
-            <td>    lazy val classTypeDiff = classType.toString.compareTo(other.classType.toString)
-</td>
+            <td class="red">55</td>
+            <td>        <span class="non">System.setProperty(prop, &quot;done&quot;)
+</span></td>
           </tr><tr >
-            <td class="green">56</td>
-            <td>    if (classNameDiff != 0) classNameDiff else classTypeDiff
+            <td class="black">56</td>
+            <td>      }
 </td>
           </tr><tr >
             <td class="black">57</td>
-            <td>  }
+            <td>    }.start
 </td>
           </tr><tr >
             <td class="black">58</td>
+            <td>  }
+</td>
+          </tr><tr >
+            <td class="black">59</td>
+            <td>}
+</td>
+          </tr><tr >
+            <td class="black">60</td>
+            <td>
+</td>
+          </tr><tr id="Object_reaktor_scct_ClassTypes">
+            <td class="black">61</td>
+            <td>object ClassTypes {
+</td>
+          </tr><tr id="Class_reaktor_scct_ClassTypes_ClassType">
+            <td class="red">62</td>
+            <td>  @serializable sealed abstract class <span class="non">ClassType
+</span></td>
+          </tr><tr id="Object_reaktor_scct_ClassTypes_Class">
+            <td class="black">63</td>
+            <td>  @serializable case object Class extends ClassType
+</td>
+          </tr><tr id="Object_reaktor_scct_ClassTypes_Trait">
+            <td class="black">64</td>
+            <td>  @serializable case object Trait extends ClassType
+</td>
+          </tr><tr id="Object_reaktor_scct_ClassTypes_Object">
+            <td class="black">65</td>
+            <td>  @serializable case object Object extends ClassType
+</td>
+          </tr><tr id="Object_reaktor_scct_ClassTypes_Package">
+            <td class="black">66</td>
+            <td>  @serializable case object Package extends ClassType
+</td>
+          </tr><tr id="Object_reaktor_scct_ClassTypes_Root">
+            <td class="black">67</td>
+            <td>  @serializable case object Root extends ClassType
+</td>
+          </tr><tr >
+            <td class="black">68</td>
+            <td>}
+</td>
+          </tr><tr >
+            <td class="black">69</td>
+            <td>
+</td>
+          </tr><tr id="Class_reaktor_scct_Name">
+            <td class="green">70</td>
+            <td>@serializable case class Name(sourceFile: String, classType: ClassTypes.ClassType, packageName: String, className: String) extends Ordered[Name] {
+</td>
+          </tr><tr >
+            <td class="black">71</td>
+            <td>  def compare(other: Name) = {
+</td>
+          </tr><tr >
+            <td class="green">72</td>
+            <td>    lazy val classNameDiff = className.compareTo(other.className)
+</td>
+          </tr><tr >
+            <td class="green">73</td>
+            <td>    lazy val classTypeDiff = classType.toString.compareTo(other.classType.toString)
+</td>
+          </tr><tr >
+            <td class="green">74</td>
+            <td>    if (classNameDiff != 0) classNameDiff else classTypeDiff
+</td>
+          </tr><tr >
+            <td class="black">75</td>
+            <td>  }
+</td>
+          </tr><tr >
+            <td class="red">76</td>
+            <td>  override def toString = <span class="non">packageName+&quot;/&quot;+className+&quot;:&quot;+sourceFile
+</span></td>
+          </tr><tr >
+            <td class="black">77</td>
             <td>}
 </td>
           </tr><tr id="Class_reaktor_scct_CoveredBlock">
-            <td class="green">59</td>
+            <td class="green">78</td>
             <td>@serializable case class CoveredBlock(id: String, name: Name, offset: Int, placeHolder: Boolean) {
 </td>
           </tr><tr >
-            <td class="green">60</td>
+            <td class="green">79</td>
             <td>  def this(id: String, name: Name, offset: Int)  = this(id, name, offset, false)
 </td>
           </tr><tr >
-            <td class="green">61</td>
+            <td class="green">80</td>
             <td>  var count = 0
 </td>
           </tr><tr >
-            <td class="black">62</td>
+            <td class="black">81</td>
             <td>  @uncovered def increment = { count = count + 1; this }
 </td>
           </tr><tr >
-            <td class="black">63</td>
+            <td class="black">82</td>
             <td>}
 </td>
           </tr><tr >
-            <td class="black">64</td>
+            <td class="black">83</td>
             <td>
 </td>
           </tr><tr id="Class_reaktor_scct_uncovered">
-            <td class="red">65</td>
+            <td class="red">84</td>
             <td>class <span class="non">uncovered extends StaticAnnotation
 </span></td>
-          </tr></tbody></table></body>
-</html>
+          </tr><tr >
+            <td class="black">85</td>
+            <td>
+</td>
+          </tr><tr id="Class_reaktor_scct_Env">
+            <td class="green">86</td>
+            <td>class Env {
+</td>
+          </tr><tr >
+            <td class="green">87</td>
+            <td>  val projectId = System.getProperty(&quot;scct.project.name&quot;, &quot;default&quot;)
+</td>
+          </tr><tr >
+            <td class="green">88</td>
+            <td>  val reportHook = System.getProperty(&quot;scct.report.hook&quot;, &quot;shutdown&quot;)
+</td>
+          </tr><tr >
+            <td class="green">89</td>
+            <td>  val reportDir = new File(System.getProperty(&quot;scct.report.dir&quot;, &quot;.&quot;))
+</td>
+          </tr><tr >
+            <td class="black">90</td>
+            <td>  /** Where the source files actually start from, so e.g. $PROJECTHOME/src/main/scala/ */
+</td>
+          </tr><tr >
+            <td class="green">91</td>
+            <td>  val sourceDir = new File(System.getProperty(&quot;scct.source.dir&quot;, &quot;.&quot;))
+</td>
+          </tr><tr >
+            <td class="black">92</td>
+            <td>  /** Where the source files are referenced from by the compiler, probably the root of the file system */
+</td>
+          </tr><tr >
+            <td class="green">93</td>
+            <td>  val sourceBaseDir = new File(System.getProperty(&quot;scct.source.base.dir&quot;, &quot;&quot;))
+</td>
+          </tr><tr >
+            <td class="black">94</td>
+            <td>}</td>
+          </tr></tbody></table>
