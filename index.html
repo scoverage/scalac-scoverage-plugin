@@ -47,8 +47,12 @@
 		<p><span class="mono">scct</span> is a code coverage tool for Scala. It's <span class="not">beta</span> alpha.</p>
 		<h2>What's it look like?</h2>
 		<p><a href="report/index.html" target="_blank"><img src="screenshot.png" alt="scct-screenshot" class="screenshot"/></a></p>
-		<h2>How to use with sbt</h2>
-		<p><span class="mono">scct</span> has only tested with scala 2.7.7 and sbt 0.7.3.</p>
+		<h2>Just How In-Progress Is It?</h2>
+		<p>The basics work: Instrumentation of source code during compilation, collecting coverage data during test runs, and creating a basic report.</p>
+		<p>Main parts missing include a maven plugin, the ability to merge reports, and a fix to support windows linefeeds in source files.</p>
+		<p>The 2.8 branch is the main one under construction at the moment, updates to that are merged back to the "master" 2.7.7 branch every now and then.</p>
+		<h2>Scala 2.7.7</h2>
+		<h3>How to use with sbt</h3>
 		<p>Add the following to <span class="mono">project/plugins/Plugins.scala</span>:</p>
 		<pre>
 import sbt._
@@ -67,18 +71,44 @@ class MyProject(i: ProjectInfo) extends DefaultProject(i) with ScctProject {
 		<p>Run your unit tests with:</p><pre>$ sbt test-coverage</pre>
 		<p>Then open:</p><pre>./target/scala_2.7.7/coverage-report/index.html</pre>
 		<p>Enjoy.</p>
-		<h2>How to use standalone</h2>
-		<p>Download <a href="http://mtkopone.github.com/scct/scct-0.1.jar">scct</a> jar.
+		<h3>How to use standalone</h3>
+		<p>Download <a href="http://mtkopone.github.com/scct/maven-repo/reaktor/scct_2.7.7/0.1-SNAPSHOT/scct_2.7.7-0.1-SNAPSHOT.jar">scct</a> jar.
 	  <p>Compile and instrument your source:</p>
-		<pre>$ scalac -Xplugin:scct-0.1.jar -classpath .:scct-0.1.jar Test.scala</pre>
+		<pre>$ scalac -Xplugin:scct_2.7.7-0.1-SNAPSHOT.jar \\ 
+	-classpath .:scct_2.7.7-0.1-SNAPSHOT.jar Test.scala</pre>
 		<p>Run something:</p>
-		<pre>$ scala -classpath .:scct-0.1.jar Test</pre>
+		<pre>$ scala -classpath .:scct_2.7.7-0.1-SNAPSHOT.jar Test</pre>
 		<p>Then open:</p><pre>./index.html</pre>
-		<h2>Download the source</h2>
-		<a href="http://github.com/mtkopone/scct/zipball/master"><img border="0" width="50" src="http://github.com/images/modules/download/zip.png"></a>
-    <a href="http://github.com/mtkopone/scct/tarball/master"><img border="0" width="50" src="http://github.com/images/modules/download/tar.png"></a>
-		<h2>Clone the git repo</h2>
-		<pre>$ git clone git://github.com/mtkopone/scct</pre>
+		
+		<h2>Scala 2.8.0</h2>
+		<h3>How to use with sbt</h3>
+		<p>Add the following to <span class="mono">project/plugins/Plugins.scala</span>:</p>
+		<pre>
+import sbt._
+class Plugins(info: ProjectInfo) extends PluginDefinition(info) {
+  val scctRepo = "scct-repo" at "http://mtkopone.github.com/scct/maven-repo/"
+  lazy val scctPlugin = "reaktor" % "sbt-scct-for-2.8" % "0.1-SNAPSHOT"
+}			
+		</pre>
+		<p>Have your project extend <span class="mono">reaktor.scct.ScctProject</span>:</p>
+		<pre>
+import reaktor.scct.ScctProject
+class MyProject(i: ProjectInfo) extends DefaultProject(i) with ScctProject {
+  // ...
+}
+		</pre>
+		<p>Run your unit tests with:</p><pre>$ sbt test-coverage</pre>
+		<p>Then open:</p><pre>./target/scala_2.8.0/coverage-report/index.html</pre>
+		<p>Enjoy.</p>
+		<h3>How to use standalone</h3>
+		<p>Download <a href="http://mtkopone.github.com/scct/maven-repo/reaktor/scct_2.8.0/0.1-SNAPSHOT/scct_2.8.0-0.1-SNAPSHOT.jar">scct</a> jar.
+	  <p>Compile and instrument your source:</p>
+		<pre>$ scalac -Xplugin:scct_2.8.0-0.1-SNAPSHOT.jar \\ 
+		-classpath .:scct_2.8.0-0.1-SNAPSHOT.jar Test.scala</pre>
+		<p>Run something:</p>
+		<pre>$ scala -classpath .:scct_2.8.0-0.1-SNAPSHOT.jar Test</pre>
+		<p>Then open:</p><pre>./index.html</pre>
+
   </div>
 	<div id="foot">
 		&copy; <a href="http://github.com/mtkopone">Mikko Koponen</a> 2010
