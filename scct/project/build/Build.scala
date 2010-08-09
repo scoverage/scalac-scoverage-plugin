@@ -30,7 +30,7 @@ class Build(info: ProjectInfo) extends DefaultProject(info) with IdeaProject {
     FileUtilities.clean(reportDir, log)
     FileUtilities.createDirectory(reportDir, log)
     System.setProperty("scct.report.dir", reportDir.toString)
-    System.setProperty("scct.src.reference.dir", mainScalaSourcePath.absolutePath)
+    System.setProperty("scct.source.dir", mainScalaSourcePath.absolutePath)
     None
   }
 
