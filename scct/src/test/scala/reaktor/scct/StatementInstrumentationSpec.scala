@@ -129,6 +129,10 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
       classOffsetsMatch("@Some(\"foo\").map(@System.getProperty)")
       defOffsetsMatch("@Some(\"foo\").map(@System.getProperty)")
     }
+    "statements using mutable state" in {
+      classOffsetsMatch("""|val z = @new scala.collection.mutable.ArrayBuffer[String]()
+                           |@z ++= List("wrok")""".stripMargin)
+    }
   }
 
 }

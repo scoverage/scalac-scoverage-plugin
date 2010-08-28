@@ -65,6 +65,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
     private def isGeneratedMethod(t: DefDef) = !t.symbol.isConstructor && t.pos.point == currentClass.pos.point
     private def isAbstractMethod(t: DefDef) = t.symbol.isDeferred
     private def isNonLazyStableMethodOrAccessor(t: DefDef) = !t.symbol.isLazy && (t.symbol.isStable || t.symbol.isGetterOrSetter)
+    private def isInAnonymousClass = currentClass.isAnonymousClass
 
     def preprocess(t: Tree): Tuple2[Boolean, Tree] = t match {
       case _ if isSynthetic(t) => (false, t)
@@ -73,15 +74,10 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
       case dd: DefDef if isAbstractMethod(dd) => (false, t)
       case dd: DefDef if isObjectOrTraitConstructor(t.symbol) => (false, t)
       case dd: DefDef if isGeneratedMethod(dd) => (false, t)
+      case dd: DefDef if isInAnonymousClass => (false, t)
 
       case dd: DefDef if (t.symbol.isConstructor) => {
-        val block @ Block(list, expr @ Literal(_)) = dd.rhs
-        val (head:Apply) :: tail = list
-        val newTail: List[Tree] = instrument(super.transformStats(tail, currentOwner)) ::: List(coverageCall(block))
-        val newApply: Apply = treeCopy.Apply(head, head.fun, super.transformTrees(head.args))
-        val newStats: List[Tree] = newApply :: newTail
-        val newRhs = treeCopy.Block(block, newStats, expr)
-        (false, treeCopy.DefDef(t, dd.mods, dd.name, dd.tparams, dd.vparamss, dd.tpt, newRhs))
+        (false, instrumentConstructor(t.symbol.isPrimaryConstructor, dd))
       }
       case dd @ DefDef(_,_,_,_,_,b @ Block(List(a @ Assign(lhs,rhs)), _)) if (t.symbol.isLazy) => {
         val newAssign = treeCopy.Assign(a, lhs, recurse(rhs))
@@ -158,6 +154,34 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
 
     def instrument(statements: List[Tree]): List[Tree] = statements.foldLeft(List[Tree]()) { (list, stat) =>
       if (shouldInstrument(stat)) list ::: List(coverageCall(stat), stat) else list ::: List(stat)
+    }
+
+    def instrumentConstructor(primary: Boolean, dd: DefDef) = {
+      val block @ Block(list, expr @ Literal(_)) = dd.rhs
+
+      def instrumentConstructorStatements(list: List[Tree], acc: List[Tree]): List[Tree] = {
+        list match {
+          case Nil => acc.reverse
+          case head :: tail => head match {
+            case vd: ValDef => {
+              instrumentConstructorStatements(tail, recurse(vd) :: acc)
+            }
+            case a @ Apply(Select(_, selector), _) if selector.toString == "<init>" => {
+              val applyInstrumentation = if (primary) coverageCall(block) else coverageCall(a)
+              val newApply = treeCopy.Apply(a, a.fun, super.transformTrees(a.args))
+              instrumentConstructorStatements(tail, applyInstrumentation :: newApply :: acc)
+            }
+            case _ => {
+              val newTail = instrument(super.transformStats(list, currentOwner))
+              acc.reverse ::: newTail
+            }
+          }
+        }
+      }
+
+      val newStats = instrumentConstructorStatements(list, List[Tree]())
+      val newRhs = treeCopy.Block(block, newStats, expr)
+      treeCopy.DefDef(dd, dd.mods, dd.name, dd.tparams, dd.vparamss, dd.tpt, newRhs)
     }
 
     private def coverageCall(tree: Tree) = {
