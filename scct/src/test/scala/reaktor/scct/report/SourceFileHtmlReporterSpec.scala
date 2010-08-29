@@ -27,7 +27,16 @@ class SourceFileHtmlReporterSpec extends Specification with XmlMatchers {
       val html = sut.formatLine("my somewhat longer line", 0, blocks((3, false), (12, true), (19, false)))
       html must equalIgnoreSpace(Text("my ") ++ <span class="non">somewhat </span> ++ Text("longer ") ++ <span class="non">line</span>)
     }
+  }
 
+  "Source file name formatting" should {
+    val env = new Env { override val sourceDir = new java.io.File("/my/source/dir") }
+    val sut = new SourceFileHtmlReporter("src", new CoverageData(Nil), new SourceLoader(env), env)
+
+    "strip base dir and split package and filename." in {
+      sut.sourceFileHeader("//my/source/dir/package/and/Source.scala") mustEqual
+        sut.zeroSpace ++ Text("package/") ++ sut.zeroSpace ++ Text("and/") ++ <span class="header">{ sut.zeroSpace ++ Text("Source.scala") }</span>
+    }
   }
 
   def blocks(offsets: Tuple2[Int, Boolean]*): List[CoveredBlock] = {

@@ -11,6 +11,7 @@ object SourceFileHtmlReporter {
 class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoader: SourceLoader, env: Env) {
   import HtmlReporter._
 
+  val zeroSpace = Unparsed("&#x200B;")
   val sourcePath = env.sourceDir.getAbsolutePath
 
   def report = {
@@ -24,13 +25,18 @@ class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoade
   }
 
   def sourceFileHeader(sourceFile: String) = {
-    val name = formatSourceFileName(sourceFile)
+    val name = cleanSourceFileName(sourceFile)
     name.lastIndexOf('/') match {
       case -1 => <span class="header">{ name }</span>
-      case idx => Text(name.substring(0, idx+1)) ++ <span class="header">{ name.substring(idx+1) }</span>
+      case idx => {
+        val pkgName = name.substring(0, idx+1)
+        val fileName = name.substring(idx+1)
+        val packages = pkgName.split("/").foldLeft(NodeSeq.Empty) { (nodes, curr) => nodes ++ zeroSpace ++ Text(curr+"/") }
+        packages ++ <span class="header">{ zeroSpace ++ Text(fileName) }</span>
+      }
     }
   }
-  def formatSourceFileName(sourceFile: String) = {
+  def cleanSourceFileName(sourceFile: String) = {
     def trimRoot(s: String) = s.indexOf(sourcePath) match {
       case -1 => s
       case idx => s.substring(sourcePath.length + idx)
