@@ -2,7 +2,6 @@ IN PROGRESS
 * sbt merge reports plugin
 
 BACKLOG
-* scala 2.8 support: test with another codebase
 * reporting pages are broken on non-FF browsers: need break-hints on dir "/"'s on source file name in detail view.
 ** zerowhitespace: &#x200B; or &#8203;
 * smoke-test: build all --> run in test project --> show report)
@@ -21,6 +20,8 @@ BLOCK
 * reconfigure sbt root project instead of 2 separate projects, prob. impossible until sbt plugin can use 2.8.
 
 DONE
+* Constructor instrumentation fails when: "class Foo extends { val x = y } with SomeTrait"
+* windows CRLF broken on 2.8
 * reporting: if only 1 package, open it automatically
 * sbt-multiproject support: need to read all req. props on startup -> Env -kinda class
 * Use scala 2.8 final
