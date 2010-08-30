@@ -1,0 +1,597 @@
+<table class="classes"><tbody><tr>
+      <td class="barContainerLeft"><a href="#">&#x200B;reaktor/&#x200B;scct/&#x200B;report/<span class="header">&#x200B;HtmlReporter.scala</span></a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr><tr>
+      <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct-root_scala-2.8_scct_src_main_scala_reaktor_scct_report_HtmlReporter.scala.html#Class_reaktor_scct_report_HtmlReporter"><img src="class.png"></img>HtmlReporter</a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr><tr>
+      <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct-root_scala-2.8_scct_src_main_scala_reaktor_scct_report_HtmlReporter.scala.html#Object_reaktor_scct_report_HtmlReporter"><img src="object.png"></img>HtmlReporter</a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr><tr>
+      <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct-root_scala-2.8_scct_src_main_scala_reaktor_scct_report_HtmlReporter.scala.html#Object_reaktor_scct_report_HtmlReporter_files"><img src="object.png"></img>HtmlReporter.files</a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr></tbody></table><table class="source"><tbody><tr>
+            <td class="black">1</td>
+            <td>package reaktor.scct.report
+</td>
+          </tr><tr>
+            <td class="black">2</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">3</td>
+            <td>import java.io.File
+</td>
+          </tr><tr>
+            <td class="black">4</td>
+            <td>import io.Source
+</td>
+          </tr><tr>
+            <td class="black">5</td>
+            <td>import xml.{Text, Node, NodeSeq}
+</td>
+          </tr><tr>
+            <td class="black">6</td>
+            <td>import reaktor.scct._
+</td>
+          </tr><tr>
+            <td class="black">7</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">8</td>
+            <td><a id="Object_reaktor_scct_report_HtmlReporter"></a>object HtmlReporter {
+</td>
+          </tr><tr>
+            <td class="black">9</td>
+            <td>  def report(blocks: List[CoveredBlock], env: Env) =
+</td>
+          </tr><tr>
+            <td class="red">10</td>
+            <td>    <span class="non">new HtmlReporter(new CoverageData(blocks), new HtmlReportWriter(env.reportDir), env).report
+</span></td>
+          </tr><tr>
+            <td class="black">11</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="red">12</td>
+            <td>  def packageReportFileName(name: String) = <span class="non">toFileName(&quot;pkg&quot;, name)
+</span></td>
+          </tr><tr>
+            <td class="red">13</td>
+            <td>  def sourceReportFileName(name: String) = <span class="non">toFileName(&quot;src&quot;, name)
+</span></td>
+          </tr><tr>
+            <td class="black">14</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">15</td>
+            <td>  private def toFileName(prefix: String, name: String) =
+</td>
+          </tr><tr>
+            <td class="red">16</td>
+            <td>    <span class="non">prefix + &quot;-&quot; + name.replaceAll(&quot;/&quot;, &quot;_&quot;) + &quot;.html&quot;
+</span></td>
+          </tr><tr>
+            <td class="black">17</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">18</td>
+            <td>  def table(headerRow: NodeSeq, itemRows: NodeSeq) =
+</td>
+          </tr><tr>
+            <td class="red">19</td>
+            <td>    &lt;<span class="non">table&gt;&lt;tbody&gt;{ headerRow }{ itemRows }&lt;/tbody&gt;&lt;/table&gt;
+</span></td>
+          </tr><tr>
+            <td class="black">20</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">21</td>
+            <td>  def headerRow(name: String, percentage: Option[Int]) =
+</td>
+          </tr><tr>
+            <td class="red">22</td>
+            <td>    &lt;<span class="non">tr&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">23</td>
+            <td>      &lt;<span class="non">td class=&quot;barContainerLeft header&quot;&gt;{ name }&lt;/td&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">24</td>
+            <td>      &lt;<span class="non">td class=&quot;barContainerRight&quot;&gt;{ percentageBar(percentage) }&lt;/td&gt;
+</span></td>
+          </tr><tr>
+            <td class="black">25</td>
+            <td>    &lt;/tr&gt;
+</td>
+          </tr><tr>
+            <td class="black">26</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">27</td>
+            <td>  def itemRow(name: String, percentage: Option[Int], href: String): Node =
+</td>
+          </tr><tr>
+            <td class="red">28</td>
+            <td>    <span class="non">itemRow(Text(name), percentage, href)
+</span></td>
+          </tr><tr>
+            <td class="black">29</td>
+            <td>  
+</td>
+          </tr><tr>
+            <td class="black">30</td>
+            <td>  def itemRow(name: NodeSeq, percentage: Option[Int], href: String): Node =
+</td>
+          </tr><tr>
+            <td class="red">31</td>
+            <td>    &lt;<span class="non">tr&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">32</td>
+            <td>      &lt;<span class="non">td class=&quot;barContainerLeft&quot;&gt;&lt;a href={ href }&gt;{ name }&lt;/a&gt;&lt;/td&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">33</td>
+            <td>      &lt;<span class="non">td class=&quot;barContainerRight&quot;&gt;{ percentageBar(percentage) }&lt;/td&gt;
+</span></td>
+          </tr><tr>
+            <td class="black">34</td>
+            <td>    &lt;/tr&gt;
+</td>
+          </tr><tr>
+            <td class="black">35</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">36</td>
+            <td>  def percentageBar(percentage: Option[Int]) =
+</td>
+          </tr><tr>
+            <td class="red">37</td>
+            <td>    &lt;<span class="non">div class=&quot;percentages&quot;&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">38</td>
+            <td>      &lt;<span class="non">div class=&quot;bar&quot;&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">39</td>
+            <td>        &lt;<span class="non">div class=&quot;percentage&quot;&gt;{ format(percentage) }&lt;/div&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">40</td>
+            <td>        &lt;<span class="non">div class=&quot;greenBar&quot; style={ &quot;width:%spx;&quot;.format(percentage.getOrElse(0)*2) }&gt;&amp;nbsp;&lt;/div&gt;
+</span></td>
+          </tr><tr>
+            <td class="black">41</td>
+            <td>      &lt;/div&gt;
+</td>
+          </tr><tr>
+            <td class="black">42</td>
+            <td>    &lt;/div&gt;
+</td>
+          </tr><tr>
+            <td class="black">43</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="red">44</td>
+            <td>  def format(percentage: Option[Int]) = <span class="non">percentage.getOrElse(0).toString + &quot; %&quot;
+</span></td>
+          </tr><tr>
+            <td class="black">45</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">46</td>
+            <td>  def classItemRows(data: CoverageData) = {
+</td>
+          </tr><tr>
+            <td class="red">47</td>
+            <td>    (for (<span class="non">(clazz, classData) &lt;- data.forClasses) yield classItemRow(clazz, classData)).toList
+</span></td>
+          </tr><tr>
+            <td class="black">48</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">49</td>
+            <td>  def classItemRow(name: Name, classData: CoverageData) = {
+</td>
+          </tr><tr>
+            <td class="red">50</td>
+            <td>    <span class="non">itemRow(classNameHeader(name), classData.percentage, classHref(name))
+</span></td>
+          </tr><tr>
+            <td class="black">51</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="red">52</td>
+            <td>  def classHref(name: Name) = <span class="non">sourceReportFileName(name.sourceFile) + &quot;#&quot; + toHtmlId(name)
+</span></td>
+          </tr><tr>
+            <td class="black">53</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">54</td>
+            <td>  def classNameHeader(name: Name) = {
+</td>
+          </tr><tr>
+            <td class="red">55</td>
+            <td>    val img = <span class="non">name.classType match {
+</span></td>
+          </tr><tr>
+            <td class="red">56</td>
+            <td>      case ClassTypes.Object =&gt; <span class="non">&quot;object.png&quot;
+</span></td>
+          </tr><tr>
+            <td class="red">57</td>
+            <td>      case ClassTypes.Trait =&gt; <span class="non">&quot;trait.png&quot;
+</span></td>
+          </tr><tr>
+            <td class="red">58</td>
+            <td>      case ClassTypes.Class =&gt; <span class="non">&quot;class.png&quot;
+</span></td>
+          </tr><tr>
+            <td class="red">59</td>
+            <td>      case ClassTypes.Root =&gt; <span class="non">&quot;package.png&quot;
+</span></td>
+          </tr><tr>
+            <td class="red">60</td>
+            <td>      case ClassTypes.Package =&gt; <span class="non">&quot;package.png&quot;
+</span></td>
+          </tr><tr>
+            <td class="black">61</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="red">62</td>
+            <td>    &lt;<span class="non">img src={img}/&gt; ++ Text(name.className)
+</span></td>
+          </tr><tr>
+            <td class="black">63</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">64</td>
+            <td>  def toHtmlId(n: Name) =
+</td>
+          </tr><tr>
+            <td class="red">65</td>
+            <td>    (<span class="non">n.classType.toString + &quot;_&quot; + n.packageName.replace(&quot;.&quot;, &quot;_&quot;) + &quot;_&quot; + n.className.replace(&quot;.&quot;, &quot;_&quot;)).replace(&quot;&lt;&quot;, &quot;_&quot;).replace(&quot;&gt;&quot;,&quot;_&quot;)
+</span></td>
+          </tr><tr>
+            <td class="black">66</td>
+            <td>}
+</td>
+          </tr><tr>
+            <td class="black">67</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="red">68</td>
+            <td><a id="Class_reaktor_scct_report_HtmlReporter"></a>class HtmlReporter<span class="non">(data: CoverageData, writer: HtmlReportWriter, env: Env) {
+</span></td>
+          </tr><tr>
+            <td class="black">69</td>
+            <td>  import HtmlReporter._
+</td>
+          </tr><tr>
+            <td class="black">70</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">71</td>
+            <td><a id="Object_reaktor_scct_report_HtmlReporter_files"></a>  object files {
+</td>
+          </tr><tr>
+            <td class="red">72</td>
+            <td>    val packages = <span class="non">&quot;packages.html&quot;
+</span></td>
+          </tr><tr>
+            <td class="red">73</td>
+            <td>    val summary = <span class="non">&quot;summary.html&quot;
+</span></td>
+          </tr><tr>
+            <td class="black">74</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">75</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">76</td>
+            <td>  def report = {
+</td>
+          </tr><tr>
+            <td class="red">77</td>
+            <td>    <span class="non">summaryReport
+</span></td>
+          </tr><tr>
+            <td class="red">78</td>
+            <td>    <span class="non">packageListReport
+</span></td>
+          </tr><tr>
+            <td class="red">79</td>
+            <td>    <span class="non">packageReports
+</span></td>
+          </tr><tr>
+            <td class="red">80</td>
+            <td>    <span class="non">sourceFileReports
+</span></td>
+          </tr><tr>
+            <td class="red">81</td>
+            <td>    <span class="non">resources
+</span></td>
+          </tr><tr>
+            <td class="black">82</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">83</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">84</td>
+            <td>  def summaryReport {
+</td>
+          </tr><tr>
+            <td class="red">85</td>
+            <td>    val header = <span class="non">headerRow(&quot;Total&quot;, data.percentage)
+</span></td>
+          </tr><tr>
+            <td class="red">86</td>
+            <td>    val items = for (<span class="non">(name, packageData) &lt;- data.forPackages) yield
+</span></td>
+          </tr><tr>
+            <td class="red">87</td>
+            <td>      <span class="non">itemRow(name, packageData.percentage, packageReportFileName(name))
+</span></td>
+          </tr><tr>
+            <td class="red">88</td>
+            <td>    <span class="non">writer.write(files.summary, table(header, items.toList))
+</span></td>
+          </tr><tr>
+            <td class="black">89</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">90</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">91</td>
+            <td>  def packageListReport {
+</td>
+          </tr><tr>
+            <td class="black">92</td>
+            <td>    val html =
+</td>
+          </tr><tr>
+            <td class="red">93</td>
+            <td>      &lt;<span class="non">div class=&quot;content&quot;&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">94</td>
+            <td>        &lt;<span class="non">div class=&quot;pkgRow header&quot;&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">95</td>
+            <td>          &lt;<span class="non">a href={files.summary}&gt;Summary { format(data.percentage) }&lt;/a&gt;
+</span></td>
+          </tr><tr>
+            <td class="black">96</td>
+            <td>        &lt;/div&gt;
+</td>
+          </tr><tr>
+            <td class="black">97</td>
+            <td>        {
+</td>
+          </tr><tr>
+            <td class="red">98</td>
+            <td>          for ((pkg, packageData) <span class="non">&lt;- data.forPackages) yield {
+</span></td>
+          </tr><tr>
+            <td class="red">99</td>
+            <td>            &lt;<span class="non">div class=&quot;pkgRow pkgLink&quot;&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">100</td>
+            <td>              &lt;<span class="non">a href={packageReportFileName(pkg)}&gt;
+</span></td>
+          </tr><tr>
+            <td class="black">101</td>
+            <td>                { pkg }&amp;nbsp;{ format(packageData.percentage) }
+</td>
+          </tr><tr>
+            <td class="black">102</td>
+            <td>              &lt;/a&gt;
+</td>
+          </tr><tr>
+            <td class="black">103</td>
+            <td>            &lt;/div&gt; ++
+</td>
+          </tr><tr>
+            <td class="red">104</td>
+            <td>            &lt;<span class="non">div class=&quot;pkgRow pkgContent&quot;&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">105</td>
+            <td>              { for ((clazz, classData) <span class="non">&lt;- packageData.forClasses) yield
+</span></td>
+          </tr><tr>
+            <td class="red">106</td>
+            <td>                  &lt;<span class="non">div class=&quot;pkgRow&quot;&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">107</td>
+            <td>                    &lt;<span class="non">a href={ classHref(clazz) }&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">108</td>
+            <td>                      &lt;<span class="non">span class=&quot;className&quot;&gt;{ classNameHeader(clazz) }&lt;/span&gt;&amp;nbsp;{ format(classData.percentage) }
+</span></td>
+          </tr><tr>
+            <td class="black">109</td>
+            <td>                    &lt;/a&gt;
+</td>
+          </tr><tr>
+            <td class="black">110</td>
+            <td>                  &lt;/div&gt;
+</td>
+          </tr><tr>
+            <td class="black">111</td>
+            <td>              }
+</td>
+          </tr><tr>
+            <td class="black">112</td>
+            <td>            &lt;/div&gt;
+</td>
+          </tr><tr>
+            <td class="black">113</td>
+            <td>          }
+</td>
+          </tr><tr>
+            <td class="black">114</td>
+            <td>        }
+</td>
+          </tr><tr>
+            <td class="black">115</td>
+            <td>      &lt;/div&gt;
+</td>
+          </tr><tr>
+            <td class="red">116</td>
+            <td>    <span class="non">writer.write(files.packages, html)
+</span></td>
+          </tr><tr>
+            <td class="black">117</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">118</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">119</td>
+            <td>  def packageReports {
+</td>
+          </tr><tr>
+            <td class="red">120</td>
+            <td>    for (<span class="non">(pkg, packageData) &lt;- data.forPackages) {
+</span></td>
+          </tr><tr>
+            <td class="red">121</td>
+            <td>      val header = <span class="non">headerRow(pkg, packageData.percentage)
+</span></td>
+          </tr><tr>
+            <td class="red">122</td>
+            <td>      val items = <span class="non">classItemRows(packageData)
+</span></td>
+          </tr><tr>
+            <td class="red">123</td>
+            <td>      <span class="non">writer.write(packageReportFileName(pkg), table(header, items))
+</span></td>
+          </tr><tr>
+            <td class="black">124</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">125</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">126</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">127</td>
+            <td>  def resources {
+</td>
+          </tr><tr>
+            <td class="red">128</td>
+            <td>    val rs = <span class="non">List(&quot;class.png&quot;, &quot;object.png&quot;, &quot;package.png&quot;, &quot;trait.png&quot;, &quot;filter_box_left.png&quot;, &quot;filter_box_right.png&quot;,
+</span></td>
+          </tr><tr>
+            <td class="black">129</td>
+            <td>      &quot;jquery-1.4.2.min.js&quot;, &quot;jquery-ui-1.8.4.custom.min.js&quot;, &quot;style.css&quot;, &quot;main.js&quot;, &quot;index.html&quot;)
+</td>
+          </tr><tr>
+            <td class="red">130</td>
+            <td>    <span class="non">rs.foreach { name =&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">131</td>
+            <td>      <span class="non">writer.write(name, IO.readResourceBytes(&quot;/html-reporting/&quot;+name))
+</span></td>
+          </tr><tr>
+            <td class="black">132</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">133</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">134</td>
+            <td>  def sourceFileReports {
+</td>
+          </tr><tr>
+            <td class="red">135</td>
+            <td>    for (<span class="non">(sourceFile, sourceData) &lt;- data.forSourceFiles) {
+</span></td>
+          </tr><tr>
+            <td class="red">136</td>
+            <td>      val report = <span class="non">SourceFileHtmlReporter.report(sourceFile, sourceData, env)
+</span></td>
+          </tr><tr>
+            <td class="red">137</td>
+            <td>      <span class="non">writer.write(sourceReportFileName(sourceFile), report)
+</span></td>
+          </tr><tr>
+            <td class="black">138</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">139</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">140</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">141</td>
+            <td>}
+</td>
+          </tr></tbody></table>
