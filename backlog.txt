@@ -2,7 +2,7 @@ IN PROGRESS
 * sbt merge reports plugin
 
 BACKLOG
-* smoke-test: build all --> run in test project --> show report)
+* Location URL from report should restore state
 * maven plugin
 * memory usage optimizations: load coverage data only for report generation?
 * fold imports in source view?
