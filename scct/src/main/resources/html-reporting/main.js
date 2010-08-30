@@ -12,7 +12,15 @@ $(document).ready(function() {
     }
     var href = $this.attr("href");
     if (href != "#") {
-      $("#detail").empty().load(href.replace(/#.*/, ''));
+      var parts = href.split("#");
+      $("#detail").empty().load(parts[0], function() {
+        if (parts[1]) {
+          var location = $("#"+parts[1]);
+          var top = location.position().top - 30;
+          $("#detail").scrollTop(top > 0 ? top : 0);
+          location.parent().effect("highlight", {}, 1000);
+        }
+      });
     }
     return false;
   });

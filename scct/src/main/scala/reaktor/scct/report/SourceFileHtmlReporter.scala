@@ -48,24 +48,24 @@ class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoade
     <table class="source"><tbody>{ sourceLines(sourceFile, data) }</tbody></table>
 
   def sourceLines(sourceFile: String, data: CoverageData): NodeSeq = {
-    sourceLines(1, 0, sourceLoader.linesFor(sourceFile), data.blocks, Name("", ClassTypes.Root, "", ""), NodeSeq.Empty)
+    sourceLines(1, 0, sourceLoader.linesFor(sourceFile), data.blocks, List[Name](), NodeSeq.Empty)
   }
 
-  def sourceLines(lineNum: Int, offset: Int, lines: List[String], blocks: List[CoveredBlock], currentName: Name, acc: NodeSeq): NodeSeq = {
+  def sourceLines(lineNum: Int, offset: Int, lines: List[String], blocks: List[CoveredBlock], usedNames: List[Name], acc: NodeSeq): NodeSeq = {
     lines match {
       case Nil => acc
       case line :: tail => {
         val maxOffset = offset + line.length
         val (currBlocks, nextBlocks) = blocks.partition(_.offset < maxOffset)
         val lineHtml = formatLine(line, offset, currBlocks.filter(!_.placeHolder))
-        val newName = currBlocks.headOption.map(_.name).getOrElse(currentName)
-        val classId = if (currentName != newName) Some(Text(toHtmlId(newName))) else None
+        val newNames = currBlocks.map(_.name).filterNot(usedNames.contains).distinct
+        val newNamesHtml = newNames.map(n => <a id={toHtmlId(n)}/>)
         val rowHtml =
-          <tr id={classId}>
+          <tr>
             <td class={chooseColor(currBlocks.filter(!_.placeHolder))}>{lineNum}</td>
-            <td>{ lineHtml }</td>
+            <td>{ newNamesHtml }{ lineHtml }</td>
           </tr>
-        sourceLines(lineNum + 1, maxOffset, tail, nextBlocks, newName, acc ++ rowHtml)
+        sourceLines(lineNum + 1, maxOffset, tail, nextBlocks, usedNames ++ newNames, acc ++ rowHtml)
       }
     }
   }

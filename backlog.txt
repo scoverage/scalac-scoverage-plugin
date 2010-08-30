@@ -3,7 +3,6 @@ IN PROGRESS
 
 BACKLOG
 * smoke-test: build all --> run in test project --> show report)
-* reporting: scroll to selected class on click.
 * maven plugin
 * memory usage optimizations: load coverage data only for report generation?
 * fold imports in source view?
@@ -17,6 +16,7 @@ BLOCK
 * reconfigure sbt root project instead of 2 separate projects, prob. impossible until sbt plugin can use 2.8.
 
 DONE
+* reporting: scroll to selected class on click.
 * reporting pages are broken on non-FF browsers: need break-hints on dir "/"'s on source file name in detail view. => &#x200B;
 * reinstall maven repo usage (earlier, it broke ivy caching somehow....)
 * Constructor instrumentation fails when: "class Foo extends { val x = y } with SomeTrait"
