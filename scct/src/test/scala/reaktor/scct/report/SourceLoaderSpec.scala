@@ -17,6 +17,6 @@ class SourceLoaderSpec extends Specification {
 
   "Handle \\n line feeds" in {
     val lines = sut.linesFor("MacOSX.scala")
-    lines(0) mustEqual "class Foo { def x = 123\n"
+    lines(0) mustEqual "class MacFoo { def x = 123\n"
   }
 }
