@@ -166,7 +166,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
             case vd: ValDef => {
               instrumentConstructorStatements(tail, recurse(vd) :: acc)
             }
-            case a @ Apply(Select(_, selector), _) if selector.toString == "<init>" => {
+            case a: Apply if !acc.exists(_.isInstanceOf[Apply]) => {
               val applyInstrumentation = if (primary) coverageCall(block) else coverageCall(a)
               val newApply = treeCopy.Apply(a, a.fun, super.transformTrees(a.args))
               instrumentConstructorStatements(tail, applyInstrumentation :: newApply :: acc)

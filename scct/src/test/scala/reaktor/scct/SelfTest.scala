@@ -1,7 +1,7 @@
 package reaktor.scct
 
 import java.lang.String
-import java.io.{FileFilter, FilenameFilter, File}
+import java.io.{FileFilter, File}
 import report.HtmlReporter
 
 object SelfTest extends InstrumentationSupport {
@@ -13,7 +13,7 @@ object SelfTest extends InstrumentationSupport {
       override val reportDir = new File("self-report")
     }
     env.reportDir.mkdir
-    HtmlReporter.report(plugin.data, env)
+    HtmlReporter.report(plugin.scctComponent.data, env)
     println("file://"+env.reportDir.getAbsolutePath+"/index.html")
   }
 

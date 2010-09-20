@@ -22,8 +22,11 @@ trait InstrumentationSpec extends Specification with InstrumentationSupport {
     offsetsMatch(parse(0, s, InstrumentationSpec("", Nil)), true)
   }
   def offsetsMatch(spec: InstrumentationSpec, placeHoldersOnly: Boolean) {
-    val resultOffsets = compile(spec.source).filter(x => placeHoldersOnly == x.placeHolder).map(_.offset)
+    val resultOffsets = compileToData(spec.source).filter(x => placeHoldersOnly == x.placeHolder).map(_.offset)
     resultOffsets must matchSpec(spec)
+  }
+  def compileSource(source: String) = {
+    compile(source)
   }
 
 }
@@ -37,7 +40,7 @@ trait InstrumentationSupport {
     val command = new CompilerCommand(args.toList, settings)
     val runner = new PluginRunner(settings, debug)
     (new runner.Run).compile(command.files)
-    runner.scctComponent
+    runner
   }
 
   def createSettings = {
@@ -52,8 +55,11 @@ trait InstrumentationSupport {
     settings
   }
 
-  def compile(line: String): List[CoveredBlock] = {
-    Some(line).map(writeFile).map(compileFile).map(_.data).map(sort).get
+  def compile(line: String): PluginRunner = {
+    Some(line).map(writeFile).map(compileFile).get
+  }
+  def compileToData(line: String): List[CoveredBlock] = {
+    Some(compile(line)).map(_.scctComponent.data).map(sort).get
   }
 
   def writeFile(line: String): String = {

@@ -55,7 +55,7 @@ class NameParsingInstrumentationSpec extends InstrumentationSpec {
     }
   }
 
-  private def packagesOf(s: String) = compile(s).map(_.name.packageName).distinct
-  private def classesOf(s: String) = compile(s).map(_.name.className).distinct
-  private def typesOf(s: String) = compile(s).map(_.name.classType).distinct
+  private def packagesOf(s: String) = compileToData(s).map(_.name.packageName).distinct
+  private def classesOf(s: String) = compileToData(s).map(_.name.className).distinct
+  private def typesOf(s: String) = compileToData(s).map(_.name.classType).distinct
 }
