@@ -30,16 +30,13 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
 
   override def newPhase(prev: scala.tools.nsc.Phase): StdPhase = new Phase(prev) {
     override def run {
-      clearMetadata
       super.run
       saveMetadata
-    }
-    private def clearMetadata {
-      if (coverageFile.exists) coverageFile.delete
     }
     private def saveMetadata {
       if (saveData) {
         println("scct: Saving coverage data.")
+        if (coverageFile.exists) coverageFile.delete
         MetadataPickler.toFile(data, coverageFile)
       }
     }
@@ -201,7 +198,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
   }
 
   private def createName(owner: Symbol, tree: Tree) =
-    Name(tree.pos.source.file.file.getAbsolutePath, classType(owner), packageName(tree, owner), className(tree, owner))
+    Name(tree.pos.source.file.file.getCanonicalPath, classType(owner), packageName(tree, owner), className(tree, owner))
 
   def className(tree: Tree, owner: Symbol): String = {
     def fromSymbol(s: Symbol): String = {

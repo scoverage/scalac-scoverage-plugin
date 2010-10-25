@@ -65,7 +65,7 @@ trait InstrumentationSupport {
   def writeFile(line: String): String = {
     val f = File.createTempFile("scct-test-compiler", ".scala")
     IO.withOutputStream(new FileOutputStream(f)) { out => out.write(line.getBytes("utf-8")) }
-    f.getAbsolutePath
+    f.getCanonicalPath
   }
 
   def sort(data: List[CoveredBlock]) = data.sortWith { (a,b) =>

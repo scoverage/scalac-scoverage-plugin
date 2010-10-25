@@ -20,7 +20,7 @@ object Coverage {
 
   private def readMetadata = {
     try {
-      val values = MetadataPickler.load
+      val values = MetadataPickler.load(env.coverageFile)
       Map(values.map(x => (x.id, x)) :_*)
     } catch {
       case e => {
@@ -91,4 +91,10 @@ class Env {
   val sourceDir = new File(System.getProperty("scct.source.dir", "."))
   /** Where the source files are referenced from by the compiler, probably the root of the file system */
   val sourceBaseDir = new File(System.getProperty("scct.source.base.dir", ""))
+  def coverageFile = sysOption("scct.coverage.file").map(new File(_)).getOrElse(new File(getClass.getResource("/coverage.data").toURI))
+
+  private def sysOption(s: String) = {
+    val value = System.getProperty(s)
+    if (value == null) None else Some(value)
+  }
 }

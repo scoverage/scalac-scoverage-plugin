@@ -12,7 +12,7 @@ class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoade
   import HtmlReporter._
 
   val zeroSpace = Unparsed("&#x200B;")
-  val sourcePath = env.sourceDir.getAbsolutePath
+  val sourcePath = env.sourceDir.getCanonicalPath
 
   def report = {
     sourceFileTableHeader ++ sourceFileTableContent

@@ -14,7 +14,7 @@ object SelfTest extends InstrumentationSupport {
     }
     env.reportDir.mkdir
     HtmlReporter.report(plugin.scctComponent.data, env)
-    println("file://"+env.reportDir.getAbsolutePath+"/index.html")
+    println("file://"+env.reportDir.getCanonicalPath+"/index.html")
   }
 
   private def findSources(dir: File): List[String] = findSources(dir, dir)
@@ -25,6 +25,6 @@ object SelfTest extends InstrumentationSupport {
     val dirs = dir.listFiles(new FileFilter() {
       def accept(f: File) = f.isDirectory
     })
-    files.toList.map(_.getAbsolutePath) ::: dirs.toList.map(findSources(rootDir, _)).flatten
+    files.toList.map(_.getCanonicalPath) ::: dirs.toList.map(findSources(rootDir, _)).flatten
   }
 }

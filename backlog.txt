@@ -1,9 +1,8 @@
 IN PROGRESS
-* sbt merge reports plugin
 
 BACKLOG
+* sbt merge reports plugin
 * Location URL from report should restore state
-* maven plugin
 * memory usage optimizations: load coverage data only for report generation?
 * fold imports in source view?
 * sbt incremental build support? "conditional coverage datafile updating"
@@ -11,11 +10,14 @@ BACKLOG
 * multi-threading support?
 * idea plugin
 * eclipse plugin
+* maven plugin to easy configuration
 
 BLOCK
 * reconfigure sbt root project instead of 2 separate projects, prob. impossible until sbt plugin can use 2.8.
 
 DONE
+* maven support, preliminary
+* reportDir.mkDirs
 * reporting: scroll to selected class on click.
 * reporting pages are broken on non-FF browsers: need break-hints on dir "/"'s on source file name in detail view. => &#x200B;
 * reinstall maven repo usage (earlier, it broke ivy caching somehow....)
