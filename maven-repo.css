@@ -1,0 +1,15 @@
+body {
+  font-family: Verdana;
+  font-size: 20px;
+  color: #B78E68;
+}
+h1 {
+  font-size: 30px;
+}
+ul {
+  list-style: none;
+  padding-left: 20px;
+}
+a:visited {
+  color: blue;
+}
