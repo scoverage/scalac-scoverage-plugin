@@ -1,18 +1,17 @@
 package reaktor.scct.report
 
 import xml.{Unparsed, NodeSeq, Text}
-import reaktor.scct.{Env, ClassTypes, Name, CoveredBlock}
+import reaktor.scct._
+import java.io.File
 
 object SourceFileHtmlReporter {
   def report(sourceFile: String, data: CoverageData, env: Env) =
-    new SourceFileHtmlReporter(sourceFile, data, new SourceLoader(env), env).report
+    new SourceFileHtmlReporter(sourceFile, data, new SourceLoader, env).report
 }
 
-class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoader: SourceLoader, env: Env) {
-  import HtmlReporter._
+class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoader: SourceLoader, env: Env) extends HtmlHelper {
 
   val zeroSpace = Unparsed("&#x200B;")
-  val sourcePath = env.sourceDir.getCanonicalPath
 
   def report = {
     sourceFileTableHeader ++ sourceFileTableContent
@@ -37,11 +36,8 @@ class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoade
     }
   }
   def cleanSourceFileName(sourceFile: String) = {
-    def trimRoot(s: String) = s.indexOf(sourcePath) match {
-      case -1 => s
-      case idx => s.substring(sourcePath.length + idx)
-    }
-    Some(sourceFile).map(trimRoot).map(_.replaceAll("//", "/")).map(s => if (s.startsWith("/")) s.substring(1) else s).get
+    val sourcePathSuffix = IO.relativePath(new File(sourceFile), env.sourceDir)
+    Some(sourcePathSuffix).map(_.replaceAll("//", "/")).map(s => if (s.startsWith("/")) s.substring(1) else s).get
   }
 
   def sourceFileTableContent =

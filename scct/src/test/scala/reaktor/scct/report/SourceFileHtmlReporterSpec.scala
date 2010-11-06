@@ -9,7 +9,7 @@ class SourceFileHtmlReporterSpec extends Specification with XmlMatchers {
 
   "Single line formatting" should {
     val env = new Env
-    val sut = new SourceFileHtmlReporter("src", new CoverageData(Nil), new SourceLoader(env), env)
+    val sut = new SourceFileHtmlReporter("src", new CoverageData(Nil), new SourceLoader, env)
 
     "format covered line" in {
       sut.formatLine("my line", 0, blocks((0, true))) must equalIgnoreSpace(Text("my line"))
@@ -31,7 +31,7 @@ class SourceFileHtmlReporterSpec extends Specification with XmlMatchers {
 
   "Source file name formatting" should {
     val env = new Env { override val sourceDir = new java.io.File("/my/source/dir") }
-    val sut = new SourceFileHtmlReporter("src", new CoverageData(Nil), new SourceLoader(env), env)
+    val sut = new SourceFileHtmlReporter("src", new CoverageData(Nil), new SourceLoader, env)
 
     "strip base dir and split package and filename." in {
       sut.sourceFileHeader("//my/source/dir/package/and/Source.scala") mustEqual

@@ -16,6 +16,9 @@ BLOCK
 * reconfigure sbt root project instead of 2 separate projects, prob. impossible until sbt plugin can use 2.8.
 
 DONE
+* Windows support: Use relative paths instead of full ones
+** pkg-<root>.html is an invalid filename on windows
+** root path "" is wrong on windows
 * maven support, preliminary
 * reportDir.mkDirs
 * reporting: scroll to selected class on click.

@@ -89,8 +89,6 @@ class Env {
   val reportDir = new File(System.getProperty("scct.report.dir", "."))
   /** Where the source files actually start from, so e.g. $PROJECTHOME/src/main/scala/ */
   val sourceDir = new File(System.getProperty("scct.source.dir", "."))
-  /** Where the source files are referenced from by the compiler, probably the root of the file system */
-  val sourceBaseDir = new File(System.getProperty("scct.source.base.dir", ""))
   def coverageFile = sysOption("scct.coverage.file").map(new File(_)).getOrElse(new File(getClass.getResource("/coverage.data").toURI))
 
   private def sysOption(s: String) = {

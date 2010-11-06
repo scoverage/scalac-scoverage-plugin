@@ -2,11 +2,10 @@ package reaktor.scct.report
 
 import java.io.File
 import io.Source
-import reaktor.scct.Env
 
-class SourceLoader(env: Env) {
+class SourceLoader {
   def linesFor(sourceFile: String) = {
-    val src = Source.fromFile(new File(env.sourceBaseDir, sourceFile))
+    val src = Source.fromFile(new File(sourceFile))
     toLines(src)
   }
 

@@ -198,7 +198,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
   }
 
   private def createName(owner: Symbol, tree: Tree) =
-    Name(tree.pos.source.file.file.getCanonicalPath, classType(owner), packageName(tree, owner), className(tree, owner))
+    Name(IO.relativePath(tree.pos.source.file.file), classType(owner), packageName(tree, owner), className(tree, owner))
 
   def className(tree: Tree, owner: Symbol): String = {
     def fromSymbol(s: Symbol): String = {

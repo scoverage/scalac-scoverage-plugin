@@ -13,7 +13,9 @@ class HtmlReportWriter(outputDir: File) {
     write(fileName, content.getBytes("utf-8"))
   }
   def write(fileName: String, bytes: Array[Byte]) {
-    if (!outputDir.exists) outputDir.mkdirs
-    IO.write(new File(outputDir, fileName), bytes)
+    val file = new File(outputDir, fileName)
+    val parent = file.getParentFile
+    if (!parent.exists) parent.mkdirs
+    IO.write(file, bytes)
   }
 }
