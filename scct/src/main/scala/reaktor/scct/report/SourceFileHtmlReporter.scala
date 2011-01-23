@@ -3,6 +3,7 @@ package reaktor.scct.report
 import xml.{Unparsed, NodeSeq, Text}
 import reaktor.scct._
 import java.io.File
+import annotation.tailrec
 
 object SourceFileHtmlReporter {
   def report(sourceFile: String, data: CoverageData, env: Env) =
@@ -47,7 +48,7 @@ class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoade
     sourceLines(1, 0, sourceLoader.linesFor(sourceFile), data.blocks, List[Name](), NodeSeq.Empty)
   }
 
-  def sourceLines(lineNum: Int, offset: Int, lines: List[String], blocks: List[CoveredBlock], usedNames: List[Name], acc: NodeSeq): NodeSeq = {
+  @tailrec private def sourceLines(lineNum: Int, offset: Int, lines: List[String], blocks: List[CoveredBlock], usedNames: List[Name], acc: NodeSeq): NodeSeq = {
     lines match {
       case Nil => acc
       case line :: tail => {
