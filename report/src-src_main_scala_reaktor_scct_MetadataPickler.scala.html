@@ -7,7 +7,7 @@
       </div>
     </div></td>
     </tr><tr>
-      <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct-root_scala-2.8_scct_src_main_scala_reaktor_scct_MetadataPickler.scala.html#Object_reaktor_scct_MetadataPickler"><img src="object.png"></img>MetadataPickler</a></td>
+      <td class="barContainerLeft"><a href="src-src_main_scala_reaktor_scct_MetadataPickler.scala.html#Object_reaktor_scct_MetadataPickler"><img src="object.png"></img>MetadataPickler</a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
         <div class="percentage">0 %</div>
@@ -80,11 +80,11 @@
 </td>
           </tr><tr>
             <td class="black">17</td>
-            <td>  def load: List[CoveredBlock] = {
+            <td>  def load(f: File): List[CoveredBlock] = {
 </td>
           </tr><tr>
             <td class="red">18</td>
-            <td>    <span class="non">fromInputStream(getClass.getResourceAsStream(&quot;/coverage.data&quot;))
+            <td>    <span class="non">fromInputStream(new FileInputStream(f))
 </span></td>
           </tr><tr>
             <td class="black">19</td>

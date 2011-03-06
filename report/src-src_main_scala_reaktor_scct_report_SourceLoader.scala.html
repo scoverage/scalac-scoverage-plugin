@@ -7,7 +7,7 @@
       </div>
     </div></td>
     </tr><tr>
-      <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct-root_scala-2.8_scct_src_main_scala_reaktor_scct_report_SourceLoader.scala.html#Class_reaktor_scct_report_SourceLoader"><img src="class.png"></img>SourceLoader</a></td>
+      <td class="barContainerLeft"><a href="src-src_main_scala_reaktor_scct_report_SourceLoader.scala.html#Class_reaktor_scct_report_SourceLoader"><img src="class.png"></img>SourceLoader</a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
         <div class="percentage">100 %</div>
@@ -32,31 +32,31 @@
 </td>
           </tr><tr>
             <td class="black">5</td>
-            <td>import reaktor.scct.Env
-</td>
-          </tr><tr>
-            <td class="black">6</td>
             <td>
 </td>
           </tr><tr>
-            <td class="green">7</td>
-            <td><a id="Class_reaktor_scct_report_SourceLoader"></a>class SourceLoader(env: Env) {
+            <td class="green">6</td>
+            <td><a id="Class_reaktor_scct_report_SourceLoader"></a>class SourceLoader {
 </td>
           </tr><tr>
-            <td class="black">8</td>
+            <td class="black">7</td>
             <td>  def linesFor(sourceFile: String) = {
 </td>
           </tr><tr>
-            <td class="green">9</td>
-            <td>    val src = Source.fromFile(new File(env.sourceBaseDir, sourceFile))
+            <td class="green">8</td>
+            <td>    val src = Source.fromFile(new File(sourceFile))
 </td>
           </tr><tr>
-            <td class="green">10</td>
+            <td class="green">9</td>
             <td>    toLines(src)
 </td>
           </tr><tr>
-            <td class="black">11</td>
+            <td class="black">10</td>
             <td>  }
+</td>
+          </tr><tr>
+            <td class="black">11</td>
+            <td>
 </td>
           </tr><tr>
             <td class="black">12</td>
@@ -64,58 +64,54 @@
 </td>
           </tr><tr>
             <td class="black">13</td>
-            <td>
-</td>
-          </tr><tr>
-            <td class="black">14</td>
             <td>  def toLines(source: Source) = {
 </td>
           </tr><tr>
-            <td class="black">15</td>
+            <td class="black">14</td>
             <td>    def toLines(acc: List[String]): List[String] = {
 </td>
           </tr><tr>
-            <td class="green">16</td>
+            <td class="green">15</td>
             <td>      if (source.isEmpty) {
 </td>
           </tr><tr>
-            <td class="green">17</td>
+            <td class="green">16</td>
             <td>        acc.reverse
 </td>
           </tr><tr>
-            <td class="black">18</td>
+            <td class="black">17</td>
             <td>      } else {
 </td>
           </tr><tr>
-            <td class="green">19</td>
+            <td class="green">18</td>
             <td>        val line = source.takeWhile(_ != '\n').mkString
 </td>
           </tr><tr>
-            <td class="green">20</td>
+            <td class="green">19</td>
             <td>        toLines(line+&quot;\n&quot; :: acc)
 </td>
           </tr><tr>
-            <td class="black">21</td>
+            <td class="black">20</td>
             <td>      }
 </td>
           </tr><tr>
-            <td class="black">22</td>
+            <td class="black">21</td>
             <td>    }
 </td>
           </tr><tr>
-            <td class="green">23</td>
+            <td class="green">22</td>
             <td>    toLines(List())
 </td>
           </tr><tr>
-            <td class="black">24</td>
+            <td class="black">23</td>
             <td>  }
 </td>
           </tr><tr>
-            <td class="black">25</td>
+            <td class="black">24</td>
             <td>}
 </td>
           </tr><tr>
-            <td class="black">26</td>
+            <td class="black">25</td>
             <td>
 </td>
           </tr></tbody></table>

@@ -7,7 +7,7 @@
       </div>
     </div></td>
     </tr><tr>
-      <td class="barContainerLeft"><a href="src-_Users_mtkopone_projects_scct-root_scala-2.8_scct_src_main_scala_reaktor_scct_report_HtmlReportWriter.scala.html#Class_reaktor_scct_report_HtmlReportWriter"><img src="class.png"></img>HtmlReportWriter</a></td>
+      <td class="barContainerLeft"><a href="src-src_main_scala_reaktor_scct_report_HtmlReportWriter.scala.html#Class_reaktor_scct_report_HtmlReportWriter"><img src="class.png"></img>HtmlReportWriter</a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
         <div class="percentage">0 %</div>
@@ -76,14 +76,26 @@
 </td>
           </tr><tr>
             <td class="red">16</td>
-            <td>    <span class="non">IO.write(new File(outputDir, fileName), bytes)
+            <td>    val file = <span class="non">new File(outputDir, fileName)
 </span></td>
           </tr><tr>
-            <td class="black">17</td>
+            <td class="red">17</td>
+            <td>    val parent = <span class="non">file.getParentFile
+</span></td>
+          </tr><tr>
+            <td class="red">18</td>
+            <td>    if (<span class="non">!parent.exists) parent.mkdirs
+</span></td>
+          </tr><tr>
+            <td class="red">19</td>
+            <td>    <span class="non">IO.write(file, bytes)
+</span></td>
+          </tr><tr>
+            <td class="black">20</td>
             <td>  }
 </td>
           </tr><tr>
-            <td class="black">18</td>
+            <td class="black">21</td>
             <td>}
 </td>
           </tr></tbody></table>

@@ -25,7 +25,12 @@ $(document).ready(function() {
     return false;
   });
   $("#packages").load("packages.html", resetPackageLinks);
-  $("#detail").load("summary.html");
+
+  if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1 && document.location.protocol == 'file:') {
+    $("#detail").append($("<h2>").addClass("warn").append("Sorry, but the Google Chrome + AJAX + file:-protocol combo doesn't work. <br/>Please use e.g. Firefox instead."));
+  } else {
+    $("#detail").load("summary.html");
+  }
 
   $(".filterContainer .post").click(filterCleared);
   $("#filter").keyup(function(evt) {
