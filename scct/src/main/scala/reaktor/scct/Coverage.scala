@@ -2,18 +2,20 @@ package reaktor.scct
 
 import report.HtmlReporter
 import java.io.File
-import java.util.concurrent.{Executors, TimeUnit}
 
 object Coverage {
-  var active = false
+  var state = State.New
   var env: Env = _
-  var data: Map[String, CoveredBlock] = Map()
+  var data: Map[String, CoveredBlock] = _
 
-  tryInit()
-
-  def tryInit() {
+  @uncovered def tryInit() {
+    val oldState = state
+    state = State.Starting
     if (!Env.isSbt || Env.sysOption("scct.project.name").isDefined) {
       init()
+      state = State.Active
+    } else {
+      state = oldState
     }
   }
 
@@ -24,15 +26,14 @@ object Coverage {
       case "system.property" => setupSystemPropertyHook
       case _ => setupShutdownHook
     }
-    active = true
   }
 
   @uncovered def invoked(id: String) {
-    if (active) {
+    if (state == State.Active) {
       data.get(id).foreach { _.increment }
-    } else {
+    } else if (state == State.New) {
       tryInit()
-      if (active) data.get(id).foreach { _.increment }
+      if (state == State.Active) data.get(id).foreach { _.increment }
     }
   }
 
@@ -56,7 +57,7 @@ object Coverage {
   private def setupShutdownHook {
     Runtime.getRuntime.addShutdownHook(new Thread {
       override def run = {
-        Coverage.active = false
+        Coverage.state = State.Done
         println("scct: Generating coverage report.")
         report
       }
@@ -67,7 +68,7 @@ object Coverage {
     new Thread {
       override def run = {
         while (System.getProperty(prop, "") != "true") Thread.sleep(200)
-        Coverage.active = false
+        Coverage.state = State.Done
         println("scct: Generating coverage report.")
         report
         System.setProperty(prop, "done")
@@ -127,5 +128,8 @@ object Env {
       matchSbtClassLoader(cl.getParent)
     }
   }
+}
 
+@uncovered object State extends Enumeration {
+  val New, Starting, Active, Done = Value
 }

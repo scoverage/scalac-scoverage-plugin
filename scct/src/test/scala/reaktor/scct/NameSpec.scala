@@ -10,9 +10,11 @@ class NameSpec extends Specification {
   }
   "Class types compare" in {
     name(ClassTypes.Class).compare(name(ClassTypes.Object)) must be < 0
-    name(ClassTypes.Object).compare(name(ClassTypes.Trait)) must be < 0
+    name(ClassTypes.Object).compare(name(ClassTypes.Package)) must be < 0
+    name(ClassTypes.Package).compare(name(ClassTypes.Root)) must be < 0
+    name(ClassTypes.Root).compare(name(ClassTypes.Trait)) must be < 0
   }
-  "Type comparison comes first" in {
+  "Name comparison comes first" in {
     name(ClassTypes.Object, "z").compare(name(ClassTypes.Class, "a")) must be > 0
     name(ClassTypes.Class, "z").compare(name(ClassTypes.Object, "a")) must be > 0
   }

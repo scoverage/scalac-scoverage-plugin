@@ -29,6 +29,7 @@ class Build(info: ProjectInfo) extends DefaultProject(info) with IdeaProject {
   lazy val setupCoverageEnv = task {
     FileUtilities.clean(reportDir, log)
     FileUtilities.createDirectory(reportDir, log)
+    System.setProperty("scct.project.name", "scct")
     System.setProperty("scct.report.dir", reportDir.toString)
     System.setProperty("scct.source.dir", mainScalaSourcePath.absolutePath)
     None
