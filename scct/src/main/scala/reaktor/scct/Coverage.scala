@@ -6,16 +6,34 @@ import java.util.concurrent.{Executors, TimeUnit}
 
 object Coverage {
   var active = false
-  val env = new Env
-  env.reportHook match {
-    case "system.property" => setupSystemPropertyHook
-    case _ => setupShutdownHook
+  var env: Env = _
+  var data: Map[String, CoveredBlock] = Map()
+
+  tryInit()
+
+  def tryInit() {
+    if (!Env.isSbt || Env.sysOption("scct.project.name").isDefined) {
+      init()
+    }
   }
-  val data = readMetadata
-  active = true
+
+  def init() {
+    env = new Env
+    data = readMetadata
+    env.reportHook match {
+      case "system.property" => setupSystemPropertyHook
+      case _ => setupShutdownHook
+    }
+    active = true
+  }
 
   @uncovered def invoked(id: String) {
-    if (active) data.get(id).foreach { _.increment }
+    if (active) {
+      data.get(id).foreach { _.increment }
+    } else {
+      tryInit()
+      if (active) data.get(id).foreach { _.increment }
+    }
   }
 
   private def readMetadata = {
@@ -89,10 +107,25 @@ class Env {
   val reportDir = new File(System.getProperty("scct.report.dir", "."))
   /** Where the source files actually start from, so e.g. $PROJECTHOME/src/main/scala/ */
   val sourceDir = new File(System.getProperty("scct.source.dir", "."))
-  def coverageFile = sysOption("scct.coverage.file").map(new File(_)).getOrElse(new File(getClass.getResource("/coverage.data").toURI))
+  def coverageFile = Env.sysOption("scct.coverage.file").map(new File(_)).getOrElse(new File(getClass.getResource("/coverage.data").toURI))
+}
 
-  private def sysOption(s: String) = {
+object Env {
+  def sysOption(s: String) = {
     val value = System.getProperty(s)
     if (value == null) None else Some(value)
   }
+  lazy val isSbt = {
+    matchSbtClassLoader(getClass.getClassLoader)
+  }
+  def matchSbtClassLoader(cl: ClassLoader): Boolean = {
+    if (cl == null) {
+      false
+    } else if (cl.getClass.getName == "xsbt.DualLoader") {
+      true
+    } else {
+      matchSbtClassLoader(cl.getParent)
+    }
+  }
+
 }
