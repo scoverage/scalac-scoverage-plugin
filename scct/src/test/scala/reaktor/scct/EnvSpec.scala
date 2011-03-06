@@ -12,7 +12,7 @@ class EnvSpec extends Specification with Mockito {
         System.setProperty(propName, "1")
         Env.sysOption(propName) mustEqual Some("1")
       } finally {
-        System.setProperty(propName, null)
+        System.clearProperty(propName)
       }
     }
   }
