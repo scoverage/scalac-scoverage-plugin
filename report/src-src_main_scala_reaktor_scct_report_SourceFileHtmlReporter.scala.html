@@ -2,16 +2,16 @@
       <td class="barContainerLeft"><a href="#">&#x200B;reaktor/&#x200B;scct/&#x200B;report/<span class="header">&#x200B;SourceFileHtmlReporter.scala</span></a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
-        <div class="percentage">35 %</div>
-        <div class="greenBar" style="width:70px;">&nbsp;</div>
+        <div class="percentage">34 %</div>
+        <div class="greenBar" style="width:68px;">&nbsp;</div>
       </div>
     </div></td>
     </tr><tr>
       <td class="barContainerLeft"><a href="src-src_main_scala_reaktor_scct_report_SourceFileHtmlReporter.scala.html#Class_reaktor_scct_report_SourceFileHtmlReporter"><img src="class.png"></img>SourceFileHtmlReporter</a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
-        <div class="percentage">35 %</div>
-        <div class="greenBar" style="width:70px;">&nbsp;</div>
+        <div class="percentage">34 %</div>
+        <div class="greenBar" style="width:68px;">&nbsp;</div>
       </div>
     </div></td>
     </tr><tr>
@@ -352,7 +352,7 @@
 </td>
           </tr><tr>
             <td class="black">83</td>
-            <td>  private def formatLine(prevChars: List[Char], line: List[Char], offset: Int, isCovered: Boolean, blocks: List[CoveredBlock], acc: NodeSeq): NodeSeq = {
+            <td>  @tailrec private def formatLine(prevChars: List[Char], line: List[Char], offset: Int, isCovered: Boolean, blocks: List[CoveredBlock], acc: NodeSeq): NodeSeq = {
 </td>
           </tr><tr>
             <td class="green">84</td>
@@ -415,9 +415,9 @@
             <td>  private def formatLinePart(part: List[Char], isCovered: Boolean) = {
 </td>
           </tr><tr>
-            <td class="green">99</td>
-            <td>    val nbsp = &quot;\u00A0\u00A0&quot;
-</td>
+            <td class="red">99</td>
+            <td>    val nbsp = <span class="non">&quot;\u00A0\u00A0&quot;
+</span></td>
           </tr><tr>
             <td class="green">100</td>
             <td>    val tabbed = part.mkString.replaceAll(&quot;\t&quot;, nbsp).replaceAll(&quot;  &quot;, nbsp)

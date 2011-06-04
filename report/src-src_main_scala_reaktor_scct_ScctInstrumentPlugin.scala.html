@@ -2,8 +2,8 @@
       <td class="barContainerLeft"><a href="#">&#x200B;reaktor/&#x200B;scct/<span class="header">&#x200B;ScctInstrumentPlugin.scala</span></a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
-        <div class="percentage">93 %</div>
-        <div class="greenBar" style="width:186px;">&nbsp;</div>
+        <div class="percentage">92 %</div>
+        <div class="greenBar" style="width:184px;">&nbsp;</div>
       </div>
     </div></td>
     </tr><tr>
@@ -18,8 +18,8 @@
       <td class="barContainerLeft"><a href="src-src_main_scala_reaktor_scct_ScctInstrumentPlugin.scala.html#Class_reaktor_scct_ScctTransformComponent"><img src="class.png"></img>ScctTransformComponent</a></td>
       <td class="barContainerRight"><div class="percentages">
       <div class="bar">
-        <div class="percentage">82 %</div>
-        <div class="greenBar" style="width:164px;">&nbsp;</div>
+        <div class="percentage">79 %</div>
+        <div class="greenBar" style="width:158px;">&nbsp;</div>
       </div>
     </div></td>
     </tr><tr>
@@ -144,7 +144,7 @@
 </td>
           </tr><tr>
             <td class="green">25</td>
-            <td>  var saveData = true  
+            <td>  var saveData = true
 </td>
           </tr><tr>
             <td class="green">26</td>
@@ -236,11 +236,11 @@
 </td>
           </tr><tr>
             <td class="yellow">48</td>
-            <td>      if (debug) <span class="non">treeBrowser.browse(List(unit))
+            <td>      if (debug) <span class="non">treeBrowser.browse(&quot;scct&quot;, List(unit))
 </span></td>
           </tr><tr>
             <td class="green">49</td>
-            <td>      registerClasses(unit.body)
+            <td>      registerClasses(unit)
 </td>
           </tr><tr>
             <td class="green">50</td>
@@ -248,7 +248,7 @@
 </td>
           </tr><tr>
             <td class="yellow">51</td>
-            <td>      if (debug) <span class="non">treeBrowser.browse(List(unit))
+            <td>      if (debug) <span class="non">treeBrowser.browse(&quot;scct&quot;, List(unit))
 </span></td>
           </tr><tr>
             <td class="black">52</td>
@@ -300,7 +300,7 @@
 </td>
           </tr><tr>
             <td class="green">64</td>
-            <td>    private def isNonLazyStableMethodOrAccessor(t: DefDef) = !t.symbol.isLazy &amp;&amp; (t.symbol.isStable || t.symbol.isGetterOrSetter)
+            <td>    private def isNonLazyStableMethodOrAccessor(t: DefDef) = !t.symbol.isLazy &amp;&amp; (t.symbol.isStable || t.symbol.hasFlag(Flags.ACCESSOR))
 </td>
           </tr><tr>
             <td class="green">65</td>
@@ -844,290 +844,310 @@
 </td>
           </tr><tr>
             <td class="black">200</td>
-            <td>  private def createName(owner: Symbol, tree: Tree) =
+            <td>  private def createName(owner: Symbol, tree: Tree) = {
 </td>
           </tr><tr>
             <td class="green">201</td>
-            <td>    Name(IO.relativePath(tree.pos.source.file.file), classType(owner), packageName(tree, owner), className(tree, owner))
+            <td>    val src = tree.pos.source.file match {
 </td>
           </tr><tr>
-            <td class="black">202</td>
-            <td>
-</td>
+            <td class="red">202</td>
+            <td>      case null =&gt; <span class="non">&quot;&lt;no file&gt;&quot;
+</span></td>
           </tr><tr>
-            <td class="black">203</td>
-            <td>  def className(tree: Tree, owner: Symbol): String = {
+            <td class="green">203</td>
+            <td>      case f =&gt; IO.relativePath(f.file)
 </td>
           </tr><tr>
             <td class="black">204</td>
-            <td>    def fromSymbol(s: Symbol): String = {
+            <td>    }
 </td>
           </tr><tr>
             <td class="green">205</td>
-            <td>      def parent = s.owner.enclClass
+            <td>    Name(src, classType(owner), packageName(tree, owner), className(tree, owner))
 </td>
           </tr><tr>
-            <td class="yellow">206</td>
-            <td>      if (s.isPackageClass) <span class="non">&quot;&quot;
-</span></td>
-          </tr><tr>
-            <td class="green">207</td>
-            <td>        else if (s.isAnonymousClass) fromSymbol(parent)
+            <td class="black">206</td>
+            <td>  }
 </td>
           </tr><tr>
-            <td class="green">208</td>
-            <td>        else if (s.isPackageObjectClass) &quot;&quot;
+            <td class="black">207</td>
+            <td>
 </td>
           </tr><tr>
-            <td class="green">209</td>
-            <td>        else if (parent.isPackageClass || parent.isPackageObjectClass) s.simpleName.toString
+            <td class="black">208</td>
+            <td>  def className(tree: Tree, owner: Symbol): String = {
+</td>
+          </tr><tr>
+            <td class="black">209</td>
+            <td>    def fromSymbol(s: Symbol): String = {
 </td>
           </tr><tr>
             <td class="green">210</td>
-            <td>        else fromSymbol(parent) + &quot;.&quot; + s.simpleName
+            <td>      def parent = s.owner.enclClass
 </td>
           </tr><tr>
-            <td class="black">211</td>
-            <td>    }
-</td>
+            <td class="yellow">211</td>
+            <td>      if (s.isPackageClass) <span class="non">&quot;&quot;
+</span></td>
           </tr><tr>
             <td class="green">212</td>
-            <td>    tree match {
+            <td>        else if (s.isAnonymousClass) fromSymbol(parent)
 </td>
           </tr><tr>
             <td class="green">213</td>
-            <td>      case cd: ClassDef =&gt; fromSymbol(cd.symbol)
+            <td>        else if (s.isPackageObjectClass) &quot;&quot;
 </td>
           </tr><tr>
             <td class="green">214</td>
-            <td>      case _ =&gt; fromSymbol(owner.enclClass)
+            <td>        else if (parent.isPackageClass || parent.isPackageObjectClass) s.simpleName.toString
 </td>
           </tr><tr>
-            <td class="black">215</td>
-            <td>    }
+            <td class="green">215</td>
+            <td>        else fromSymbol(parent) + &quot;.&quot; + s.simpleName
 </td>
           </tr><tr>
             <td class="black">216</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="green">217</td>
+            <td>    tree match {
+</td>
+          </tr><tr>
+            <td class="red">218</td>
+            <td>      case cd: ClassDef =&gt; <span class="non">fromSymbol(cd.symbol)
+</span></td>
+          </tr><tr>
+            <td class="green">219</td>
+            <td>      case _ =&gt; fromSymbol(owner.enclClass)
+</td>
+          </tr><tr>
+            <td class="black">220</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">221</td>
             <td>  }
 </td>
           </tr><tr>
-            <td class="black">217</td>
+            <td class="black">222</td>
             <td>
 </td>
           </tr><tr>
-            <td class="green">218</td>
+            <td class="green">223</td>
             <td>  def packageName(tree: Tree, owner: Symbol): String = tree match {
 </td>
           </tr><tr>
-            <td class="red">219</td>
+            <td class="red">224</td>
             <td>    case pd: PackageDef if <span class="non">pd.symbol.isEmptyPackage =&gt; &quot;&lt;root&gt;&quot;
 </span></td>
           </tr><tr>
-            <td class="red">220</td>
+            <td class="red">225</td>
             <td>    case pd: PackageDef =&gt; <span class="non">pd.symbol.fullName.toString
 </span></td>
           </tr><tr>
-            <td class="yellow">221</td>
+            <td class="yellow">226</td>
             <td>    case _ =&gt; if (owner.isEmptyPackageClass || owner.isEmptyPackage) <span class="non">&quot;&lt;root&gt;&quot;
 </span></td>
           </tr><tr>
-            <td class="yellow">222</td>
+            <td class="yellow">227</td>
             <td>                else if (owner.isPackage || owner.isPackageClass) <span class="non">owner.fullName.toString
 </span></td>
           </tr><tr>
-            <td class="yellow">223</td>
+            <td class="yellow">228</td>
             <td>                else if (owner.toplevelClass == NoSymbol) <span class="non">&quot;&lt;root&gt;&quot;
 </span></td>
           </tr><tr>
-            <td class="green">224</td>
+            <td class="green">229</td>
             <td>                else if (owner.toplevelClass.owner.isEmptyPackageClass) &quot;&lt;root&gt;&quot;
 </td>
           </tr><tr>
-            <td class="green">225</td>
+            <td class="green">230</td>
             <td>                else owner.toplevelClass.owner.fullName.toString
 </td>
           </tr><tr>
-            <td class="black">226</td>
+            <td class="black">231</td>
             <td>  }
 </td>
           </tr><tr>
-            <td class="black">227</td>
+            <td class="black">232</td>
             <td>
 </td>
           </tr><tr>
-            <td class="black">228</td>
+            <td class="black">233</td>
             <td>
 </td>
           </tr><tr>
-            <td class="black">229</td>
+            <td class="black">234</td>
             <td>  def classType(s: Symbol) = {
 </td>
           </tr><tr>
-            <td class="yellow">230</td>
-            <td>    if (s.isRoot) <span class="non">ClassTypes.Root
+            <td class="yellow">235</td>
+            <td>    if (s.isEffectiveRoot) <span class="non">ClassTypes.Root
 </span></td>
           </tr><tr>
-            <td class="green">231</td>
+            <td class="green">236</td>
             <td>      else if (s.isPackageObjectClass) ClassTypes.Package
 </td>
           </tr><tr>
-            <td class="green">232</td>
+            <td class="green">237</td>
             <td>      else if (s.isModule || s.isModuleClass) ClassTypes.Object
 </td>
           </tr><tr>
-            <td class="green">233</td>
+            <td class="green">238</td>
             <td>      else if (s.isTrait) ClassTypes.Trait
 </td>
           </tr><tr>
-            <td class="green">234</td>
+            <td class="green">239</td>
             <td>      else ClassTypes.Class
 </td>
           </tr><tr>
-            <td class="black">235</td>
+            <td class="black">240</td>
             <td>  }
 </td>
           </tr><tr>
-            <td class="black">236</td>
+            <td class="black">241</td>
             <td>
-</td>
-          </tr><tr>
-            <td class="black">237</td>
-            <td>
-</td>
-          </tr><tr>
-            <td class="green">238</td>
-            <td>  def minOffset(t: Tree) = new MinimumOffsetFinder().offsetFor(t)
-</td>
-          </tr><tr>
-            <td class="black">239</td>
-            <td>
-</td>
-          </tr><tr>
-            <td class="green">240</td>
-            <td><a id="Class_reaktor_scct_ScctTransformComponent_MinimumOffsetFinder"></a>  class MinimumOffsetFinder extends Traverser {
-</td>
-          </tr><tr>
-            <td class="green">241</td>
-            <td>    var min = Integer.MAX_VALUE
 </td>
           </tr><tr>
             <td class="black">242</td>
-            <td>    override def traverse(t: Tree) {
+            <td>
 </td>
           </tr><tr>
             <td class="green">243</td>
-            <td>      if (t.pos.isDefined) {
+            <td>  def minOffset(t: Tree) = new MinimumOffsetFinder().offsetFor(t)
 </td>
           </tr><tr>
-            <td class="green">244</td>
-            <td>        val curr = t.pos.startOrPoint
+            <td class="black">244</td>
+            <td>
 </td>
           </tr><tr>
             <td class="green">245</td>
+            <td><a id="Class_reaktor_scct_ScctTransformComponent_MinimumOffsetFinder"></a>  class MinimumOffsetFinder extends Traverser {
+</td>
+          </tr><tr>
+            <td class="green">246</td>
+            <td>    var min = Integer.MAX_VALUE
+</td>
+          </tr><tr>
+            <td class="black">247</td>
+            <td>    override def traverse(t: Tree) {
+</td>
+          </tr><tr>
+            <td class="green">248</td>
+            <td>      if (t.pos.isDefined) {
+</td>
+          </tr><tr>
+            <td class="green">249</td>
+            <td>        val curr = t.pos.startOrPoint
+</td>
+          </tr><tr>
+            <td class="green">250</td>
             <td>        if (curr &lt; min) min = curr
 </td>
           </tr><tr>
-            <td class="black">246</td>
+            <td class="black">251</td>
             <td>      }
-</td>
-          </tr><tr>
-            <td class="green">247</td>
-            <td>      super.traverse(t)
-</td>
-          </tr><tr>
-            <td class="black">248</td>
-            <td>    }
-</td>
-          </tr><tr>
-            <td class="black">249</td>
-            <td>
-</td>
-          </tr><tr>
-            <td class="black">250</td>
-            <td>    def offsetFor(t: Tree): Int = {
-</td>
-          </tr><tr>
-            <td class="green">251</td>
-            <td>      min = Integer.MAX_VALUE
 </td>
           </tr><tr>
             <td class="green">252</td>
-            <td>      super.apply(t)
-</td>
-          </tr><tr>
-            <td class="green">253</td>
-            <td>      min
-</td>
-          </tr><tr>
-            <td class="black">254</td>
-            <td>    }
-</td>
-          </tr><tr>
-            <td class="black">255</td>
-            <td>  }
-</td>
-          </tr><tr>
-            <td class="black">256</td>
-            <td>
-</td>
-          </tr><tr>
-            <td class="black">257</td>
-            <td>
-</td>
-          </tr><tr>
-            <td class="green">258</td>
-            <td>  def registerClasses(t: Tree) = new ClassRegisterer().apply(t)
-</td>
-          </tr><tr>
-            <td class="black">259</td>
-            <td>
-</td>
-          </tr><tr>
-            <td class="green">260</td>
-            <td><a id="Class_reaktor_scct_ScctTransformComponent_ClassRegisterer"></a>  class ClassRegisterer extends Traverser {
-</td>
-          </tr><tr>
-            <td class="black">261</td>
-            <td>    override def traverse(t: Tree) = {
-</td>
-          </tr><tr>
-            <td class="green">262</td>
-            <td>      t match {
-</td>
-          </tr><tr>
-            <td class="green">263</td>
-            <td>        case cd: ClassDef if (!cd.symbol.isSynthetic) =&gt; {
-</td>
-          </tr><tr>
-            <td class="green">264</td>
-            <td>          data = CoveredBlock(newId, createName(cd.symbol, t), minOffset(t), true) :: data
-</td>
-          </tr><tr>
-            <td class="black">265</td>
-            <td>        }
-</td>
-          </tr><tr>
-            <td class="black">266</td>
-            <td>        case _ =&gt;
-</td>
-          </tr><tr>
-            <td class="black">267</td>
-            <td>      }
-</td>
-          </tr><tr>
-            <td class="green">268</td>
             <td>      super.traverse(t)
 </td>
           </tr><tr>
-            <td class="black">269</td>
+            <td class="black">253</td>
             <td>    }
 </td>
           </tr><tr>
-            <td class="black">270</td>
+            <td class="black">254</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">255</td>
+            <td>    def offsetFor(t: Tree): Int = {
+</td>
+          </tr><tr>
+            <td class="green">256</td>
+            <td>      min = Integer.MAX_VALUE
+</td>
+          </tr><tr>
+            <td class="green">257</td>
+            <td>      super.apply(t)
+</td>
+          </tr><tr>
+            <td class="green">258</td>
+            <td>      min
+</td>
+          </tr><tr>
+            <td class="black">259</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">260</td>
             <td>  }
 </td>
           </tr><tr>
+            <td class="black">261</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">262</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="green">263</td>
+            <td>  def registerClasses(unit: CompilationUnit) = new ClassRegisterer().apply(unit.body)
+</td>
+          </tr><tr>
+            <td class="black">264</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="green">265</td>
+            <td><a id="Class_reaktor_scct_ScctTransformComponent_ClassRegisterer"></a>  class ClassRegisterer extends Traverser {
+</td>
+          </tr><tr>
+            <td class="black">266</td>
+            <td>    override def traverse(tree: Tree) = {
+</td>
+          </tr><tr>
+            <td class="green">267</td>
+            <td>      tree match {
+</td>
+          </tr><tr>
+            <td class="green">268</td>
+            <td>        case t: Template if (!t.symbol.owner.isSynthetic) =&gt; {
+</td>
+          </tr><tr>
+            <td class="green">269</td>
+            <td>          data = CoveredBlock(newId, createName(t.symbol.owner, tree), minOffset(tree), true) :: data
+</td>
+          </tr><tr>
+            <td class="black">270</td>
+            <td>        }
+</td>
+          </tr><tr>
             <td class="black">271</td>
+            <td>        case _ =&gt;
+</td>
+          </tr><tr>
+            <td class="black">272</td>
+            <td>      }
+</td>
+          </tr><tr>
+            <td class="green">273</td>
+            <td>      super.traverse(tree)
+</td>
+          </tr><tr>
+            <td class="black">274</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">275</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">276</td>
             <td>}
 </td>
           </tr></tbody></table>

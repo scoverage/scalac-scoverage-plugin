@@ -44,7 +44,7 @@
 </td>
           </tr><tr>
             <td class="red">8</td>
-            <td>    <span class="non">&quot;System properties:&quot;+JavaConversions.asMap(System.getProperties).map(e =&gt; e._1 + &quot; = &quot; + e._2).mkString(&quot;\n\t&quot;, &quot;\n\t&quot;, &quot;\n&quot;)
+            <td>    <span class="non">&quot;System properties:&quot;+JavaConversions.propertiesAsScalaMap(System.getProperties).map(e =&gt; e._1 + &quot; = &quot; + e._2).mkString(&quot;\n\t&quot;, &quot;\n\t&quot;, &quot;\n&quot;)
 </span></td>
           </tr><tr>
             <td class="black">9</td>
