@@ -45,10 +45,10 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
   class Instrumenter(unit: CompilationUnit) extends TypingTransformer(unit) {
 
     override def transformUnit(unit: CompilationUnit) {
-      if (debug) treeBrowser.browse(List(unit))
+      if (debug) treeBrowser.browse("scct", List(unit))
       registerClasses(unit.body)
       super.transformUnit(unit)
-      if (debug) treeBrowser.browse(List(unit))
+      if (debug) treeBrowser.browse("scct", List(unit))
     }
 
     override def transform(tree: Tree) = {
@@ -61,7 +61,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
     private def isObjectOrTraitConstructor(s: Symbol) = s.isConstructor && (currentClass.isModuleClass || currentClass.isTrait)
     private def isGeneratedMethod(t: DefDef) = !t.symbol.isConstructor && t.pos.point == currentClass.pos.point
     private def isAbstractMethod(t: DefDef) = t.symbol.isDeferred
-    private def isNonLazyStableMethodOrAccessor(t: DefDef) = !t.symbol.isLazy && (t.symbol.isStable || t.symbol.isGetterOrSetter)
+    private def isNonLazyStableMethodOrAccessor(t: DefDef) = !t.symbol.isLazy && (t.symbol.isStable || t.symbol.hasFlag(Flags.ACCESSOR))
     private def isInAnonymousClass = currentClass.isAnonymousClass
 
     def preprocess(t: Tree): Tuple2[Boolean, Tree] = t match {
