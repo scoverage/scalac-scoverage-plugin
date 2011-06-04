@@ -32,6 +32,7 @@ trait InstrumentationSpec extends Specification with InstrumentationSupport {
 }
 
 trait InstrumentationSupport {
+  def scalaDir = "scala-2.9.0-1"
   def debug = false
 
   def compileFile(file: String) = compileFiles(Seq(file) :_*)
@@ -47,9 +48,9 @@ trait InstrumentationSupport {
     val settings = new Settings
     val scalaJars = List("scala-compiler.jar", "scala-library.jar")
     val classPath = if (System.getProperty("java.class.path").contains("sbt-launch")) {
-      "./target/scala_2.9.0/classes" :: scalaJars.map("./project/boot/scala-2.9.0/lib/"+_)
+      "./target/"+scalaDir+"/classes" :: scalaJars.map("./project/boot/"+scalaDir+"+/lib/"+_)
     } else {
-      "./out/production/scct" :: scalaJars.map("./project/boot/scala-2.9.0/lib/"+_)
+      "./out/production/scct" :: scalaJars.map("./project/boot/"+scalaDir+"/lib/"+_)
     }
     settings.classpath.value = classPath.mkString(":")
     settings
