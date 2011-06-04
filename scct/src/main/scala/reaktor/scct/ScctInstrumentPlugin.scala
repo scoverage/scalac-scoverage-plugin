@@ -46,7 +46,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
 
     override def transformUnit(unit: CompilationUnit) {
       if (debug) treeBrowser.browse("scct", List(unit))
-      registerClasses(unit.body)
+      registerClasses(unit)
       super.transformUnit(unit)
       if (debug) treeBrowser.browse("scct", List(unit))
     }
@@ -197,8 +197,13 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
     }
   }
 
-  private def createName(owner: Symbol, tree: Tree) =
-    Name(IO.relativePath(tree.pos.source.file.file), classType(owner), packageName(tree, owner), className(tree, owner))
+  private def createName(owner: Symbol, tree: Tree) = {
+    val src = tree.pos.source.file match {
+      case null => "<no file>"
+      case f => IO.relativePath(f.file)
+    }
+    Name(src, classType(owner), packageName(tree, owner), className(tree, owner))
+  }
 
   def className(tree: Tree, owner: Symbol): String = {
     def fromSymbol(s: Symbol): String = {
@@ -227,7 +232,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
 
 
   def classType(s: Symbol) = {
-    if (s.isRoot) ClassTypes.Root
+    if (s.isEffectiveRoot) ClassTypes.Root
       else if (s.isPackageObjectClass) ClassTypes.Package
       else if (s.isModule || s.isModuleClass) ClassTypes.Object
       else if (s.isTrait) ClassTypes.Trait
@@ -255,17 +260,17 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
   }
 
 
-  def registerClasses(t: Tree) = new ClassRegisterer().apply(t)
+  def registerClasses(unit: CompilationUnit) = new ClassRegisterer().apply(unit.body)
 
   class ClassRegisterer extends Traverser {
-    override def traverse(t: Tree) = {
-      t match {
-        case cd: ClassDef if (!cd.symbol.isSynthetic) => {
-          data = CoveredBlock(newId, createName(cd.symbol, t), minOffset(t), true) :: data
+    override def traverse(tree: Tree) = {
+      tree match {
+        case t: Template if (!t.symbol.owner.isSynthetic) => {
+          data = CoveredBlock(newId, createName(t.symbol.owner, tree), minOffset(tree), true) :: data
         }
         case _ =>
       }
-      super.traverse(t)
+      super.traverse(tree)
     }
   }
 }

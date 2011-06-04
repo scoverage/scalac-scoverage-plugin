@@ -28,7 +28,7 @@ class NameParsingInstrumentationSpec extends InstrumentationSpec {
       classesOf("class X { class Y }") mustEqual List("X", "X.Y")
     }
     "handle classes nested inside methods" in {
-      classesOf("class X { def method { class Y } }") mustEqual List("X", "X.Y")      
+      classesOf("class X { def method { class Y } }") mustEqual List("X", "X.Y")
     }
     "skip anonymous classes" in {
       classesOf("class X { def go = 1 }; class Y { new X { override def go = 2 } }") mustEqual List("X", "Y")

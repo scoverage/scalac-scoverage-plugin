@@ -68,8 +68,8 @@ class ConstructorInstrumentationSpec extends InstrumentationSpec {
       val src = "class Second extends { val x = 1; val y = 2 } with First; trait First"
       val stats = digOutConstructorStats(compileSource(src))
       stats.length mustEqual 4
-      stats(0) must startWith("val x: Int = ")
-      stats(1) must startWith("val y: Int = ")
+      stats(0) must startWith("val x: Int(1) = ")
+      stats(1) must startWith("val y: Int(2) = ")
       stats(2) must startWith("Second.super.this()")
       stats(3) must startWith("reaktor.scct.Coverage.invoked(")
     }

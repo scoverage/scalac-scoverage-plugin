@@ -133,6 +133,9 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
       classOffsetsMatch("""|val z = @new scala.collection.mutable.ArrayBuffer[String]()
                            |@z ++= List("wrok")""".stripMargin)
     }
+    "not instrument when compiler takes shortcuts" in {
+      classOffsetsMatch("def junk = @{ val i = 1; val j = i; j; }");
+    }
   }
 
 }

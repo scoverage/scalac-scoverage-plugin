@@ -79,10 +79,15 @@ class BasicClassInstrumentationSpec extends InstrumentationSpec {
     "inner classes" in {
       classOffsetsMatch("""class Inner @{ @println("1") }""")
     }
+    "math operations" in {
+      classOffsetsMatch("val eh = 12@/5.0");
+    }
     "method bodys" in {
       classOffsetsMatch("def foo = @12")
       classOffsetsMatch("def foo = @hashCode")
       classOffsetsMatch("def foo = @System.currentTimeMillis")
+      classOffsetsMatch("def foo = { @System.currentTimeMillis(); }");
+
     }
     "val bodys" in {
       classOffsetsMatch("val foo = @12")
@@ -93,14 +98,14 @@ class BasicClassInstrumentationSpec extends InstrumentationSpec {
       classOffsetsMatch("def foo { @12; @hashCode; @System.currentTimeMillis }")
     }
     "nested blocks" in {
-      classOffsetsMatch("def z = { @1; { @2; @3; { @4; @5; }; @6; }; @7 }")      
+      classOffsetsMatch("def z = { @1; { @2; @3; { @4; @5; }; @6; }; @7 }")
     }
     "body content" in {
       offsetsMatch("""|class Foo@(x: Boolean) {
                             |  val y = @12
                             |  def z = @12
                             |  def defWithVal = {
-                            |    val myVal = @17
+                            |    val myVal = @y + System.getProperty("eh?") + methodWithInner
                             |    @myVal
                             |  }
                             |  def methodWithMap(s: String) =
