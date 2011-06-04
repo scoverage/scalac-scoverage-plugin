@@ -71,7 +71,6 @@
 		<p><a href="report/index.html" target="_blank"><img src="screenshot.png" alt="scct-screenshot" class="screenshot"/></a></p>
 		<h2>What's missing?</h2>
 		<p>Mainly, the ability to merge reports, a better-lookin' report UI, a simpler maven configuration.</p>
-		<p>The 2.9 branch is the one being developed, with updates merged back to the 2.8 branch every now and then.</p>
     
     <h2>Usage</h2>
     
@@ -80,102 +79,101 @@
       <button id="x-usage-1-tabs">Scala 2.8</button>
       <button id="x-usage-2-tabs">Scala 2.7.7</button>
     </div>
-
-    		<div id="usage-3-tabs" class="usage-tab">
-    			<ul>
-    				<li><a href="#usage-3-tabs-1">sbt</a></li>
-    				<li><a href="#usage-3-tabs-2">maven</a></li>
-    				<li><a href="#usage-3-tabs-3">standalone</a></li>
-    			</ul>
-        	<div id="usage-3-tabs-1">
-    				<p>Add the following to <span class="mono">project/plugins/Plugins.scala</span>:</p>
-    				<pre>
-    import sbt._
-    class Plugins(info: ProjectInfo) extends PluginDefinition(info) {
-      val scctRepo = "scct-repo" at "http://mtkopone.github.com/scct/maven-repo/"
-      lazy val scctPlugin = "reaktor" % "sbt-scct-for-2.9" % "0.1-SNAPSHOT"
-    }			
-    				</pre>
-    				<p>Have your project extend <span class="mono">reaktor.scct.ScctProject</span>:</p>
-    				<pre>
-    import sbt._
-    import reaktor.scct.ScctProject
-    class MyProject(i: ProjectInfo) extends DefaultProject(i) with ScctProject {
-      // ...
-    }
-    				</pre>
-    				<p>Run your unit tests with:</p><pre>$ sbt test-coverage</pre>
-    				<p>Then open:</p><pre>./target/scala_2.9.0-1/coverage-report/index.html</pre>
-    				<p>Enjoy.</p>
-    			</div>
-    			<div id="usage-3-tabs-2">
-    				<p>Maven support is very preliminary at the moment, but assuming you are using <span class="mono">maven-scala-plugin</span>, something like this should get you going:</p>
-    				<pre>
-    &lt;profiles&gt;
-      &lt;profile&gt;
-        &lt;id&gt;coverage&lt;/id&gt;
-        &lt;repositories&gt;
-          &lt;repository&gt;
-            &lt;id&gt;scct repository&lt;/id&gt;
-            &lt;url&gt;http://mtkopone.github.com/scct/maven-repo&lt;/url&gt;
-          &lt;/repository&gt;
-        &lt;/repositories&gt;
-        &lt;dependencies&gt;
-          &lt;dependency&gt;
-            &lt;groupId&gt;reaktor&lt;/groupId&gt;
-            &lt;artifactId&gt;scct_2.9.0-1&lt;/artifactId&gt;
-            &lt;version&gt;0.1-SNAPSHOT&lt;/version&gt;
-          &lt;/dependency&gt;
-        &lt;/dependencies&gt;
-        &lt;build&gt;
-          &lt;plugins&gt;
-            &lt;plugin&gt;
-              &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
-              &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
-              &lt;version&gt;2.6&lt;/version&gt;
-              &lt;configuration&gt;
-                &lt;systemPropertyVariables&gt;
-                  &lt;scct.project.name&gt;${project.name}&lt;/scct.project.name&gt;
-                  &lt;scct.coverage.file&gt;${project.build.outputDirectory}/coverage.data&lt;/scct.coverage.file&gt;
-                  &lt;scct.report.dir&gt;${project.build.directory}/coverage-report&lt;/scct.report.dir&gt;
-                  &lt;scct.source.dir&gt;${project.build.sourceDirectory}&lt;/scct.source.dir&gt;
-                &lt;/systemPropertyVariables&gt;
-              &lt;/configuration&gt;
-            &lt;/plugin&gt;
-            &lt;plugin&gt;
-              &lt;groupId&gt;org.scala-tools&lt;/groupId&gt;
-              &lt;artifactId&gt;maven-scala-plugin&lt;/artifactId&gt;
-              &lt;configuration&gt;
-                &lt;compilerPlugins&gt;
-                  &lt;compilerPlugin&gt;
-                    &lt;groupId&gt;reaktor&lt;/groupId&gt;
-                    &lt;artifactId&gt;scct_2.9.0-1&lt;/artifactId&gt;
-                    &lt;version&gt;0.1-SNAPSHOT&lt;/version&gt;
-                  &lt;/compilerPlugin&gt;
-                &lt;/compilerPlugins&gt;
-              &lt;/configuration&gt;
-            &lt;/plugin&gt;        
-          &lt;/plugins&gt;
-        &lt;/build&gt;
-      &lt;/profile&gt;
-    &lt;/profiles&gt;
-    				</pre>
-    				<p>Run your unit tests with:</p><pre>$ mvn -Pcoverage clean test</pre>
-    				<p>Then open:</p><pre>./target/coverage-report/index.html</pre>
-    				<p>Enjoy.</p>
-    			</div>
-    			<div id="usage-3-tabs-3">
-    				<p>Download <a href="http://mtkopone.github.com/scct/maven-repo/reaktor/scct_2.9.0-1/0.1-SNAPSHOT/scct_2.9.0-1-0.1-SNAPSHOT.jar">scct</a> jar.
-    			  <p>Compile and instrument your source:</p>
-    				<pre>
-    $ scalac -Xplugin:scct_2.9.0-1-0.1-SNAPSHOT.jar \\ 
-    	  -classpath .:scct_2.9.0-1-0.1-SNAPSHOT.jar Test.scala
-    				</pre>
-    				<p>Run something:</p>
-    				<pre>$ scala -classpath .:scct_2.9.0-1-0.1-SNAPSHOT.jar Test</pre>
-    				<p>Then open:</p><pre>./index.html</pre>
-    			</div>
-    		</div>
+		<div id="usage-3-tabs" class="usage-tab">
+			<ul>
+				<li><a href="#usage-3-tabs-1">sbt</a></li>
+				<li><a href="#usage-3-tabs-2">maven</a></li>
+				<li><a href="#usage-3-tabs-3">standalone</a></li>
+			</ul>
+    	<div id="usage-3-tabs-1">
+				<p>Add the following to <span class="mono">project/plugins/Plugins.scala</span>:</p>
+				<pre>
+import sbt._
+class Plugins(info: ProjectInfo) extends PluginDefinition(info) {
+  val scctRepo = "scct-repo" at "http://mtkopone.github.com/scct/maven-repo/"
+  lazy val scctPlugin = "reaktor" % "scct-sbt-for-2.9" % "0.1-SNAPSHOT"
+}			
+				</pre>
+				<p>Have your project extend <span class="mono">reaktor.scct.ScctProject</span>:</p>
+				<pre>
+import sbt._
+import reaktor.scct.ScctProject
+class MyProject(i: ProjectInfo) extends DefaultProject(i) with ScctProject {
+  // ...
+}
+				</pre>
+				<p>Run your unit tests with:</p><pre>$ sbt test-coverage</pre>
+				<p>Then open:</p><pre>./target/scala_2.9.0-1/coverage-report/index.html</pre>
+				<p>Enjoy.</p>
+			</div>
+			<div id="usage-3-tabs-2">
+				<p>Maven support is very preliminary at the moment, but assuming you are using <span class="mono">maven-scala-plugin</span>, something like this should get you going:</p>
+				<pre>
+&lt;profiles&gt;
+  &lt;profile&gt;
+    &lt;id&gt;coverage&lt;/id&gt;
+    &lt;repositories&gt;
+      &lt;repository&gt;
+        &lt;id&gt;scct repository&lt;/id&gt;
+        &lt;url&gt;http://mtkopone.github.com/scct/maven-repo&lt;/url&gt;
+      &lt;/repository&gt;
+    &lt;/repositories&gt;
+    &lt;dependencies&gt;
+      &lt;dependency&gt;
+        &lt;groupId&gt;reaktor&lt;/groupId&gt;
+        &lt;artifactId&gt;scct_2.9.0-1&lt;/artifactId&gt;
+        &lt;version&gt;0.1-SNAPSHOT&lt;/version&gt;
+      &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+    &lt;build&gt;
+      &lt;plugins&gt;
+        &lt;plugin&gt;
+          &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+          &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+          &lt;version&gt;2.6&lt;/version&gt;
+          &lt;configuration&gt;
+            &lt;systemPropertyVariables&gt;
+              &lt;scct.project.name&gt;${project.name}&lt;/scct.project.name&gt;
+              &lt;scct.coverage.file&gt;${project.build.outputDirectory}/coverage.data&lt;/scct.coverage.file&gt;
+              &lt;scct.report.dir&gt;${project.build.directory}/coverage-report&lt;/scct.report.dir&gt;
+              &lt;scct.source.dir&gt;${project.build.sourceDirectory}&lt;/scct.source.dir&gt;
+            &lt;/systemPropertyVariables&gt;
+          &lt;/configuration&gt;
+        &lt;/plugin&gt;
+        &lt;plugin&gt;
+          &lt;groupId&gt;org.scala-tools&lt;/groupId&gt;
+          &lt;artifactId&gt;maven-scala-plugin&lt;/artifactId&gt;
+          &lt;configuration&gt;
+            &lt;compilerPlugins&gt;
+              &lt;compilerPlugin&gt;
+                &lt;groupId&gt;reaktor&lt;/groupId&gt;
+                &lt;artifactId&gt;scct_2.9.0-1&lt;/artifactId&gt;
+                &lt;version&gt;0.1-SNAPSHOT&lt;/version&gt;
+              &lt;/compilerPlugin&gt;
+            &lt;/compilerPlugins&gt;
+          &lt;/configuration&gt;
+        &lt;/plugin&gt;        
+      &lt;/plugins&gt;
+    &lt;/build&gt;
+  &lt;/profile&gt;
+&lt;/profiles&gt;
+				</pre>
+				<p>Run your unit tests with:</p><pre>$ mvn -Pcoverage clean test</pre>
+				<p>Then open:</p><pre>./target/coverage-report/index.html</pre>
+				<p>Enjoy.</p>
+			</div>
+			<div id="usage-3-tabs-3">
+				<p>Download <a href="http://mtkopone.github.com/scct/maven-repo/reaktor/scct_2.9.0-1/0.1-SNAPSHOT/scct_2.9.0-1-0.1-SNAPSHOT.jar">scct</a> jar.
+			  <p>Compile and instrument your source:</p>
+				<pre>
+$ scalac -Xplugin:scct_2.9.0-1-0.1-SNAPSHOT.jar \\ 
+	  -classpath .:scct_2.9.0-1-0.1-SNAPSHOT.jar Test.scala
+				</pre>
+				<p>Run something:</p>
+				<pre>$ scala -classpath .:scct_2.9.0-1-0.1-SNAPSHOT.jar Test</pre>
+				<p>Then open:</p><pre>./index.html</pre>
+			</div>
+		</div>
 
 		<div id="usage-1-tabs" class="usage-tab">
 			<ul>
