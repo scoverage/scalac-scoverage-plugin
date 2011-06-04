@@ -1,6 +1,7 @@
 package reaktor.scct
 
 import java.io._
+import annotation.tailrec
 
 object MetadataPickler {
 
@@ -22,13 +23,13 @@ object MetadataPickler {
     IO.withInputStream(new ObjectInputStream(in)) { in => readObjects(in, Nil) }
   }
 
-  private def readObjects(in: ObjectInputStream, acc:List[CoveredBlock]): List[CoveredBlock] = {
+  @tailrec private def readObjects(in: ObjectInputStream, acc:List[CoveredBlock]): List[CoveredBlock] = {
     readObj(in) match {
       case None => acc
       case Some(o) => readObjects(in, o :: acc)
     }
   }
-  private def readObj(in: ObjectInputStream): Option[CoveredBlock] = {
+  def readObj(in: ObjectInputStream): Option[CoveredBlock] = {
     try {
       val obj = in.readObject.asInstanceOf[CoveredBlock]
       if (obj != null) Some(obj) else None

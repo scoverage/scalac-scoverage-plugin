@@ -22,7 +22,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
   def newTransformer(unit: CompilationUnit) = new Instrumenter(unit)
 
   var debug = false
-  var saveData = true  
+  var saveData = true
   var counter = 0L
   var data: List[CoveredBlock] = Nil
   lazy val coverageFile = new File(global.settings.outdir.value, "coverage.data")

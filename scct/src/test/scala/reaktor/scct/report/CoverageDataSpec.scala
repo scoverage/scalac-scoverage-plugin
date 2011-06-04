@@ -1,9 +1,11 @@
 package reaktor.scct.report
 
 import org.specs.Specification
-import reaktor.scct.{ClassTypes, Name, CoveredBlock}
+import reaktor.scct.CoveredBlock
 
 class CoverageDataSpec extends Specification {
+  import reaktor.scct.CoveredBlockGenerator._
+
   "Percentage calculation" should {
     "calculate total" in {
       new CoverageData(blocks()).percentage mustEqual None
@@ -12,17 +14,9 @@ class CoverageDataSpec extends Specification {
       new CoverageData(blocks(true, true, false, true)).percentage mustEqual Some(75)
     }
     "skip placeholders" in {
-      val data = new CoverageData(CoveredBlock("x", name("x"), 1, true) :: blocks(true, true, false, false))
+      val data = new CoverageData(CoveredBlock("x", blockName("x"), 1, true) :: blocks(true, true, false, false))
       data.percentage mustEqual Some(50)
     }
   }
-
-  private def blocks(hits: Boolean*) = {
-    1.to(hits.size).map { i =>
-      val b = new CoveredBlock(i.toString, name(i.toString), i, false)
-      if (hits(i-1)) b.increment else b
-    }.toList
-  }
-  private def name(s: String) = Name(s, ClassTypes.Class, s, s)
 
 }

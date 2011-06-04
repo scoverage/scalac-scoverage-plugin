@@ -80,7 +80,7 @@ class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoade
   def formatLine(line: String, offset: Int, blocks: List[CoveredBlock]): NodeSeq =
     formatLine(List[Char](), line.toList, offset, true, blocks, NodeSeq.Empty)
 
-  private def formatLine(prevChars: List[Char], line: List[Char], offset: Int, isCovered: Boolean, blocks: List[CoveredBlock], acc: NodeSeq): NodeSeq = {
+  @tailrec private def formatLine(prevChars: List[Char], line: List[Char], offset: Int, isCovered: Boolean, blocks: List[CoveredBlock], acc: NodeSeq): NodeSeq = {
     blocks match {
       case Nil => acc ++ formatLinePart(prevChars ::: line, isCovered)
       case block :: tail => {
