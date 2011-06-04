@@ -11,3 +11,4 @@ lib_managed/
 target/
 out/
 self-report/
+.idea/
