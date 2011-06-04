@@ -47,9 +47,9 @@ trait InstrumentationSupport {
     val settings = new Settings
     val scalaJars = List("scala-compiler.jar", "scala-library.jar")
     val classPath = if (System.getProperty("java.class.path").contains("sbt-launch")) {
-      "./target/scala_2.8.0/classes" :: scalaJars.map("./project/boot/scala-2.8.0/lib/"+_)
+      "./target/scala_2.9.0/classes" :: scalaJars.map("./project/boot/scala-2.9.0/lib/"+_)
     } else {
-      "./out/production/scct" :: scalaJars.map("./project/boot/scala-2.8.0/lib/"+_)
+      "./out/production/scct" :: scalaJars.map("./project/boot/scala-2.9.0/lib/"+_)
     }
     settings.classpath.value = classPath.mkString(":")
     settings
