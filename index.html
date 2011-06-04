@@ -7,13 +7,19 @@
 	<meta name="keywords" content="mtkopone scct scala code coverage tool codecoverage" />	
   <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.1/build/reset-fonts-grids/reset-fonts-grids.css">
   <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.8.1/build/base/base-min.css">
-  <link type="text/css" href="css/custom-theme/jquery-ui-1.8.4.custom.css" rel="stylesheet" />    
-  <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
-  <script type="text/javascript" src="js/jquery-ui-1.8.4.custom.min.js"></script>
+  <link type="text/css" href="css/jquery-ui-1.8.13.custom.css" rel="stylesheet" />    
+  <script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
+  <script type="text/javascript" src="js/jquery-ui-1.8.13.custom.min.js"></script>
   <script type="text/javascript">
 		$(function(){
-			$('#usage-1-tabs').tabs();
-			$('#usage-2-tabs').tabs();
+			$('.usage-tab').tabs().hide();
+			$('.usage-tab:first').show();
+			$('#usage-buttons button').button().click(function() {
+			  $('#usage-buttons button').removeClass('selected');
+			  $(this).addClass('selected');
+			  $('.usage-tab').hide();
+			  $('#'+$(this).attr('id').substring(2)).show();
+			});
 		});
   </script>
 	<style type="text/css">
@@ -36,6 +42,9 @@
 		.screenshot { border: 1px solid #cca; }
 		.not { text-decoration: line-through; color: #777; }
 		.ui-tabs-nav a { outline: none; }
+		.news { padding: 2px 5px; margin-right: 5px; }
+		#usage-buttons button { width: 10em !important; margin-bottom: 10px;}
+		button.selected span { font-size: 120%; color: black; }
 	</style>
 </head>
 <body>
@@ -55,16 +64,120 @@
 	</a>
   <div id="container">
 		<h2>Eh?</h2>
-		<p><span class="mono">scct</span> is a code coverage tool for Scala. It's beta.</p>
+		<p><span class="mono">scct</span> is a code coverage tool for Scala.</p>
+		<h2>News</h2>
+		<p><span class="news ui-state-default ui-corner-all">Jun 4, 2011</span> <span class="mono">scct</span> now theoretically supports scala 2.9.0-1 and up. Give it a try!</p>
 		<h2>What's it look like?</h2>
 		<p><a href="report/index.html" target="_blank"><img src="screenshot.png" alt="scct-screenshot" class="screenshot"/></a></p>
-		<h2>Just How "In-Progress" Is It?</h2>
-		<p>The basics work: Instrumentation of source code during compilation, collecting coverage data during test runs, and creating a basic report.</p>
-		<p>Mainly missing is the ability to merge reports, more test runs with larger codebases and simplification of the maven configuration.</p>
-		<p>The 2.8 branch is the main one under construction at the moment, updates to that are merged back to the "master" 2.7.7 branch every now and then.</p>
+		<h2>What's missing?</h2>
+		<p>Mainly, the ability to merge reports, a better-lookin' report UI, a simpler maven configuration.</p>
+		<p>The 2.9 branch is the one being developed, with updates merged back to the 2.8 branch every now and then.</p>
+    
+    <h2>Usage</h2>
+    
+    <div id="usage-buttons">
+      <button class="selected" id="x-usage-3-tabs">Scala 2.9</button>
+      <button id="x-usage-1-tabs">Scala 2.8</button>
+      <button id="x-usage-2-tabs">Scala 2.7.7</button>
+    </div>
 
-		<h2>Usage with Scala 2.8.0+</h2>
-		<div id="usage-1-tabs">
+    		<div id="usage-3-tabs" class="usage-tab">
+    			<ul>
+    				<li><a href="#usage-3-tabs-1">sbt</a></li>
+    				<li><a href="#usage-3-tabs-2">maven</a></li>
+    				<li><a href="#usage-3-tabs-3">standalone</a></li>
+    			</ul>
+        	<div id="usage-3-tabs-1">
+    				<p>Add the following to <span class="mono">project/plugins/Plugins.scala</span>:</p>
+    				<pre>
+    import sbt._
+    class Plugins(info: ProjectInfo) extends PluginDefinition(info) {
+      val scctRepo = "scct-repo" at "http://mtkopone.github.com/scct/maven-repo/"
+      lazy val scctPlugin = "reaktor" % "sbt-scct-for-2.9" % "0.1-SNAPSHOT"
+    }			
+    				</pre>
+    				<p>Have your project extend <span class="mono">reaktor.scct.ScctProject</span>:</p>
+    				<pre>
+    import sbt._
+    import reaktor.scct.ScctProject
+    class MyProject(i: ProjectInfo) extends DefaultProject(i) with ScctProject {
+      // ...
+    }
+    				</pre>
+    				<p>Run your unit tests with:</p><pre>$ sbt test-coverage</pre>
+    				<p>Then open:</p><pre>./target/scala_2.9.0-1/coverage-report/index.html</pre>
+    				<p>Enjoy.</p>
+    			</div>
+    			<div id="usage-3-tabs-2">
+    				<p>Maven support is very preliminary at the moment, but assuming you are using <span class="mono">maven-scala-plugin</span>, something like this should get you going:</p>
+    				<pre>
+    &lt;profiles&gt;
+      &lt;profile&gt;
+        &lt;id&gt;coverage&lt;/id&gt;
+        &lt;repositories&gt;
+          &lt;repository&gt;
+            &lt;id&gt;scct repository&lt;/id&gt;
+            &lt;url&gt;http://mtkopone.github.com/scct/maven-repo&lt;/url&gt;
+          &lt;/repository&gt;
+        &lt;/repositories&gt;
+        &lt;dependencies&gt;
+          &lt;dependency&gt;
+            &lt;groupId&gt;reaktor&lt;/groupId&gt;
+            &lt;artifactId&gt;scct_2.9.0-1&lt;/artifactId&gt;
+            &lt;version&gt;0.1-SNAPSHOT&lt;/version&gt;
+          &lt;/dependency&gt;
+        &lt;/dependencies&gt;
+        &lt;build&gt;
+          &lt;plugins&gt;
+            &lt;plugin&gt;
+              &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+              &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+              &lt;version&gt;2.6&lt;/version&gt;
+              &lt;configuration&gt;
+                &lt;systemPropertyVariables&gt;
+                  &lt;scct.project.name&gt;${project.name}&lt;/scct.project.name&gt;
+                  &lt;scct.coverage.file&gt;${project.build.outputDirectory}/coverage.data&lt;/scct.coverage.file&gt;
+                  &lt;scct.report.dir&gt;${project.build.directory}/coverage-report&lt;/scct.report.dir&gt;
+                  &lt;scct.source.dir&gt;${project.build.sourceDirectory}&lt;/scct.source.dir&gt;
+                &lt;/systemPropertyVariables&gt;
+              &lt;/configuration&gt;
+            &lt;/plugin&gt;
+            &lt;plugin&gt;
+              &lt;groupId&gt;org.scala-tools&lt;/groupId&gt;
+              &lt;artifactId&gt;maven-scala-plugin&lt;/artifactId&gt;
+              &lt;configuration&gt;
+                &lt;compilerPlugins&gt;
+                  &lt;compilerPlugin&gt;
+                    &lt;groupId&gt;reaktor&lt;/groupId&gt;
+                    &lt;artifactId&gt;scct_2.9.0-1&lt;/artifactId&gt;
+                    &lt;version&gt;0.1-SNAPSHOT&lt;/version&gt;
+                  &lt;/compilerPlugin&gt;
+                &lt;/compilerPlugins&gt;
+              &lt;/configuration&gt;
+            &lt;/plugin&gt;        
+          &lt;/plugins&gt;
+        &lt;/build&gt;
+      &lt;/profile&gt;
+    &lt;/profiles&gt;
+    				</pre>
+    				<p>Run your unit tests with:</p><pre>$ mvn -Pcoverage clean test</pre>
+    				<p>Then open:</p><pre>./target/coverage-report/index.html</pre>
+    				<p>Enjoy.</p>
+    			</div>
+    			<div id="usage-3-tabs-3">
+    				<p>Download <a href="http://mtkopone.github.com/scct/maven-repo/reaktor/scct_2.9.0-1/0.1-SNAPSHOT/scct_2.9.0-1-0.1-SNAPSHOT.jar">scct</a> jar.
+    			  <p>Compile and instrument your source:</p>
+    				<pre>
+    $ scalac -Xplugin:scct_2.9.0-1-0.1-SNAPSHOT.jar \\ 
+    	  -classpath .:scct_2.9.0-1-0.1-SNAPSHOT.jar Test.scala
+    				</pre>
+    				<p>Run something:</p>
+    				<pre>$ scala -classpath .:scct_2.9.0-1-0.1-SNAPSHOT.jar Test</pre>
+    				<p>Then open:</p><pre>./index.html</pre>
+    			</div>
+    		</div>
+
+		<div id="usage-1-tabs" class="usage-tab">
 			<ul>
 				<li><a href="#usage-1-tabs-1">sbt</a></li>
 				<li><a href="#usage-1-tabs-2">maven</a></li>
@@ -159,8 +272,7 @@ $ scalac -Xplugin:scct_2.8.0-0.1-SNAPSHOT.jar \\
 				<p>Then open:</p><pre>./index.html</pre>
 			</div>
 		</div>
-		<h2>Usage with Scala 2.7.7</h2>
-		<div id="usage-2-tabs">
+		<div id="usage-2-tabs" class="usage-tab">
 			<ul>	
 				<li><a href="#usage-2-tabs-1">sbt</a></li>
 				<li><a href="#usage-2-tabs-2">maven</a></li>
@@ -255,9 +367,10 @@ $ scalac -Xplugin:scct_2.7.7-0.1-SNAPSHOT.jar \\
 				<p>Then open:</p><pre>./index.html</pre>
 			</div>
 		</div>
+
   </div>
 	<div id="foot">
-		&copy; <a href="http://github.com/mtkopone">Mikko Koponen</a> 2010
+		&copy; <a href="http://github.com/mtkopone">Mikko Koponen</a> 2011
     | Layout by <a href="http://developer.yahoo.com/yui/license.html">yui</a>
 	</div>
 
