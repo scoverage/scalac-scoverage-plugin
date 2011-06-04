@@ -86,7 +86,7 @@ trait InstrumentationSupport {
 
   private def splitAtMark(s: String): Tuple2[String,String] = {
     var isEscape = false
-    val idx = s.findIndexOf { _ match {
+    val idx = s.indexWhere { _ match {
       case '@' if !isEscape => true
       case '\\' => { isEscape = true; false }
       case _ => { isEscape = false; false }

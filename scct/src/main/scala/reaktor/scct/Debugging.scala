@@ -5,7 +5,7 @@ import collection.JavaConversions
 
 object Debugging {
   def props = {
-    "System properties:"+JavaConversions.asMap(System.getProperties).map(e => e._1 + " = " + e._2).mkString("\n\t", "\n\t", "\n")
+    "System properties:"+JavaConversions.propertiesAsScalaMap(System.getProperties).map(e => e._1 + " = " + e._2).mkString("\n\t", "\n\t", "\n")
   }
   def classPath = {
     "Classpath:"+System.getProperty("java.class.path").split(":").mkString("\n\t", "\n\t", "\n")

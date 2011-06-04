@@ -78,15 +78,15 @@ object Coverage {
 }
 
 object ClassTypes {
-  @serializable sealed abstract class ClassType
-  @serializable case object Class extends ClassType
-  @serializable case object Trait extends ClassType
-  @serializable case object Object extends ClassType
-  @serializable case object Package extends ClassType
-  @serializable case object Root extends ClassType
+  sealed abstract class ClassType extends Serializable
+  case object Class extends ClassType
+  case object Trait extends ClassType
+  case object Object extends ClassType
+  case object Package extends ClassType
+  case object Root extends ClassType
 }
 
-@serializable case class Name(sourceFile: String, classType: ClassTypes.ClassType, packageName: String, className: String) extends Ordered[Name] {
+case class Name(sourceFile: String, classType: ClassTypes.ClassType, packageName: String, className: String) extends Ordered[Name] {
   def compare(other: Name) = {
     lazy val classNameDiff = className.compareTo(other.className)
     lazy val classTypeDiff = classType.toString.compareTo(other.classType.toString)
@@ -94,13 +94,13 @@ object ClassTypes {
   }
   override def toString = packageName+"/"+className+":"+sourceFile
 }
-@serializable case class CoveredBlock(id: String, name: Name, offset: Int, placeHolder: Boolean) {
+case class CoveredBlock(id: String, name: Name, offset: Int, placeHolder: Boolean) {
   def this(id: String, name: Name, offset: Int)  = this(id, name, offset, false)
   var count = 0
   @uncovered def increment = { count = count + 1; this }
 }
 
-class uncovered extends StaticAnnotation
+class uncovered extends scala.annotation.StaticAnnotation
 
 class Env {
   val projectId = System.getProperty("scct.project.name", "default")
