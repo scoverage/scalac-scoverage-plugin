@@ -4,7 +4,7 @@
      <title>scct - Coverage Report</title>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <link rel="stylesheet" type="text/css" href="style.css" />
-    <script src="jquery-1.4.2.min.js" type="text/javascript"></script>
+    <script src="jquery-1.6.1.min.js" type="text/javascript"></script>
     <script src="jquery-ui-1.8.4.custom.min.js" type="text/javascript"></script>
     <script src="main.js" type="text/javascript"></script>
   </head>
@@ -17,6 +17,18 @@
       </div>
       <div id="packages"></div>
     </div>
-    <div id="detail"></div>
+    <div id="detail">
+      <div id="load-error">
+        <p>Sorry, but there seems to be a problem loading the report contents.</p>
+        <div class="browser-error browser-chrome">
+          <p>Google Chrome doesn't allow ajax with the file:-protocol by default.</p>
+          <p>Please either restart the browser with <span class='code'>--allow-file-access-from-files</span> or use a different browser.</p>
+        </div>
+        <div class="browser-error browser-other">
+          <p>Please try another browser,</p>
+          <p>and send an error report via <a class="external" href='https://github.com/mtkopone/scct/issues'>GitHub</a>.</p>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

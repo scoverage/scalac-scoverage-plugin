@@ -70,7 +70,7 @@ class HtmlReporter(data: CoverageData, writer: HtmlReportWriter, env: Env) exten
 
   def resources {
     val rs = List("class.png", "object.png", "package.png", "trait.png", "filter_box_left.png", "filter_box_right.png",
-      "jquery-1.4.2.min.js", "jquery-ui-1.8.4.custom.min.js", "style.css", "main.js", "index.html")
+      "jquery-1.6.1.min.js", "jquery-ui-1.8.4.custom.min.js", "style.css", "main.js", "index.html")
     rs.foreach { name =>
       writer.write(name, IO.readResourceBytes("/html-reporting/"+name))
     }

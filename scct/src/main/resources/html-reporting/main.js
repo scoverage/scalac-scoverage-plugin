@@ -7,6 +7,9 @@ $(document).ready(function() {
   }).resize();
   $("a").live("click", function() {
     var $this = $(this);
+    if ($this.hasClass('external')) {
+      return true;
+    }
     if ($this.parent().hasClass("pkgLink")) {
       $(this).parent().next().slideToggle();
     }
@@ -24,13 +27,13 @@ $(document).ready(function() {
     }
     return false;
   });
-  $("#packages").load("packages.html", resetPackageLinks);
-
-  if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1 && document.location.protocol == 'file:') {
-    $("#detail").append($("<h2>").addClass("warn").append("Sorry, but the Google Chrome + AJAX + file:-protocol combo doesn't work. <br/>Please use e.g. Firefox instead."));
-  } else {
-    $("#detail").load("summary.html");
-  }
+  $.get('packages.html').success(function(html) {
+    $("#packages").html(html);
+    resetPackageLinks();
+  }).error(function() {
+    showLoadError();
+  });
+  $("#detail").load("summary.html");
 
   $(".filterContainer .post").click(filterCleared);
   $("#filter").keyup(function(evt) {
@@ -74,5 +77,14 @@ function resetPackageLinks() {
   var pkgContents = $(".pkgContent");
   if (pkgContents.size() == 1) {
     pkgContents.show();
+  }
+}
+
+function showLoadError() {
+  $('#load-error').show();
+  if (navigator.userAgent.toLowerCase().indexOf('chrome') > -1 && document.location.protocol == 'file:') {
+    $('#load-error .browser-chrome').show();
+  } else {
+    $('#load-error .browser-other').show();
   }
 }

@@ -8,6 +8,7 @@ td { color: #444; padding: 2px; }
 img { border-style: none; margin: 5px 5px 0 5px; }
 a { text-decoration: none; color: #444; }
 a:hover { text-decoration: underline; }
+a.external { color:blue; }
 td.barContainerRight { width: 210px; }
 td.barContainerLeft { text-align: right; }
 .content { padding: 5px; }
@@ -33,4 +34,5 @@ td.barContainerLeft { text-align: right; }
 .filterContainer .pre { background: url('filter_box_left.png'); float: left; display: block; height: 20px; width: 20px; }
 .filterContainer .post { background: url('filter_box_right.png'); float: left; display: block; height: 20px; width: 20px; cursor: pointer; }
 .classes { border-bottom: 1px solid #aaa; }
-.warn { color: red; margin: 1em; }
+#load-error { display:none; margin: 10px; }
+#load-error .browser-error { display:none; }
