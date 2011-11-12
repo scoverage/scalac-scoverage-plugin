@@ -27,10 +27,10 @@ $(document).ready(function() {
     }
     return false;
   });
-  $.get('packages.html').success(function(html) {
+  $.get('packages.html', '', function(html) {
     $("#packages").html(html);
     resetPackageLinks();
-  }).error(function() {
+  }, 'html').error(function() {
     showLoadError();
   });
   $("#detail").load("summary.html");
