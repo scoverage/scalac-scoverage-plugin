@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/sbt-scct/sbt-scct.iml" filepath="$PROJECT_DIR$/sbt-scct/sbt-scct.iml" />
+      <module fileurl="file://$PROJECT_DIR$/scct/scct.iml" filepath="$PROJECT_DIR$/scct/scct.iml" />
+    </modules>
+  </component>
+</project>
+

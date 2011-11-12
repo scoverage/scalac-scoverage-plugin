@@ -1,3 +1,2 @@
-out/
-scct.ipr
-scct.iws
+/out/
+/.idea/workspace.xml

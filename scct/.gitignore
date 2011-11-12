@@ -1,5 +1,3 @@
-scct.iml
-scct.ipr
 project/boot/
 project/build/target/
 project/plugins/lib_managed/
@@ -9,6 +7,4 @@ project/plugins/target/
 project/sbt_project_definition.iml
 lib_managed/
 target/
-out/
 self-report/
-.idea/
