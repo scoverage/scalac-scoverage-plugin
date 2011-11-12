@@ -1,4 +1,5 @@
 #!/bin/sh
+
 set -e
 pushd scct && sbt clean update publish-local publish
 popd
