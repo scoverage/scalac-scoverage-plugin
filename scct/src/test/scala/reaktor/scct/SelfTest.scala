@@ -4,6 +4,7 @@ import java.lang.String
 import java.io.{FileFilter, File}
 import report.HtmlReporter
 
+/* When running in IntelliJ IDEA, needs basedir as %MODULE_DIR% */
 object SelfTest extends InstrumentationSupport {
   def main(args: Array[String]) = {
     val src = findSources(new File("src/main/scala"))

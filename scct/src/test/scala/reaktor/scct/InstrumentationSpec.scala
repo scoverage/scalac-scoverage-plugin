@@ -32,7 +32,7 @@ trait InstrumentationSpec extends Specification with InstrumentationSupport {
 }
 
 trait InstrumentationSupport {
-  def scalaVersion = "2.9.0-1"
+  def scalaVersion = "2.9.1"
   def debug = false
 
   def compileFile(file: String) = compileFiles(Seq(file) :_*)
@@ -47,10 +47,11 @@ trait InstrumentationSupport {
   def createSettings = {
     val settings = new Settings
     val scalaJars = List("scala-compiler.jar", "scala-library.jar")
-    val classPath = if (System.getProperty("java.class.path").contains("sbt-launch")) {
+    val classPath = if (TestEnv.isSbt) {
       "./target/scala_"+scalaVersion+"/classes" :: scalaJars.map("./project/boot/scala-"+scalaVersion+"/lib/"+_)
     } else {
-      "./out/production/scct" :: scalaJars.map("./project/boot/scala-"+scalaVersion+"/lib/"+_)
+      // Assume IntelliJ IDEA (with base dir as %MODULE_DIR%, which should be $git/scct/):
+      "../out/production/scct" :: scalaJars.map("./project/boot/scala-"+scalaVersion+"/lib/"+_)
     }
     settings.classpath.value = classPath.mkString(":")
     settings

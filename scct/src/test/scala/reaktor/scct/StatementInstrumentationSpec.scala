@@ -134,7 +134,9 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
                            |@z ++= List("wrok")""".stripMargin)
     }
     "not instrument when compiler takes shortcuts" in {
-      classOffsetsMatch("def junk = @{ val i = 1; val j = i; j; }");
+      // Pre-scala 2.9.1, only block (the RHS of def) got instrumented.
+      // scala 2.9.1 instruments inside the block.
+      classOffsetsMatch("def junk = { val i = @1; val j = @i; @j; }");
     }
   }
 
