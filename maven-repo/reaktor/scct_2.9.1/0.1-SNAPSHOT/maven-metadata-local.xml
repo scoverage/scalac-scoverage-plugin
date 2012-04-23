@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>reaktor</groupId>
+  <artifactId>scct_2.9.1</artifactId>
+  <version>0.1-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <localCopy>true</localCopy>
+    </snapshot>
+    <lastUpdated>20120423152958</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>0.1-SNAPSHOT</value>
+        <updated>20120423152958</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>0.1-SNAPSHOT</value>
+        <updated>20120423152958</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>

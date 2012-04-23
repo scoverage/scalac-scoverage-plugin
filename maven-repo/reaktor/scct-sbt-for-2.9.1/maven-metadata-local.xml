@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>reaktor</groupId>
+  <artifactId>scct-sbt-for-2.9.1</artifactId>
+  <versioning>
+    <versions>
+      <version>0.1-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20120423153000</lastUpdated>
+  </versioning>
+</metadata>
