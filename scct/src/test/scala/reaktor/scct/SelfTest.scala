@@ -2,7 +2,7 @@ package reaktor.scct
 
 import java.lang.String
 import java.io.{FileFilter, File}
-import report.HtmlReporter
+import report.{CoberturaReporter, HtmlReporter}
 
 /* When running in IntelliJ IDEA, needs basedir as %MODULE_DIR% */
 object SelfTest extends InstrumentationSupport {
@@ -15,6 +15,7 @@ object SelfTest extends InstrumentationSupport {
     }
     env.reportDir.mkdir
     HtmlReporter.report(plugin.scctComponent.data, env)
+    CoberturaReporter.report(plugin.scctComponent.data, env)
     println("file://"+env.reportDir.getCanonicalPath+"/index.html")
   }
 

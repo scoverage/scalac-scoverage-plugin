@@ -1,7 +1,7 @@
 package reaktor.scct
 
-import report.HtmlReporter
 import java.io.File
+import report.{CoberturaReporter, HtmlReporter}
 
 object Coverage {
   var state = State.New
@@ -51,7 +51,9 @@ object Coverage {
   }
 
   def report = {
-    HtmlReporter.report(data.values.toList, env)
+    val dataList = data.values.toList
+    HtmlReporter.report(dataList, env)
+    CoberturaReporter.report(dataList, env)
   }
 
   private def setupShutdownHook {
