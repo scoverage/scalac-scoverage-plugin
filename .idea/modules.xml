@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/sbt-scct/sbt-scct.iml" filepath="$PROJECT_DIR$/sbt-scct/sbt-scct.iml" />
       <module fileurl="file://$PROJECT_DIR$/scct/scct.iml" filepath="$PROJECT_DIR$/scct/scct.iml" />
+      <module fileurl="file://$PROJECT_DIR$/smoke-test/simple-test/simple-test.iml" filepath="$PROJECT_DIR$/smoke-test/simple-test/simple-test.iml" />
     </modules>
   </component>
 </project>
