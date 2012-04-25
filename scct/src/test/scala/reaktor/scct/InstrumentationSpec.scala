@@ -40,7 +40,15 @@ trait InstrumentationSupport {
     val settings = createSettings
     val command = new CompilerCommand(args.toList, settings)
     val runner = new PluginRunner(settings, debug)
-    (new runner.Run).compile(command.files)
+    try {
+      (new runner.Run).compile(command.files)
+    } catch {
+      case e:scala.tools.nsc.MissingRequirementError => {
+        println("test-fail: Scala compiler is probably not finding scala jars (catch-22).\nFix paths in InstrumentationSpec:createSettings.")
+        throw e
+      }
+      case e:Exception => throw e
+    }
     runner
   }
 
@@ -50,8 +58,10 @@ trait InstrumentationSupport {
     val classPath = if (TestEnv.isSbt) {
       "./target/scala_"+scalaVersion+"/classes" :: scalaJars.map("./project/boot/scala-"+scalaVersion+"/lib/"+_)
     } else {
-      // Assume IntelliJ IDEA (with base dir as %MODULE_DIR%, which should be $git/scct/):
-      "../out/production/scct" :: scalaJars.map("./project/boot/scala-"+scalaVersion+"/lib/"+_)
+      // Assume IntelliJ IDEA with working dir as project root (ie. $git/):
+      "out/production/scct" :: scalaJars.map("./scct/project/boot/scala-"+scalaVersion+"/lib/"+_)
+      // IDEA keeps changing default working dir btw. module and project root btw. versions, last time it was this:
+      // "../out/production/scct" :: scalaJars.map("./project/boot/scala-"+scalaVersion+"/lib/"+_)
     }
     settings.classpath.value = classPath.mkString(":")
     settings
