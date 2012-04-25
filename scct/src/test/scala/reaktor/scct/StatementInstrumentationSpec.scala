@@ -138,6 +138,24 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
       // scala 2.9.1 instruments inside the block.
       classOffsetsMatch("def junk = { val i = @1; val j = @i; @j; }");
     }
+    "compile jestan's case: case class constructor in package object called from separate package" in {
+      offsetsMatch(
+        """|package foo {
+           |  package object common {
+           |    case class Person@()
+           |  }
+           |}
+           |
+           |package bar {
+           |  import foo.common._
+           |  object myRequestVar extends RequestVar[Person](Person())
+           |
+           |}
+           |
+           |abstract class RequestVar[T]@(dflt: => T) {}
+           |
+           |""".stripMargin)
+    }
   }
 
 }
