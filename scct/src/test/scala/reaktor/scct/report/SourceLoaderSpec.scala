@@ -5,18 +5,16 @@ import java.io.File
 
 class SourceLoaderSpec extends Specification {
 
-  val sut = new SourceLoader()
+  val sut = new SourceLoader(new File("src/test/resources"))
 
   "Handle windows line feeds" in {
-    val lines = sut.linesFor(path("WindowsCRLF.scala"))
+    val lines = sut.linesFor("WindowsCRLF.scala")
     lines(0) mustEqual "class Foo { def x = 123\r\n"
   }
 
   "Handle \\n line feeds" in {
-    val lines = sut.linesFor(path("MacOSX.scala"))
+    val lines = sut.linesFor("MacOSX.scala")
     lines(0) mustEqual "class MacFoo { def x = 123\n"
   }
-
-  private def path(f: String) = new File(new File(".", "src/test/resources"), f).getCanonicalPath
 
 }

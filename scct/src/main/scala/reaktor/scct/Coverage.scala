@@ -1,7 +1,7 @@
 package reaktor.scct
 
 import java.io.File
-import report.{CoberturaReporter, HtmlReporter}
+import report._
 
 object Coverage {
   var state = State.New
@@ -51,9 +51,10 @@ object Coverage {
   }
 
   def report = {
-    val dataList = data.values.toList
-    HtmlReporter.report(dataList, env)
-    CoberturaReporter.report(dataList, env)
+    val projectData = new ProjectData(env, data.values.toList)
+    val writer = new HtmlReportWriter(env.reportDir)
+    new HtmlReporter(projectData, writer).report
+    new CoberturaReporter(projectData, writer).report
   }
 
   private def setupShutdownHook {
@@ -106,6 +107,7 @@ class uncovered extends scala.annotation.StaticAnnotation
 
 class Env {
   val projectId = System.getProperty("scct.project.name", "default")
+  val baseDir = new File(System.getProperty("scct.basedir", System.getProperty("user.dir", ".")))
   val reportHook = System.getProperty("scct.report.hook", "shutdown")
   val reportDir = new File(System.getProperty("scct.report.dir", "."))
   /** Where the source files actually start from, so e.g. $PROJECTHOME/src/main/scala/ */

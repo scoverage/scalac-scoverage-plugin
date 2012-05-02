@@ -1,15 +1,11 @@
 package reaktor.scct.report
 
-import reaktor.scct.{CoveredBlock, Env}
+import reaktor.scct.CoveredBlock
 import xml.{PrettyPrinter, NodeSeq}
 
-object CoberturaReporter {
-  def report(blocks: List[CoveredBlock], env: Env) {
-    new CoberturaReporter(new CoverageData(blocks), new HtmlReportWriter(env.reportDir), env).report
-  }
-}
+class CoberturaReporter(project: ProjectData, writer: HtmlReportWriter) {
+  val data = project.coverage
 
-class CoberturaReporter(data: CoverageData, writer: HtmlReportWriter, env: Env) {
   def report {
     val xml = <coverage line-rate={data.rate.getOrElse(0).toString}>
       <packages>
@@ -40,7 +36,7 @@ class CoberturaReporter(data: CoverageData, writer: HtmlReportWriter, env: Env) 
   }
 
   def lines(sourceFile: String, classData: CoverageData) = {
-    val sourceLines = new SourceLoader().linesFor(sourceFile)
+    val sourceLines = project.sourceLoader.linesFor(sourceFile)
     line(1, 0, sourceLines, classData.blocks, NodeSeq.Empty)
   }
 

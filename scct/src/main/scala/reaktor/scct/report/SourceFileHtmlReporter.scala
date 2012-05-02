@@ -6,9 +6,9 @@ import java.io.File
 import annotation.tailrec
 
 object SourceFileHtmlReporter {
-  def report(sourceFile: String, data: CoverageData, env: Env) = {
-    val sourceName = cleanSourceName(sourceFile, env.sourceDir)
-    val lines = new SourceLoader().linesFor(sourceFile)
+  def report(sourceFile: String, data: CoverageData, project: ProjectData) = {
+    val sourceName = cleanSourceName(sourceFile, project.sourceDir)
+    val lines = project.sourceLoader.linesFor(sourceFile)
     new SourceFileHtmlReporter(sourceName, data, lines).report
   }
   def cleanSourceName(sourceFile: String, sourceDir:File) = {

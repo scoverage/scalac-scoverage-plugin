@@ -5,12 +5,8 @@ import io.Source
 import xml.{Text, Node, NodeSeq}
 import reaktor.scct._
 
-object HtmlReporter {
-  def report(blocks: List[CoveredBlock], env: Env) =
-    new HtmlReporter(new CoverageData(blocks), new HtmlReportWriter(env.reportDir), env).report
-}
-
-class HtmlReporter(data: CoverageData, writer: HtmlReportWriter, env: Env) extends HtmlHelper {
+class HtmlReporter(project: ProjectData, writer: HtmlReportWriter) extends HtmlHelper {
+  val data = project.coverage
 
   object files {
     val packages = "packages.html"
@@ -77,7 +73,7 @@ class HtmlReporter(data: CoverageData, writer: HtmlReportWriter, env: Env) exten
   }
   def sourceFileReports {
     for ((sourceFile, sourceData) <- data.forSourceFiles) {
-      val report = SourceFileHtmlReporter.report(sourceFile, sourceData, env)
+      val report = SourceFileHtmlReporter.report(sourceFile, sourceData, project)
       writer.write(sourceReportFileName(sourceFile), report)
     }
   }

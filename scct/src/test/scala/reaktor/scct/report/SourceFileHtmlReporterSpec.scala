@@ -8,8 +8,7 @@ import reaktor.scct.{Env, ClassTypes, Name, CoveredBlock}
 class SourceFileHtmlReporterSpec extends Specification with XmlMatchers {
 
   "Single line formatting" should {
-    val env = new Env
-    val sut = new SourceFileHtmlReporter("src", new CoverageData(Nil), new SourceLoader, env)
+    val sut = new SourceFileHtmlReporter("src", new CoverageData(Nil), List())
 
     "format covered line" in {
       sut.formatLine("my line", 0, blocks((0, true))) must equalIgnoreSpace(Text("my line"))
@@ -29,12 +28,16 @@ class SourceFileHtmlReporterSpec extends Specification with XmlMatchers {
     }
   }
 
-  "Source file name formatting" should {
-    val env = new Env { override val sourceDir = new java.io.File("/my/source/dir") }
-    val sut = new SourceFileHtmlReporter("src", new CoverageData(Nil), new SourceLoader, env)
-
-    "strip base dir and split package and filename." in {
-      sut.sourceFileHeader("//my/source/dir/package/and/Source.scala") mustEqual
+  "Source file name cleanup" should {
+    "strip base dir and cleanup duplicate /es" in {
+      var name = SourceFileHtmlReporter.cleanSourceName("//my/source/dir/package/and//Source.scala", new java.io.File("/my/source/dir"))
+      name mustEqual "package/and/Source.scala"
+    }
+  }
+  "Header rendering" should {
+    val sut = new SourceFileHtmlReporter("package/and/Source.scala", new CoverageData(Nil), List())
+    "render file name" in {
+      sut.sourceFileHeader mustEqual
         sut.zeroSpace ++ Text("package/") ++ sut.zeroSpace ++ Text("and/") ++ <span class="header">{ sut.zeroSpace ++ Text("Source.scala") }</span>
     }
   }
