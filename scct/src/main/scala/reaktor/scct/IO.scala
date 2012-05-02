@@ -22,16 +22,23 @@ trait IO {
     }
   }
 
+  def read[T](file: File)(func: InputStream => T) = {
+    withInputStream(new FileInputStream(file)) { in => func(in) }
+  }
+
+  def write(file: File)(func: OutputStream => Unit) {
+    withOutputStream(new FileOutputStream(file)) { out => func(out) }
+  }
+
+  def readObjects[T](file:File)(func: ObjectInputStream => T) = {
+    read(file) { in => func(new ObjectInputStream(in)) }
+  }
+  def writeObjects(file:File)(func: ObjectOutputStream => Unit) {
+    write(file) { out => func(new ObjectOutputStream(out)) }
+  }
+
   def write(file: File, content: Array[Byte]) {
-    withOutputStream(new FileOutputStream(file)) { out => out.write(content) }
-  }
-
-  def write(fileName: String, content: String) {
-    write(new File(fileName), content.getBytes("utf-8"))
-  }
-
-  def write(file: File, content: String) {
-    write(file, content.getBytes("utf-8"))
+    write(file) { _.write(content) }
   }
 
   def readResource(resourceName: String): String = {

@@ -6,21 +6,11 @@ import annotation.tailrec
 object MetadataPickler {
 
   def toFile(data: List[CoveredBlock], f: File) {
-    toOutputStream(data, new FileOutputStream(f))
-  }
-
-  private def toOutputStream(data: List[CoveredBlock], out: OutputStream) {
-    IO.withOutputStream(new ObjectOutputStream(out)) { o =>
-      data.foreach { o.writeObject _ }
-    }
+    IO.writeObjects(f) { out => data.foreach { out.writeObject _ } }
   }
 
   def load(f: File): List[CoveredBlock] = {
-    fromInputStream(new FileInputStream(f))
-  }
-
-  private def fromInputStream(in: InputStream) = {
-    IO.withInputStream(new ObjectInputStream(in)) { in => readObjects(in, Nil) }
+    IO.readObjects(f) { readObjects(_, Nil) }
   }
 
   @tailrec private def readObjects(in: ObjectInputStream, acc:List[CoveredBlock]): List[CoveredBlock] = {
