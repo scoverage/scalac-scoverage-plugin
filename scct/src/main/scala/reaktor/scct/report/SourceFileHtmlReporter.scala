@@ -6,11 +6,18 @@ import java.io.File
 import annotation.tailrec
 
 object SourceFileHtmlReporter {
-  def report(sourceFile: String, data: CoverageData, env: Env) =
-    new SourceFileHtmlReporter(sourceFile, data, new SourceLoader, env).report
+  def report(sourceFile: String, data: CoverageData, env: Env) = {
+    val sourceName = cleanSourceName(sourceFile, env.sourceDir)
+    val lines = new SourceLoader().linesFor(sourceFile)
+    new SourceFileHtmlReporter(sourceName, data, lines).report
+  }
+  def cleanSourceName(sourceFile: String, sourceDir:File) = {
+    val sourcePathSuffix = IO.relativePath(new File(sourceFile), sourceDir)
+    Some(sourcePathSuffix).map(_.replaceAll("//", "/")).map(s => if (s.startsWith("/")) s.substring(1) else s).get
+  }
 }
 
-class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoader: SourceLoader, env: Env) extends HtmlHelper {
+class SourceFileHtmlReporter(sourceFileName: String, data: CoverageData, lines: List[String]) extends HtmlHelper {
 
   val zeroSpace = Unparsed("&#x200B;")
 
@@ -19,33 +26,28 @@ class SourceFileHtmlReporter(sourceFile: String, data: CoverageData, sourceLoade
   }
 
   def sourceFileTableHeader = {
-    val header = itemRow(sourceFileHeader(sourceFile), data.percentage, "#")
+    val header = itemRow(sourceFileHeader, data.percentage, "#")
     val classRows = classItemRows(data)
     <table class="classes"><tbody>{ header }{ classRows }</tbody></table>
   }
 
-  def sourceFileHeader(sourceFile: String) = {
-    val name = cleanSourceFileName(sourceFile)
-    name.lastIndexOf('/') match {
-      case -1 => <span class="header">{ name }</span>
+  def sourceFileHeader = {
+    sourceFileName.lastIndexOf('/') match {
+      case -1 => <span class="header">{ sourceFileName }</span>
       case idx => {
-        val pkgName = name.substring(0, idx+1)
-        val fileName = name.substring(idx+1)
+        val pkgName = sourceFileName.substring(0, idx+1)
+        val fileName = sourceFileName.substring(idx+1)
         val packages = pkgName.split("/").foldLeft(NodeSeq.Empty) { (nodes, curr) => nodes ++ zeroSpace ++ Text(curr+"/") }
         packages ++ <span class="header">{ zeroSpace ++ Text(fileName) }</span>
       }
     }
   }
-  def cleanSourceFileName(sourceFile: String) = {
-    val sourcePathSuffix = IO.relativePath(new File(sourceFile), env.sourceDir)
-    Some(sourcePathSuffix).map(_.replaceAll("//", "/")).map(s => if (s.startsWith("/")) s.substring(1) else s).get
-  }
 
   def sourceFileTableContent =
-    <table class="source"><tbody>{ sourceLines(sourceFile, data) }</tbody></table>
+    <table class="source"><tbody>{ sourceLines }</tbody></table>
 
-  def sourceLines(sourceFile: String, data: CoverageData): NodeSeq = {
-    sourceLines(1, 0, sourceLoader.linesFor(sourceFile), data.blocks, List[Name](), NodeSeq.Empty)
+  def sourceLines: NodeSeq = {
+    sourceLines(1, 0, lines, data.blocks, List[Name](), NodeSeq.Empty)
   }
 
   @tailrec private def sourceLines(lineNum: Int, offset: Int, lines: List[String], blocks: List[CoveredBlock], usedNames: List[Name], acc: NodeSeq): NodeSeq = {
