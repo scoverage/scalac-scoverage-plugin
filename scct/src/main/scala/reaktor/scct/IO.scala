@@ -6,7 +6,7 @@ import java.io._
 object IO extends IO
 
 trait IO {
-  val workingDir = new File(System.getProperty("user.dir"))
+  val workingDir = new File(System.getProperty("scct.basedir", System.getProperty("user.dir")))
   def withInputStream[A, B <: InputStream](in: B)(func: B => A): A = {
     try {
       func(in)
