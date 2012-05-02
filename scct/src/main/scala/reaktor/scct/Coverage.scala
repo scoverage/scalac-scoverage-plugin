@@ -55,6 +55,7 @@ object Coverage {
     val writer = new HtmlReportWriter(env.reportDir)
     new HtmlReporter(projectData, writer).report
     new CoberturaReporter(projectData, writer).report
+    BinaryReporter.report(projectData, env.reportDir)
   }
 
   private def setupShutdownHook {
