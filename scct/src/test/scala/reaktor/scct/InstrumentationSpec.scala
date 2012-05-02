@@ -59,9 +59,12 @@ trait InstrumentationSupport {
       "./target/scala_"+scalaVersion+"/classes" :: scalaJars.map("./project/boot/scala-"+scalaVersion+"/lib/"+_)
     } else {
       // Assume IntelliJ IDEA with working dir as project root (ie. $git/):
-      "out/production/scct" :: scalaJars.map("./scct/project/boot/scala-"+scalaVersion+"/lib/"+_)
-      // IDEA keeps changing default working dir btw. module and project root btw. versions, last time it was this:
-      // "../out/production/scct" :: scalaJars.map("./project/boot/scala-"+scalaVersion+"/lib/"+_)
+      // IDEA keeps changing default working dir btw. module and project root so checking where we are:
+      if (new File("./src/main/scala").exists) {
+        "../out/production/scct" :: scalaJars.map("./project/boot/scala-"+scalaVersion+"/lib/"+_)
+      } else {
+        "out/production/scct" :: scalaJars.map("./scct/project/boot/scala-"+scalaVersion+"/lib/"+_)
+      }
     }
     settings.classpath.value = classPath.mkString(":")
     settings
