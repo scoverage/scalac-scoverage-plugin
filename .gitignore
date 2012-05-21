@@ -1,2 +1,4 @@
 /out/
 /.idea/workspace.xml
+/.idea/libraries
+/maven-scct-multiproject-report/target

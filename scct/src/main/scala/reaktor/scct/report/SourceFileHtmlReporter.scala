@@ -7,12 +7,13 @@ import annotation.tailrec
 
 object SourceFileHtmlReporter {
   def report(sourceFile: String, data: CoverageData, project: ProjectData) = {
-    val sourceName = cleanSourceName(sourceFile, project.sourceDir)
+    val sourceName = cleanSourceName(sourceFile, project.baseDir, project.sourceDir)
     val lines = project.sourceLoader.linesFor(sourceFile)
     new SourceFileHtmlReporter(sourceName, data, lines).report
   }
-  def cleanSourceName(sourceFile: String, sourceDir:File) = {
-    val sourcePathSuffix = IO.relativePath(new File(sourceFile), sourceDir)
+  def cleanSourceName(sourceFile: String, baseDir:File, sourceDir:File) = {
+    println("clean up: "+sourceFile + "  " + sourceDir.getAbsolutePath)
+    val sourcePathSuffix = IO.relativePath(new File(baseDir, sourceFile), sourceDir)
     Some(sourcePathSuffix).map(_.replaceAll("//", "/")).map(s => if (s.startsWith("/")) s.substring(1) else s).get
   }
 }
