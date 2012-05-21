@@ -62,8 +62,12 @@
       <id>coverage</id>
       <repositories>
         <repository>
-          <id>scct-local-repo</id>
+          <id>scct-repo</id>
+          <!-- locally built version
           <url>file://${basedir}/../../gh-pages/maven-repo</url>
+          -->
+          <!-- deployed version -->
+          <url>http://mtkopone.github.com/scct/maven-repo</url>
         </repository>
       </repositories>
       <dependencies>
