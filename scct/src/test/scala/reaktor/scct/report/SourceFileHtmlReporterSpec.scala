@@ -4,6 +4,7 @@ import org.specs.Specification
 import xml.Text
 import org.specs.matcher.XmlMatchers
 import reaktor.scct.{Env, ClassTypes, Name, CoveredBlock}
+import java.io.File
 
 class SourceFileHtmlReporterSpec extends Specification with XmlMatchers {
 
@@ -30,7 +31,10 @@ class SourceFileHtmlReporterSpec extends Specification with XmlMatchers {
 
   "Source file name cleanup" should {
     "strip base dir and cleanup duplicate /es" in {
-      var name = SourceFileHtmlReporter.cleanSourceName("//my/source/dir/package/and//Source.scala", new java.io.File("/my/source/dir"))
+      val sourceFilePathRelativeToBaseDir = "my/source/dir//package/and//Source.scala"
+      val baseDir = new File("/baseDir")
+      val sourceDir = new File(baseDir, "my/source/dir")
+      val name = SourceFileHtmlReporter.cleanSourceName(sourceFilePathRelativeToBaseDir, baseDir, sourceDir)
       name mustEqual "package/and/Source.scala"
     }
   }
