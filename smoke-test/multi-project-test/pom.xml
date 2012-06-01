@@ -115,7 +115,10 @@
               <execution>
                 <id>main-scalac</id>
                 <configuration>
-                  <jvmArgs><jvmArg>-Dscct.basedir=${project.basedir}</jvmArg></jvmArgs>
+                  <jvmArgs>
+                    <jvmArg>-Dscct.basedir=${project.basedir}</jvmArg>
+                    <jvmArg>-Dscct.project.name=${project.name}</jvmArg>
+                  </jvmArgs>
                   <compilerPlugins>
                     <compilerPlugin>
                       <groupId>reaktor</groupId>

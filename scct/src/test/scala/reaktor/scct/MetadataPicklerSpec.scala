@@ -17,7 +17,7 @@ class MetadataPicklerSpec extends Specification {
       loaded must haveSize(1)
       val b = loaded(0)
       b.id mustEqual "0"
-      b.name mustEqual Name("0", ClassTypes.Class, "0", "0")
+      b.name mustEqual Name("0", ClassTypes.Class, "0", "0", "0")
       b.offset mustEqual 0
       b.placeHolder must beFalse
     }

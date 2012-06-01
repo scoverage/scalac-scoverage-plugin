@@ -32,6 +32,14 @@ class CoverageData(val blocks: List[CoveredBlock]) {
     names.foldLeft(stringMap) { (map, n) => map + (n -> forPackage(n)) }
   }
 
+  private def forProject(projectName: String) =
+    new CoverageData(blocks.filter(_.name.projectName == projectName))
+
+  def forProjects: Map[String, CoverageData] = {
+    val names = blocks.map(_.name.projectName).distinct
+    names.foldLeft(stringMap) { (map, n) => map + (n -> forProject(n)) }
+  }
+
   private def nameMap: SortedMap[Name, CoverageData] = new TreeMap[Name, CoverageData]()
   private def stringMap: SortedMap[String, CoverageData] = new TreeMap[String, CoverageData]()
 

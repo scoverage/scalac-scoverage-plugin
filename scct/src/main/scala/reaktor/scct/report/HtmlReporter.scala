@@ -22,10 +22,26 @@ class HtmlReporter(project: ProjectData, writer: HtmlReportWriter) extends HtmlH
   }
 
   def summaryReport {
-    val header = headerRow("Total", data.percentage)
+    writer.write(files.summary, projectSummaryReport ++ packageSummaryReport)
+  }
+
+  def projectSummaryReport = {
+    val projects = data.forProjects
+    if (projects.size > 1) {
+      val header = headerRow("Total", data.percentage)
+      val items = for ((name, projectData) <- projects) yield
+        headerRow(name, projectData.percentage)
+      table(header, items.toList)
+    } else {
+      val header = headerRow(projects.head._1, data.percentage)
+      table(header, NodeSeq.Empty)
+    }
+  }
+
+  def packageSummaryReport = {
     val items = for ((name, packageData) <- data.forPackages) yield
       itemRow(name, packageData.percentage, packageReportFileName(name))
-    writer.write(files.summary, table(header, items.toList))
+    table(NodeSeq.Empty, items.toList)
   }
 
   def packageListReport {

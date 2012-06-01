@@ -21,6 +21,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
   val phaseName = "scctInstrumentation"
   def newTransformer(unit: CompilationUnit) = new Instrumenter(unit)
 
+  val env = new Env
   var debug = false
   var saveData = true
   var counter = 0L
@@ -35,7 +36,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
     }
     private def saveMetadata {
       if (saveData) {
-        println("scct: Saving coverage data.")
+        println("[" + env.projectId + "] scct: Saving coverage data.")
         if (coverageFile.exists) coverageFile.delete
         MetadataPickler.toFile(data, coverageFile)
       }
@@ -200,9 +201,9 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
   private def createName(owner: Symbol, tree: Tree) = {
     val src = tree.pos.source.file match {
       case null => "<no file>"
-      case f => IO.relativePath(f.file)
+      case f => IO.relativePath(f.file, env.baseDir)
     }
-    Name(src, classType(owner), packageName(tree, owner), className(tree, owner))
+    Name(src, classType(owner), packageName(tree, owner), className(tree, owner), env.projectId)
   }
 
   def className(tree: Tree, owner: Symbol): String = {

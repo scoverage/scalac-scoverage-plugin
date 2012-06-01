@@ -90,13 +90,14 @@ object ClassTypes {
   case object Root extends ClassType
 }
 
-case class Name(sourceFile: String, classType: ClassTypes.ClassType, packageName: String, className: String) extends Ordered[Name] {
+case class Name(sourceFile: String, classType: ClassTypes.ClassType, packageName: String, className: String, projectName:String) extends Ordered[Name] {
   def compare(other: Name) = {
     lazy val classNameDiff = className.compareTo(other.className)
     lazy val classTypeDiff = classType.toString.compareTo(other.classType.toString)
-    if (classNameDiff != 0) classNameDiff else classTypeDiff
+    lazy val projectNameDiff = projectName.compareTo(other.projectName)
+    if (classNameDiff != 0) classNameDiff else if (classTypeDiff != 0) classTypeDiff else projectNameDiff
   }
-  override def toString = packageName+"/"+className+":"+sourceFile
+  override def toString = projectName+":"+packageName+"/"+className+":"+sourceFile
 }
 case class CoveredBlock(id: String, name: Name, offset: Int, placeHolder: Boolean) {
   def this(id: String, name: Name, offset: Int)  = this(id, name, offset, false)
@@ -107,7 +108,8 @@ case class CoveredBlock(id: String, name: Name, offset: Int, placeHolder: Boolea
 class uncovered extends scala.annotation.StaticAnnotation
 
 class Env {
-  val projectId = System.getProperty("scct.project.name", "default")
+  val defaultProjectId = "default"
+  val projectId = System.getProperty("scct.project.name", defaultProjectId)
   val baseDir = new File(System.getProperty("scct.basedir", System.getProperty("user.dir", ".")))
   val reportHook = System.getProperty("scct.report.hook", "shutdown")
   val reportDir = new File(System.getProperty("scct.report.dir", "."))

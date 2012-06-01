@@ -9,6 +9,6 @@ object CoveredBlockGenerator {
     }.toList
   }
   def block(i: Int) = new CoveredBlock(i.toString, blockName(i.toString), i, false)
-  def blockName(s: String) = Name(s, ClassTypes.Class, s, s)
+  def blockName(s: String) = Name(s, ClassTypes.Class, s, s, s)
 
 }

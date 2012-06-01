@@ -47,7 +47,7 @@ class SourceFileHtmlReporterSpec extends Specification with XmlMatchers {
   }
 
   def blocks(offsets: Tuple2[Int, Boolean]*): List[CoveredBlock] = {
-    val name = Name("src", ClassTypes.Class, "pkg", "clazz")
+    val name = Name("src", ClassTypes.Class, "pkg", "clazz", "project")
     val bs = for ((off,hit) <- offsets) yield {
       val b = new CoveredBlock(off.toString, name, off)
       if (hit) b.increment;

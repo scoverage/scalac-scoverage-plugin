@@ -6,7 +6,6 @@ import java.io._
 object IO extends IO
 
 trait IO {
-  val workingDir = new File(System.getProperty("scct.basedir", System.getProperty("user.dir")))
   def withInputStream[A, B <: InputStream](in: B)(func: B => A): A = {
     try {
       func(in)
@@ -72,7 +71,6 @@ trait IO {
     }
   }
 
-  def relativePath(f: File): String = relativePath(f, workingDir)
   def relativePath(f: File, to: File): String = to.toURI.relativize(f.toURI).toString
 
 }
