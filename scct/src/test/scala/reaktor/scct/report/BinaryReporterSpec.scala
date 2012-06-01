@@ -10,7 +10,7 @@ class BinaryReporterSpec extends Specification {
     val tmp = new File(System.getProperty("java.io.tmpdir", "/tmp"))
     val projectData = ProjectData("myProject", new File("/baseDir"), new File("/sourceDir"), blocks(true, false))
     BinaryReporter.report(projectData, tmp)
-    val result = BinaryReporter.read(tmp)
+    val result = BinaryReporter.read(new File(tmp, BinaryReporter.dataFile))
     result.projectId mustEqual "myProject"
     result.baseDir.getAbsolutePath mustEqual "/baseDir"
     result.sourceDir.getAbsolutePath mustEqual "/sourceDir"
