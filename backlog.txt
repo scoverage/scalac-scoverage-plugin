@@ -1,19 +1,23 @@
 IN PROGRESS
 
+Report merging:
+* sbt 0.11/0.12 merge reports support
+* update version info
+* update documentation
+* Give projectNames to Multiproject reporter, so it can
+ 1) generate per-project summary %-ages
+ 2) show project name for source files.
+
 BACKLOG
-* sbt merge reports plugin
 * Location URL from report should restore state
 * memory usage optimizations: load coverage data only for report generation?
 * fold imports in source view?
-* sbt incremental build support? "conditional coverage datafile updating"
-* scala-code html highlighting?
+* sbt/maven incremental build support? "conditional coverage datafile updating"
+* scala-code html highlighting? harrah/browse?
 * multi-threading support?
 * idea plugin
 * eclipse plugin
 * maven plugin to easy configuration
-
-BLOCK
-* reconfigure sbt root project instead of 2 separate projects, prob. impossible until sbt plugin can use 2.8.
 
 DONE
 * Windows support: Use relative paths instead of full ones
