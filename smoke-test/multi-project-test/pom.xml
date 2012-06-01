@@ -35,6 +35,22 @@
   <build>
     <sourceDirectory>src/main/scala</sourceDirectory>
     <testSourceDirectory>src/test/scala</testSourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <reportPlugins>
+            <plugin>
+              <groupId>reaktor.scct</groupId>
+              <artifactId>maven-scct-multiproject-report</artifactId>
+              <version>1.0-SNAPSHOT</version>
+            </plugin>
+          </reportPlugins>
+        </configuration>
+      </plugin>
+    </plugins>
     <pluginManagement>
       <plugins>
         <plugin>
@@ -60,16 +76,6 @@
       </plugins>
     </pluginManagement>
   </build>
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>reaktor.scct</groupId>
-        <artifactId>maven-scct-multiproject-report</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <inherited>false</inherited>
-      </plugin>
-    </plugins>
-  </reporting>
   <profiles>
     <profile>
       <id>coverage</id>

@@ -1,8 +1,6 @@
 package reaktor.scct.maven;
 
 import org.apache.maven.plugin.AbstractMojo;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.reporting.MavenReport;
 import org.apache.maven.reporting.MavenReportException;
@@ -16,24 +14,22 @@ import java.util.Locale;
 
 
 /**
+ * Learned so far:
+ *   Everything in Maven keeps changing the destination directory, so we need both reportOutputDir and destDir to keep it in place.
+ *   The aggregator and phase "annotation" here do pretty much nothing. And depending on the maven repoting configuration wrt v2 and v3, this plugin sometimes gets called for site and sometimes not.
+ *
  * @goal scct-report
+ * @phase site
  * @aggregator
- * @execute phase="generate-sources"
  */
 public class MultiProjectReportMojo extends AbstractMojo implements MavenReport {
 
-  public MultiProjectReportMojo() {
-    System.out.println("MultiProjectReportMojo()");
-  }
+  public MultiProjectReportMojo() {}
 
-  public void execute() throws MojoExecutionException, MojoFailureException {
-    System.out.println("MultiProjectReportMojo:EXECUTE!");
+  public void execute() {
     List<File> files = collectCoverageFiles();
-    for (File f : files) {
-      System.out.println("Coverage: "+f.getAbsolutePath());
-    }
     scala.collection.immutable.List<File> scalaList = scala.collection.JavaConversions.asScalaBuffer(files).toList();
-    MultiProjectHtmlReporter.report(scalaList);
+    MultiProjectHtmlReporter.report(scalaList, reportOutputDirectory);
   }
 
   private List<File> collectCoverageFiles() {
@@ -41,9 +37,7 @@ public class MultiProjectReportMojo extends AbstractMojo implements MavenReport 
     List<File> files = new ArrayList<File>();
     for (MavenProject module : modules) {
       if ("pom".equalsIgnoreCase(module.getPackaging())) continue;
-      // TODO: parametrize file location
       File f = new File(module.getBuild().getDirectory() + "/coverage-report/coverage-result.data").getAbsoluteFile();
-      System.out.println("Haz: " + f.getAbsolutePath()+" "+f.exists());
       if (f.exists()) {
         files.add(f);
       }
@@ -52,11 +46,11 @@ public class MultiProjectReportMojo extends AbstractMojo implements MavenReport 
   }
 
   public void generate(@SuppressWarnings("unused") Sink sink, @SuppressWarnings("unused") Locale locale) throws MavenReportException {
-    System.out.println("MultiProjectReportMojo:BUYACACHA!");
     if (!canGenerateReport()) {
       getLog().warn("No child projects to aggregate report from. Sry.");
       return;
     }
+    execute();
   }
 
 
@@ -65,10 +59,17 @@ public class MultiProjectReportMojo extends AbstractMojo implements MavenReport 
   /**
    * Directory where reports will go.
    *
-   * @parameter expression="${project.reporting.outputDirectory}/coverage-report"
+   * @parameter expression="${reportOutputDirectory}" default-value="${project.reporting.outputDirectory}/coverage-report"
    * @required
    */
-  private File outputDirectory;
+  private File reportOutputDirectory;
+
+
+  /**
+   * Name of the last directory where reports go, under reportOutputDirectory.
+   * @parameter expression="${destDir}" default-value="coverage-report"
+   */
+  private String destDir;
 
   /**
    * @parameter default-value="${project}"
@@ -80,14 +81,28 @@ public class MultiProjectReportMojo extends AbstractMojo implements MavenReport 
   // The rest is boilerplate crap:
 
   public boolean isExternalReport() { return true; }
-  public String getOutputName() { return outputDirectory + "/index.html"; }
+  public String getOutputName() { return reportOutputDirectory + "/index.html"; }
   public String getCategoryName() { return CATEGORY_PROJECT_REPORTS; }
   public String getName(Locale locale) { return "scct-report"; }
   public String getDescription(Locale locale)  { return "scct-report"; }
-  public void setReportOutputDirectory(File file) { outputDirectory = file; }
-  public File getReportOutputDirectory() { return outputDirectory; }
+  public void setDestDir(String destDir) {
+    this.destDir = destDir;
+    setRealOutputDir(reportOutputDirectory, destDir);
+  }
+  public void setReportOutputDirectory(File file) {
+    setRealOutputDir(file, destDir);
+  }
+  public File getReportOutputDirectory() {
+    return reportOutputDirectory;
+  }
+  private void setRealOutputDir(File baseDir, String destDir) {
+    if (baseDir != null && destDir != null && !baseDir.getAbsolutePath().endsWith(destDir)) {
+      this.reportOutputDirectory = new File(baseDir, destDir);
+    } else {
+      this.reportOutputDirectory = baseDir;
+    }
+  }
   public boolean canGenerateReport() {
-    System.out.println("MultiProjectReportMojo:canGenerateReport() "+project.isExecutionRoot() + " " + (project.getCollectedProjects().size() > 0));
     return project.isExecutionRoot() && project.getCollectedProjects().size() > 0;
   }
 
