@@ -1,12 +1,11 @@
 IN PROGRESS
 
 Report merging:
-* sbt 0.11/0.12 merge reports support
-* update version info
+* xsbt11 is messed up -> needs projectname + basedir in scalac-options
+* Add projectName to source files report page?
+* update version to 0.2-SNAPSHOT?
 * update documentation
-* Give projectNames to Multiproject reporter, so it can
- 1) generate per-project summary %-ages
- 2) show project name for source files.
+* sbt 0.11/0.12 merge reports support
 
 BACKLOG
 * Location URL from report should restore state
