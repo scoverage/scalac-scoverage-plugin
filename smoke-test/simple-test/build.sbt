@@ -6,7 +6,8 @@ version := "1.0"
 
 scalaVersion := "2.9.1"
 
-resolvers += "scct-local-repo" at "file://"+baseDirectory+"/../../gh-pages/maven-repo"
+// Using publish-local for now instead:
+// resolvers += "scct-local-repo" at "file://"+baseDirectory+"/../../../gh-pages/maven-repo"
 
 libraryDependencies ++= Seq(
   "junit" % "junit" % "4.10" % "test",

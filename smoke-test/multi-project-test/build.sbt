@@ -1,0 +1,2 @@
+name := "multi-project-test"
+

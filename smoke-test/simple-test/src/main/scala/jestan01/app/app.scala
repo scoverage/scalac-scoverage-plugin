@@ -1,8 +1,6 @@
 package jestan01.app
 
-
-
-package object argh {
+object argh {
   case class Person()
 }
 
