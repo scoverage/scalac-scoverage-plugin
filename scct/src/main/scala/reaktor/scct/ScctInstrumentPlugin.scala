@@ -10,10 +10,41 @@ class ScctInstrumentPlugin(val global: Global) extends Plugin {
   val name = "scct"
   val description = "Scala code coverage instrumentation plugin."
   val runsAfter = List("refchecks")
-  val components = List(new ScctTransformComponent(global))
+
+  val options = new ScctInstrumentPluginOptions()
+  val components = List(new ScctTransformComponent(global, options))
+
+  override def processOptions(opts: List[String], error: String => Unit) {
+    for (opt <- opts) {
+      if (opt.startsWith("projectId:")) {
+        options.projectId = opt.substring("projectId:".length)
+      } else if (opt.startsWith("basedir:")) {
+        options.baseDir = new File(opt.substring("basedir:".length))
+      } else {
+        error("Unknown option: "+opt)
+      }
+    }
+  }
+  override val optionsHelp: Option[String] = Some(
+    "  -P:scct:projectId:<name>          identify compiled classes under project <name>\n" +
+    "  -P:scct:basedir:<dir>             set the root dir of the project being compiled"
+  )
 }
 
-class ScctTransformComponent(val global: Global) extends PluginComponent with TypingTransformers with Transform {
+class ScctInstrumentPluginOptions(var projectId:String, var baseDir:File) {
+  def this() = this(ScctInstrumentPluginOptions.defaultProjectName, ScctInstrumentPluginOptions.defaultBasedir)
+}
+
+object ScctInstrumentPluginOptions {
+  def defaultBasedir = {
+    new File(System.getProperty("scct.basedir", System.getProperty("user.dir", ".")))
+  }
+  def defaultProjectName = {
+    if (defaultBasedir.exists) defaultBasedir.getName else "default"
+  }
+}
+
+class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOptions) extends PluginComponent with TypingTransformers with Transform {
   import global._
   import global.definitions._
   override val runsRightAfter = Some("refchecks")
@@ -21,7 +52,6 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
   val phaseName = "scctInstrumentation"
   def newTransformer(unit: CompilationUnit) = new Instrumenter(unit)
 
-  val env = new Env
   var debug = false
   var saveData = true
   var counter = 0L
@@ -36,7 +66,7 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
     }
     private def saveMetadata {
       if (saveData) {
-        println("[" + env.projectId + "] scct: Saving coverage data.")
+        println("[" + opts.projectId + "] scct: Saving coverage data.")
         if (coverageFile.exists) coverageFile.delete
         MetadataPickler.toFile(data, coverageFile)
       }
@@ -201,9 +231,9 @@ class ScctTransformComponent(val global: Global) extends PluginComponent with Ty
   private def createName(owner: Symbol, tree: Tree) = {
     val src = tree.pos.source.file match {
       case null => "<no file>"
-      case f => IO.relativePath(f.file, env.baseDir)
+      case f => IO.relativePath(f.file, opts.baseDir)
     }
-    Name(src, classType(owner), packageName(tree, owner), className(tree, owner), env.projectId)
+    Name(src, classType(owner), packageName(tree, owner), className(tree, owner), opts.projectId)
   }
 
   def className(tree: Tree, owner: Symbol): String = {

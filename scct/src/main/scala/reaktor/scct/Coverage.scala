@@ -108,8 +108,7 @@ case class CoveredBlock(id: String, name: Name, offset: Int, placeHolder: Boolea
 class uncovered extends scala.annotation.StaticAnnotation
 
 class Env {
-  val defaultProjectId = "default"
-  val projectId = System.getProperty("scct.project.name", defaultProjectId)
+  val projectId = System.getProperty("scct.project.name", "default")
   val baseDir = new File(System.getProperty("scct.basedir", System.getProperty("user.dir", ".")))
   val reportHook = System.getProperty("scct.report.hook", "shutdown")
   val reportDir = new File(System.getProperty("scct.report.dir", "."))

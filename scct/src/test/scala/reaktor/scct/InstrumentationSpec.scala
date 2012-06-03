@@ -163,7 +163,8 @@ trait InstrumentationSupport {
 
 class PluginRunner(settings: Settings, debug: Boolean) extends Global(settings, new ConsoleReporter(settings)) {
   lazy val scctComponent = {
-    val scctTransformer = new ScctTransformComponent(this)
+    val opts = new ScctInstrumentPluginOptions("default", new File(System.getProperty("user.dir", ".")))
+    val scctTransformer = new ScctTransformComponent(this, opts)
     scctTransformer.debug = debug
     scctTransformer.saveData = false
     scctTransformer
