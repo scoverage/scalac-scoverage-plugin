@@ -1,10 +1,10 @@
 package reaktor.scct
 
 import scala.tools.nsc.reporters.ConsoleReporter
-import tools.nsc.{SubComponent, Global, CompilerCommand, Settings}
 import java.io.{File, FileOutputStream}
 import org.specs.matcher.Matcher
 import org.specs.Specification
+import tools.nsc._
 
 trait InstrumentationSpec extends Specification with InstrumentationSupport {
   def instrument = addToSusVerb("instrument")
@@ -54,20 +54,38 @@ trait InstrumentationSupport {
 
   def createSettings = {
     val settings = new Settings
-    val scalaJars = List("scala-compiler.jar", "scala-library.jar")
-    val classPath = if (TestEnv.isSbt) {
-      "./target/scala_"+scalaVersion+"/classes" :: scalaJars.map("./project/boot/scala-"+scalaVersion+"/lib/"+_)
-    } else {
-      // Assume IntelliJ IDEA with working dir as project root (ie. $git/):
-      // IDEA keeps changing default working dir btw. module and project root so checking where we are:
-      if (new File("./src/main/scala").exists) {
-        "../out/production/scct" :: scalaJars.map("./project/boot/scala-"+scalaVersion+"/lib/"+_)
-      } else {
-        "out/production/scct" :: scalaJars.map("./scct/project/boot/scala-"+scalaVersion+"/lib/"+_)
-      }
-    }
+    val classPath = locateCompiledClasses() :: locateScalaJars()
     settings.classpath.value = classPath.mkString(":")
     settings
+  }
+
+  def locateCompiledClasses() = {
+    if (new File("./target/scala_"+scalaVersion+"/classes").exists) {
+      // sbt || IDEA with module dir as working dir
+      "./target/scala_"+scalaVersion+"/classes"
+    } else if (new File("./scct/target/scala_"+scalaVersion+"/classes").exists) {
+      // IDEA, with project dir as working dir
+      "./scct/target/scala_2.9.2/classes"
+    } else {
+      throw new MissingRequirementError("compiled classes not found. Check InstrumentationSpec:locateCompiledClasses")
+    }
+  }
+
+  def locateScalaJars() = {
+    val scalaJars = List("scala-compiler.jar", "scala-library.jar")
+    val userHome = System.getProperty("user.home")
+    if (new File(System.getProperty("user.home") + "/.sbt/boot/scala-"+scalaVersion+"/lib/"+ scalaJars.head).exists) {
+      // sbt 0.11+ with global boot dirs
+      scalaJars.map(userHome + "/.sbt/boot/scala-"+scalaVersion+"/lib/"+_)
+    } else if (new File("./project/boot/scala-"+scalaVersion+"/lib/" + scalaJars.head).exists) {
+      // sbt 0.7.7 and such, project-specific boot dirs
+      scalaJars.map("./project/boot/scala-"+scalaVersion+"/lib/"+_)
+    } else if (new File("./scct/project/boot/scala-"+scalaVersion+"/lib/" + scalaJars.head).exists) {
+      // Probably IDEA with project dir instead of module dir as working dir
+      scalaJars.map("./scct/project/boot/scala-"+scalaVersion+"/lib/"+_)
+    } else {
+      throw new MissingRequirementError("scala jars not found. Check InstrumentationSpec:locateScalaJars")
+    }
   }
 
   def compile(line: String): PluginRunner = {
