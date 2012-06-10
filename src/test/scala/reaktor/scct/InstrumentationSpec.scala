@@ -32,7 +32,7 @@ trait InstrumentationSpec extends Specification with InstrumentationSupport {
 }
 
 trait InstrumentationSupport {
-  def scalaVersion = "2.9.1"
+  def scalaVersion = "2.9.2"
   def debug = false
 
   def compileFile(file: String) = compileFiles(Seq(file) :_*)
