@@ -10,9 +10,9 @@ object SelfTest extends InstrumentationSupport {
     val src = findSources(new File("src/main/scala"))
     val plugin = compileFiles(src :_*)
     val env = new Env {
-      override val baseDir = new File(".")
-      override val sourceDir = new File("src/main/scala")
-      override val reportDir = new File("self-report")
+      override lazy val baseDir = new File(".")
+      override lazy val sourceDir = new File("src/main/scala")
+      override lazy val reportDir = new File("self-report")
     }
     env.reportDir.mkdir
     val projectData = new ProjectData(env, plugin.scctComponent.data)

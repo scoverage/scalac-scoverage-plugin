@@ -20,7 +20,6 @@ object MultiProjectHtmlReporter {
     parentReporter.resources
 
     projects.foreach { p =>
-      // println("Reporting source for project: " + p)
       new HtmlReporter(p, writer).sourceFileReports
     }
   }
