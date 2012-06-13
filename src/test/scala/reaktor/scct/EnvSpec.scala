@@ -15,5 +15,12 @@ class EnvSpec extends Specification with Mockito {
         System.clearProperty(propName)
       }
     }
+    "read from prop file" in {
+      val env = new Env {
+        override val props = Env.envProps("/scct-example.properties")
+      }
+      env.projectId mustEqual "Foobar"
+      env.reportHook mustEqual "shutdown"
+    }
   }
 }

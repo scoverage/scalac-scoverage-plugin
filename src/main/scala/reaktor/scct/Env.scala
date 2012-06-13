@@ -1,11 +1,11 @@
 package reaktor.scct
 
 import java.io.File
+import java.util.Properties
 
 object Env {
   def sysOption(s: String) = {
-    val value = System.getProperty(s)
-    if (value == null) None else Some(value)
+    Option(System.getProperty(s))
   }
   lazy val isSbt = {
     matchSbtClassLoader(getClass.getClassLoader)
@@ -19,16 +19,36 @@ object Env {
       matchSbtClassLoader(cl.getParent)
     }
   }
+
+  def envProps(propertyFileResourceName: String) = {
+    val props = new Properties(sysProps)
+    Option(getClass.getResourceAsStream(propertyFileResourceName)).map(props.load)
+    props
+  }
+
+  def sysProps = {
+    val props = new Properties
+    def put(s: String, d:String) = props.put(s, System.getProperty(s, d))
+    put("scct.project.name", "default")
+    put("scct.basedir", System.getProperty("user.dir", "."))
+    put("scct.report.hook", "shutdown")
+    put("scct.report.dir", ".")
+    put("scct.source.dir", ".")
+    props
+  }
 }
 
 class Env {
-  val projectId = System.getProperty("scct.project.name", "default")
-  val baseDir = new File(System.getProperty("scct.basedir", System.getProperty("user.dir", ".")))
-  val reportHook = System.getProperty("scct.report.hook", "shutdown")
-  val reportDir = new File(System.getProperty("scct.report.dir", "."))
+  val props = Env.envProps("/scct.properties")
+  def prop(x: String) = props.getProperty(x)
+
+  lazy val projectId = prop("scct.project.name")
+  lazy val baseDir = new File(prop("scct.basedir"))
+  lazy val reportHook = prop("scct.report.hook")
+  lazy val reportDir = new File(prop("scct.report.dir"))
 
   /** Where the source files actually start from, so e.g. $PROJECTHOME/src/main/scala/ */
-  val sourceDir = new File(System.getProperty("scct.source.dir", "."))
+  lazy val sourceDir = new File(prop("scct.source.dir"))
 
   def coverageFile = Env.sysOption("scct.coverage.file").map(new File(_)).getOrElse(new File(getClass.getResource("/coverage.data").toURI))
 }

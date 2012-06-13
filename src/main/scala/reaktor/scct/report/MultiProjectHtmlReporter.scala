@@ -6,7 +6,7 @@ import reaktor.scct.Env
 object MultiProjectHtmlReporter {
   def report(files: List[File], multiProjectReportDir: File) {
     val env = new Env {
-      override val reportDir = multiProjectReportDir
+      override lazy val reportDir = multiProjectReportDir
     }
     val writer = new HtmlReportWriter(env.reportDir)
     val projects: List[ProjectData] = files.map(BinaryReporter.read)
