@@ -30,7 +30,7 @@ trait IO {
   }
 
   def readObjects[T](file:File)(func: ObjectInputStream => T) = {
-    read(file) { in => func(new ObjectInputStream(in)) }
+    read(file) { in => func(new ClassLoaderedObjectInputStream(in, this.getClass.getClassLoader)) }
   }
   def writeObjects(file:File)(func: ObjectOutputStream => Unit) {
     write(file) { out => func(new ObjectOutputStream(out)) }
@@ -73,4 +73,10 @@ trait IO {
 
   def relativePath(f: File, to: File): String = to.toURI.relativize(f.toURI).toString
 
+
+  class ClassLoaderedObjectInputStream(in:InputStream, val loader:ClassLoader) extends ObjectInputStream(in) {
+    override def resolveClass(desc: ObjectStreamClass) = {
+      Class.forName(desc.getName(), false, loader)
+    }
+  }
 }

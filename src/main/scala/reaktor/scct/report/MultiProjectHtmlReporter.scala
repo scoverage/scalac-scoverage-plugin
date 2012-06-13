@@ -4,12 +4,12 @@ import java.io.File
 import reaktor.scct.Env
 
 object MultiProjectHtmlReporter {
-  def report(files: List[File], multiProjectReportDir: File) {
+  def report(files: Seq[File], multiProjectReportDir: File) {
     val env = new Env {
       override lazy val reportDir = multiProjectReportDir
     }
     val writer = new HtmlReportWriter(env.reportDir)
-    val projects: List[ProjectData] = files.map(BinaryReporter.read)
+    val projects: List[ProjectData] = files.toList.map(BinaryReporter.read)
 
     val mergedProjectData = new ProjectData(env, projects.flatMap(_.coverage.blocks))
 
