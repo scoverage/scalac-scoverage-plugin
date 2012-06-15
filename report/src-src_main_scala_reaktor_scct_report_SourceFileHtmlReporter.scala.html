@@ -1,0 +1,449 @@
+<table class="classes"><tbody><tr>
+      <td class="barContainerLeft"><a href="#">&#x200B;reaktor/&#x200B;scct/&#x200B;report/<span class="header">&#x200B;SourceFileHtmlReporter.scala</span></a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">34 %</div>
+        <div class="greenBar" style="width:68px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr><tr>
+      <td class="barContainerLeft"><a href="src-src_main_scala_reaktor_scct_report_SourceFileHtmlReporter.scala.html#Class_reaktor_scct_report_SourceFileHtmlReporter"><img src="class.png"></img>SourceFileHtmlReporter</a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">32 %</div>
+        <div class="greenBar" style="width:64px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr><tr>
+      <td class="barContainerLeft"><a href="src-src_main_scala_reaktor_scct_report_SourceFileHtmlReporter.scala.html#Object_reaktor_scct_report_SourceFileHtmlReporter"><img src="object.png"></img>SourceFileHtmlReporter</a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">55 %</div>
+        <div class="greenBar" style="width:110px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr></tbody></table><table class="source"><tbody><tr>
+            <td class="black">1</td>
+            <td>package reaktor.scct.report
+</td>
+          </tr><tr>
+            <td class="black">2</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">3</td>
+            <td>import xml.{Unparsed, NodeSeq, Text}
+</td>
+          </tr><tr>
+            <td class="black">4</td>
+            <td>import reaktor.scct._
+</td>
+          </tr><tr>
+            <td class="black">5</td>
+            <td>import java.io.File
+</td>
+          </tr><tr>
+            <td class="black">6</td>
+            <td>import annotation.tailrec
+</td>
+          </tr><tr>
+            <td class="black">7</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">8</td>
+            <td><a id="Object_reaktor_scct_report_SourceFileHtmlReporter"></a>object SourceFileHtmlReporter {
+</td>
+          </tr><tr>
+            <td class="black">9</td>
+            <td>  def report(sourceFile: String, data: CoverageData, project: ProjectData) = {
+</td>
+          </tr><tr>
+            <td class="red">10</td>
+            <td>    val sourceName = <span class="non">cleanSourceName(sourceFile, project.baseDir, project.sourceDir)
+</span></td>
+          </tr><tr>
+            <td class="red">11</td>
+            <td>    val lines = <span class="non">project.sourceLoader.linesFor(sourceFile)
+</span></td>
+          </tr><tr>
+            <td class="red">12</td>
+            <td>    <span class="non">new SourceFileHtmlReporter(sourceName, data, lines).report
+</span></td>
+          </tr><tr>
+            <td class="black">13</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">14</td>
+            <td>  def cleanSourceName(sourceFile: String, baseDir:File, sourceDir:File) = {
+</td>
+          </tr><tr>
+            <td class="green">15</td>
+            <td>    val sourcePathSuffix = IO.relativePath(new File(baseDir, sourceFile), sourceDir)
+</td>
+          </tr><tr>
+            <td class="yellow">16</td>
+            <td>    Some(sourcePathSuffix).map(_.replaceAll(&quot;//&quot;, &quot;/&quot;)).map(s =&gt; if (s.startsWith(&quot;/&quot;)) <span class="non">s.substring(1) else </span>s).get
+</td>
+          </tr><tr>
+            <td class="black">17</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">18</td>
+            <td>}
+</td>
+          </tr><tr>
+            <td class="black">19</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="green">20</td>
+            <td><a id="Class_reaktor_scct_report_SourceFileHtmlReporter"></a>class SourceFileHtmlReporter(sourceFileName: String, data: CoverageData, lines: List[String]) extends HtmlHelper {
+</td>
+          </tr><tr>
+            <td class="black">21</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="green">22</td>
+            <td>  val zeroSpace = Unparsed(&quot;&amp;#x200B;&quot;)
+</td>
+          </tr><tr>
+            <td class="black">23</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">24</td>
+            <td>  def report = {
+</td>
+          </tr><tr>
+            <td class="red">25</td>
+            <td>    <span class="non">sourceFileTableHeader ++ sourceFileTableContent
+</span></td>
+          </tr><tr>
+            <td class="black">26</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">27</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">28</td>
+            <td>  def sourceFileTableHeader = {
+</td>
+          </tr><tr>
+            <td class="red">29</td>
+            <td>    val header = <span class="non">itemRow(sourceFileHeader, data.percentage, &quot;#&quot;)
+</span></td>
+          </tr><tr>
+            <td class="red">30</td>
+            <td>    val classRows = <span class="non">classItemRows(data)
+</span></td>
+          </tr><tr>
+            <td class="red">31</td>
+            <td>    &lt;<span class="non">table class=&quot;classes&quot;&gt;&lt;tbody&gt;{ header }{ classRows }&lt;/tbody&gt;&lt;/table&gt;
+</span></td>
+          </tr><tr>
+            <td class="black">32</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">33</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">34</td>
+            <td>  def sourceFileHeader = {
+</td>
+          </tr><tr>
+            <td class="green">35</td>
+            <td>    sourceFileName.lastIndexOf('/') match {
+</td>
+          </tr><tr>
+            <td class="red">36</td>
+            <td>      case -1 =&gt; &lt;<span class="non">span class=&quot;header&quot;&gt;{ sourceFileName }&lt;/span&gt;
+</span></td>
+          </tr><tr>
+            <td class="black">37</td>
+            <td>      case idx =&gt; {
+</td>
+          </tr><tr>
+            <td class="green">38</td>
+            <td>        val pkgName = sourceFileName.substring(0, idx+1)
+</td>
+          </tr><tr>
+            <td class="green">39</td>
+            <td>        val fileName = sourceFileName.substring(idx+1)
+</td>
+          </tr><tr>
+            <td class="green">40</td>
+            <td>        val packages = pkgName.split(&quot;/&quot;).foldLeft(NodeSeq.Empty) { (nodes, curr) =&gt; nodes ++ zeroSpace ++ Text(curr+&quot;/&quot;) }
+</td>
+          </tr><tr>
+            <td class="green">41</td>
+            <td>        packages ++ &lt;span class=&quot;header&quot;&gt;{ zeroSpace ++ Text(fileName) }&lt;/span&gt;
+</td>
+          </tr><tr>
+            <td class="black">42</td>
+            <td>      }
+</td>
+          </tr><tr>
+            <td class="black">43</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">44</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">45</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">46</td>
+            <td>  def sourceFileTableContent =
+</td>
+          </tr><tr>
+            <td class="red">47</td>
+            <td>    &lt;<span class="non">table class=&quot;source&quot;&gt;&lt;tbody&gt;{ sourceLines }&lt;/tbody&gt;&lt;/table&gt;
+</span></td>
+          </tr><tr>
+            <td class="black">48</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">49</td>
+            <td>  def sourceLines: NodeSeq = {
+</td>
+          </tr><tr>
+            <td class="red">50</td>
+            <td>    <span class="non">sourceLines(1, 0, lines, data.blocks, List[Name](), NodeSeq.Empty)
+</span></td>
+          </tr><tr>
+            <td class="black">51</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">52</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">53</td>
+            <td>  @tailrec private def sourceLines(lineNum: Int, offset: Int, lines: List[String], blocks: List[CoveredBlock], usedNames: List[Name], acc: NodeSeq): NodeSeq = {
+</td>
+          </tr><tr>
+            <td class="red">54</td>
+            <td>    <span class="non">lines match {
+</span></td>
+          </tr><tr>
+            <td class="red">55</td>
+            <td>      case Nil =&gt; <span class="non">acc
+</span></td>
+          </tr><tr>
+            <td class="black">56</td>
+            <td>      case line :: tail =&gt; {
+</td>
+          </tr><tr>
+            <td class="red">57</td>
+            <td>        val maxOffset = <span class="non">offset + line.length
+</span></td>
+          </tr><tr>
+            <td class="red">58</td>
+            <td>        val (<span class="non">currBlocks, nextBlocks) = blocks.partition(_.offset &lt; maxOffset)
+</span></td>
+          </tr><tr>
+            <td class="red">59</td>
+            <td>        val lineHtml = <span class="non">formatLine(line, offset, currBlocks.filter(!_.placeHolder))
+</span></td>
+          </tr><tr>
+            <td class="red">60</td>
+            <td>        val newNames = <span class="non">currBlocks.map(_.name).filterNot(usedNames.contains).distinct
+</span></td>
+          </tr><tr>
+            <td class="red">61</td>
+            <td>        val newNamesHtml = <span class="non">newNames.map(n =&gt; &lt;a id={toHtmlId(n)}/&gt;)
+</span></td>
+          </tr><tr>
+            <td class="black">62</td>
+            <td>        val rowHtml =
+</td>
+          </tr><tr>
+            <td class="red">63</td>
+            <td>          &lt;<span class="non">tr&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">64</td>
+            <td>            &lt;<span class="non">td class={chooseColor(currBlocks.filter(!_.placeHolder))}&gt;{lineNum}&lt;/td&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">65</td>
+            <td>            &lt;<span class="non">td&gt;{ newNamesHtml }{ lineHtml }&lt;/td&gt;
+</span></td>
+          </tr><tr>
+            <td class="black">66</td>
+            <td>          &lt;/tr&gt;
+</td>
+          </tr><tr>
+            <td class="red">67</td>
+            <td>        <span class="non">sourceLines(lineNum + 1, maxOffset, tail, nextBlocks, usedNames ++ newNames, acc ++ rowHtml)
+</span></td>
+          </tr><tr>
+            <td class="black">68</td>
+            <td>      }
+</td>
+          </tr><tr>
+            <td class="black">69</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">70</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">71</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">72</td>
+            <td>  private def chooseColor(metadatas: List[CoveredBlock]) = {
+</td>
+          </tr><tr>
+            <td class="red">73</td>
+            <td>    <span class="non">metadatas.length match {
+</span></td>
+          </tr><tr>
+            <td class="red">74</td>
+            <td>      case 0 =&gt; <span class="non">&quot;black&quot;
+</span></td>
+          </tr><tr>
+            <td class="black">75</td>
+            <td>      case _ =&gt; {
+</td>
+          </tr><tr>
+            <td class="red">76</td>
+            <td>        val hits = <span class="non">metadatas.filter(_.count &gt; 0).size
+</span></td>
+          </tr><tr>
+            <td class="red">77</td>
+            <td>        if (<span class="non">hits == 0) &quot;red&quot; else if (hits == metadatas.length) &quot;green&quot; else &quot;yellow&quot;
+</span></td>
+          </tr><tr>
+            <td class="black">78</td>
+            <td>      }
+</td>
+          </tr><tr>
+            <td class="black">79</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">80</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">81</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">82</td>
+            <td>  def formatLine(line: String, offset: Int, blocks: List[CoveredBlock]): NodeSeq =
+</td>
+          </tr><tr>
+            <td class="green">83</td>
+            <td>    formatLine(List[Char](), line.toList, offset, true, blocks, NodeSeq.Empty)
+</td>
+          </tr><tr>
+            <td class="black">84</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">85</td>
+            <td>  @tailrec private def formatLine(prevChars: List[Char], line: List[Char], offset: Int, isCovered: Boolean, blocks: List[CoveredBlock], acc: NodeSeq): NodeSeq = {
+</td>
+          </tr><tr>
+            <td class="green">86</td>
+            <td>    blocks match {
+</td>
+          </tr><tr>
+            <td class="green">87</td>
+            <td>      case Nil =&gt; acc ++ formatLinePart(prevChars ::: line, isCovered)
+</td>
+          </tr><tr>
+            <td class="black">88</td>
+            <td>      case block :: tail =&gt; {
+</td>
+          </tr><tr>
+            <td class="green">89</td>
+            <td>        val (currChars, nextChars) = line.splitAt(block.offset - offset)
+</td>
+          </tr><tr>
+            <td class="green">90</td>
+            <td>        if (isCovered == block.count &gt; 0) {
+</td>
+          </tr><tr>
+            <td class="green">91</td>
+            <td>          formatLine(prevChars ::: currChars, nextChars, block.offset, isCovered, tail, acc)
+</td>
+          </tr><tr>
+            <td class="black">92</td>
+            <td>        } else {
+</td>
+          </tr><tr>
+            <td class="green">93</td>
+            <td>          val part = formatLinePart(prevChars ::: currChars, isCovered)
+</td>
+          </tr><tr>
+            <td class="green">94</td>
+            <td>          formatLine(List[Char](), nextChars, block.offset, block.count &gt; 0, tail, acc ++ part)
+</td>
+          </tr><tr>
+            <td class="black">95</td>
+            <td>        }
+</td>
+          </tr><tr>
+            <td class="black">96</td>
+            <td>      }
+</td>
+          </tr><tr>
+            <td class="black">97</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">98</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">99</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">100</td>
+            <td>  private def formatLinePart(part: List[Char], isCovered: Boolean) = {
+</td>
+          </tr><tr>
+            <td class="green">101</td>
+            <td>    val nbsp = &quot;\u00A0\u00A0&quot;
+</td>
+          </tr><tr>
+            <td class="green">102</td>
+            <td>    val tabbed = part.mkString.replaceAll(&quot;\t&quot;, nbsp).replaceAll(&quot;  &quot;, nbsp)
+</td>
+          </tr><tr>
+            <td class="green">103</td>
+            <td>    if (isCovered) Text(tabbed) else &lt;span class=&quot;non&quot;&gt;{ tabbed }&lt;/span&gt;
+</td>
+          </tr><tr>
+            <td class="black">104</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">105</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">106</td>
+            <td>}
+</td>
+          </tr></tbody></table>

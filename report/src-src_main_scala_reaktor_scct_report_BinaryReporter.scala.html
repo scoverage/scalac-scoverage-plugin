@@ -1,0 +1,81 @@
+<table class="classes"><tbody><tr>
+      <td class="barContainerLeft"><a href="#">&#x200B;reaktor/&#x200B;scct/&#x200B;report/<span class="header">&#x200B;BinaryReporter.scala</span></a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr><tr>
+      <td class="barContainerLeft"><a href="src-src_main_scala_reaktor_scct_report_BinaryReporter.scala.html#Object_reaktor_scct_report_BinaryReporter"><img src="object.png"></img>BinaryReporter</a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr></tbody></table><table class="source"><tbody><tr>
+            <td class="black">1</td>
+            <td>package reaktor.scct.report
+</td>
+          </tr><tr>
+            <td class="black">2</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">3</td>
+            <td>import reaktor.scct.IO
+</td>
+          </tr><tr>
+            <td class="black">4</td>
+            <td>import java.io._
+</td>
+          </tr><tr>
+            <td class="black">5</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">6</td>
+            <td><a id="Object_reaktor_scct_report_BinaryReporter"></a>object BinaryReporter {
+</td>
+          </tr><tr>
+            <td class="red">7</td>
+            <td>  val dataFile = <span class="non">&quot;coverage-result.data&quot;
+</span></td>
+          </tr><tr>
+            <td class="black">8</td>
+            <td>  def report(projectData: ProjectData, reportDir: File) {
+</td>
+          </tr><tr>
+            <td class="red">9</td>
+            <td>    val f = <span class="non">new File(reportDir, dataFile)
+</span></td>
+          </tr><tr>
+            <td class="red">10</td>
+            <td>    <span class="non">IO.writeObjects(f) { _.writeObject(projectData) }
+</span></td>
+          </tr><tr>
+            <td class="black">11</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">12</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">13</td>
+            <td>  def read(reportFile: File): ProjectData = {
+</td>
+          </tr><tr>
+            <td class="red">14</td>
+            <td>    <span class="non">IO.readObjects(reportFile) { _.readObject().asInstanceOf[ProjectData] }
+</span></td>
+          </tr><tr>
+            <td class="black">15</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">16</td>
+            <td>}
+</td>
+          </tr></tbody></table>

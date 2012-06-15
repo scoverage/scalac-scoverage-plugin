@@ -1,0 +1,249 @@
+<table class="classes"><tbody><tr>
+      <td class="barContainerLeft"><a href="#">&#x200B;reaktor/&#x200B;scct/&#x200B;report/<span class="header">&#x200B;CoberturaReporter.scala</span></a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr><tr>
+      <td class="barContainerLeft"><a href="src-src_main_scala_reaktor_scct_report_CoberturaReporter.scala.html#Class_reaktor_scct_report_CoberturaReporter"><img src="class.png"></img>CoberturaReporter</a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr></tbody></table><table class="source"><tbody><tr>
+            <td class="black">1</td>
+            <td>package reaktor.scct.report
+</td>
+          </tr><tr>
+            <td class="black">2</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">3</td>
+            <td>import reaktor.scct.CoveredBlock
+</td>
+          </tr><tr>
+            <td class="black">4</td>
+            <td>import xml.{PrettyPrinter, NodeSeq}
+</td>
+          </tr><tr>
+            <td class="black">5</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="red">6</td>
+            <td><a id="Class_reaktor_scct_report_CoberturaReporter"></a>class CoberturaReporter<span class="non">(project: ProjectData, writer: HtmlReportWriter) {
+</span></td>
+          </tr><tr>
+            <td class="red">7</td>
+            <td>  val data = <span class="non">project.coverage
+</span></td>
+          </tr><tr>
+            <td class="black">8</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">9</td>
+            <td>  def report {
+</td>
+          </tr><tr>
+            <td class="red">10</td>
+            <td>    val xml = &lt;<span class="non">coverage line-rate={data.rate.getOrElse(0).toString}&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">11</td>
+            <td>      &lt;<span class="non">packages&gt;
+</span></td>
+          </tr><tr>
+            <td class="black">12</td>
+            <td>        {packages}
+</td>
+          </tr><tr>
+            <td class="black">13</td>
+            <td>      &lt;/packages&gt;
+</td>
+          </tr><tr>
+            <td class="black">14</td>
+            <td>    &lt;/coverage&gt;
+</td>
+          </tr><tr>
+            <td class="red">15</td>
+            <td>    <span class="non">writer.write(&quot;cobertura.xml&quot;, new PrettyPrinter(120, 2).format(xml))
+</span></td>
+          </tr><tr>
+            <td class="black">16</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">17</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">18</td>
+            <td>  def packages = {
+</td>
+          </tr><tr>
+            <td class="red">19</td>
+            <td>    for (<span class="non">(pkg, packageData) &lt;- data.forPackages) yield {
+</span></td>
+          </tr><tr>
+            <td class="red">20</td>
+            <td>      &lt;<span class="non">package line-rate={packageData.rate.getOrElse(0).toString} name={pkg}&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">21</td>
+            <td>        &lt;<span class="non">classes&gt;
+</span></td>
+          </tr><tr>
+            <td class="black">22</td>
+            <td>          {classes(packageData)}
+</td>
+          </tr><tr>
+            <td class="black">23</td>
+            <td>        &lt;/classes&gt;
+</td>
+          </tr><tr>
+            <td class="black">24</td>
+            <td>      &lt;/package&gt;
+</td>
+          </tr><tr>
+            <td class="black">25</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">26</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">27</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">28</td>
+            <td>  def classes(packageData: CoverageData) = {
+</td>
+          </tr><tr>
+            <td class="red">29</td>
+            <td>    for (<span class="non">(clazz, classData) &lt;- packageData.forClasses) yield
+</span></td>
+          </tr><tr>
+            <td class="red">30</td>
+            <td>      &lt;<span class="non">class line-rate={classData.rate.getOrElse(0).toString} name={clazz.className} filename={clazz.sourceFile}&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">31</td>
+            <td>          &lt;<span class="non">methods/&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">32</td>
+            <td>        &lt;<span class="non">lines&gt;
+</span></td>
+          </tr><tr>
+            <td class="black">33</td>
+            <td>          {lines(clazz.sourceFile, classData)}
+</td>
+          </tr><tr>
+            <td class="black">34</td>
+            <td>        &lt;/lines&gt;
+</td>
+          </tr><tr>
+            <td class="black">35</td>
+            <td>      &lt;/class&gt;
+</td>
+          </tr><tr>
+            <td class="black">36</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">37</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">38</td>
+            <td>  def lines(sourceFile: String, classData: CoverageData) = {
+</td>
+          </tr><tr>
+            <td class="red">39</td>
+            <td>    val sourceLines = <span class="non">project.sourceLoader.linesFor(sourceFile)
+</span></td>
+          </tr><tr>
+            <td class="red">40</td>
+            <td>    <span class="non">line(1, 0, sourceLines, classData.blocks, NodeSeq.Empty)
+</span></td>
+          </tr><tr>
+            <td class="black">41</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">42</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">43</td>
+            <td>  def line(num: Int, offset: Int, sourceLines: List[String], blocks: List[CoveredBlock], acc: NodeSeq): NodeSeq =
+</td>
+          </tr><tr>
+            <td class="red">44</td>
+            <td>    <span class="non">sourceLines match {
+</span></td>
+          </tr><tr>
+            <td class="red">45</td>
+            <td>      case Nil =&gt; <span class="non">acc
+</span></td>
+          </tr><tr>
+            <td class="black">46</td>
+            <td>      case sourceLine :: tail =&gt; {
+</td>
+          </tr><tr>
+            <td class="red">47</td>
+            <td>        val maxOffset = <span class="non">offset + sourceLine.length
+</span></td>
+          </tr><tr>
+            <td class="red">48</td>
+            <td>        val (<span class="non">currBlocks, nextBlocks) = blocks.partition(_.offset &lt; maxOffset)
+</span></td>
+          </tr><tr>
+            <td class="red">49</td>
+            <td>        val lineBlocks = <span class="non">currBlocks.filter(!_.placeHolder)
+</span></td>
+          </tr><tr>
+            <td class="red">50</td>
+            <td>        var xml = <span class="non">acc
+</span></td>
+          </tr><tr>
+            <td class="red">51</td>
+            <td>        if (<span class="non">lineBlocks.size != 0) {
+</span></td>
+          </tr><tr>
+            <td class="red">52</td>
+            <td>          val hits = <span class="non">lineBlocks.filter(_.count &gt; 0).size
+</span></td>
+          </tr><tr>
+            <td class="red">53</td>
+            <td>          <span class="non">xml = xml ++ &lt;line number={num.toString} hits={hits.toString}/&gt;
+</span></td>
+          </tr><tr>
+            <td class="black">54</td>
+            <td>        }
+</td>
+          </tr><tr>
+            <td class="red">55</td>
+            <td>        <span class="non">line(num + 1, maxOffset, tail, nextBlocks, xml)
+</span></td>
+          </tr><tr>
+            <td class="black">56</td>
+            <td>      }
+</td>
+          </tr><tr>
+            <td class="black">57</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">58</td>
+            <td>}
+</td>
+          </tr></tbody></table>

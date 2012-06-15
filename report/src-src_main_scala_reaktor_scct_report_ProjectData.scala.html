@@ -1,0 +1,57 @@
+<table class="classes"><tbody><tr>
+      <td class="barContainerLeft"><a href="#">&#x200B;reaktor/&#x200B;scct/&#x200B;report/<span class="header">&#x200B;ProjectData.scala</span></a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr><tr>
+      <td class="barContainerLeft"><a href="src-src_main_scala_reaktor_scct_report_ProjectData.scala.html#Class_reaktor_scct_report_ProjectData"><img src="class.png"></img>ProjectData</a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr></tbody></table><table class="source"><tbody><tr>
+            <td class="black">1</td>
+            <td>package reaktor.scct.report
+</td>
+          </tr><tr>
+            <td class="black">2</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">3</td>
+            <td>import java.io.File
+</td>
+          </tr><tr>
+            <td class="black">4</td>
+            <td>import reaktor.scct.{Env, CoveredBlock}
+</td>
+          </tr><tr>
+            <td class="black">5</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="red">6</td>
+            <td><a id="Class_reaktor_scct_report_ProjectData"></a>case class ProjectData<span class="non">(projectId: String, baseDir: File, sourceDir: File, data:List[CoveredBlock]) {
+</span></td>
+          </tr><tr>
+            <td class="red">7</td>
+            <td>  def this(env: Env, data:List[CoveredBlock]) = <span class="non">this(env.projectId, env.baseDir, env.sourceDir, data)
+</span></td>
+          </tr><tr>
+            <td class="red">8</td>
+            <td>  @transient lazy val coverage = <span class="non">new CoverageData(data)
+</span></td>
+          </tr><tr>
+            <td class="red">9</td>
+            <td>  @transient lazy val sourceLoader = <span class="non">new SourceLoader(baseDir)
+</span></td>
+          </tr><tr>
+            <td class="black">10</td>
+            <td>}
+</td>
+          </tr></tbody></table>

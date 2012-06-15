@@ -1,0 +1,129 @@
+<table class="classes"><tbody><tr>
+      <td class="barContainerLeft"><a href="#">&#x200B;reaktor/&#x200B;scct/&#x200B;report/<span class="header">&#x200B;MultiProjectHtmlReporter.scala</span></a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr><tr>
+      <td class="barContainerLeft"><a href="src-src_main_scala_reaktor_scct_report_MultiProjectHtmlReporter.scala.html#Class_reaktor_scct_report_MultiProjectHtmlReporter"><img src="class.png"></img>MultiProjectHtmlReporter</a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr><tr>
+      <td class="barContainerLeft"><a href="src-src_main_scala_reaktor_scct_report_MultiProjectHtmlReporter.scala.html#Object_reaktor_scct_report_MultiProjectHtmlReporter"><img src="object.png"></img>MultiProjectHtmlReporter</a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr></tbody></table><table class="source"><tbody><tr>
+            <td class="black">1</td>
+            <td>package reaktor.scct.report
+</td>
+          </tr><tr>
+            <td class="black">2</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">3</td>
+            <td>import java.io.File
+</td>
+          </tr><tr>
+            <td class="black">4</td>
+            <td>import reaktor.scct.Env
+</td>
+          </tr><tr>
+            <td class="black">5</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">6</td>
+            <td><a id="Object_reaktor_scct_report_MultiProjectHtmlReporter"></a>object MultiProjectHtmlReporter {
+</td>
+          </tr><tr>
+            <td class="black">7</td>
+            <td>  def report(files: Seq[File], multiProjectReportDir: File) {
+</td>
+          </tr><tr>
+            <td class="red">8</td>
+            <td><a id="Class_reaktor_scct_report_MultiProjectHtmlReporter"></a>    val env = <span class="non">new Env {
+</span></td>
+          </tr><tr>
+            <td class="black">9</td>
+            <td>      override lazy val reportDir = multiProjectReportDir
+</td>
+          </tr><tr>
+            <td class="black">10</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="red">11</td>
+            <td>    val writer = <span class="non">new HtmlReportWriter(env.reportDir)
+</span></td>
+          </tr><tr>
+            <td class="red">12</td>
+            <td>    val projects: List[ProjectData] = <span class="non">files.toList.map(BinaryReporter.read)
+</span></td>
+          </tr><tr>
+            <td class="black">13</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="red">14</td>
+            <td>    val mergedProjectData = <span class="non">new ProjectData(env, projects.flatMap(_.coverage.blocks))
+</span></td>
+          </tr><tr>
+            <td class="black">15</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="red">16</td>
+            <td>    val parentReporter = <span class="non">new HtmlReporter(mergedProjectData, writer)
+</span></td>
+          </tr><tr>
+            <td class="red">17</td>
+            <td>    <span class="non">parentReporter.summaryReport
+</span></td>
+          </tr><tr>
+            <td class="red">18</td>
+            <td>    <span class="non">parentReporter.packageListReport
+</span></td>
+          </tr><tr>
+            <td class="red">19</td>
+            <td>    <span class="non">parentReporter.packageReports
+</span></td>
+          </tr><tr>
+            <td class="red">20</td>
+            <td>    <span class="non">parentReporter.resources
+</span></td>
+          </tr><tr>
+            <td class="black">21</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="red">22</td>
+            <td>    <span class="non">projects.foreach { p =&gt;
+</span></td>
+          </tr><tr>
+            <td class="red">23</td>
+            <td>      <span class="non">new HtmlReporter(p, writer).sourceFileReports
+</span></td>
+          </tr><tr>
+            <td class="black">24</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">25</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">26</td>
+            <td>}
+</td>
+          </tr></tbody></table>

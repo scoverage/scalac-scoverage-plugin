@@ -1,0 +1,133 @@
+<table class="classes"><tbody><tr>
+      <td class="barContainerLeft"><a href="#">&#x200B;reaktor/&#x200B;scct/<span class="header">&#x200B;Debugging.scala</span></a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr><tr>
+      <td class="barContainerLeft"><a href="src-src_main_scala_reaktor_scct_Debugging.scala.html#Object_reaktor_scct_Debugging"><img src="object.png"></img>Debugging</a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr></tbody></table><table class="source"><tbody><tr>
+            <td class="black">1</td>
+            <td>package reaktor.scct
+</td>
+          </tr><tr>
+            <td class="black">2</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">3</td>
+            <td>import java.net.URLClassLoader
+</td>
+          </tr><tr>
+            <td class="black">4</td>
+            <td>import collection.JavaConversions
+</td>
+          </tr><tr>
+            <td class="black">5</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">6</td>
+            <td><a id="Object_reaktor_scct_Debugging"></a>object Debugging {
+</td>
+          </tr><tr>
+            <td class="black">7</td>
+            <td>  def props = {
+</td>
+          </tr><tr>
+            <td class="red">8</td>
+            <td>    <span class="non">&quot;System properties:&quot;+JavaConversions.propertiesAsScalaMap(System.getProperties).map(e =&gt; e._1 + &quot; = &quot; + e._2).mkString(&quot;\n\t&quot;, &quot;\n\t&quot;, &quot;\n&quot;)
+</span></td>
+          </tr><tr>
+            <td class="black">9</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">10</td>
+            <td>  def classPath = {
+</td>
+          </tr><tr>
+            <td class="red">11</td>
+            <td>    <span class="non">&quot;Classpath:&quot;+System.getProperty(&quot;java.class.path&quot;).split(&quot;:&quot;).mkString(&quot;\n\t&quot;, &quot;\n\t&quot;, &quot;\n&quot;)
+</span></td>
+          </tr><tr>
+            <td class="black">12</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">13</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">14</td>
+            <td>  def classLoaders = {
+</td>
+          </tr><tr>
+            <td class="red">15</td>
+            <td>    <span class="non">classLoader(&quot;&quot;, getClass.getClassLoader, List())
+</span></td>
+          </tr><tr>
+            <td class="black">16</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">17</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">18</td>
+            <td>  def classLoader(tab: String, cl: ClassLoader, acc: List[String]): String = {
+</td>
+          </tr><tr>
+            <td class="red">19</td>
+            <td>    if (<span class="non">cl == null) {
+</span></td>
+          </tr><tr>
+            <td class="red">20</td>
+            <td>      <span class="non">acc.reverse.mkString(&quot;\n&quot;)
+</span></td>
+          </tr><tr>
+            <td class="black">21</td>
+            <td>    } else {
+</td>
+          </tr><tr>
+            <td class="red">22</td>
+            <td>      val curr = <span class="non">cl match {
+</span></td>
+          </tr><tr>
+            <td class="red">23</td>
+            <td>        case urlCl: URLClassLoader =&gt; <span class="non">tab + cl.getClass.getName+&quot;:&quot;+urlCl.getURLs.map(_.toString).mkString(&quot;\n\t&quot;+tab, &quot;\n\t&quot;+tab, &quot;\n&quot;)
+</span></td>
+          </tr><tr>
+            <td class="red">24</td>
+            <td>        case _ =&gt; <span class="non">tab + cl.getClass.getName
+</span></td>
+          </tr><tr>
+            <td class="black">25</td>
+            <td>      }
+</td>
+          </tr><tr>
+            <td class="red">26</td>
+            <td>      <span class="non">classLoader(tab + &quot;\t&quot;, cl.getParent, curr :: acc)
+</span></td>
+          </tr><tr>
+            <td class="black">27</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">28</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">29</td>
+            <td>}
+</td>
+          </tr></tbody></table>

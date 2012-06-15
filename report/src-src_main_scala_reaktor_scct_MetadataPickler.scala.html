@@ -1,0 +1,137 @@
+<table class="classes"><tbody><tr>
+      <td class="barContainerLeft"><a href="#">&#x200B;reaktor/&#x200B;scct/<span class="header">&#x200B;MetadataPickler.scala</span></a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr><tr>
+      <td class="barContainerLeft"><a href="src-src_main_scala_reaktor_scct_MetadataPickler.scala.html#Object_reaktor_scct_MetadataPickler"><img src="object.png"></img>MetadataPickler</a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">0 %</div>
+        <div class="greenBar" style="width:0px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr></tbody></table><table class="source"><tbody><tr>
+            <td class="black">1</td>
+            <td>package reaktor.scct
+</td>
+          </tr><tr>
+            <td class="black">2</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">3</td>
+            <td>import java.io._
+</td>
+          </tr><tr>
+            <td class="black">4</td>
+            <td>import annotation.tailrec
+</td>
+          </tr><tr>
+            <td class="black">5</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">6</td>
+            <td><a id="Object_reaktor_scct_MetadataPickler"></a>object MetadataPickler {
+</td>
+          </tr><tr>
+            <td class="black">7</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">8</td>
+            <td>  def toFile(data: List[CoveredBlock], f: File) {
+</td>
+          </tr><tr>
+            <td class="red">9</td>
+            <td>    <span class="non">IO.writeObjects(f) { out =&gt; data.foreach { out.writeObject _ } }
+</span></td>
+          </tr><tr>
+            <td class="black">10</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">11</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">12</td>
+            <td>  def load(f: File): List[CoveredBlock] = {
+</td>
+          </tr><tr>
+            <td class="red">13</td>
+            <td>    <span class="non">IO.readObjects(f) { readObjects(_, Nil) }
+</span></td>
+          </tr><tr>
+            <td class="black">14</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">15</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">16</td>
+            <td>  @tailrec private def readObjects(in: ObjectInputStream, acc:List[CoveredBlock]): List[CoveredBlock] = {
+</td>
+          </tr><tr>
+            <td class="red">17</td>
+            <td>    <span class="non">readObj(in) match {
+</span></td>
+          </tr><tr>
+            <td class="red">18</td>
+            <td>      case None =&gt; <span class="non">acc
+</span></td>
+          </tr><tr>
+            <td class="red">19</td>
+            <td>      case Some(o) =&gt; <span class="non">readObjects(in, o :: acc)
+</span></td>
+          </tr><tr>
+            <td class="black">20</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">21</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">22</td>
+            <td>  def readObj(in: ObjectInputStream): Option[CoveredBlock] = {
+</td>
+          </tr><tr>
+            <td class="black">23</td>
+            <td>    try {
+</td>
+          </tr><tr>
+            <td class="red">24</td>
+            <td>      val obj = <span class="non">in.readObject.asInstanceOf[CoveredBlock]
+</span></td>
+          </tr><tr>
+            <td class="red">25</td>
+            <td>      if (<span class="non">obj != null) Some(obj) else None
+</span></td>
+          </tr><tr>
+            <td class="black">26</td>
+            <td>    } catch {
+</td>
+          </tr><tr>
+            <td class="red">27</td>
+            <td>      case e: EOFException =&gt; <span class="non">None
+</span></td>
+          </tr><tr>
+            <td class="black">28</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">29</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">30</td>
+            <td>}
+</td>
+          </tr></tbody></table>

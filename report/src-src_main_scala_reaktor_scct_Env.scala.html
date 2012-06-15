@@ -1,0 +1,245 @@
+<table class="classes"><tbody><tr>
+      <td class="barContainerLeft"><a href="#">&#x200B;reaktor/&#x200B;scct/<span class="header">&#x200B;Env.scala</span></a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">62 %</div>
+        <div class="greenBar" style="width:124px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr><tr>
+      <td class="barContainerLeft"><a href="src-src_main_scala_reaktor_scct_Env.scala.html#Class_reaktor_scct_Env"><img src="class.png"></img>Env</a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">50 %</div>
+        <div class="greenBar" style="width:100px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr><tr>
+      <td class="barContainerLeft"><a href="src-src_main_scala_reaktor_scct_Env.scala.html#Object_reaktor_scct_Env"><img src="object.png"></img>Env</a></td>
+      <td class="barContainerRight"><div class="percentages">
+      <div class="bar">
+        <div class="percentage">68 %</div>
+        <div class="greenBar" style="width:136px;">&nbsp;</div>
+      </div>
+    </div></td>
+    </tr></tbody></table><table class="source"><tbody><tr>
+            <td class="black">1</td>
+            <td>package reaktor.scct
+</td>
+          </tr><tr>
+            <td class="black">2</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">3</td>
+            <td>import java.io.File
+</td>
+          </tr><tr>
+            <td class="black">4</td>
+            <td>import java.util.Properties
+</td>
+          </tr><tr>
+            <td class="black">5</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">6</td>
+            <td><a id="Object_reaktor_scct_Env"></a>object Env {
+</td>
+          </tr><tr>
+            <td class="black">7</td>
+            <td>  def sysOption(s: String) = {
+</td>
+          </tr><tr>
+            <td class="green">8</td>
+            <td>    Option(System.getProperty(s))
+</td>
+          </tr><tr>
+            <td class="black">9</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">10</td>
+            <td>  lazy val isSbt = {
+</td>
+          </tr><tr>
+            <td class="red">11</td>
+            <td>    <span class="non">matchSbtClassLoader(getClass.getClassLoader)
+</span></td>
+          </tr><tr>
+            <td class="black">12</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">13</td>
+            <td>  def matchSbtClassLoader(cl: ClassLoader): Boolean = {
+</td>
+          </tr><tr>
+            <td class="red">14</td>
+            <td>    if (<span class="non">cl == null) {
+</span></td>
+          </tr><tr>
+            <td class="red">15</td>
+            <td>      <span class="non">false
+</span></td>
+          </tr><tr>
+            <td class="red">16</td>
+            <td>    } else if (<span class="non">cl.getClass.getName == &quot;xsbt.DualLoader&quot;) {
+</span></td>
+          </tr><tr>
+            <td class="red">17</td>
+            <td>      <span class="non">true
+</span></td>
+          </tr><tr>
+            <td class="black">18</td>
+            <td>    } else {
+</td>
+          </tr><tr>
+            <td class="red">19</td>
+            <td>      <span class="non">matchSbtClassLoader(cl.getParent)
+</span></td>
+          </tr><tr>
+            <td class="black">20</td>
+            <td>    }
+</td>
+          </tr><tr>
+            <td class="black">21</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">22</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">23</td>
+            <td>  def envProps(propertyFileResourceName: String) = {
+</td>
+          </tr><tr>
+            <td class="green">24</td>
+            <td>    val props = new Properties(sysProps)
+</td>
+          </tr><tr>
+            <td class="green">25</td>
+            <td>    Option(getClass.getResourceAsStream(propertyFileResourceName)).map(props.load)
+</td>
+          </tr><tr>
+            <td class="green">26</td>
+            <td>    props
+</td>
+          </tr><tr>
+            <td class="black">27</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">28</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">29</td>
+            <td>  def sysProps = {
+</td>
+          </tr><tr>
+            <td class="green">30</td>
+            <td>    val props = new Properties
+</td>
+          </tr><tr>
+            <td class="green">31</td>
+            <td>    def put(s: String, d:String) = props.put(s, System.getProperty(s, d))
+</td>
+          </tr><tr>
+            <td class="green">32</td>
+            <td>    put(&quot;scct.project.name&quot;, &quot;default&quot;)
+</td>
+          </tr><tr>
+            <td class="green">33</td>
+            <td>    put(&quot;scct.basedir&quot;, System.getProperty(&quot;user.dir&quot;, &quot;.&quot;))
+</td>
+          </tr><tr>
+            <td class="green">34</td>
+            <td>    put(&quot;scct.report.hook&quot;, &quot;shutdown&quot;)
+</td>
+          </tr><tr>
+            <td class="green">35</td>
+            <td>    put(&quot;scct.report.dir&quot;, &quot;.&quot;)
+</td>
+          </tr><tr>
+            <td class="green">36</td>
+            <td>    put(&quot;scct.source.dir&quot;, &quot;.&quot;)
+</td>
+          </tr><tr>
+            <td class="green">37</td>
+            <td>    props
+</td>
+          </tr><tr>
+            <td class="black">38</td>
+            <td>  }
+</td>
+          </tr><tr>
+            <td class="black">39</td>
+            <td>}
+</td>
+          </tr><tr>
+            <td class="black">40</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="green">41</td>
+            <td><a id="Class_reaktor_scct_Env"></a>class Env {
+</td>
+          </tr><tr>
+            <td class="green">42</td>
+            <td>  val props = Env.envProps(&quot;/scct.properties&quot;)
+</td>
+          </tr><tr>
+            <td class="green">43</td>
+            <td>  def prop(x: String) = props.getProperty(x)
+</td>
+          </tr><tr>
+            <td class="black">44</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="green">45</td>
+            <td>  lazy val projectId = prop(&quot;scct.project.name&quot;)
+</td>
+          </tr><tr>
+            <td class="red">46</td>
+            <td>  lazy val baseDir = <span class="non">new File(prop(&quot;scct.basedir&quot;))
+</span></td>
+          </tr><tr>
+            <td class="green">47</td>
+            <td>  lazy val reportHook = prop(&quot;scct.report.hook&quot;)
+</td>
+          </tr><tr>
+            <td class="red">48</td>
+            <td>  lazy val reportDir = <span class="non">new File(prop(&quot;scct.report.dir&quot;))
+</span></td>
+          </tr><tr>
+            <td class="black">49</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="black">50</td>
+            <td>  /** Where the source files actually start from, so e.g. $PROJECTHOME/src/main/scala/ */
+</td>
+          </tr><tr>
+            <td class="red">51</td>
+            <td>  lazy val sourceDir = <span class="non">new File(prop(&quot;scct.source.dir&quot;))
+</span></td>
+          </tr><tr>
+            <td class="black">52</td>
+            <td>
+</td>
+          </tr><tr>
+            <td class="red">53</td>
+            <td>  def coverageFile = <span class="non">Env.sysOption(&quot;scct.coverage.file&quot;).map(new File(_)).getOrElse(new File(getClass.getResource(&quot;/coverage.data&quot;).toURI))
+</span></td>
+          </tr><tr>
+            <td class="black">54</td>
+            <td>}
+</td>
+          </tr><tr>
+            <td class="black">55</td>
+            <td>
+</td>
+          </tr></tbody></table>
