@@ -1,11 +1,15 @@
 IN PROGRESS
 
-Report merging:
-* xsbt11 is messed up -> needs projectname + basedir in scalac-options
-* Add projectName to source files report page?
-* update version to 0.2-SNAPSHOT?
+* crossbuild scct
+* crossbuild sbt-scct
+* test with older sbt's
 * update documentation
-* sbt 0.11/0.12 merge reports support
+
+* publish with checksums
+* update scct build to sbt 0.13?
+** then can get checksums for "free".
+
+* merge: Add projectName to source files report page?
 
 BACKLOG
 * Location URL from report should restore state
@@ -19,6 +23,9 @@ BACKLOG
 * maven plugin to easy configuration
 
 DONE
+* sbt 0.13 merge reports support
+* update version to 0.2-SNAPSHOT?
+* merge: xsbt11 is messed up -> needs projectname + basedir in scalac-options
 * Windows support: Use relative paths instead of full ones
 ** pkg-<root>.html is an invalid filename on windows
 ** root path "" is wrong on windows
