@@ -60,14 +60,17 @@ trait InstrumentationSupport {
   }
 
   def locateCompiledClasses() = {
-    if (new File("./target/scala_"+scalaVersion+"/classes").exists) {
+    val first = new File("./target/scala-"+scalaVersion+"/classes")
+    val second = new File("./scct/target/scala-"+scalaVersion+"/classes")
+    if (first.exists) {
       // sbt || IDEA with module dir as working dir
-      "./target/scala_"+scalaVersion+"/classes"
-    } else if (new File("./scct/target/scala_"+scalaVersion+"/classes").exists) {
+      "./target/scala-"+scalaVersion+"/classes"
+    } else if (second.exists) {
       // IDEA, with project dir as working dir
-      "./scct/target/scala_2.9.2/classes"
+      "./scct/target/scala-"+scalaVersion+"/classes"
     } else {
-      throw new MissingRequirementError("compiled classes not found. Check InstrumentationSpec:locateCompiledClasses")
+      val err = "Compiled classes not found. Looked in " + first.getAbsolutePath + " and " + second.getAbsolutePath
+      throw new MissingRequirementError(err+ " Check InstrumentationSpec:locateCompiledClasses")
     }
   }
 
