@@ -1,17 +1,11 @@
 IN PROGRESS
 
-* crossbuild scct
 * crossbuild sbt-scct
 * test with older sbt's
 * update documentation
 
-* publish with checksums
-* update scct build to sbt 0.13?
-** then can get checksums for "free".
-
-* merge: Add projectName to source files report page?
-
 BACKLOG
+* merge: Add projectName to source files report page?
 * Location URL from report should restore state
 * memory usage optimizations: load coverage data only for report generation?
 * fold imports in source view?
