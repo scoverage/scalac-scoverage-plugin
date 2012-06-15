@@ -1,21 +1,25 @@
 IN PROGRESS
 
+* crossbuild sbt-scct
+* test with older sbt's
+* update documentation
+
 BACKLOG
-* sbt merge reports plugin
+* merge: Add projectName to source files report page?
 * Location URL from report should restore state
 * memory usage optimizations: load coverage data only for report generation?
 * fold imports in source view?
-* sbt incremental build support? "conditional coverage datafile updating"
-* scala-code html highlighting?
+* sbt/maven incremental build support? "conditional coverage datafile updating"
+* scala-code html highlighting? harrah/browse?
 * multi-threading support?
 * idea plugin
 * eclipse plugin
 * maven plugin to easy configuration
 
-BLOCK
-* reconfigure sbt root project instead of 2 separate projects, prob. impossible until sbt plugin can use 2.8.
-
 DONE
+* sbt 0.13 merge reports support
+* update version to 0.2-SNAPSHOT?
+* merge: xsbt11 is messed up -> needs projectname + basedir in scalac-options
 * Windows support: Use relative paths instead of full ones
 ** pkg-<root>.html is an invalid filename on windows
 ** root path "" is wrong on windows
