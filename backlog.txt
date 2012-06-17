@@ -1,8 +1,6 @@
 IN PROGRESS
 
-* crossbuild sbt-scct
-* test with older sbt's
-* update documentation
+* update documentation for 0.2
 
 BACKLOG
 * merge: Add projectName to source files report page?
