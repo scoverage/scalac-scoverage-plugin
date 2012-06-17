@@ -81,15 +81,15 @@ object Coverage {
 }
 
 object ClassTypes {
-  sealed abstract class ClassType extends Serializable
-  case object Class extends ClassType
-  case object Trait extends ClassType
-  case object Object extends ClassType
-  case object Package extends ClassType
-  case object Root extends ClassType
+  @SerialVersionUID(1L) sealed abstract class ClassType extends Serializable
+  @SerialVersionUID(1L) case object Class extends ClassType
+  @SerialVersionUID(1L) case object Trait extends ClassType
+  @SerialVersionUID(1L) case object Object extends ClassType
+  @SerialVersionUID(1L) case object Package extends ClassType
+  @SerialVersionUID(1L) case object Root extends ClassType
 }
 
-case class Name(sourceFile: String, classType: ClassTypes.ClassType, packageName: String, className: String, projectName:String) extends Ordered[Name] {
+@SerialVersionUID(1L) case class Name(sourceFile: String, classType: ClassTypes.ClassType, packageName: String, className: String, projectName:String) extends Ordered[Name] {
   def compare(other: Name) = {
     lazy val classNameDiff = className.compareTo(other.className)
     lazy val classTypeDiff = classType.toString.compareTo(other.classType.toString)
@@ -98,7 +98,8 @@ case class Name(sourceFile: String, classType: ClassTypes.ClassType, packageName
   }
   override def toString = projectName+":"+packageName+"/"+className+":"+sourceFile
 }
-case class CoveredBlock(id: String, name: Name, offset: Int, placeHolder: Boolean) {
+
+@SerialVersionUID(1L) case class CoveredBlock(id: String, name: Name, offset: Int, placeHolder: Boolean) {
   def this(id: String, name: Name, offset: Int)  = this(id, name, offset, false)
   var count = 0
   @uncovered def increment = { count = count + 1; this }
