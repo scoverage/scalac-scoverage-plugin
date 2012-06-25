@@ -1,9 +1,8 @@
 package reaktor.scct
 
-import org.specs.mock.Mockito
-import org.specs.Specification
+import org.specs2.mutable._
 
-class EnvSpec extends Specification with Mockito {
+class EnvSpec extends Specification {
   "Env" should {
     "provide Option[String]'s" in {
       val propName = "scct.test."+System.currentTimeMillis

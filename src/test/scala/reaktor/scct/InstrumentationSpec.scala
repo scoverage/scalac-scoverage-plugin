@@ -2,26 +2,25 @@ package reaktor.scct
 
 import scala.tools.nsc.reporters.ConsoleReporter
 import java.io.{File, FileOutputStream}
-import org.specs.matcher.Matcher
-import org.specs.Specification
+import org.specs2.matcher.{Expectable, Matcher}
+import org.specs2.mutable._
 import tools.nsc._
 
 trait InstrumentationSpec extends Specification with InstrumentationSupport {
-  def instrument = addToSusVerb("instrument")
 
-  def classOffsetsMatch(s: String) {
+  def classOffsetsMatch(s: String) = {
     offsetsMatch("class Foo@(x: Int) {\n  "+s+"\n}")
   }
-  def defOffsetsMatch(s: String) {
+  def defOffsetsMatch(s: String) = {
     offsetsMatch("class Foo@(x: Int) {\n  def foo {\n    "+s+"\n  }\n}")
   }
-  def offsetsMatch(s: String) {
-    offsetsMatch(parse(0, s, InstrumentationSpec("", Nil)), false)
+  def offsetsMatch(s: String) = {
+    _offsetsMatch(parse(0, s, InstrumentationSpec("", Nil)), false)
   }
-  def placeHoldersMatch(s: String) {
-    offsetsMatch(parse(0, s, InstrumentationSpec("", Nil)), true)
+  def placeHoldersMatch(s: String) = {
+    _offsetsMatch(parse(0, s, InstrumentationSpec("", Nil)), true)
   }
-  def offsetsMatch(spec: InstrumentationSpec, placeHoldersOnly: Boolean) {
+  def _offsetsMatch(spec: InstrumentationSpec, placeHoldersOnly: Boolean) = {
     val resultOffsets = compileToData(spec.source).filter(x => placeHoldersOnly == x.placeHolder).map(_.offset)
     resultOffsets must matchSpec(spec)
   }
@@ -135,8 +134,16 @@ trait InstrumentationSupport {
 
   case class matchSpec(spec: InstrumentationSpec) extends Matcher[List[Int]]() {
     def toS(l: Seq[Int]) = l.mkString("[",",","]")
-    def apply(v: => List[Int]) = (v == spec.expectedOffsets, "ok",
-            "Offset mismatch: %s != %s\n\n%s\n - doesn't match expected - \n\n%s".format(toS(v), toS(spec.expectedOffsets), printOffsets(v, spec.source), printOffsets(spec.expectedOffsets, spec.source)))
+
+    def apply[S <: List[Int]](s: Expectable[S]) = result(
+      s.value == spec.expectedOffsets,
+      "ok",
+      "Offset mismatch: %s != %s\n\n%s\n - doesn't match expected - \n\n%s".format(
+        toS(s.value), toS(spec.expectedOffsets),
+        printOffsets(s.value, spec.source), printOffsets(spec.expectedOffsets, spec.source)
+      ),
+      s
+    )
   }
 
   case class InstrumentationSpec(source: String, expectedOffsets: List[Int]) {

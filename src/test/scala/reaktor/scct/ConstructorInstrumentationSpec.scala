@@ -2,7 +2,7 @@ package reaktor.scct
 
 class ConstructorInstrumentationSpec extends InstrumentationSpec {
 
-  "Constructor instrumentation" should instrument {
+  "Constructor instrumentation" should {
     "basic auxiliary constructors" in {
       offsetsMatch("class Foo@(x: Int) { def this(s: String) = @this(s.toInt) }")
     }
@@ -47,9 +47,7 @@ class ConstructorInstrumentationSpec extends InstrumentationSpec {
     }
   }
 
-  val workFor = addToSusVerb("workFor")
-
-  "Not messing about with the super call in constructors" should workFor {
+  "Not messing about with the super call in constructors should work for" should {
     "basic extending constructor" in {
       val src = "class Obj(y: String)"
       val stats = digOutConstructorStats(compileSource(src))

@@ -1,6 +1,6 @@
 package reaktor.scct.report
 
-import org.specs.Specification
+import org.specs2.mutable._
 import java.io.File
 
 class BinaryReporterSpec extends Specification {

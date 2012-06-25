@@ -1,7 +1,7 @@
 package reaktor.scct
 
-import org.specs.Specification
-import org.specs.mock.Mockito
+import org.specs2.mutable._
+import org.specs2.mock._
 import tools.nsc.Global
 
 class ScctInstrumentPluginSpec extends Specification with Mockito {

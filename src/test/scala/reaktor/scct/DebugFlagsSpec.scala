@@ -1,6 +1,6 @@
 package reaktor.scct
 
-import org.specs.Specification
+import org.specs2.mutable._
 import tools.nsc.symtab.Flags
 
 class DebugFlagsSpec extends Specification {

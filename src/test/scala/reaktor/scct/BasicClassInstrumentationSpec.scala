@@ -1,7 +1,7 @@
 package reaktor.scct
 
 class BasicClassInstrumentationSpec extends InstrumentationSpec {
-  "Basic template instrumentation" should instrument {
+  "Basic template instrumentation" should {
     "basic class" in {
       offsetsMatch("class Fo@o") // TODO: how is the offset there?
       offsetsMatch("class Foo @{}")
@@ -56,7 +56,7 @@ class BasicClassInstrumentationSpec extends InstrumentationSpec {
     }
   }
 
-  "Class instrumentation" should instrument {
+  "Class instrumentation" should {
     "basic fixed declarations" in {
       classOffsetsMatch("val z = @12;")
       classOffsetsMatch("var z = @12;")
@@ -118,13 +118,13 @@ class BasicClassInstrumentationSpec extends InstrumentationSpec {
     }
   }
 
-  "Case class instrumentation" should instrument {
+  "Case class instrumentation" should {
     "overriden generated methods" in {
       offsetsMatch("case class Foo @{ override def hashCode = @999 }")
     }
   }
 
-  "asInstanceOf" should instrument {
+  "asInstanceOf" should {
     "normally" in {
       classOffsetsMatch("""val foo = @"x".asInstanceOf[scala.xml.Node]""")
       classOffsetsMatch("""def foo = @"x".asInstanceOf[scala.xml.Node]""")

@@ -1,31 +1,30 @@
 package reaktor.scct.report
 
-import org.specs.Specification
+import org.specs2.mutable._
 import xml.Text
-import org.specs.matcher.XmlMatchers
 import reaktor.scct.{Env, ClassTypes, Name, CoveredBlock}
 import java.io.File
 
-class SourceFileHtmlReporterSpec extends Specification with XmlMatchers {
+class SourceFileHtmlReporterSpec extends Specification {
 
   "Single line formatting" should {
     val sut = new SourceFileHtmlReporter("src", new CoverageData(Nil), List())
 
     "format covered line" in {
-      sut.formatLine("my line", 0, blocks((0, true))) must equalIgnoreSpace(Text("my line"))
-      sut.formatLine("my line", 0, blocks((1, true))) must equalIgnoreSpace(Text("my line"))
+      sut.formatLine("my line", 0, blocks((0, true))) must beEqualToIgnoringSpace(Text("my line"))
+      sut.formatLine("my line", 0, blocks((1, true))) must beEqualToIgnoringSpace(Text("my line"))
     }
     "format non-covered line" in {
-      sut.formatLine("my line", 0, blocks((0, false))) must equalIgnoreSpace(<span class="non">my line</span>)
+      sut.formatLine("my line", 0, blocks((0, false))) must beEqualToIgnoringSpace(<span class="non">my line</span>)
     }
     "format partially covered line" in {
       val result = Text("my ") ++ <span class="non">line</span>
-      sut.formatLine("my line", 0, blocks((0, true), (3, false))) must equalIgnoreSpace(result)
-      sut.formatLine("my line", 0, blocks((3, false))) must equalIgnoreSpace(result)
+      sut.formatLine("my line", 0, blocks((0, true), (3, false))) must beEqualToIgnoringSpace(result)
+      sut.formatLine("my line", 0, blocks((3, false))) must beEqualToIgnoringSpace(result)
     }
     "format more partially covered line" in {
       val html = sut.formatLine("my somewhat longer line", 0, blocks((3, false), (12, true), (19, false)))
-      html must equalIgnoreSpace(Text("my ") ++ <span class="non">somewhat </span> ++ Text("longer ") ++ <span class="non">line</span>)
+      html must beEqualToIgnoringSpace(Text("my ") ++ <span class="non">somewhat </span> ++ Text("longer ") ++ <span class="non">line</span>)
     }
   }
 

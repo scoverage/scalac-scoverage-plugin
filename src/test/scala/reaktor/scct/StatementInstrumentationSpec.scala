@@ -1,7 +1,7 @@
 package reaktor.scct
 
 class StatementInstrumentationSpec extends InstrumentationSpec {
-  "If instrumentation" should instrument {
+  "If instrumentation" should {
     "hardcoded if's" in {
       classOffsetsMatch("if (true) @println(x)")
       defOffsetsMatch("if (true) @println(x)")
@@ -26,7 +26,7 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
     }
   }
 
-  "Return instrumentation" should instrument {
+  "Return instrumentation" should {
     "return in method" in {
       classOffsetsMatch("def foo(z: Int): Boolean = { @println(z.toString); @return z % 2 == 0 }")
     }
@@ -40,7 +40,7 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
     }
   }
 
-  "While/doWhile instrumentation" should instrument {
+  "While/doWhile instrumentation" should {
     "basic while" in {
       classOffsetsMatch("var z = @0; while (@z < 5) @z += 1")
       classOffsetsMatch("var z = @0; while (@z < 5) { @println(z); @z += 1 }")
@@ -53,7 +53,7 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
     }
   }
 
-  "Match/case instrumentation" should instrument {
+  "Match/case instrumentation" should {
     "basic match" in {
       classOffsetsMatch("""val z = @x match { case 1 => @"one"; case 2 => @"two"; case _ => @throw new Exception() }""")
     }
@@ -69,7 +69,7 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
     }
   }
 
-  "Exception instrumentation" should instrument {
+  "Exception instrumentation" should {
     "basic try/catch/finally" in {
       defOffsetsMatch("try { @100 / x } catch { case e => @println(\"ouch\") } finally { @println(\"done\") }")
       defOffsetsMatch("try { @super.hashCode } catch { case _ => @throw new Exception() }")
@@ -80,7 +80,7 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
     }
   }
 
-  "For instrumentation" should instrument {
+  "For instrumentation" should {
     "basic for" in {
       classOffsetsMatch("val z = for (@i <- 0.to(10)) @println(i.toString)")
     }
@@ -96,7 +96,7 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
     }
   }
 
-  "Enumeration instrumentation" should instrument {
+  "Enumeration instrumentation" should {
     "basic enumeration" in {
       // TODO: Not sure how to instrument these...
       offsetsMatch("object Enum extends Enumeration { val Black = @Value; val White = @Value }")
@@ -105,13 +105,13 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
     }
   }
 
-  "Implicit parameter instrumentation" should instrument {
+  "Implicit parameter instrumentation" should {
     "basic implicit param usage" in {
       classOffsetsMatch("""implicit val defaultString = @"hi"; def say(implicit s: String) { @println(s) }""")
     }
   }
 
-  "Instrumentation of other misc. bits and pieces" should instrument {
+  "Instrumentation of other misc. bits and pieces" should {
     "seq to var-args" in {
       classOffsetsMatch("val z = @Map(0 to(5) map { n => @(n.toString, n*5)} : _*)")
     }

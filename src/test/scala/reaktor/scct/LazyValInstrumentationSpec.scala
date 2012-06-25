@@ -1,7 +1,7 @@
 package reaktor.scct
 
 class LazyValInstrumentationSpec extends InstrumentationSpec {
-  "Lazy val instrumentation" should instrument {
+  "Lazy val instrumentation" should {
     "basic lazy val" in {
       classOffsetsMatch("lazy val foo = @System.currentTimeMillis")
     }

@@ -1,10 +1,10 @@
 package reaktor.scct.report
 
-import org.specs.Specification
+import org.specs2.mutable._
 import reaktor.scct.CoveredBlock
+import reaktor.scct.CoveredBlockGenerator._
 
 class CoverageDataSpec extends Specification {
-  import reaktor.scct.CoveredBlockGenerator._
 
   "Percentage calculation" should {
     "calculate total" in {

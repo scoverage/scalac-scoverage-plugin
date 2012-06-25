@@ -1,6 +1,6 @@
 package reaktor.scct
 
-import org.specs.Specification
+import org.specs2.mutable._
 import reaktor.scct.ClassTypes.ClassType
 
 class NameSpec extends Specification {

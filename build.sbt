@@ -15,8 +15,9 @@ libraryDependencies <+= (scalaVersion) { v =>
 libraryDependencies ++= Seq(
   "junit" % "junit" % "4.7" % "test" withSources,
   "org.mockito" % "mockito-all" % "1.8.5" % "test" withSources,
-  "org.scala-tools.testing" % "specs_2.9.1" % "1.6.9" % "test" withSources
+  "org.specs2" %% "specs2" % "1.11" % "test"
 )
 
 publishTo := Some(Resolver.file("file",  new File("../gh-pages/maven-repo")))
 
+resolvers += "scala-tools-releases" at "https://oss.sonatype.org/content/groups/scala-tools/"

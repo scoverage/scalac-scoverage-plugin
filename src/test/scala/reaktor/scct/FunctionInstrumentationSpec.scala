@@ -2,7 +2,7 @@ package reaktor.scct
 
 class FunctionInstrumentationSpec extends InstrumentationSpec {
 
-  "basic function instrumentation" should instrument {
+  "basic function instrumentation" should {
     "one-liners" in {
       classOffsetsMatch("(@1 to 10).foreach(x => @println(x))")
     }
