@@ -52,7 +52,7 @@ class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOp
   val phaseName = "scctInstrumentation"
   def newTransformer(unit: CompilationUnit) = new Instrumenter(unit)
 
-  var debug = false
+  var debug = System.getProperty("scct.debug") == "true"
   var saveData = true
   var counter = 0L
   var data: List[CoveredBlock] = Nil
