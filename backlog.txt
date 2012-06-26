@@ -3,6 +3,7 @@ IN PROGRESS
 * update documentation for 0.2
 
 BACKLOG
+* change synchronization and init mess to lazy val's in Coverage.scala:init?
 * merge: Add projectName to source files report page?
 * Location URL from report should restore state
 * memory usage optimizations: load coverage data only for report generation?

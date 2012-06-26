@@ -3,37 +3,28 @@ package reaktor.scct
 import report._
 
 object Coverage {
-  var state = State.New
-  var env: Env = _
-  var data: Map[String, CoveredBlock] = _
+  @uncovered var state = State.New
+  @uncovered var env: Env = _
+  @uncovered var data: Map[String, CoveredBlock] = Map[String, CoveredBlock]()
 
-  @uncovered def tryInit() {
-    val oldState = state
+  @uncovered def init() {
     state = State.Starting
-    if (!Env.isSbt || Env.sysOption("scct.project.name").isDefined) {
-      init()
-      state = State.Active
-    } else {
-      state = oldState
-    }
-  }
-
-  def init() {
     env = new Env
     data = readMetadata
     env.reportHook match {
       case "system.property" => setupSystemPropertyHook
       case _ => setupShutdownHook
     }
+    state = State.Active
   }
 
   @uncovered def invoked(id: String) {
-    if (state == State.Active) {
-      data.get(id).foreach { _.increment }
-    } else if (state == State.New) {
-      tryInit()
-      if (state == State.Active) data.get(id).foreach { _.increment }
+    synchronized {
+      if (state == State.New) {
+        init()
+      }
     }
+    data.get(id).foreach { _.increment }
   }
 
   private def readMetadata = {
@@ -80,7 +71,7 @@ object Coverage {
   }
 }
 
-object ClassTypes {
+@uncovered object ClassTypes {
   @SerialVersionUID(1L) sealed abstract class ClassType extends Serializable
   @SerialVersionUID(1L) case object Class extends ClassType
   @SerialVersionUID(1L) case object Trait extends ClassType
