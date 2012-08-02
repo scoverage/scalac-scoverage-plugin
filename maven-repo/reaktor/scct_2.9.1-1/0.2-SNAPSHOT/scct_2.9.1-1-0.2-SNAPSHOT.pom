@@ -36,10 +36,18 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.scala-tools.testing</groupId>
-            <artifactId>specs_2.9.1</artifactId>
-            <version>1.6.9</version>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2_2.9.1-1</artifactId>
+            <version>1.11</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>scalatoolsreleases</id>
+            <name>scala-tools-releases</name>
+            <url>https://oss.sonatype.org/content/groups/scala-tools/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
 </project>
