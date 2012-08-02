@@ -52,7 +52,7 @@ object Coverage {
     Runtime.getRuntime.addShutdownHook(new Thread {
       override def run = {
         Coverage.state = State.Done
-        println("scct: Generating coverage report.")
+        println("scct: [" + env.projectId + "] Generating coverage report.")
         report
       }
     })
@@ -63,7 +63,7 @@ object Coverage {
       override def run = {
         while (System.getProperty(prop, "") != "true") Thread.sleep(200)
         Coverage.state = State.Done
-        println("scct: Generating coverage report.")
+        println("scct: [" + env.projectId + "] Generating coverage report.")
         report
         System.setProperty(prop, "done")
       }

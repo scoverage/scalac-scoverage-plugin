@@ -66,7 +66,7 @@ class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOp
     }
     private def saveMetadata {
       if (saveData) {
-        println("[" + opts.projectId + "] scct: Saving coverage data.")
+        println("scct: [" + opts.projectId + "] Saving coverage data.")
         if (coverageFile.exists) coverageFile.delete
         MetadataPickler.toFile(data, coverageFile)
       }
