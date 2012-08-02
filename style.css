@@ -1,0 +1,24 @@
+body {
+  margin-top: 0.7em;
+  font-family: "Helvetica", arial;
+  font-weight: 100;
+  font-size: 12px;
+}
+h1, h2, h3, h4, h5, h6 { font-weight: 100; color: #b78e68; }
+h1 a { text-decoration: none; color: #000; }
+pre { border: 1px solid #cca; margin: 5px; padding: 0.5em; color: #000; background: #fafafa; font-size: 11px; font-family: 'Courier New', 'Monaco', monospace; }
+a:link, a:visited { color: #99a; }
+.h { margin: 0.2em 0; font-family: 'Courier New', 'Monaco', monospace; text-align: right; }
+h1 { font-size: 55px;  }
+p { margin: 8px 0 5px 5px; }
+#beef { padding: 1em; border-left: 1px dashed #cca; }
+#foot { padding: 1em 0 0 0; margin: 5px; font-size: 10px; color: #bbc; }
+.mono { margin: 0 0.3em; font-family: 'Courier New', monospace; color: #333; }
+.screenshot { border: 1px solid #cca; margin:1px; }
+.screenshot:hover { border: 2px solid #d4d4b2; margin:0; }
+.not { text-decoration: line-through; color: #777; }
+.ui-tabs-nav a { outline: none; }
+.news { padding: 2px 5px; margin-right: 5px; min-width:80px; display:inline-block; text-align: right; }
+#usage-buttons button { width: 10em !important; margin-bottom: 10px;}
+button.selected span { font-size: 120%; color: black; }
+.hilite { color: #F60; }
