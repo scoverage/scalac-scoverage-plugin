@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <plugins>
+    <plugin>
+      <name>maven-scct-multiproject-report</name>
+      <prefix>scct-multiproject-report</prefix>
+      <artifactId>maven-scct-multiproject-report</artifactId>
+    </plugin>
+  </plugins>
+</metadata>
