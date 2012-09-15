@@ -4,10 +4,9 @@ import report._
 
 object Coverage {
   @uncovered private var state = State.New
-  @uncovered private var env: Env = _
+  @uncovered private lazy val env: Env = new Env
   @uncovered private lazy val data: Map[String, CoveredBlock] = {
     state = State.Starting
-    env = new Env
     val metaData = readMetadata
     env.reportHook match {
       case "system.property" => setupSystemPropertyHook
