@@ -3,27 +3,21 @@ package reaktor.scct
 import report._
 
 object Coverage {
-  @uncovered var state = State.New
-  @uncovered var env: Env = _
-  @uncovered var data: Map[String, CoveredBlock] = Map[String, CoveredBlock]()
-
-  @uncovered def init() {
+  @uncovered private var state = State.New
+  @uncovered private var env: Env = _
+  @uncovered private lazy val data: Map[String, CoveredBlock] = {
     state = State.Starting
     env = new Env
-    data = readMetadata
+    val metaData = readMetadata
     env.reportHook match {
       case "system.property" => setupSystemPropertyHook
-      case _ => setupShutdownHook
+      case _                 => setupShutdownHook
     }
     state = State.Active
+    metaData
   }
 
   @uncovered def invoked(id: String) {
-    synchronized {
-      if (state == State.New) {
-        init()
-      }
-    }
     data.get(id).foreach { _.increment }
   }
 
