@@ -1,6 +1,6 @@
 body { color: #444; font-family: monospace; font-size: 11px; margin: 0px;}
 h1 { color: #2F4F4F; }
-#overview { width: 300px; float: left; border-right: 1px solid #aaa; }
+#overview { min-width: 300px; max-width: 800px; float: left; border-right: 1px solid #aaa; }
 #detail { overflow: scroll; }
 #packages { overflow: scroll; }
 table { width: 99%; margin-top: 5px; }
