@@ -1,11 +1,13 @@
 package reaktor.scct
 
 import report._
+import it.unimi.dsi.fastutil.objects.{Object2ObjectOpenHashMap}
+import scala.collection.JavaConverters._
 
 object Coverage {
   @uncovered private var state = State.New
-  @uncovered private lazy val env: Env = new Env
-  @uncovered private lazy val data: Map[String, CoveredBlock] = {
+  @uncovered private[this] val env: Env = new Env
+  @uncovered private[this] val data: Object2ObjectOpenHashMap[String, CoveredBlock] = {
     state = State.Starting
     val metaData = readMetadata
     env.reportHook match {
@@ -13,11 +15,14 @@ object Coverage {
       case _                 => setupShutdownHook
     }
     state = State.Active
-    metaData
+    val data = new Object2ObjectOpenHashMap[String, CoveredBlock]()
+    data.putAll(metaData.asJava)
+    data
   }
 
   @uncovered def invoked(id: String) {
-    data.get(id).foreach { _.increment }
+    val block = data.get(id)
+    if (block != null) block.increment
   }
 
   private def readMetadata = {
@@ -33,8 +38,8 @@ object Coverage {
     }
   }
 
-  def report = {
-    val projectData = new ProjectData(env, data.values.toList)
+  @uncovered def report = {
+    val projectData = new ProjectData(env, data.values.asScala.toList)
     val writer = new HtmlReportWriter(env.reportDir)
     new HtmlReporter(projectData, writer).report
     new CoberturaReporter(projectData, writer).report
