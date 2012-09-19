@@ -54,10 +54,15 @@ class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOp
 
   var debug = System.getProperty("scct.debug") == "true"
   var saveData = true
-  var counter = 0L
+  var counter = 0
   var data: List[CoveredBlock] = Nil
   lazy val coverageFile = new File(global.settings.outdir.value, "coverage.data")
-  def newId = { counter += 1; counter.toString }
+
+  def newId: Int = {
+    require(counter < Integer.MAX_VALUE)
+    counter += 1
+    counter
+  }
 
   override def newPhase(prev: scala.tools.nsc.Phase): StdPhase = new Phase(prev) {
     override def run {
@@ -222,7 +227,7 @@ class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOp
       localTyper.typed(atPos(orig.pos)(newTree))
     }
 
-    private def rawCoverageCall(id: String) = {
+    private def rawCoverageCall(id: Int) = {
       val fun = Select( Select( Select(Ident("reaktor"), newTermName("scct") ), newTermName("Coverage") ), newTermName("invoked") )
       Apply(fun, List(Literal(id)))
     }
