@@ -5,7 +5,7 @@ import io.Source
 
 class SourceLoader(baseDir:File) {
   def linesFor(sourceFile: String) = {
-    val src = Source.fromFile(new File(baseDir, sourceFile))
+    val src = Source.fromFile(new File(baseDir, sourceFile), "UTF-8")
     toLines(src)
   }
 
