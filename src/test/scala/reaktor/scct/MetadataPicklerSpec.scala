@@ -16,7 +16,7 @@ class MetadataPicklerSpec extends Specification {
       val loaded = MetadataPickler.load(f)
       loaded must haveSize(1)
       val b = loaded(0)
-      b.id mustEqual "0"
+      b.id mustEqual 0
       b.name mustEqual Name("0", ClassTypes.Class, "0", "0", "0")
       b.offset mustEqual 0
       b.placeHolder must beFalse
@@ -25,7 +25,7 @@ class MetadataPicklerSpec extends Specification {
       val f = tmpFile
       MetadataPickler.toFile(List(block(0)), f)
       MetadataPickler.toFile(List(block(1)), f)
-      MetadataPickler.load(f).map(_.id) mustEqual List("1")
+      MetadataPickler.load(f).map(_.id) mustEqual List(1)
     }
   }
 

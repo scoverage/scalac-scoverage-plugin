@@ -22,7 +22,7 @@ class BinaryReporterSpec extends Specification {
     result.baseDir.getAbsolutePath mustEqual "/baseDir"
     result.sourceDir.getAbsolutePath mustEqual "/sourceDir"
     result.data must haveSize(2)
-    result.data(0).id mustEqual "1"
+    result.data(0).id mustEqual 1
     result.data(0).count mustEqual 1
     result.data(1).count mustEqual 0
   }

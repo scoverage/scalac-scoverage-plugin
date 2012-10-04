@@ -15,7 +15,7 @@ class CoverageDataSpec extends Specification {
       new CoverageData(blocks(true, true, false)).percentage mustEqual Some(66)
     }
     "skip placeholders" in {
-      val data = new CoverageData(CoveredBlock("x", blockName("x"), 1, true) :: blocks(true, true, false, false))
+      val data = new CoverageData(CoveredBlock(99999, blockName("x"), 1, true) :: blocks(true, true, false, false))
       data.percentage mustEqual Some(50)
     }
   }
@@ -29,7 +29,7 @@ class CoverageDataSpec extends Specification {
       new CoverageData(blocks(true, true, false)).rate mustEqual Some(0.66)
     }
     "skip placeholders" in {
-      val data = new CoverageData(CoveredBlock("x", blockName("x"), 1, true) :: blocks(true, true, false, false))
+      val data = new CoverageData(CoveredBlock(99999, blockName("x"), 1, true) :: blocks(true, true, false, false))
       data.rate mustEqual Some(0.5)
     }
   }
