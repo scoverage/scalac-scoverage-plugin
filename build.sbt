@@ -14,8 +14,8 @@ libraryDependencies <+= (scalaVersion) { v =>
 
 libraryDependencies ++= Seq(
   "it.unimi.dsi" % "fastutil" % "6.4.3" withSources,
-  "junit" % "junit" % "4.7" % "test" withSources,
-  "org.mockito" % "mockito-all" % "1.8.5" % "test" withSources,
+  "junit" % "junit" % "4.10" % "test",
+  "org.mockito" % "mockito-all" % "1.9.5-rc1" % "test" withSources,
   "org.specs2" % "specs2" % "1.11" % "test" cross CrossVersion.binaryMapped {
     case "2.9.0-1" => "2.9.1"
     case "2.9.0" => "2.9.1"
