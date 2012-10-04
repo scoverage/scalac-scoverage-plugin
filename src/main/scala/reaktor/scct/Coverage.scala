@@ -3,16 +3,15 @@ package reaktor.scct
 import report._
 
 object Coverage {
-  @uncovered private var state = State.New
+  @uncovered private var started = false
   @uncovered private[this] val env: Env = new Env
   @uncovered private[this] val data: Map[Int, CoveredBlock] = {
-    state = State.Starting
     val metaData = readMetadata
     env.reportHook match {
       case "system.property" => setupSystemPropertyHook
       case _ => setupShutdownHook
     }
-    state = State.Active
+    started = true
     metaData
   }
 
@@ -22,6 +21,7 @@ object Coverage {
   }
 
   @uncovered def invoked(id: Int) {
+    if (!started) return
     counters(id) +=1
   }
 
@@ -38,7 +38,6 @@ object Coverage {
     }
   }
 
-  @uncovered
   lazy val dataValues: List[CoveredBlock] = {
     for {
       (id, block) <- data
@@ -49,7 +48,7 @@ object Coverage {
     data.values.toList
   }
 
-  @uncovered def report = {
+  def report = {
     val projectData = new ProjectData(env, dataValues)
     val writer = new HtmlReportWriter(env.reportDir)
     new HtmlReporter(projectData, writer).report
@@ -60,7 +59,6 @@ object Coverage {
   private def setupShutdownHook {
     Runtime.getRuntime.addShutdownHook(new Thread {
       override def run = {
-        Coverage.state = State.Done
         println("scct: [" + env.projectId + "] Generating coverage report.")
         report
       }
@@ -72,7 +70,6 @@ object Coverage {
     new Thread {
       override def run = {
         while (System.getProperty(prop, "") != "true") Thread.sleep(200)
-        Coverage.state = State.Done
         println("scct: [" + env.projectId + "] Generating coverage report.")
         report
         System.setProperty(prop, "done")
@@ -82,22 +79,15 @@ object Coverage {
 }
 
 @uncovered object ClassTypes {
-
   @SerialVersionUID(1L) sealed abstract class ClassType extends Serializable
-
   @SerialVersionUID(1L) case object Class extends ClassType
-
   @SerialVersionUID(1L) case object Trait extends ClassType
-
   @SerialVersionUID(1L) case object Object extends ClassType
-
   @SerialVersionUID(1L) case object Package extends ClassType
-
   @SerialVersionUID(1L) case object Root extends ClassType
-
 }
 
-@SerialVersionUID(1L) case class Name(sourceFile: String, classType: ClassTypes.ClassType, packageName: String, className: String, projectName: String) extends Ordered[Name] {
+@uncovered @SerialVersionUID(1L) case class Name(sourceFile: String, classType: ClassTypes.ClassType, packageName: String, className: String, projectName: String) extends Ordered[Name] {
   def compare(other: Name) = {
     lazy val classNameDiff = className.compareTo(other.className)
     lazy val classTypeDiff = classType.toString.compareTo(other.classType.toString)
@@ -113,17 +103,13 @@ object Coverage {
 
   var count = 0
 
-  @uncovered def increment = {
+  def increment = {
     count = count + 1; this
   }
 
-  @uncovered def incrementBy(value: Int) = {
+  def incrementBy(value: Int) = {
     count = count + value; this
   }
 }
 
 class uncovered extends scala.annotation.StaticAnnotation
-
-@uncovered object State extends Enumeration {
-  val New, Starting, Active, Done = Value
-}
