@@ -2,6 +2,7 @@ package reaktor.scct.report
 
 import reaktor.scct.CoveredBlock
 import xml.{PrettyPrinter, NodeSeq}
+import annotation.tailrec
 
 class CoberturaReporter(project: ProjectData, writer: HtmlReportWriter) {
   val data = project.coverage
@@ -40,7 +41,7 @@ class CoberturaReporter(project: ProjectData, writer: HtmlReportWriter) {
     line(1, 0, sourceLines, classData.blocks, NodeSeq.Empty)
   }
 
-  def line(num: Int, offset: Int, sourceLines: List[String], blocks: List[CoveredBlock], acc: NodeSeq): NodeSeq =
+  @tailrec final def line(num: Int, offset: Int, sourceLines: List[String], blocks: List[CoveredBlock], acc: NodeSeq): NodeSeq =
     sourceLines match {
       case Nil => acc
       case sourceLine :: tail => {
