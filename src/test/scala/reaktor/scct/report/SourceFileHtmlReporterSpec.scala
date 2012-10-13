@@ -48,7 +48,7 @@ class SourceFileHtmlReporterSpec extends Specification {
   def blocks(offsets: Tuple2[Int, Boolean]*): List[CoveredBlock] = {
     val name = Name("src", ClassTypes.Class, "pkg", "clazz", "project")
     val bs = for ((off,hit) <- offsets) yield {
-      val b = new CoveredBlock(off, name, off)
+      val b = new CoveredBlock("c1", off, name, off)
       if (hit) b.increment;
       b
     }

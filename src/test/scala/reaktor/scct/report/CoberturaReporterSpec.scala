@@ -19,10 +19,10 @@ class CoberturaReporterSpec extends Specification {
   "report output" in new CleanEnv {
     IO.write(sourceFile, 1.to(4).map((ii:Int) => "0123456789").mkString("\n").getBytes("utf-8"))
     val blocks = List(
-      new CoveredBlock(0, name, 0, false).increment,
-      new CoveredBlock(1, name, 11, false),
-      new CoveredBlock(1, name, 23, false).increment,
-      new CoveredBlock(2, name, 28, false).increment
+      new CoveredBlock("c1", 0, name, 0, false).increment,
+      new CoveredBlock("c1", 1, name, 11, false),
+      new CoveredBlock("c1", 1, name, 23, false).increment,
+      new CoveredBlock("c1", 2, name, 28, false).increment
     )
     val projectData = ProjectData("myProject", tmpDir, tmpDir, blocks)
     val sut = new CoberturaReporter(projectData, new HtmlReportWriter(tmpDir))
@@ -63,7 +63,7 @@ class CoberturaReporterSpec extends Specification {
 
   def blocks(ii: Int, name: Name) = {
     1.to(ii).map { ii:Int =>
-      val b = new CoveredBlock(ii, name, ii, false)
+      val b = new CoveredBlock("c1", ii, name, ii, false)
       if (ii % 2 == 0) b.increment
       b
     }.toList

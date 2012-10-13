@@ -5,6 +5,7 @@ import java.io.File
 import tools.nsc.transform.{Transform, TypingTransformers}
 import tools.nsc.symtab.Flags
 import tools.nsc.{Phase, Global}
+import util.Random
 
 class ScctInstrumentPlugin(val global: Global) extends Plugin {
   val name = "scct"
@@ -31,8 +32,8 @@ class ScctInstrumentPlugin(val global: Global) extends Plugin {
   )
 }
 
-class ScctInstrumentPluginOptions(var projectId:String, var baseDir:File) {
-  def this() = this(ScctInstrumentPluginOptions.defaultProjectName, ScctInstrumentPluginOptions.defaultBasedir)
+class ScctInstrumentPluginOptions(val compilationId:String, var projectId:String, var baseDir:File) {
+  def this() = this(System.currentTimeMillis.toString + Random.nextLong().toString, ScctInstrumentPluginOptions.defaultProjectName, ScctInstrumentPluginOptions.defaultBasedir)
 }
 
 object ScctInstrumentPluginOptions {
@@ -219,7 +220,7 @@ class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOp
 
     private def coverageCall(tree: Tree) = {
       val id = newId
-      data = CoveredBlock(id, createName(currentOwner, tree), minOffset(tree), false) :: data
+      data = CoveredBlock(opts.compilationId, id, createName(currentOwner, tree), minOffset(tree), false) :: data
       fitIntoTree(tree, rawCoverageCall(id))
     }
 
@@ -229,7 +230,7 @@ class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOp
 
     private def rawCoverageCall(id: Int) = {
       val fun = Select( Select( Select(Ident("reaktor"), newTermName("scct") ), newTermName("Coverage") ), newTermName("invoked") )
-      Apply(fun, List(Literal(id)))
+      Apply(fun, List(Literal(opts.compilationId), Literal(id)))
     }
   }
 
@@ -302,7 +303,7 @@ class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOp
     override def traverse(tree: Tree) = {
       tree match {
         case t: Template if (!t.symbol.owner.isSynthetic) => {
-          data = CoveredBlock(newId, createName(t.symbol.owner, tree), minOffset(tree), true) :: data
+          data = CoveredBlock(opts.compilationId, newId, createName(t.symbol.owner, tree), minOffset(tree), true) :: data
         }
         case _ =>
       }

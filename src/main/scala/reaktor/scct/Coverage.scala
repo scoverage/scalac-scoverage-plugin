@@ -3,11 +3,12 @@ package reaktor.scct
 import report._
 
 object Coverage {
-  @uncovered private var started = false
+  @uncovered private[this] var started = false
   @uncovered private[this] val env: Env = new Env
   @uncovered private[this] val data: Map[Int, CoveredBlock] = {
     val metaData = readMetadata
     env.reportHook match {
+      case "none" =>
       case "system.property" => setupSystemPropertyHook
       case _ => setupShutdownHook
     }
@@ -15,13 +16,16 @@ object Coverage {
     metaData
   }
 
+  @uncovered private[this] val dataCompilationId = data.headOption.map(_._2.compilationId).getOrElse("")
+
   @uncovered private[this] val counters: Array[Int] = {
     val size = data.keysIterator.max + 1
     new Array[Int](size)
   }
 
-  @uncovered def invoked(id: Int) {
+  @uncovered def invoked(compilationId: String, id: Int) {
     if (!started) return
+    if (dataCompilationId != compilationId) return
     counters(id) +=1
   }
 
@@ -98,8 +102,8 @@ object Coverage {
   override def toString = projectName + ":" + packageName + "/" + className + ":" + sourceFile
 }
 
-@SerialVersionUID(1L) case class CoveredBlock(id: Int, name: Name, offset: Int, placeHolder: Boolean) {
-  def this(id: Int, name: Name, offset: Int) = this(id, name, offset, false)
+@SerialVersionUID(1L) case class CoveredBlock(compilationId:String, id: Int, name: Name, offset: Int, placeHolder: Boolean) {
+  def this(compilationId:String, id: Int, name: Name, offset: Int) = this(compilationId, id, name, offset, false)
 
   var count = 0
 
