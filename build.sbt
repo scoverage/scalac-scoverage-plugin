@@ -26,3 +26,5 @@ libraryDependencies ++= Seq(
 publishTo := Some(Resolver.file("file",  new File("../gh-pages/maven-repo")))
 
 resolvers += "scala-tools-releases" at "https://oss.sonatype.org/content/groups/scala-tools/"
+
+testOptions in Test <+= (scalaVersion in Test) map { (scalaVer) => Tests.Setup { () => System.setProperty("scct-test-scala-version", scalaVer) } }
