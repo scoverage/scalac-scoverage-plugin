@@ -1,7 +1,7 @@
 package reaktor.scct
 
 import scala.tools.nsc.reporters.ConsoleReporter
-import java.io.{File, FileOutputStream}
+import java.io.{FileNotFoundException, File, FileOutputStream}
 import org.specs2.matcher.{Expectable, Matcher}
 import org.specs2.mutable._
 import tools.nsc._
@@ -59,17 +59,21 @@ trait InstrumentationSupport {
   }
 
   def locateCompiledClasses() = {
-    val first = new File("./target/scala-"+scalaVersion+"/classes")
-    val second = new File("./scct/target/scala-"+scalaVersion+"/classes")
+    val scalaTargetDir = scalaVersion match {
+      case "2.10.0-RC1" => "2.10"
+      case x => x
+    }
+    val first = new File("./target/scala-"+scalaTargetDir+"/classes")
+    val second = new File("./scct/target/scala-"+scalaTargetDir+"/classes")
     if (first.exists) {
       // sbt || IDEA with module dir as working dir
-      "./target/scala-"+scalaVersion+"/classes"
+      "./target/scala-"+scalaTargetDir+"/classes"
     } else if (second.exists) {
       // IDEA, with project dir as working dir
-      "./scct/target/scala-"+scalaVersion+"/classes"
+      "./scct/target/scala-"+scalaTargetDir+"/classes"
     } else {
       val err = "Compiled classes not found. Looked in " + first.getAbsolutePath + " and " + second.getAbsolutePath
-      throw new MissingRequirementError(err+ " Check InstrumentationSpec:locateCompiledClasses")
+      throw new FileNotFoundException(err+ " Check InstrumentationSpec:locateCompiledClasses")
     }
   }
 
@@ -86,7 +90,7 @@ trait InstrumentationSupport {
       // Probably IDEA with project dir instead of module dir as working dir
       scalaJars.map("./scct/project/boot/scala-"+scalaVersion+"/lib/"+_)
     } else {
-      throw new MissingRequirementError("scala jars not found. Check InstrumentationSpec:locateScalaJars")
+      throw new FileNotFoundException("scala jars not found. Check InstrumentationSpec:locateScalaJars")
     }
   }
 
@@ -204,7 +208,7 @@ class PluginRunner(settings: Settings, debug: Boolean) extends Global(settings, 
     phasesSet += analyzer.typerFactory
     phasesSet += superAccessors
     phasesSet += pickler
-    phasesSet += refchecks
+    phasesSet += refChecks
     phasesSet += scctComponent
   }
 }

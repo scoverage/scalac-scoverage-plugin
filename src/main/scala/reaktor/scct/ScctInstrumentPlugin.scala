@@ -93,7 +93,7 @@ class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOp
       if (continue) super.transform(result) else result
     }
 
-    private def hasSkipAnnotation(t: Tree) = t.hasSymbol && t.symbol.hasAnnotation(definitions.getClass("reaktor.scct.uncovered"))
+    private def hasSkipAnnotation(t: Tree) = t.hasSymbol && t.symbol.hasAnnotation(definitions.getClass(global.stringToTypeName("reaktor.scct.uncovered")))
     private def isSynthetic(t: Tree) = t.hasSymbol && t.symbol.isSynthetic && !t.symbol.isAnonymousFunction
     private def isObjectOrTraitConstructor(s: Symbol) = s.isConstructor && (currentClass.isModuleClass || currentClass.isTrait)
     private def isGeneratedMethod(t: DefDef) = !t.symbol.isConstructor && t.pos.point == currentClass.pos.point
@@ -230,7 +230,7 @@ class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOp
 
     private def rawCoverageCall(id: Int) = {
       val fun = Select( Select( Select(Ident("reaktor"), newTermName("scct") ), newTermName("Coverage") ), newTermName("invoked") )
-      Apply(fun, List(Literal(opts.compilationId), Literal(id)))
+      Apply(fun, List(Literal(Constant(opts.compilationId)), Literal(Constant(id))))
     }
   }
 
