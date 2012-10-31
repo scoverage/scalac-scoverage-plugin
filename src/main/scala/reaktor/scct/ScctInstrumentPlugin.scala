@@ -10,7 +10,7 @@ import util.Random
 class ScctInstrumentPlugin(val global: Global) extends Plugin {
   val name = "scct"
   val description = "Scala code coverage instrumentation plugin."
-  val runsAfter = List("refchecks")
+  val runsAfter = List("typer")
 
   val options = new ScctInstrumentPluginOptions()
   val components = List(new ScctTransformComponent(global, options))
@@ -48,7 +48,11 @@ object ScctInstrumentPluginOptions {
 class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOptions) extends PluginComponent with TypingTransformers with Transform {
   import global._
   import global.definitions._
-  override val runsRightAfter = Some("refchecks")
+
+  println("ScctTransformComponent()")
+
+
+  override val runsRightAfter = Some("typer")
   val runsAfter = List[String](runsRightAfter.get)
   val phaseName = "scctInstrumentation"
   def newTransformer(unit: CompilationUnit) = new Instrumenter(unit)
@@ -80,7 +84,7 @@ class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOp
   }
 
   class Instrumenter(unit: CompilationUnit) extends TypingTransformer(unit) {
-
+    println("Instrumenter()")
     override def transformUnit(unit: CompilationUnit) {
       if (debug) treeBrowser.browse("scct", List(unit))
       registerClasses(unit)
@@ -168,6 +172,7 @@ class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOp
 
     def shouldInstrument(t: Tree) = t match {
       case _:ClassDef => false
+      case _:ModuleDef => false
       case _:Template => false
       case _:TypeDef => false
       case _:DefDef => false
@@ -220,6 +225,12 @@ class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOp
 
     private def coverageCall(tree: Tree) = {
       val id = newId
+      println("CALL/"+id+"/\n"+tree)
+      if (id == 5) {
+        var t = tree
+        println(t.hasSymbol+" && "+t.symbol.isSynthetic+" && "+(!t.symbol.isAnonymousFunction))
+        new Exception("STACK").printStackTrace()
+      }
       data = CoveredBlock(opts.compilationId, id, createName(currentOwner, tree), minOffset(tree), false) :: data
       fitIntoTree(tree, rawCoverageCall(id))
     }

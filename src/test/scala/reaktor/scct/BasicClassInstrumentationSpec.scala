@@ -3,7 +3,7 @@ package reaktor.scct
 class BasicClassInstrumentationSpec extends InstrumentationSpec {
   "Basic template instrumentation" should {
     "basic class" in {
-      offsetsMatch("class Fo@o") // TODO: how is the offset there?
+      offsetsMatch("class Foo@ ")
       offsetsMatch("class Foo @{}")
       offsetsMatch("class Foo@(x: Int) {}")
       offsetsMatch("class Foo@(val x: Int) {}")
@@ -29,7 +29,7 @@ class BasicClassInstrumentationSpec extends InstrumentationSpec {
       offsetsMatch("case object Foo {}")
     }
     "annotation" in {
-      offsetsMatch("class MyAnnotation @extends StaticAnnotation")
+      offsetsMatch("class MyAnnotation @extends scala.annotation.StaticAnnotation")
     }
   }
 

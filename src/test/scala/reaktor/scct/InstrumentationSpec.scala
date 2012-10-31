@@ -31,7 +31,7 @@ trait InstrumentationSpec extends Specification with InstrumentationSupport {
 }
 
 trait InstrumentationSupport {
-  def scalaVersion = System.getProperty("scct-test-scala-version", "2.9.2")
+  def scalaVersion = System.getProperty("scct-test-scala-version", "2.10.0-RC1")
   def debug = false
 
   def compileFile(file: String) = compileFiles(Seq(file) :_*)
@@ -54,6 +54,7 @@ trait InstrumentationSupport {
   def createSettings = {
     val settings = new Settings
     val classPath = locateCompiledClasses() :: locateScalaJars()
+    //settings.Xprint.value = List("all")
     settings.classpath.value = classPath.mkString(":")
     settings
   }
@@ -202,13 +203,18 @@ class PluginRunner(settings: Settings, debug: Boolean) extends Global(settings, 
     scctTransformer
   }
   override def computeInternalPhases() {
-    phasesSet += syntaxAnalyzer
-    phasesSet += analyzer.namerFactory
-    phasesSet += analyzer.packageObjects
-    phasesSet += analyzer.typerFactory
-    phasesSet += superAccessors
-    phasesSet += pickler
-    phasesSet += refChecks
-    phasesSet += scctComponent
+    val phs = List(
+      syntaxAnalyzer          -> "parse source into ASTs, perform simple desugaring",
+      analyzer.namerFactory   -> "resolve names, attach symbols to named trees",
+      analyzer.packageObjects -> "load package objects",
+      analyzer.typerFactory   -> "the meat and potatoes: type the trees",
+      //patmat                  -> "translate match expressions",
+      //superAccessors          -> "add super accessors in traits and nested classes",
+      //extensionMethods        -> "add extension methods for inline classes",
+      //pickler                 -> "serialize symbol tables",
+      //refChecks               -> "reference/override checking, translate nested objects",
+      scctComponent           -> "That's me!"
+    )
+    phs foreach (addToPhasesSet _).tupled
   }
 }
