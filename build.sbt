@@ -4,9 +4,9 @@ name := "scct"
 
 version := "0.2-SNAPSHOT"
 
-scalaVersion := "2.10.0-RC1"
+scalaVersion := "2.10.0-RC3"
 
-crossScalaVersions := Seq("2.10.0-RC1", "2.9.2", "2.9.1-1", "2.9.1", "2.9.0-1", "2.9.0")
+crossScalaVersions := Seq("2.10.0-RC3", "2.9.2", "2.9.1-1", "2.9.1", "2.9.0-1", "2.9.0")
 
 libraryDependencies <+= (scalaVersion) { v =>
   "org.scala-lang" % "scala-compiler" % v % "provided"
@@ -16,7 +16,7 @@ libraryDependencies ++= Seq(
   "it.unimi.dsi" % "fastutil" % "6.4.3" withSources,
   "junit" % "junit" % "4.10" % "test",
   "org.mockito" % "mockito-all" % "1.9.5-rc1" % "test" withSources,
-  "org.specs2" % "specs2" % "1.11" % "test" cross CrossVersion.binaryMapped {
+  "org.specs2" % "specs2" % "1.12.3" % "test" cross CrossVersion.binaryMapped {
     case "2.9.0-1" => "2.9.1"
     case "2.9.0" => "2.9.1"
     case x => x

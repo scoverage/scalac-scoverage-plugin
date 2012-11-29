@@ -31,7 +31,7 @@ trait InstrumentationSpec extends Specification with InstrumentationSupport {
 }
 
 trait InstrumentationSupport {
-  def scalaVersion = System.getProperty("scct-test-scala-version", "2.10.0-RC1")
+  def scalaVersion = System.getProperty("scct-test-scala-version", "2.10.0-RC3")
   def debug = false
 
   def compileFile(file: String) = compileFiles(Seq(file) :_*)
@@ -61,7 +61,7 @@ trait InstrumentationSupport {
 
   def locateCompiledClasses() = {
     val scalaTargetDir = scalaVersion match {
-      case "2.10.0-RC1" => "2.10"
+      case "2.10.0-RC3" => "2.10"
       case x => x
     }
     val first = new File("./target/scala-"+scalaTargetDir+"/classes")
