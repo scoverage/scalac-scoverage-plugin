@@ -49,11 +49,7 @@ class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOp
   import global._
   import global.definitions._
 
-  println("ScctTransformComponent()")
-
-
-  override val runsRightAfter = Some("typer")
-  val runsAfter = List[String](runsRightAfter.get)
+  val runsAfter = List[String]("typer")
   val phaseName = "scctInstrumentation"
   def newTransformer(unit: CompilationUnit) = new Instrumenter(unit)
 
@@ -84,7 +80,6 @@ class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOp
   }
 
   class Instrumenter(unit: CompilationUnit) extends TypingTransformer(unit) {
-    println("Instrumenter()")
     override def transformUnit(unit: CompilationUnit) {
       if (debug) treeBrowser.browse("scct", List(unit))
       registerClasses(unit)
@@ -225,12 +220,6 @@ class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOp
 
     private def coverageCall(tree: Tree) = {
       val id = newId
-      println("CALL/"+id+"/\n"+tree)
-      if (id == 5) {
-        var t = tree
-        println(t.hasSymbol+" && "+t.symbol.isSynthetic+" && "+(!t.symbol.isAnonymousFunction))
-        new Exception("STACK").printStackTrace()
-      }
       data = CoveredBlock(opts.compilationId, id, createName(currentOwner, tree), minOffset(tree), false) :: data
       fitIntoTree(tree, rawCoverageCall(id))
     }
