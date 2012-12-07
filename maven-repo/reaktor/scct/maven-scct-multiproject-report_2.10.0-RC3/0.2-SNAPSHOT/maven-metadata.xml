@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>reaktor.scct</groupId>
+  <artifactId>maven-scct-multiproject-report_2.10.0-RC3</artifactId>
+  <version>0.2-SNAPSHOT</version>
+  <versioning>
+    <snapshot>
+      <timestamp>20121207.142544</timestamp>
+      <buildNumber>1</buildNumber>
+    </snapshot>
+    <lastUpdated>20121207142544</lastUpdated>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>jar</extension>
+        <value>0.2-20121207.142544-1</value>
+        <updated>20121207142544</updated>
+      </snapshotVersion>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>0.2-20121207.142544-1</value>
+        <updated>20121207142544</updated>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>
