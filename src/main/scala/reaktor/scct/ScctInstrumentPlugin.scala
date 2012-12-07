@@ -10,8 +10,6 @@ import util.Random
 class ScctInstrumentPlugin(val global: Global) extends Plugin {
   val name = "scct"
   val description = "Scala code coverage instrumentation plugin."
-  val runsAfter = List("typer")
-
   val options = new ScctInstrumentPluginOptions()
   val components = List(new ScctTransformComponent(global, options))
 
@@ -50,6 +48,8 @@ class ScctTransformComponent(val global: Global, val opts:ScctInstrumentPluginOp
   import global.definitions._
 
   val runsAfter = List[String]("typer")
+  override val runsBefore = List[String]("patmat")
+
   val phaseName = "scctInstrumentation"
   def newTransformer(unit: CompilationUnit) = new Instrumenter(unit)
 
