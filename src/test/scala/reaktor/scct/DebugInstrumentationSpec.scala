@@ -3,34 +3,6 @@ package reaktor.scct
 class DebugInstrumentationSpec extends InstrumentationSpec {
   override def debug = false
 
-  "match/case" in {
-    classOffsetsMatch("""|var ii = @12
-                        |@ii match {
-                        |  case 1 => @println("pow"); @"one"
-                        |  case 2 => @"two"
-                        |  case _ => @"many"
-                        |}""".stripMargin)
-  }
-
-  "match/case with if" in {
-    classOffsetsMatch("""|var ii = @12
-                        |@ii match {
-                        |  case 1 if (@System.currentTimeMillis > 1) => @"yeah"
-                        |  case _ => @"nope"
-                        |}""".stripMargin)
-  }
-  "pow" in {
-    offsetsMatch("class Foo @{ case class Bar @}") // TODO: how is the offset there?
-    classOffsetsMatch("""val z = @Some(x).map(@_ * 1000) match { case Some(1) => @"one"; case _ => }""")
-  }
-
-  /* works: */
-  "extending java classes" in {
-    offsetsMatch("""|class Foo @extends java.util.ArrayList[String] {
-                    |  override def size = @12
-                    |}""".stripMargin)
-  }
-
   /* don't know:
   "literal in partial functions" in {
     val blocks = compileToData("""|class Foo {
