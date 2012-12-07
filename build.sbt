@@ -6,7 +6,7 @@ version := "0.2-SNAPSHOT"
 
 scalaVersion := "2.10.0-RC3"
 
-crossScalaVersions := Seq("2.10.0-RC3", "2.9.2", "2.9.1-1", "2.9.1", "2.9.0-1", "2.9.0")
+crossScalaVersions := Seq("2.10.0-RC3")
 
 libraryDependencies <+= (scalaVersion) { v =>
   "org.scala-lang" % "scala-compiler" % v % "provided"
@@ -15,11 +15,7 @@ libraryDependencies <+= (scalaVersion) { v =>
 libraryDependencies ++= Seq(
   "junit" % "junit" % "4.10" % "test",
   "org.mockito" % "mockito-all" % "1.9.5-rc1" % "test" withSources,
-  "org.specs2" % "specs2" % "1.12.3" % "test" cross CrossVersion.binaryMapped {
-    case "2.9.0-1" => "2.9.1"
-    case "2.9.0" => "2.9.1"
-    case x => x
-  }
+  "org.specs2" %% "specs2" % "1.12.3" % "test"
 )
 
 publishTo := Some(Resolver.file("file",  new File("../gh-pages/maven-repo")))
