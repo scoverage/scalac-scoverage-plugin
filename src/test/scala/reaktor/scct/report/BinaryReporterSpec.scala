@@ -14,7 +14,7 @@ class BinaryReporterSpec extends Specification {
   "Readin and riting" in new CleanEnv {
     val tmp = new File(System.getProperty("java.io.tmpdir", "/tmp"))
     new File(tmp, BinaryReporter.dataFile).exists() must beFalse
-    val projectData = ProjectData("myProject", new File("/baseDir"), new File("/sourceDir"), blocks(true, false))
+    val projectData = ProjectData("myProject", new File("/baseDir"), new File("/sourceDir"), blocks(true, false).toArray)
     BinaryReporter.report(projectData, tmp)
     new File(tmp, BinaryReporter.dataFile).exists() must beTrue
     val result = BinaryReporter.read(new File(tmp, BinaryReporter.dataFile))
