@@ -1,4 +1,4 @@
 <plugin>
-  <name>scctPlugin</name>
+  <name>scctInstrumentation</name>
   <classname>reaktor.scct.ScctInstrumentPlugin</classname>
 </plugin>

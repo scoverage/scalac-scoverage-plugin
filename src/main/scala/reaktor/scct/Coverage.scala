@@ -34,7 +34,7 @@ object Coverage {
       val values = MetadataPickler.load(env.coverageFile)
       Map(values.map(x => (x.id, x)): _*)
     } catch {
-      case e => {
+      case e:Exception => {
         System.err.println("Fail: " + e)
         e.printStackTrace
         throw e

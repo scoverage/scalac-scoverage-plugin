@@ -3,12 +3,12 @@ package reaktor.scct
 class StatementInstrumentationSpec extends InstrumentationSpec {
   "If instrumentation" should {
     "hardcoded if's" in {
-      classOffsetsMatch("if (true) @println(x)")
-      defOffsetsMatch("if (true) @println(x)")
+      classOffsetsMatch("if (@true) @println(x)")
+      defOffsetsMatch("if (@true) @println(x)")
     }
     "not hardcoded false's" in {
-      classOffsetsMatch("if (false) println(x)")
-      defOffsetsMatch("if (false) println(x)")
+      classOffsetsMatch("if (@false) @println(x)")
+      defOffsetsMatch("if (@false) @println(x)")
     }
     "basic if's" in {
       classOffsetsMatch("if (@x > 2) @println(x.toString)")
@@ -71,8 +71,8 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
 
   "Exception instrumentation" should {
     "basic try/catch/finally" in {
-      defOffsetsMatch("try { @100 / x } catch { case e => @println(\"ouch\") } finally { @println(\"done\") }")
-      defOffsetsMatch("try { @super.hashCode } catch { case _ => @throw new Exception() }")
+      defOffsetsMatch("try { @100 / x } catch { case e:Throwable => @println(\"ouch\") } finally { @println(\"done\") }")
+      defOffsetsMatch("try { @super.hashCode } catch { case _:Throwable => @throw new Exception() }")
     }
     "basic throw" in {
       classOffsetsMatch("@throw new Exception()")
@@ -135,7 +135,7 @@ class StatementInstrumentationSpec extends InstrumentationSpec {
     }
     "not instrument when compiler takes shortcuts" in {
       // Pre-scala 2.9.1, only block (the RHS of def) got instrumented.
-      // scala 2.9.1 instruments inside the block.
+      // scala 2.9.1+ instruments inside the block.
       classOffsetsMatch("def junk = { val i = @1; val j = @i; @j; }");
     }
     "compile jestan's case: case class constructor in package object called from separate package" in {

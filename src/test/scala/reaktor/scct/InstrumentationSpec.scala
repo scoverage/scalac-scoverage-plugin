@@ -1,7 +1,7 @@
 package reaktor.scct
 
 import scala.tools.nsc.reporters.ConsoleReporter
-import java.io.{File, FileOutputStream}
+import java.io.{FileNotFoundException, File, FileOutputStream}
 import org.specs2.matcher.{Expectable, Matcher}
 import org.specs2.mutable._
 import tools.nsc._
@@ -31,7 +31,7 @@ trait InstrumentationSpec extends Specification with InstrumentationSupport {
 }
 
 trait InstrumentationSupport {
-  def scalaVersion = "2.9.2"
+  def scalaVersion = System.getProperty("scct-test-scala-version", "2.10.0-RC3")
   def debug = false
 
   def compileFile(file: String) = compileFiles(Seq(file) :_*)
@@ -54,22 +54,27 @@ trait InstrumentationSupport {
   def createSettings = {
     val settings = new Settings
     val classPath = locateCompiledClasses() :: locateScalaJars()
+    //settings.Xprint.value = List("all")
     settings.classpath.value = classPath.mkString(":")
     settings
   }
 
   def locateCompiledClasses() = {
-    val first = new File("./target/scala-"+scalaVersion+"/classes")
-    val second = new File("./scct/target/scala-"+scalaVersion+"/classes")
+    val scalaTargetDir = scalaVersion match {
+      case "2.10.0-RC3" => "2.10"
+      case x => x
+    }
+    val first = new File("./target/scala-"+scalaTargetDir+"/classes")
+    val second = new File("./scct/target/scala-"+scalaTargetDir+"/classes")
     if (first.exists) {
       // sbt || IDEA with module dir as working dir
-      "./target/scala-"+scalaVersion+"/classes"
+      "./target/scala-"+scalaTargetDir+"/classes"
     } else if (second.exists) {
       // IDEA, with project dir as working dir
-      "./scct/target/scala-"+scalaVersion+"/classes"
+      "./scct/target/scala-"+scalaTargetDir+"/classes"
     } else {
       val err = "Compiled classes not found. Looked in " + first.getAbsolutePath + " and " + second.getAbsolutePath
-      throw new MissingRequirementError(err+ " Check InstrumentationSpec:locateCompiledClasses")
+      throw new FileNotFoundException(err+ " Check InstrumentationSpec:locateCompiledClasses")
     }
   }
 
@@ -86,7 +91,7 @@ trait InstrumentationSupport {
       // Probably IDEA with project dir instead of module dir as working dir
       scalaJars.map("./scct/project/boot/scala-"+scalaVersion+"/lib/"+_)
     } else {
-      throw new MissingRequirementError("scala jars not found. Check InstrumentationSpec:locateScalaJars")
+      throw new FileNotFoundException("scala jars not found. Check InstrumentationSpec:locateScalaJars")
     }
   }
 
@@ -198,13 +203,18 @@ class PluginRunner(settings: Settings, debug: Boolean) extends Global(settings, 
     scctTransformer
   }
   override def computeInternalPhases() {
-    phasesSet += syntaxAnalyzer
-    phasesSet += analyzer.namerFactory
-    phasesSet += analyzer.packageObjects
-    phasesSet += analyzer.typerFactory
-    phasesSet += superAccessors
-    phasesSet += pickler
-    phasesSet += refchecks
-    phasesSet += scctComponent
+    val phs = List(
+      syntaxAnalyzer          -> "parse source into ASTs, perform simple desugaring",
+      analyzer.namerFactory   -> "resolve names, attach symbols to named trees",
+      analyzer.packageObjects -> "load package objects",
+      analyzer.typerFactory   -> "the meat and potatoes: type the trees",
+      //patmat                  -> "translate match expressions",
+      //superAccessors          -> "add super accessors in traits and nested classes",
+      //extensionMethods        -> "add extension methods for inline classes",
+      //pickler                 -> "serialize symbol tables",
+      //refChecks               -> "reference/override checking, translate nested objects",
+      scctComponent           -> "That's me!"
+    )
+    phs foreach (addToPhasesSet _).tupled
   }
 }

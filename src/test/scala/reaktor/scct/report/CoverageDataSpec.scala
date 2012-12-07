@@ -26,7 +26,7 @@ class CoverageDataSpec extends Specification {
       new CoverageData(blocks(true)).rate mustEqual Some(1)
       new CoverageData(blocks(false)).rate mustEqual Some(0)
       new CoverageData(blocks(true, true, false, true)).rate mustEqual Some(0.75)
-      new CoverageData(blocks(true, true, false)).rate mustEqual Some(0.66)
+      new CoverageData(blocks(true, true, false)).rate mustEqual Some(BigDecimal(0.66))
     }
     "skip placeholders" in {
       val data = new CoverageData(CoveredBlock("c1", 99999, blockName("x"), 1, true) :: blocks(true, true, false, false))

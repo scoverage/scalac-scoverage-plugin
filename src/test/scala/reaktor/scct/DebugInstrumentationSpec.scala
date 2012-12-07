@@ -3,12 +3,17 @@ package reaktor.scct
 class DebugInstrumentationSpec extends InstrumentationSpec {
   override def debug = false
 
-  /* works: */
-  "extending java classes" in {
-    offsetsMatch("""|class Foo @extends java.util.ArrayList[String] {
-                    |  override def size = @12
-                    |}""".stripMargin)
+  /* don't know:
+  "literal in partial functions" in {
+    val blocks = compileToData("""|class Foo {
+                                  |  def collect(x: String): String = x.collect {
+                                  |    case 'a' => 'a'
+                                  |  }
+                                  |}""".stripMargin)
+    println(blocks)
+    1 mustEqual 1
   }
+  */
 
   /*
     Doesn't work, the 'def size' hits this and stops instrumentation:

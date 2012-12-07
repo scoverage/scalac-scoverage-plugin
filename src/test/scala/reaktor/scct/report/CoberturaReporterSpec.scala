@@ -24,7 +24,7 @@ class CoberturaReporterSpec extends Specification {
       new CoveredBlock("c1", 1, name, 23, false).increment,
       new CoveredBlock("c1", 2, name, 28, false).increment
     )
-    val projectData = ProjectData("myProject", tmpDir, tmpDir, blocks)
+    val projectData = ProjectData("myProject", tmpDir, tmpDir, blocks.toArray)
     val sut = new CoberturaReporter(projectData, new HtmlReportWriter(tmpDir))
     sut.report
     XML.loadFile(outputFile) must beEqualToIgnoringSpace(
@@ -50,7 +50,7 @@ class CoberturaReporterSpec extends Specification {
   "tail recursive source line reading" in new CleanEnv {
     IO.write(sourceFile, 1.to(4000).mkString("\n").getBytes("utf-8"))
 
-    val projectData = ProjectData("myProject", tmpDir, tmpDir, blocks(4000, name))
+    val projectData = ProjectData("myProject", tmpDir, tmpDir, blocks(4000, name).toArray)
     val sut = new CoberturaReporter(projectData, new HtmlReportWriter(tmpDir))
     sut.report
     outputFile must beAFile
