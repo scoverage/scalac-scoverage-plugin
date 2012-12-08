@@ -33,4 +33,12 @@
             <version>0.2-SNAPSHOT</version>
         </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>scctgithubrepository</id>
+            <name>scct-github-repository</name>
+            <url>http://mtkopone.github.com/scct/maven-repo/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
 </project>
