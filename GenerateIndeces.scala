@@ -17,7 +17,7 @@ object GenerateIndeces extends App {
   def generateIndex(dir: File) = {
     val dirs = dir.listFiles.filter(_.isDirectory).map(_.getName + "/").toList.sorted
     val files = dir.listFiles.filter(f => f.isFile && f.getName != "index.html").map(_.getName).toList.sorted
-    <html>
+    <html lang="en">
     <head><link type="text/css" href={rootLink(dir) + "/maven-repo.css"} rel="stylesheet" /></head>
     <body>
       <h1>{ path(dir) }</h1>
