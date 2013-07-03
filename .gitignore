@@ -1,10 +1,13 @@
-project/boot/
-project/build/target/
-project/plugins/lib_managed/
-project/plugins/project/
-project/plugins/src_managed/
-project/plugins/target/
-project/sbt_project_definition.iml
-lib_managed/
+*.class
+*.log
+
+# sbt specific
+dist/*
 target/
-self-report/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+
+# Scala-IDE specific
+.scala_dependencies

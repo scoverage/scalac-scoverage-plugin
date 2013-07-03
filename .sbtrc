@@ -1,3 +1,0 @@
-alias c=compile
-alias tc=test:compile
-alias gi=gen-idea
