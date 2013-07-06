@@ -61,15 +61,12 @@
         <compiler.version.source>1.6</compiler.version.source>
         <compiler.version.target>1.6</compiler.version.target>
 
-        <commons.io.version>2.4</commons.io.version>
-        <commons.beanutils.version>1.8.3</commons.beanutils.version>
-
         <junit.version>4.11</junit.version>
         <log4j.version>1.2.17</log4j.version>
         <mockito.version>1.9.5</mockito.version>
         <slf4j.version>1.6.6</slf4j.version>
         <scala.test.version>1.9.1</scala.test.version>
-        <scala.version>2.10.1</scala.version>
+        <scala.version>2.10.2</scala.version>
     </properties>
 
     <dependencyManagement>
@@ -219,7 +216,7 @@
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-compiler</artifactId>
-            <version>2.10.2</version>
+            <version>${scala.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -256,37 +253,6 @@
             <artifactId>scalatest_2.10</artifactId>
             <version>${scala.test.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-scala_2.10</artifactId>
-            <version>2.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>2.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>2.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-json-org</artifactId>
-            <version>2.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.2.2</version>
         </dependency>
     </dependencies>
 
