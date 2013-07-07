@@ -50,7 +50,7 @@ case class MeasuredFile(source: SourceFile, statements: Iterable[MeasuredStateme
     def lineStatus(lineNumber: Int): LineStatus = {
         statements.filter(_.line == lineNumber) match {
             case i if i.isEmpty => NotInstrumented
-            case i if i.filter(_.count == 0).isEmpty => MissingCoverage
+            case i if i.size > 0 && i.exists(_.count == 0) => MissingCoverage
             case _ => Covered
         }
     }

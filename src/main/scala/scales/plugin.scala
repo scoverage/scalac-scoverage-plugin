@@ -27,6 +27,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
               .coverage
               .statements
               .size + " statments")
+            println("Statements=" + Instrumentation.coverage.statements)
             val writer = ScalesHtmlWriter
             writer.write(Instrumentation.coverage)
         }

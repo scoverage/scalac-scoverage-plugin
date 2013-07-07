@@ -31,11 +31,12 @@ object ScalesHtmlWriter extends CoverageWriter {
         lines(file.source).map(line => {
             lineNumber = lineNumber + 1
             val status = file.lineStatus(lineNumber)
+            val css = lineCss(status)
             <tr>
                 <td>
-                    {lineNumber}
+                    {lineNumber.toString}
                 </td>
-                <td css={lineCss(status)}>
+                <td style={css}>
                     {Unparsed(formatLine(line))}
                 </td>
             </tr>
@@ -60,8 +61,10 @@ object ScalesHtmlWriter extends CoverageWriter {
                 {file.source}
             </h1>
             <div>Statement Coverage:
-                {file.invokedStatements.toString} / {file.totalStatements.toString}
-                {file.statementCoverage.toString}%
+                {file.invokedStatements.toString}
+                /
+                {file.totalStatements.toString}{file.statementCoverage.toString}
+                %
             </div>
             <table>
                 {table(file)}
