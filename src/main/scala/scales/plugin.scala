@@ -21,7 +21,8 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
             // run after the transformer
             super.run
             println("Coverage completed")
-            println(Instrumentation.instructions)
+            println(Instrumentation.instructions.values.size + " Instructions: " + Instrumentation.instructions.values)
+            ScalesReporter.report(Instrumentation.classes.toMap)
         }
     }
     val phaseName: String = "coverage inspector phase"
@@ -50,7 +51,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
         // wraps the given tree with an Instrumentation call
         def instrument(tree: Tree) = {
-            val instruction = Instrumentation.add(_safeSource(tree), _safeStart(tree), _safeLine(tree))
+            val instruction = Instrumentation.add(_safeSource(tree).getOrElse("unknown"), _safeStart(tree), _safeLine(tree))
             val apply = invokeCall(instruction.id)
             localTyper.typed(atPos(tree.pos)(apply))
         }
@@ -65,6 +66,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
             tree match {
 
+                case _: Import => tree
                 case _: PackageDef => super.transform(tree)
                 case _: ClassDef => super.transform(tree)
                 case t: Template => treeCopy.Template(tree, t.parents, t.self, transformStatements(t.body))
@@ -74,9 +76,15 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
                 case _: Block => super.transform(tree)
                 case EmptyTree => super.transform(tree)
 
+                case f: Function => treeCopy.Function(tree, f.vparams, transform(f.body))
+
+                case l: LabelDef => treeCopy.LabelDef(tree, l.name, l.params, transform(l.rhs))
+
                 case d: DefDef if tree.symbol.isConstructor && (tree.symbol.isTrait || tree.symbol.isModule) => tree
                 case d: DefDef if tree.symbol.isConstructor => tree
                 case d: DefDef if d.symbol.isCaseAccessor => tree
+                case d: DefDef if d.symbol.isStable && d.symbol.isAccessor => tree // hidden accessor methods
+                case d: DefDef if d.symbol.isParamAccessor && d.symbol.isAccessor => tree // hidden setter methods
                 case d: DefDef if tree.symbol.isDeferred => tree // abstract methods
                 case d: DefDef if d.symbol.isSynthetic => tree // such as auto generated hash code methods in case classes
                 case _: DefDef => super.transform(tree)
@@ -84,25 +92,22 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
                 case m: ModuleDef if m.symbol.isSynthetic => tree // a generated object, such as case class companion
                 case _: ModuleDef => super.transform(tree)
 
-                case v: ValDef if v.symbol.isParamAccessor => tree
-                case v: ValDef if v.symbol.isCaseAccessor => tree
+                case v: ValDef if v.symbol.isParamAccessor && v.symbol.isCaseAccessor => tree // case param accessores
                 case v: ValDef => treeCopy.ValDef(tree, v.mods, v.name, v.tpt, transform(v.rhs))
 
-                case a: Assign =>
-                    println("Assign: " + a)
-                    a
+                case apply: Apply => instrument(apply)
+                case assign: Assign => instrument(assign)
 
                 case Match(clause: Tree, cases: List[CaseDef]) => treeCopy.Match(tree, instrument(clause), transformCases(cases))
                 case Try(t: Tree, cases: List[CaseDef], f: Tree) => treeCopy.Try(tree, instrument(t), transformCases(cases), instrument(f))
 
-                case apply: Apply =>
-                    println("Instrumenting apply " + apply)
-                    instrument(apply)
+                //       println("Instrumenting apply " + apply)
+
                 //                case literal: Literal => instrument(literal)
                 //    case select: Select => instrument(select)
 
                 case _ =>
-                    println("Unrecognized construct sending to parent: " + tree.getClass + " " + tree.symbol)
+                    println("Unexpected construct: " + tree.getClass + " " + tree.symbol)
                     super.transform(tree)
             }
         }
