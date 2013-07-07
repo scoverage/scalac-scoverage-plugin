@@ -112,6 +112,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
                 case d: DefDef if d.symbol.isSynthetic => tree // such as auto generated hash code methods in case classes
                 case d: DefDef =>
                     setPackageAndClass(d.symbol)
+                    Instrumentation.coverage.methodNames.append(d.name.toString)
                     super.transform(tree)
 
                 case m: ModuleDef if m.symbol.isSynthetic => tree // a generated object, such as case class companion

@@ -34,8 +34,15 @@ class Coverage {
     val statements = new ListBuffer[MeasuredStatement]
     val sources = mutable.Set[SourceFile]()
     val loc = sources.map(src => new String(src.content).count(_ == '\n')).sum
+    val ncloc = sources.map(src => new String(src.content).replaceAll("/\\*.*?\\*/", "").count(_ == '\n')).sum
     val packageNames = mutable.Set[String]()
-    val classNames = mutable.Set[String]()
+    def packageCount = packageNames.size
+    val classNames = new ListBuffer[String]()
+    def classCount = classNames.size
+    val methodNames = new ListBuffer[String]()
+    def methodCount = methodNames.size
+    def classesPerPackage = classCount / packageCount.toDouble
+    def methodsPerClass = methodCount / classCount.toDouble
 
     def add(stmt: MeasuredStatement): Unit = statements.append(stmt)
     def invoked(id: Int): Unit = statements.find(_.id == id).foreach(_.invoked)
@@ -43,6 +50,7 @@ class Coverage {
     def files = statements.groupBy(_.source.path).map(arg => MeasuredFile(arg._2.head.source, arg._2))
     def packages: Iterable[MeasuredPackage] = statements.groupBy(_._package).map(arg => MeasuredPackage(arg._1, arg._2))
     def statementCoverage: Double = statements.count(_.count > 0) / statements.size.toDouble
+    def statementCount = statements.size
 }
 
 case class MeasuredPackage(name: String, statements: Iterable[MeasuredStatement]) {
