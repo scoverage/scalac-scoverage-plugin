@@ -38,7 +38,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
     protected def newTransformer(unit: CompilationUnit): CoverageTransformer = new CoverageTransformer(unit)
 
     class CoverageTransformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
-        Instrumentation.coverage.sources.add(unit.source)
+        Instrumentation.coverage.sources.append(unit.source)
 
         import global._
 
@@ -75,11 +75,11 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
         def setPackageAndClass(s: Symbol) {
             _package = s.owner.enclosingPackage.nameString
-            _class = s.owner.fullNameString
+            _class = s.owner.enclClass.fullNameString
         }
 
         def registerPackage(p: PackageDef): Unit = Instrumentation.coverage.packageNames.add(p.name.toString)
-        def registerClass(p: ClassDef): Unit = Instrumentation.coverage.classNames.add(p.name.toString)
+        def registerClass(p: ClassDef): Unit = Instrumentation.coverage.classNames.append(p.name.toString)
 
         def process(tree: Tree): Tree = {
 
@@ -89,9 +89,12 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
                 case p: PackageDef =>
                     registerPackage(p)
                     super.transform(tree)
+
+                case c: ClassDef if c.symbol.isAnonymousClass || c.symbol.isAnonymousFunction => super.transform(tree)
                 case c: ClassDef =>
                     registerClass(c)
                     super.transform(tree)
+
                 case t: Template => treeCopy.Template(tree, t.parents, t.self, transformStatements(t.body))
                 case _: TypeTree => super.transform(tree)
                 case _: If => super.transform(tree)

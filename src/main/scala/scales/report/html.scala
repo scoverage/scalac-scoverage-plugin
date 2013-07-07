@@ -20,6 +20,14 @@ object ScalesHtmlWriter extends CoverageWriter {
 
     }
 
+    def risks(coverage: Coverage) = {
+        <div id="risks">
+            <div>Total 20 Project Risks</div>{coverage.risks(20).map(arg => <div>
+            {arg.name}
+        </div>)}
+        </div>
+    }
+
     def writeOverview(coverage: Coverage) {
 
         val overview = <html>
@@ -69,7 +77,7 @@ object ScalesHtmlWriter extends CoverageWriter {
                             {coverage.methodCount.toString}
                         </td>
                     </tr>
-                </table>
+                </table>{risks(coverage)}
             </body>
         </html>
 

@@ -32,14 +32,15 @@ case object NotInstrumented extends LineStatus
 class Coverage {
 
     val statements = new ListBuffer[MeasuredStatement]
-    val sources = mutable.Set[SourceFile]()
-    val loc = sources.map(src => new String(src.content).count(_ == '\n')).sum
-    val ncloc = sources.map(src => new String(src.content).replaceAll("/\\*.*?\\*/", "").count(_ == '\n')).sum
+    val sources = new ListBuffer[SourceFile]
     val packageNames = mutable.Set[String]()
-    def packageCount = packageNames.size
     val classNames = new ListBuffer[String]()
-    def classCount = classNames.size
     val methodNames = new ListBuffer[String]()
+
+    def loc = sources.map(src => new String(src.content).count(_ == '\n')).sum
+    def ncloc = sources.map(src => new String(src.content).replaceAll("/\\*.*?\\*/", "").count(_ == '\n')).sum
+    def packageCount = packageNames.size
+    def classCount = classNames.size
     def methodCount = methodNames.size
     def classesPerPackage = classCount / packageCount.toDouble
     def methodsPerClass = methodCount / classCount.toDouble
@@ -51,6 +52,9 @@ class Coverage {
     def packages: Iterable[MeasuredPackage] = statements.groupBy(_._package).map(arg => MeasuredPackage(arg._1, arg._2))
     def statementCoverage: Double = statements.count(_.count > 0) / statements.size.toDouble
     def statementCount = statements.size
+    def classes = statements.groupBy(_.fqn).map(arg => MeasuredClass(arg._1, arg._2))
+
+    def risks(limit: Int) = classes.toSeq.sortBy(_.statementCoverage).take(limit)
 }
 
 case class MeasuredPackage(name: String, statements: Iterable[MeasuredStatement]) {
@@ -81,6 +85,7 @@ case class MeasuredClass(name: String, statements: Iterable[MeasuredStatement]) 
 }
 
 case class MeasuredStatement(source: SourceFile, _package: String, _class: String, id: Int, start: Int, line: Int, var end: Int = -1) {
+    val fqn = (_package + ".").replace("<empty>.", "") + _class
     var count = 0
     def invoked: Unit = count = count + 1
 }
