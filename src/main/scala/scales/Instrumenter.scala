@@ -1,4 +1,4 @@
-package com
+package scales
 
 /** @author Stephen Samuel */
 object Instrumenter {

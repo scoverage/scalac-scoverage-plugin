@@ -1,4 +1,4 @@
-package com.sksamuel.scales
+package scales
 
 /** @author Stephen Samuel */
 case class Instruction(id: Int, name: String, offset: Int) {

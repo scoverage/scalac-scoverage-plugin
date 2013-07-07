@@ -1,42 +1,36 @@
-package com.sksamuel.scales
+package scales
 
-import scala.tools.nsc
-import nsc.plugins.Plugin
-import nsc.plugins.PluginComponent
-import scala.tools.nsc._
-import tools.nsc.transform.{Transform, TypingTransformers}
-import nsc.ast.TreeDSL
+import scala.tools.nsc.plugins.{PluginComponent, Plugin}
+import scala.tools.nsc.Global
+import scala.tools.nsc.transform.{Transform, TypingTransformers}
+import scala.tools.nsc.ast.TreeDSL
 
 /** @author Stephen Samuel */
-
-class ScalesPlugin(val global: Global) extends Plugin {
-
-    val name = "something2"
-    val description = "Scala code coverage"
-    val components = List(new ScalesComponent(global))
+class ScalePlugin(val global: Global) extends Plugin {
+    val name: String = "scales_coverage_plugin"
+    val components: List[PluginComponent] = List(new ScaleComponent(global))
+    val description: String = "code coverage compiler plugin"
 }
 
-class ScalesComponent(val global: Global) extends PluginComponent with TypingTransformers with Transform with TreeDSL {
+class ScaleComponent(val global: Global) extends PluginComponent with TypingTransformers with Transform with TreeDSL {
 
     import global._
+    import CODE._
 
-    def newTransformer(unit: CompilationUnit) = new ScalesTransformer(unit)
-
-    val runsAfter = List[String]("typer")
-    override val runsBefore = List[String]("patmat")
-    val phaseName: String = "ScalesInstrumentPhase"
-
-    override def newPhase(prev: scala.tools.nsc.Phase): StdPhase = new Phase(prev) {
+    override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
         override def run: Unit = {
             // run after the transformer
             super.run
             println("Coverage completed")
         }
     }
+    val phaseName: String = "coverage inspector phase"
+    val runsAfter: List[String] = List("typer")
+    protected def newTransformer(unit: CompilationUnit): CoverageTransformer = new CoverageTransformer(unit)
 
-    class ScalesTransformer(unit: CompilationUnit) extends TypingTransformer(unit) {
+    class CoverageTransformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
 
-        import CODE._
+        import global._
 
         def foo = {
             println("Called id: " + 45)
