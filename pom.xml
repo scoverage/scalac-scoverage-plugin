@@ -13,8 +13,8 @@
     <artifactId>scales</artifactId>
     <packaging>jar</packaging>
     <version>0.0.1-SNAPSHOT</version>
-    <name>elastic4s</name>
-    <url>https://github.com/sksamuel/scales4s</url>
+    <name>scales</name>
+    <url>https://github.com/sksamuel/scales</url>
 
     <prerequisites>
         <maven>3.0</maven>
