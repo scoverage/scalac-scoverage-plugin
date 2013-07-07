@@ -11,7 +11,7 @@ import java.util.Date
 object ScalesHtmlWriter extends CoverageWriter {
     def write(coverage: Coverage) {
 
-        writeOverview(coverage)
+        writeIndex(coverage)
 
         for ( file <- coverage.files ) {
             val data = html(file)
@@ -28,60 +28,90 @@ object ScalesHtmlWriter extends CoverageWriter {
         </div>
     }
 
-    def writeOverview(coverage: Coverage) {
+    def packages(coverage: Coverage) = {
+        val rows = coverage.packages.map(arg => {
+            <tr>
+                <td>
+                    {arg.name}
+                </td>
+                <td>
+                    {arg.invokedClasses.toString}
+                    /
+                    {arg.classCount}
+                    (
+                    {arg.classCoverage.toString}
+                    %)
+                </td>
+                <td>
+                    {arg.invokedStatements.toString}
+                    /
+                    {arg.statementCount}
+                    (
+                    {arg.statementCoverage.toString}
+                    %)
+                </td>
+            </tr>
+        })
+        <table>
+            {rows}
+        </table>
+    }
 
-        val overview = <html>
+    def overview(coverage: Coverage) = {
+        <table>
+            <caption>Statistics generated at
+                {new Date().toString}
+            </caption>
+            <tr>
+                <td>Lines of code:</td>
+                <td>
+                    {coverage.loc.toString}
+                </td>
+                <td>Statements:</td>
+                <td>
+                    {coverage.statementCount.toString}
+                </td>
+                <td>Clases per package:</td>
+                <td>
+                    {coverage.classesPerPackage.toString}
+                </td>
+                <td>Methods per class:</td>
+                <td>
+                    {coverage.methodsPerClass.toString}
+                </td>
+            </tr>
+            <tr>
+                <td>Non comment lines of code:</td>
+                <td>
+                    {coverage.ncloc.toString}
+                </td>
+                <td>Packages:</td>
+                <td>
+                    {coverage.classCount.toString}
+                </td>
+                <td>Classes:</td>
+                <td>
+                    {coverage.packageCount.toString}
+                </td>
+                <td>Methods:</td>
+                <td>
+                    {coverage.methodCount.toString}
+                </td>
+            </tr>
+        </table>
+    }
+
+    def writeIndex(coverage: Coverage) {
+        val data = <html>
             <head>
                 <title>Scales Code Coverage Overview</title>
                 <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.2.0/pure-nr-min.css"/>
             </head>
             <body>
-                <h1>Scales Code Coverage</h1>
-                <table>
-                    <caption>Statistics generated at
-                        {new Date().toString}
-                    </caption>
-                    <tr>
-                        <td>Lines of code:</td>
-                        <td>
-                            {coverage.loc.toString}
-                        </td>
-                        <td>Statements:</td>
-                        <td>
-                            {coverage.statementCount.toString}
-                        </td>
-                        <td>Clases per package:</td>
-                        <td>
-                            {coverage.classesPerPackage.toString}
-                        </td>
-                        <td>Methods per class:</td>
-                        <td>
-                            {coverage.methodsPerClass.toString}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Non comment lines of code:</td>
-                        <td>
-                            {coverage.ncloc.toString}
-                        </td>
-                        <td>Packages:</td>
-                        <td>
-                            {coverage.classCount.toString}
-                        </td>
-                        <td>Classes:</td>
-                        <td>
-                            {coverage.packageCount.toString}
-                        </td>
-                        <td>Methods:</td>
-                        <td>
-                            {coverage.methodCount.toString}
-                        </td>
-                    </tr>
-                </table>{risks(coverage)}
+                <h1>Scales Code Coverage</h1>{overview(coverage)}{risks(coverage)}{packages(coverage)}
             </body>
         </html>
-
-        write("index.html", overview.toString)
+        write("index.html", data.toString)
     }
 
     def write(path: String, data: AnyRef) {
@@ -133,7 +163,7 @@ object ScalesHtmlWriter extends CoverageWriter {
             <div>Statement Coverage:
                 {file.invokedStatements.toString}
                 /
-                {file.totalStatements.toString}{file.statementCoverage.toString}
+                {file.statementCount.toString}{file.statementCoverage.toString}
                 %
             </div>
             <table>

@@ -2,12 +2,18 @@ import java.util.concurrent.atomic.AtomicInteger
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
+/** some lovely comments **/
 object Test {
 
+    /*
+
+    More comments
+     */
     val classes = mutable.Map[String, MeasuredClass]()
     val instructions = mutable.Map[Int, MeasuredInstruction]()
     val ids = new AtomicInteger(0)
 
+    // and more
     def add(source: String, start: Int, line: Int) = {
         val id = ids.incrementAndGet()
         val instruction = MeasuredInstruction(source, id, start, line)

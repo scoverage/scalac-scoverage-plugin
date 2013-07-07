@@ -44,6 +44,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
         var _package: String = null
         var _class: String = null
+        var _method: String = null
 
         def _safeStart(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.startOrPoint else -1
         def _safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.safeLine else -1
@@ -62,7 +63,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
             _safeSource(tree) match {
                 case None => tree
                 case Some(source) =>
-                    val instruction = Instrumentation.add(source, _package, _class, _safeStart(tree), _safeLine(tree))
+                    val instruction = Instrumentation.add(source, _package, _class, _method, _safeStart(tree), _safeLine(tree))
                     val apply = invokeCall(instruction.id)
                     localTyper.typed(atPos(tree.pos)(apply))
             }
@@ -76,6 +77,9 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
         def setPackageAndClass(s: Symbol) {
             _package = s.owner.enclosingPackage.nameString
             _class = s.owner.enclClass.fullNameString
+        }
+        def setMethod(s: Symbol) {
+            _method = s.owner.enclMethod.fullNameString
         }
 
         def registerPackage(p: PackageDef): Unit = Instrumentation.coverage.packageNames.add(p.name.toString)
@@ -92,6 +96,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
                 case c: ClassDef if c.symbol.isAnonymousClass || c.symbol.isAnonymousFunction => super.transform(tree)
                 case c: ClassDef =>
+                    setPackageAndClass(c.symbol)
                     registerClass(c)
                     super.transform(tree)
 
@@ -115,15 +120,17 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
                 case d: DefDef if d.symbol.isSynthetic => tree // such as auto generated hash code methods in case classes
                 case d: DefDef =>
                     setPackageAndClass(d.symbol)
+                    setMethod(d.symbol)
                     Instrumentation.coverage.methodNames.append(d.name.toString)
                     super.transform(tree)
 
                 case m: ModuleDef if m.symbol.isSynthetic => tree // a generated object, such as case class companion
                 case m: ModuleDef => super.transform(tree)
 
-                case v: ValDef if v.symbol.isParamAccessor && v.symbol.isCaseAccessor => tree // case param accessores
+                case v: ValDef if v.symbol.isParamAccessor && v.symbol.isCaseAccessor => tree // case param accessors
                 case v: ValDef =>
                     setPackageAndClass(v.symbol)
+                    setMethod(v.symbol)
                     treeCopy.ValDef(tree, v.mods, v.name, v.tpt, transform(v.rhs))
 
                 case apply: Apply => instrument(apply)
