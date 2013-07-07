@@ -4,7 +4,7 @@ import scala.tools.nsc.plugins.{PluginComponent, Plugin}
 import scala.tools.nsc.Global
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
 import scala.tools.nsc.ast.TreeDSL
-import scales.report.ScalesHtmlWriter
+import scales.report.{ScalesXmlWriter, ScalesHtmlWriter}
 import scala.reflect.internal.util.SourceFile
 
 /** @author Stephen Samuel */
@@ -30,6 +30,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
             println("Statements=" + Instrumentation.coverage.statements)
             val writer = ScalesHtmlWriter
             writer.write(Instrumentation.coverage)
+            ScalesXmlWriter.write(Instrumentation.coverage)
         }
     }
 
@@ -63,7 +64,8 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
             _safeSource(tree) match {
                 case None => tree
                 case Some(source) =>
-                    val instruction = Instrumentation.add(source, _package, _class, _method, _safeStart(tree), _safeLine(tree))
+                    val instruction =
+                        Instrumentation.add(source, _package, _class, _method, _safeStart(tree), _safeLine(tree), tree.toString())
                     val apply = invokeCall(instruction.id)
                     localTyper.typed(atPos(tree.pos)(apply))
             }

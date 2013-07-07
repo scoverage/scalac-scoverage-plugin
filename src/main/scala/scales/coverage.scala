@@ -3,8 +3,6 @@ package scales
 import scala.collection.mutable.ListBuffer
 import scala.reflect.internal.util.SourceFile
 import scala.collection.mutable
-import java.lang.String
-import scala.Predef.String
 
 /** @author Stephen Samuel */
 class Coverage extends StatementCoverage {
@@ -15,8 +13,10 @@ class Coverage extends StatementCoverage {
     val classNames = new ListBuffer[String]()
     val methodNames = new ListBuffer[String]()
 
-    def loc = sources.map(src => new String(src.content).replaceAll("^\\s.*$", "").split("\n").size).sum
-    def ncloc = sources.map(src => new String(src.content).replaceAll("/\\*.*?\\*/", "").replace("//.*$", "").count(_ == '\n')).sum
+    def loc = sources.map(src => new String(src.content).replaceAll("^\\s.*$", "").split("\n").length).sum
+    def ncloc =
+        sources
+          .map(src => new String(src.content).replaceAll("/\\*.*?\\*/", "").replace("//.*$", "").split("\n").count(_ == '\n')).sum
     def packageCount = packageNames.size
     def classCount = classNames.size
     def methodCount = methodNames.size
@@ -57,7 +57,7 @@ case class MeasuredStatement(source: SourceFile,
                              id: Int,
                              start: Int,
                              line: Int,
-                             var end: Int = -1) {
+                             desc: String) {
     val fqn = (_package + ".").replace("<empty>.", "") + _class
     var count = 0
     def invoked: Unit = count = count + 1

@@ -1,6 +1,8 @@
 package scales.report
 
-/** @author Stephen Samuel */
-class CoberturaXmlWriter {
+import scales.Coverage
 
+/** @author Stephen Samuel */
+class CoberturaXmlWriter extends ScalesWriter {
+    def write(coverage: Coverage) {}
 }
