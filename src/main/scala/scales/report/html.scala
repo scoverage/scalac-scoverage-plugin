@@ -7,9 +7,9 @@ import scala.reflect.internal.util.SourceFile
 /** @author Stephen Samuel */
 object ScalesHtmlWriter extends CoverageWriter {
     def write(coverage: Coverage) {
-        for ( source <- coverage.files.keys ) {
-            val data = html(source)
-            write(source.path.replace(".scala", "") + ".html", data)
+        for ( file <- coverage.files ) {
+            val data = html(file.source)
+            write(file.source.path.replace(".scala", "") + ".html", data)
         }
     }
 

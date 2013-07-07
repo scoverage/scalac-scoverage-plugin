@@ -22,8 +22,8 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
         // run after the transformer to output the report
         override def run: Unit = {
             super.run
-            println("Coverage completed")
-            println(Instrumentation.coverage.instructions.values.size + " Instructions: " + Instrumentation.coverage.instructions.values)
+            println("** Coverage completed **")
+            println("Statement coverage: " + Instrumentation.coverage.statementCoverage)
             val writer = ScalesHtmlWriter
             writer.write(Instrumentation.coverage)
         }
@@ -37,7 +37,8 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
         import global._
 
-        var owner: String = null
+        var _package: String = null
+        var _class: String = null
 
         def _safeStart(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.startOrPoint else -1
         def _safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.safeLine else -1
@@ -56,7 +57,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
             _safeSource(tree) match {
                 case None => tree
                 case Some(source) =>
-                    val instruction = Instrumentation.add(source, owner, _safeStart(tree), _safeLine(tree))
+                    val instruction = Instrumentation.add(source, _package, _class, _safeStart(tree), _safeLine(tree))
                     val apply = invokeCall(instruction.id)
                     localTyper.typed(atPos(tree.pos)(apply))
             }
@@ -66,6 +67,11 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
             Apply(Select(Select(Ident("scales"),
                 newTermName("Instrumentation")),
                 newTermName("invoked")), List(Literal(Constant(id))))
+
+        def setPackageAndClass(s: Symbol) {
+            _package = s.owner.enclosingPackage.nameString
+            _class = s.owner.fullNameString
+        }
 
         def process(tree: Tree): Tree = {
 
@@ -93,7 +99,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
                 case d: DefDef if tree.symbol.isDeferred => tree // abstract methods
                 case d: DefDef if d.symbol.isSynthetic => tree // such as auto generated hash code methods in case classes
                 case d: DefDef =>
-                    owner = d.symbol.owner.enclosingPackage.nameString + "." + d.symbol.owner.fullNameString
+                    setPackageAndClass(d.symbol)
                     super.transform(tree)
 
                 case m: ModuleDef if m.symbol.isSynthetic => tree // a generated object, such as case class companion
@@ -101,7 +107,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
                 case v: ValDef if v.symbol.isParamAccessor && v.symbol.isCaseAccessor => tree // case param accessores
                 case v: ValDef =>
-                    owner = v.symbol.owner.enclosingPackage.nameString + "." + v.symbol.owner.fullNameString
+                    setPackageAndClass(v.symbol)
                     treeCopy.ValDef(tree, v.mods, v.name, v.tpt, transform(v.rhs))
 
                 case apply: Apply => instrument(apply)
