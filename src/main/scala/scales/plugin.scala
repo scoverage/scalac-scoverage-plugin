@@ -15,7 +15,6 @@ class ScalesPlugin(val global: Global) extends Plugin {
 class ScalesComponent(val global: Global) extends PluginComponent with TypingTransformers with Transform with TreeDSL {
 
     import global._
-    import CODE._
 
     override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
         override def run: Unit = {
@@ -35,15 +34,19 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
         def _constructor(tree: Tree) = tree.symbol != null && tree.symbol.isConstructor
         def _safeStart(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.startOrPoint else -1
-        def _safeEnd(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.endOrPoint else -1
 
         override def transform(tree: Tree) = {
-            println(s"Process ${tree.getClass} - symbol=${tree.symbol}")
             process(tree)
         }
 
+        // instrument the given case defintions not changing the patterns or guards
+        def transformCases(cases: List[CaseDef]): List[CaseDef] = {
+            cases.map(c => treeCopy.CaseDef(c, c.pat, c.guard, instrument(c.body)))
+        }
+
+        // wraps the given tree with an Instrumentation call
         def instrument(tree: Tree) = {
-            val instruction = Instrumentation.add(_safeStart(tree), _safeEnd(tree))
+            val instruction = Instrumentation.add(_safeStart(tree))
             val apply = invokeCall(instruction.id)
             localTyper.typed(atPos(tree.pos)(apply))
         }
@@ -70,10 +73,14 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
                 case _: If => super.transform(tree)
                 case _: Ident => super.transform(tree)
                 case _: Block => super.transform(tree)
+                case _: ValDef => super.transform(tree)
                 case EmptyTree => super.transform(tree)
 
+                case Match(clause: Tree, cases: List[CaseDef]) => treeCopy.Match(tree, instrument(clause), transformCases(cases))
+                case Try(t: Tree, cases: List[CaseDef], f: Tree) => treeCopy.Try(tree, instrument(t), transformCases(cases), instrument(f))
+
                 case apply: Apply => instrument(apply)
-                case literal: Literal => instrument(literal)
+                //                case literal: Literal => instrument(literal)
                 //    case select: Select => instrument(select)
 
                 case _ =>

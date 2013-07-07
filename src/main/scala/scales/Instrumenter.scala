@@ -9,9 +9,9 @@ object Instrumentation {
     val instructions = mutable.Map[Int, MeasuredInstruction]()
     val ids = new AtomicInteger(0)
 
-    def add(start: Int, end: Int) = {
+    def add(start: Int) = {
         val id = ids.incrementAndGet()
-        val instruction = MeasuredInstruction(id, start, end)
+        val instruction = MeasuredInstruction(id, start, -1)
         instructions.put(id, instruction)
         instruction
     }
@@ -23,7 +23,7 @@ object Instrumentation {
     }
 }
 
-case class MeasuredInstruction(id: Int, start: Int, end: Int) {
+case class MeasuredInstruction(id: Int, start: Int, var end: Int) {
     var count = 0
     def invoked: Unit = count = count + 1
 }
