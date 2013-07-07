@@ -9,9 +9,9 @@ object Instrumentation {
     val instructions = mutable.Map[Int, MeasuredInstruction]()
     val ids = new AtomicInteger(0)
 
-    def add(start: Int) = {
+    def add(source: Option[String], start: Int, line: Int) = {
         val id = ids.incrementAndGet()
-        val instruction = MeasuredInstruction(id, start, -1)
+        val instruction = MeasuredInstruction(source.orNull, id, start, line)
         instructions.put(id, instruction)
         instruction
     }
@@ -21,9 +21,11 @@ object Instrumentation {
         instructions.get(id).foreach(_.invoked)
         id
     }
+
+    def instructionCoverage: Double = instructions.values.count(_.count > 0) / instructions.size
 }
 
-case class MeasuredInstruction(id: Int, start: Int, var end: Int) {
+case class MeasuredInstruction(source: String, id: Int, start: Int, line: Int, var end: Int = -1) {
     var count = 0
     def invoked: Unit = count = count + 1
 }

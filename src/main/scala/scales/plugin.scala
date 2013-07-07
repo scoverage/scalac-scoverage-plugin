@@ -32,10 +32,13 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
         import global._
 
-        def _constructor(tree: Tree) = tree.symbol != null && tree.symbol.isConstructor
         def _safeStart(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.startOrPoint else -1
+        def _safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.safeLine else -1
+        def _safeSource(tree: Tree): Option[String] = if (tree.pos.isDefined) Some(tree.pos.source.path) else None
 
         override def transform(tree: Tree) = {
+            // println(showRaw(tree))
+            //tree
             process(tree)
         }
 
@@ -46,7 +49,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
         // wraps the given tree with an Instrumentation call
         def instrument(tree: Tree) = {
-            val instruction = Instrumentation.add(_safeStart(tree))
+            val instruction = Instrumentation.add(_safeSource(tree), _safeStart(tree), _safeLine(tree))
             val apply = invokeCall(instruction.id)
             localTyper.typed(atPos(tree.pos)(apply))
         }
@@ -61,30 +64,44 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
             tree match {
 
-                case dd: DefDef if _constructor(dd) =>
-                    println("Not processing constructor")
-                    tree
-
                 case _: PackageDef => super.transform(tree)
                 case _: ClassDef => super.transform(tree)
                 case _: Template => super.transform(tree)
                 case _: TypeTree => super.transform(tree)
-                case _: DefDef => super.transform(tree)
                 case _: If => super.transform(tree)
                 case _: Ident => super.transform(tree)
                 case _: Block => super.transform(tree)
-                case _: ValDef => super.transform(tree)
                 case EmptyTree => super.transform(tree)
+
+                case d: DefDef if tree.symbol.isConstructor && (tree.symbol.isTrait || tree.symbol.isModule) => tree
+                case d: DefDef if tree.symbol.isConstructor => tree
+                case d: DefDef if d.symbol.isCaseAccessor => tree
+                case d: DefDef if tree.symbol.isDeferred => tree // abstract methods
+                case d: DefDef if d.symbol.isSynthetic => tree // such as auto generated hash code methods in case classes
+                case _: DefDef => super.transform(tree)
+
+                case m: ModuleDef if m.symbol.isSynthetic => tree // a generated object, such as case class companion
+                case _: ModuleDef => super.transform(tree)
+
+                case v: ValDef if v.symbol.isParamAccessor => tree
+                case v: ValDef if v.symbol.isCaseAccessor => tree
+                case v: ValDef => treeCopy.ValDef(tree, v.mods, v.name, v.tpt, transform(v.rhs))
+
+                case a: Assign =>
+                    println("Assign: " + a)
+                    a
 
                 case Match(clause: Tree, cases: List[CaseDef]) => treeCopy.Match(tree, instrument(clause), transformCases(cases))
                 case Try(t: Tree, cases: List[CaseDef], f: Tree) => treeCopy.Try(tree, instrument(t), transformCases(cases), instrument(f))
 
-                case apply: Apply => instrument(apply)
+                case apply: Apply =>
+                    println("Instrumenting apply " + apply)
+                    instrument(apply)
                 //                case literal: Literal => instrument(literal)
                 //    case select: Select => instrument(select)
 
                 case _ =>
-                    println("Unrecognized construct sending to parent: " + tree.getClass)
+                    println("Unrecognized construct sending to parent: " + tree.getClass + " " + tree.symbol)
                     super.transform(tree)
             }
         }
