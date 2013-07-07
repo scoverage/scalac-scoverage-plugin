@@ -37,10 +37,11 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
         def _safeSource(tree: Tree): Option[String] = if (tree.pos.isDefined) Some(tree.pos.source.path) else None
 
         override def transform(tree: Tree) = {
-            // println(showRaw(tree))
-            //tree
+            //   println(s"Processing ${tree.getClass}")
             process(tree)
         }
+
+        def transformStatements(trees: List[Tree]): List[Tree] = trees.map(tree => process(tree))
 
         // instrument the given case defintions not changing the patterns or guards
         def transformCases(cases: List[CaseDef]): List[CaseDef] = {
@@ -66,7 +67,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
                 case _: PackageDef => super.transform(tree)
                 case _: ClassDef => super.transform(tree)
-                case _: Template => super.transform(tree)
+                case t: Template => treeCopy.Template(tree, t.parents, t.self, transformStatements(t.body))
                 case _: TypeTree => super.transform(tree)
                 case _: If => super.transform(tree)
                 case _: Ident => super.transform(tree)
