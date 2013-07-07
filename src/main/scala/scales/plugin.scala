@@ -37,6 +37,8 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
         import global._
 
+        var owner: String = null
+
         def _safeStart(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.startOrPoint else -1
         def _safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.safeLine else -1
         def _safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
@@ -54,14 +56,16 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
             _safeSource(tree) match {
                 case None => tree
                 case Some(source) =>
-                    val instruction = Instrumentation.add(source, _safeStart(tree), _safeLine(tree))
+                    val instruction = Instrumentation.add(source, owner, _safeStart(tree), _safeLine(tree))
                     val apply = invokeCall(instruction.id)
                     localTyper.typed(atPos(tree.pos)(apply))
             }
         }
 
         def invokeCall(id: Int) =
-            Apply(Select(Select(Ident("scales"), newTermName("Instrumentation")), newTermName("invoked")), List(Literal(Constant(id))))
+            Apply(Select(Select(Ident("scales"),
+                newTermName("Instrumentation")),
+                newTermName("invoked")), List(Literal(Constant(id))))
 
         def process(tree: Tree): Tree = {
 
@@ -69,7 +73,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
                 case _: Import => tree
                 case _: PackageDef => super.transform(tree)
-                case _: ClassDef => super.transform(tree)
+                case c: ClassDef => super.transform(tree)
                 case t: Template => treeCopy.Template(tree, t.parents, t.self, transformStatements(t.body))
                 case _: TypeTree => super.transform(tree)
                 case _: If => super.transform(tree)
@@ -88,13 +92,17 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
                 case d: DefDef if d.symbol.isParamAccessor && d.symbol.isAccessor => tree // hidden setter methods
                 case d: DefDef if tree.symbol.isDeferred => tree // abstract methods
                 case d: DefDef if d.symbol.isSynthetic => tree // such as auto generated hash code methods in case classes
-                case _: DefDef => super.transform(tree)
+                case d: DefDef =>
+                    owner = d.symbol.owner.enclosingPackage.nameString + "." + d.symbol.owner.fullNameString
+                    super.transform(tree)
 
                 case m: ModuleDef if m.symbol.isSynthetic => tree // a generated object, such as case class companion
-                case _: ModuleDef => super.transform(tree)
+                case m: ModuleDef => super.transform(tree)
 
                 case v: ValDef if v.symbol.isParamAccessor && v.symbol.isCaseAccessor => tree // case param accessores
-                case v: ValDef => treeCopy.ValDef(tree, v.mods, v.name, v.tpt, transform(v.rhs))
+                case v: ValDef =>
+                    owner = v.symbol.owner.enclosingPackage.nameString + "." + v.symbol.owner.fullNameString
+                    treeCopy.ValDef(tree, v.mods, v.name, v.tpt, transform(v.rhs))
 
                 case apply: Apply => instrument(apply)
                 case assign: Assign => instrument(assign)

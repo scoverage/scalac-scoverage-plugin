@@ -41,3 +41,10 @@ object Test {
     }
 }
 
+trait TestyTrait
+
+class Test2 {
+    def boo {
+        println("boo")
+    }
+}
