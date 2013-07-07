@@ -3,43 +3,49 @@ package scales
 import scala.collection.mutable
 import java.util.concurrent.atomic.AtomicInteger
 import scala.collection.mutable.ListBuffer
+import scala.reflect.internal.util.SourceFile
 
 /** @author Stephen Samuel */
 object Instrumentation {
 
-    val classes = mutable.Map[String, MeasuredClass]()
-    val instructions = mutable.Map[Int, MeasuredInstruction]()
     val ids = new AtomicInteger(0)
+    val coverage = new Coverage
 
-    def add(source: String, start: Int, line: Int) = {
+    def add(source: SourceFile, start: Int, line: Int) = {
         val id = ids.incrementAndGet()
         val instruction = MeasuredInstruction(source, id, start, line)
-        instructions.put(id, instruction)
-        classes.get(source) match {
-            case None => classes.put(source, new MeasuredClass(source))
+        coverage.instructions.put(id, instruction)
+        coverage.files.get(source) match {
+            case None => coverage.files.put(source, new MeasuredFile(source))
             case _ =>
         }
-        classes(source).add(instruction)
+        coverage.files(source).add(instruction)
         instruction
     }
 
     def invoked(id: Int) = {
         println("Hello from coverage: " + id)
-        instructions.get(id).foreach(_.invoked)
+        coverage.instructions.get(id).foreach(_.invoked)
         id
     }
+}
 
+class Coverage {
+    val files = mutable.Map[SourceFile, MeasuredFile]()
+    val instructions = mutable.Map[Int, MeasuredInstruction]()
+
+    // overall coverage
     def instructionCoverage(instructions: Iterable[MeasuredInstruction]): Double =
         instructions.count(_.count > 0) / instructions.size.toDouble
-    def instructionCoverage: Double = instructions.values.count(_.count > 0) / instructions.size
 }
 
-case class MeasuredClass(name: String) {
+case class MeasuredFile(name: SourceFile) {
     val instructions = new ListBuffer[MeasuredInstruction]
     def add(instr: MeasuredInstruction): Unit = instructions.append(instr)
+    def instructionCoverage: Double = instructions.count(_.count > 0) / instructions.size.toDouble
 }
 
-case class MeasuredInstruction(source: String, id: Int, start: Int, line: Int, var end: Int = -1) {
+case class MeasuredInstruction(source: SourceFile, id: Int, start: Int, line: Int, var end: Int = -1) {
     var count = 0
     def invoked: Unit = count = count + 1
 }

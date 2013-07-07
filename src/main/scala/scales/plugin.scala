@@ -4,6 +4,8 @@ import scala.tools.nsc.plugins.{PluginComponent, Plugin}
 import scala.tools.nsc.Global
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
 import scala.tools.nsc.ast.TreeDSL
+import scales.report.ScalesHtmlWriter
+import scala.reflect.internal.util.SourceFile
 
 /** @author Stephen Samuel */
 class ScalesPlugin(val global: Global) extends Plugin {
@@ -17,14 +19,16 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
     import global._
 
     override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
+        // run after the transformer to output the report
         override def run: Unit = {
-            // run after the transformer
             super.run
             println("Coverage completed")
-            println(Instrumentation.instructions.values.size + " Instructions: " + Instrumentation.instructions.values)
-            ScalesReporter.report(Instrumentation.classes.toMap)
+            println(Instrumentation.coverage.instructions.values.size + " Instructions: " + Instrumentation.coverage.instructions.values)
+            val writer = ScalesHtmlWriter
+            writer.write(Instrumentation.coverage)
         }
     }
+
     val phaseName: String = "coverage inspector phase"
     val runsAfter: List[String] = List("typer")
     protected def newTransformer(unit: CompilationUnit): CoverageTransformer = new CoverageTransformer(unit)
@@ -35,13 +39,9 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
         def _safeStart(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.startOrPoint else -1
         def _safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.safeLine else -1
-        def _safeSource(tree: Tree): Option[String] = if (tree.pos.isDefined) Some(tree.pos.source.path) else None
+        def _safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
 
-        override def transform(tree: Tree) = {
-            //   println(s"Processing ${tree.getClass}")
-            process(tree)
-        }
-
+        override def transform(tree: Tree) = process(tree)
         def transformStatements(trees: List[Tree]): List[Tree] = trees.map(tree => process(tree))
 
         // instrument the given case defintions not changing the patterns or guards
@@ -51,16 +51,17 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
         // wraps the given tree with an Instrumentation call
         def instrument(tree: Tree) = {
-            val instruction = Instrumentation.add(_safeSource(tree).getOrElse("unknown"), _safeStart(tree), _safeLine(tree))
-            val apply = invokeCall(instruction.id)
-            localTyper.typed(atPos(tree.pos)(apply))
+            _safeSource(tree) match {
+                case None => tree
+                case Some(source) =>
+                    val instruction = Instrumentation.add(source, _safeStart(tree), _safeLine(tree))
+                    val apply = invokeCall(instruction.id)
+                    localTyper.typed(atPos(tree.pos)(apply))
+            }
         }
 
         def invokeCall(id: Int) =
             Apply(Select(Select(Ident("scales"), newTermName("Instrumentation")), newTermName("invoked")), List(Literal(Constant(id))))
-
-        //        val instrumented = localTyper.typed(BLOCK(apply))
-        //      treeCopy.DefDef(dd, dd.mods, dd.name, dd.tparams, dd.vparamss, dd.tpt, instrumented)
 
         def process(tree: Tree): Tree = {
 
