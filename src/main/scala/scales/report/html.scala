@@ -8,7 +8,7 @@ import scales.MeasuredFile
 import java.util.Date
 
 /** @author Stephen Samuel */
-object ScalesHtmlWriter extends CoverageWriter {
+object ScalesHtmlWriter extends ScalesWriter {
     def write(coverage: Coverage) {
 
         writeIndex(coverage)
