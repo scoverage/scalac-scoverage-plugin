@@ -1,4 +1,4 @@
 <plugin>
     <name>scales</name>
-    <classname>com.sksamuel.scales.ScalesPlugin</classname>
+    <classname>scales.ScalesPlugin</classname>
 </plugin>
