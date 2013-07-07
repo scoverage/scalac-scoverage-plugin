@@ -38,6 +38,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
     protected def newTransformer(unit: CompilationUnit): CoverageTransformer = new CoverageTransformer(unit)
 
     class CoverageTransformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
+        Instrumentation.coverage.sources.add(unit.source)
 
         import global._
 
@@ -77,13 +78,20 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
             _class = s.owner.fullNameString
         }
 
+        def registerPackage(p: PackageDef): Unit = Instrumentation.coverage.packageNames.add(p.name.toString)
+        def registerClass(p: ClassDef): Unit = Instrumentation.coverage.classNames.add(p.name.toString)
+
         def process(tree: Tree): Tree = {
 
             tree match {
 
                 case _: Import => tree
-                case _: PackageDef => super.transform(tree)
-                case c: ClassDef => super.transform(tree)
+                case p: PackageDef =>
+                    registerPackage(p)
+                    super.transform(tree)
+                case c: ClassDef =>
+                    registerClass(c)
+                    super.transform(tree)
                 case t: Template => treeCopy.Template(tree, t.parents, t.self, transformStatements(t.body))
                 case _: TypeTree => super.transform(tree)
                 case _: If => super.transform(tree)

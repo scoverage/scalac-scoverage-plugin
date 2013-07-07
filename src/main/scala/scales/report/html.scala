@@ -54,6 +54,7 @@ object ScalesHtmlWriter extends CoverageWriter {
             <title>
                 {file.source}
             </title>
+            <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.2.0/pure-nr-min.css"/>
         </head>
         <body>
             <h1>

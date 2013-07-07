@@ -3,6 +3,7 @@ package scales
 import java.util.concurrent.atomic.AtomicInteger
 import scala.collection.mutable.ListBuffer
 import scala.reflect.internal.util.SourceFile
+import scala.collection.mutable
 
 /** @author Stephen Samuel */
 object Instrumentation {
@@ -31,6 +32,10 @@ case object NotInstrumented extends LineStatus
 class Coverage {
 
     val statements = new ListBuffer[MeasuredStatement]
+    val sources = mutable.Set[SourceFile]()
+    val loc = sources.map(src => new String(src.content).count(_ == '\n')).sum
+    val packageNames = mutable.Set[String]()
+    val classNames = mutable.Set[String]()
 
     def add(stmt: MeasuredStatement): Unit = statements.append(stmt)
     def invoked(id: Int): Unit = statements.find(_.id == id).foreach(_.invoked)
