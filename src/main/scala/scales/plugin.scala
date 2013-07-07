@@ -23,7 +23,10 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
         override def run: Unit = {
             super.run
             println("** Coverage completed **")
-            println("Statement coverage: " + Instrumentation.coverage.statementCoverage)
+            println("Statement coverage: " + Instrumentation.coverage.statementCoverage + " from " + Instrumentation
+              .coverage
+              .statements
+              .size + " statments")
             val writer = ScalesHtmlWriter
             writer.write(Instrumentation.coverage)
         }

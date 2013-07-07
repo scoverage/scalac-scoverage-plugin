@@ -23,13 +23,19 @@ object Instrumentation {
     }
 }
 
+sealed trait LineStatus
+case object Covered extends LineStatus
+case object MissingCoverage extends LineStatus
+case object NotInstrumented extends LineStatus
+
 class Coverage {
+
     val statements = new ListBuffer[MeasuredStatement]
 
     def add(stmt: MeasuredStatement): Unit = statements.append(stmt)
     def invoked(id: Int): Unit = statements.find(_.id == id).foreach(_.invoked)
 
-    def files = statements.groupBy(_.source).map(arg => MeasuredFile(arg._1, arg._2))
+    def files = statements.groupBy(_.source.path).map(arg => MeasuredFile(arg._2.head.source, arg._2))
     def packages: Iterable[MeasuredPackage] = statements.groupBy(_._package).map(arg => MeasuredPackage(arg._1, arg._2))
     def statementCoverage: Double = statements.count(_.count > 0) / statements.size.toDouble
 }
@@ -40,8 +46,20 @@ case class MeasuredPackage(name: String, statements: Iterable[MeasuredStatement]
 }
 
 case class MeasuredFile(source: SourceFile, statements: Iterable[MeasuredStatement]) {
+
+    def lineStatus(lineNumber: Int): LineStatus = {
+        statements.filter(_.line == lineNumber) match {
+            case i if i.isEmpty => NotInstrumented
+            case i if i.filter(_.count == 0).isEmpty => MissingCoverage
+            case _ => Covered
+        }
+    }
+
     def classes = statements.groupBy(_._class).map(arg => MeasuredClass(arg._1, arg._2))
     def packages: Iterable[MeasuredPackage] = statements.groupBy(_._package).map(arg => MeasuredPackage(arg._1, arg._2))
+
+    def totalStatements = statements.size
+    def invokedStatements = statements.count(_.count > 0)
     def statementCoverage: Double = statements.count(_.count > 0) / statements.size.toDouble
 }
 
