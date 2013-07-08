@@ -28,8 +28,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
               .statements
               .size + " statments")
             println("Statements=" + Instrumentation.coverage.statements)
-            val writer = ScalesHtmlWriter
-            writer.write(Instrumentation.coverage)
+            ScalesHtmlWriter.write(Instrumentation.coverage)
             ScalesXmlWriter.write(Instrumentation.coverage)
         }
     }
@@ -126,6 +125,8 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
                     Instrumentation.coverage.methodNames.append(d.name.toString)
                     super.transform(tree)
 
+                case s: Select => super.transform(tree) // should only inside something we are instrumenting.
+
                 case m: ModuleDef if m.symbol.isSynthetic => tree // a generated object, such as case class companion
                 case m: ModuleDef => super.transform(tree)
 
@@ -136,9 +137,10 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
                     treeCopy.ValDef(tree, v.mods, v.name, v.tpt, transform(v.rhs))
 
                 case apply: Apply => instrument(apply)
+                case tapply: TypeApply => instrument(tapply)
                 case assign: Assign => instrument(assign)
 
-                case Match(clause: Tree, cases: List[CaseDef]) => treeCopy.Match(tree, instrument(clause), transformCases(cases))
+                case Match(clause: Tree, cases: List[CaseDef]) => treeCopy.Match(tree, clause, transformCases(cases))
                 case Try(t: Tree, cases: List[CaseDef], f: Tree) => treeCopy.Try(tree, instrument(t), transformCases(cases), instrument(f))
 
                 //       println("Instrumenting apply " + apply)

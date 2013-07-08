@@ -1,7 +1,6 @@
 package scales.report
 
 import scales._
-import java.io.{FileWriter, BufferedWriter, File}
 import scala.reflect.internal.util.SourceFile
 import scala.xml.{Unparsed, Node}
 import scales.MeasuredFile
@@ -9,15 +8,13 @@ import java.util.Date
 
 /** @author Stephen Samuel */
 object ScalesHtmlWriter extends ScalesWriter {
+
     def write(coverage: Coverage) {
-
         writeIndex(coverage)
-
         for ( file <- coverage.files ) {
             val data = html(file)
-            write(file.source.path.replace(".scala", "") + ".html", data)
+            IOUtils.write(file.source.file.path + ".html", data)
         }
-
     }
 
     def risks(coverage: Coverage) = {
@@ -111,15 +108,7 @@ object ScalesHtmlWriter extends ScalesWriter {
                 <h1>Scales Code Coverage</h1>{overview(coverage)}{risks(coverage)}{packages(coverage)}
             </body>
         </html>
-        write("index.html", data.toString)
-    }
-
-    def write(path: String, data: AnyRef) {
-        println(s"Writing to path $path")
-        val file = new File(path)
-        val writer = new BufferedWriter(new FileWriter(file))
-        writer.write(data.toString)
-        writer.close()
+        IOUtils.write("index.html", data.toString)
     }
 
     def lines(source: SourceFile): Seq[String] = new String(source.content).split("\n")

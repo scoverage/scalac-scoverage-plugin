@@ -1,7 +1,6 @@
 package scales.report
 
-import scales.{MeasuredStatement, Coverage}
-import java.io.{FileWriter, BufferedWriter, File}
+import scales.{IOUtils, MeasuredStatement, Coverage}
 
 /** @author Stephen Samuel */
 object ScalesXmlWriter extends ScalesWriter {
@@ -11,15 +10,7 @@ object ScalesXmlWriter extends ScalesWriter {
         val xml = <scales timestamp={System.currentTimeMillis.toString}>
             {statements}
         </scales>
-        write("scales.xml", xml.toString())
-    }
-
-    def write(path: String, data: AnyRef) {
-        println(s"Writing to path $path")
-        val file = new File(path)
-        val writer = new BufferedWriter(new FileWriter(file))
-        writer.write(data.toString)
-        writer.close()
+        IOUtils.write("scales.xml", xml.toString())
     }
 
     def statements2xml(statements: Iterable[MeasuredStatement]) = statements.map(arg => statement2xml(arg))
