@@ -1,0 +1,415 @@
+<html>
+        <head>
+            <title>
+                Test.scala
+            </title>
+            <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.2.0/pure-nr-min.css"/>
+        </head>
+        <body>
+            <h1>
+                Filename:
+                Test.scala
+            </h1>
+            <div>Statement Coverage:
+                0
+                /
+                190.0
+                %
+            </div>
+            <table>
+                <tr>
+                <td>
+                    1
+                </td>
+                <td style="background: white">
+                    import&nbsp;java.util.concurrent.atomic.AtomicInteger
+                </td>
+            </tr><tr>
+                <td>
+                    2
+                </td>
+                <td style="background: white">
+                    import&nbsp;scala.collection.mutable
+                </td>
+            </tr><tr>
+                <td>
+                    3
+                </td>
+                <td style="background: white">
+                    import&nbsp;scala.collection.mutable.ListBuffer
+                </td>
+            </tr><tr>
+                <td>
+                    4
+                </td>
+                <td style="background: white">
+                    
+                </td>
+            </tr><tr>
+                <td>
+                    5
+                </td>
+                <td style="background: white">
+                    /**&nbsp;some&nbsp;lovely&nbsp;comments&nbsp;**/
+                </td>
+            </tr><tr>
+                <td>
+                    6
+                </td>
+                <td style="background: white">
+                    object&nbsp;Test&nbsp;{
+                </td>
+            </tr><tr>
+                <td>
+                    7
+                </td>
+                <td style="background: white">
+                    
+                </td>
+            </tr><tr>
+                <td>
+                    8
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;/*
+                </td>
+            </tr><tr>
+                <td>
+                    9
+                </td>
+                <td style="background: white">
+                    
+                </td>
+            </tr><tr>
+                <td>
+                    10
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;More&nbsp;comments
+                </td>
+            </tr><tr>
+                <td>
+                    11
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/
+                </td>
+            </tr><tr>
+                <td>
+                    12
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;val&nbsp;classes&nbsp;=&nbsp;mutable.Map[String,&nbsp;MeasuredClass]()
+                </td>
+            </tr><tr>
+                <td>
+                    13
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;val&nbsp;instructions&nbsp;=&nbsp;mutable.Map[Int,&nbsp;MeasuredInstruction]()
+                </td>
+            </tr><tr>
+                <td>
+                    14
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;val&nbsp;ids&nbsp;=&nbsp;new&nbsp;AtomicInteger(0)
+                </td>
+            </tr><tr>
+                <td>
+                    15
+                </td>
+                <td style="background: white">
+                    
+                </td>
+            </tr><tr>
+                <td>
+                    16
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;and&nbsp;more
+                </td>
+            </tr><tr>
+                <td>
+                    17
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;add(source:&nbsp;String,&nbsp;start:&nbsp;Int,&nbsp;line:&nbsp;Int)&nbsp;=&nbsp;{
+                </td>
+            </tr><tr>
+                <td>
+                    18
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;val&nbsp;id&nbsp;=&nbsp;ids.incrementAndGet()
+                </td>
+            </tr><tr>
+                <td>
+                    19
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;val&nbsp;instruction&nbsp;=&nbsp;MeasuredInstruction(source,&nbsp;id,&nbsp;start,&nbsp;line)
+                </td>
+            </tr><tr>
+                <td>
+                    20
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;instructions.put(id,&nbsp;instruction)
+                </td>
+            </tr><tr>
+                <td>
+                    21
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classes.get(source)&nbsp;match&nbsp;{
+                </td>
+            </tr><tr>
+                <td>
+                    22
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;None&nbsp;=>&nbsp;classes.put(source,&nbsp;new&nbsp;MeasuredClass(source))
+                </td>
+            </tr><tr>
+                <td>
+                    23
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;_&nbsp;=>
+                </td>
+            </tr><tr>
+                <td>
+                    24
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+                </td>
+            </tr><tr>
+                <td>
+                    25
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;classes(source).add(instruction)
+                </td>
+            </tr><tr>
+                <td>
+                    26
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;instruction
+                </td>
+            </tr><tr>
+                <td>
+                    27
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;}
+                </td>
+            </tr><tr>
+                <td>
+                    28
+                </td>
+                <td style="background: white">
+                    
+                </td>
+            </tr><tr>
+                <td>
+                    29
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;invoked(id:&nbsp;Int)&nbsp;=&nbsp;{
+                </td>
+            </tr><tr>
+                <td>
+                    30
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;println("Hello&nbsp;from&nbsp;coverage:&nbsp;"&nbsp;+&nbsp;id)
+                </td>
+            </tr><tr>
+                <td>
+                    31
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;instructions.get(id).foreach(_.invoked)
+                </td>
+            </tr><tr>
+                <td>
+                    32
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id
+                </td>
+            </tr><tr>
+                <td>
+                    33
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;}
+                </td>
+            </tr><tr>
+                <td>
+                    34
+                </td>
+                <td style="background: white">
+                    
+                </td>
+            </tr><tr>
+                <td>
+                    35
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;instructionCoverage(instructions:&nbsp;Iterable[MeasuredInstruction]):&nbsp;Double&nbsp;=
+                </td>
+            </tr><tr>
+                <td>
+                    36
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;instructions.count(_.count&nbsp;>&nbsp;0)&nbsp;/&nbsp;instructions.size.toDouble
+                </td>
+            </tr><tr>
+                <td>
+                    37
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;instructionCoverage:&nbsp;Double&nbsp;=&nbsp;instructions.values.count(_.count&nbsp;>&nbsp;0)&nbsp;/&nbsp;instructions.size
+                </td>
+            </tr><tr>
+                <td>
+                    38
+                </td>
+                <td style="background: white">
+                    
+                </td>
+            </tr><tr>
+                <td>
+                    39
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;class&nbsp;MeasuredClass(name:&nbsp;String)&nbsp;{
+                </td>
+            </tr><tr>
+                <td>
+                    40
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;val&nbsp;instructions&nbsp;=&nbsp;new&nbsp;ListBuffer[MeasuredInstruction]
+                </td>
+            </tr><tr>
+                <td>
+                    41
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;add(instr:&nbsp;MeasuredInstruction):&nbsp;Unit&nbsp;=&nbsp;instructions.append(instr)
+                </td>
+            </tr><tr>
+                <td>
+                    42
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;}
+                </td>
+            </tr><tr>
+                <td>
+                    43
+                </td>
+                <td style="background: white">
+                    
+                </td>
+            </tr><tr>
+                <td>
+                    44
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;case&nbsp;class&nbsp;MeasuredInstruction(source:&nbsp;String,&nbsp;id:&nbsp;Int,&nbsp;start:&nbsp;Int,&nbsp;line:&nbsp;Int,&nbsp;var&nbsp;end:&nbsp;Int&nbsp;=&nbsp;-1)&nbsp;{
+                </td>
+            </tr><tr>
+                <td>
+                    45
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;count&nbsp;=&nbsp;0
+                </td>
+            </tr><tr>
+                <td>
+                    46
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;invoked:&nbsp;Unit&nbsp;=&nbsp;count&nbsp;=&nbsp;count&nbsp;+&nbsp;1
+                </td>
+            </tr><tr>
+                <td>
+                    47
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;}
+                </td>
+            </tr><tr>
+                <td>
+                    48
+                </td>
+                <td style="background: white">
+                    }
+                </td>
+            </tr><tr>
+                <td>
+                    49
+                </td>
+                <td style="background: white">
+                    
+                </td>
+            </tr><tr>
+                <td>
+                    50
+                </td>
+                <td style="background: white">
+                    trait&nbsp;TestyTrait
+                </td>
+            </tr><tr>
+                <td>
+                    51
+                </td>
+                <td style="background: white">
+                    
+                </td>
+            </tr><tr>
+                <td>
+                    52
+                </td>
+                <td style="background: white">
+                    class&nbsp;Test2&nbsp;{
+                </td>
+            </tr><tr>
+                <td>
+                    53
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;boo&nbsp;{
+                </td>
+            </tr><tr>
+                <td>
+                    54
+                </td>
+                <td style="background: red">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;println("boo")
+                </td>
+            </tr><tr>
+                <td>
+                    55
+                </td>
+                <td style="background: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;}
+                </td>
+            </tr><tr>
+                <td>
+                    56
+                </td>
+                <td style="background: white">
+                    }
+                </td>
+            </tr>
+            </table>
+        </body>
+    </html>

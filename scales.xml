@@ -1,0 +1,41 @@
+<scales timestamp="1373263495786">
+            <statement source="Test.scala" package="&lt;empty&gt;" class="Test" method="&lt;none&gt;" start="255" line="12" count="0">
+            scala.collection.mutable.Map.apply[String, Test.MeasuredClass]()
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test" method="&lt;none&gt;" start="318" line="13" count="0">
+            scala.collection.mutable.Map.apply[Int, Test.MeasuredInstruction]()
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test" method="&lt;none&gt;" start="335" line="14" count="0">
+            new java.util.concurrent.atomic.AtomicInteger(0)
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test" method="Test.add" start="464" line="18" count="0">
+            Test.this.ids.incrementAndGet()
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test" method="Test.add" start="512" line="19" count="0">
+            Test.this.MeasuredInstruction.apply(source, id, start, line, Test.this.MeasuredInstruction.apply$default$5)
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test" method="Test.add" start="562" line="20" count="0">
+            Test.this.instructions.put(id, instruction)
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test" method="Test.add" start="599" line="21" count="0">
+            Test.this.classes.get(source)
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test" method="Test.add" start="652" line="22" count="0">
+            Test.this.classes.put(source, new Test.this.MeasuredClass(source))
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test" method="Test.add" start="707" line="23" count="0">
+            ()
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test" method="Test.add" start="747" line="25" count="0">
+            Test.this.classes.apply(source).add(instruction)
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test" method="Test.invoked" start="832" line="30" count="0">
+            scala.this.Predef.println(&quot;Hello from coverage: &quot;.+(id))
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test" method="Test.invoked" start="899" line="31" count="0">
+            Test.this.instructions.get(id).foreach[Unit](((x$1: Test.MeasuredInstruction) =&gt; x$1.invoked))
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test" method="Test.instructionCoverage" start="1052" line="36" count="0">
+            instructions.count(((x$2: Test.MeasuredInstruction) =&gt; x$2.count.&gt;(0)))./(instructions.size.toDouble)
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test" method="&lt;none&gt;" start="1158" line="37" count="0">
+            Test.this.instructions.values.count(((x$3: Test.MeasuredInstruction) =&gt; x$3.count.&gt;(0)))./(Test.this.instructions.size)
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test.MeasuredClass" method="&lt;none&gt;" start="1251" line="40" count="0">
+            new scala.collection.mutable.ListBuffer[Test.MeasuredInstruction]()
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test.MeasuredClass" method="Test.MeasuredClass.add" start="1358" line="41" count="0">
+            MeasuredClass.this.instructions.append(instr)
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test.MeasuredInstruction" method="Test.MeasuredInstruction.count_=" start="1489" line="45" count="0">
+            MeasuredInstruction.this.count = x$1
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test.MeasuredInstruction" method="&lt;none&gt;" start="1533" line="46" count="0">
+            MeasuredInstruction.this.count_=(MeasuredInstruction.this.count.+(1))
+        </statement><statement source="Test.scala" package="&lt;empty&gt;" class="Test2" method="&lt;none&gt;" start="1615" line="54" count="0">
+            scala.this.Predef.println(&quot;boo&quot;)
+        </statement>
+        </scales>

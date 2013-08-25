@@ -28,7 +28,7 @@ class Coverage extends StatementCoverage {
   def methodsPerClass = methodCount / classCount.toDouble
 
   def add(stmt: MeasuredStatement): Unit = statements.append(stmt)
-  def invoked(id: Int): Unit = statements.find(_.id == id).foreach(_.invoked)
+  def invoked(id: Int): Unit = statements.find(_.id == id).foreach(_.invoked())
 
   def files = statements.groupBy(_.source.path).map(arg => MeasuredFile(arg._2.head.source, arg._2))
   def packages: Iterable[MeasuredPackage] = statements.groupBy(_._package).map(arg => MeasuredPackage(arg._1, arg._2))
