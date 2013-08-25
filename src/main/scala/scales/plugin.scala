@@ -22,11 +22,12 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
     // run after the transformer to output the report
     override def run(): Unit = {
       super.run()
+
+      val stmtCoverage = Instrumentation.coverage.statementCoverage
+      val stmts = Instrumentation.coverage.statements.size
+
       println("** Coverage completed **")
-      println("Statement coverage: " + Instrumentation.coverage.statementCoverage + " from " + Instrumentation
-        .coverage
-        .statements
-        .size + " statments")
+      println(s"Statement coverage: $stmtCoverage from $stmts statments")
       println("Statements=" + Instrumentation.coverage.statements)
       ScalesHtmlWriter.write(Instrumentation.coverage)
       ScalesXmlWriter.write(Instrumentation.coverage)
