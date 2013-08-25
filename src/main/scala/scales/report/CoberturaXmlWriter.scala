@@ -4,5 +4,5 @@ import scales.Coverage
 
 /** @author Stephen Samuel */
 class CoberturaXmlWriter extends ScalesWriter {
-    def write(coverage: Coverage) {}
+  def write(coverage: Coverage) {}
 }
