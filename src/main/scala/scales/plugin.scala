@@ -19,8 +19,9 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
   import global._
 
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
-    // run after the transformer to output the report
+
     override def run(): Unit = {
+      // run after the parent transformer to output the report after that phase
       super.run()
 
       val stmtCoverage = Instrumentation.coverage.statementCoverage

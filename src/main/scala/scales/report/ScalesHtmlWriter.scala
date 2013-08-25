@@ -108,7 +108,7 @@ object ScalesHtmlWriter extends ScalesWriter {
         <h1>Scales Code Coverage</h1>{overview(coverage)}{risks(coverage)}{packages(coverage)}
       </body>
     </html>
-    IOUtils.write("index.html", data.toString)
+    IOUtils.write("index.html", data.toString())
   }
 
   def lines(source: SourceFile): Seq[String] = new String(source.content).split("\n")
