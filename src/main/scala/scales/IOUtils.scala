@@ -1,6 +1,6 @@
 package scales
 
-import java.io.{FileWriter, BufferedWriter, File}
+import java.io.{FileWriter, BufferedWriter}
 
 /** @author Stephen Samuel */
 object IOUtils {
