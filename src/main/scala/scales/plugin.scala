@@ -11,7 +11,7 @@ import scala.reflect.internal.util.SourceFile
 class ScalesPlugin(val global: Global) extends Plugin {
   val name: String = "scales_coverage_plugin"
   val components: List[PluginComponent] = List(new ScalesComponent(global))
-  val description: String = "code coverage compiler plugin"
+  val description: String = "scales code coverage compiler plugin"
 }
 
 class ScalesComponent(val global: Global) extends PluginComponent with TypingTransformers with Transform with TreeDSL {
@@ -143,12 +143,10 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
         case assign: Assign => instrument(assign)
 
         case Match(clause: Tree, cases: List[CaseDef]) => treeCopy.Match(tree, clause, transformCases(cases))
-        case Try(t: Tree, cases: List[CaseDef], f: Tree) => treeCopy
-          .Try(tree, instrument(t), transformCases(cases), instrument(f))
-
+        case Try(t: Tree, cases: List[CaseDef], f: Tree) =>
+          treeCopy.Try(tree, instrument(t), transformCases(cases), instrument(f))
         //       println("Instrumenting apply " + apply)
-
-        //                case literal: Literal => instrument(literal)
+        //        case literal: Literal => instrument(literal)
         //    case select: Select => instrument(select)
 
         case _ =>
