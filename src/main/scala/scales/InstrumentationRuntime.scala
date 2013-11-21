@@ -25,15 +25,6 @@ object InstrumentationRuntime {
     coverage.add(stmt)
     stmt
   }
-
-  /**
-   * Sets the MeasuredStatement wtih the given id to invoked.
-   * Idempotent operation.
-   */
-  def invoked(id: Int): Int = {
-    coverage.invoked(id)
-    id
-  }
 }
 
 

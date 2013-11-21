@@ -1,6 +1,7 @@
 package scales
 
 import java.io._
+import scala.collection.mutable.ListBuffer
 
 /** @author Stephen Samuel */
 object IOUtils {
@@ -22,6 +23,17 @@ object IOUtils {
     val writer = new BufferedWriter(new FileWriter(file))
     writer.write(data.toString)
     writer.close()
+  }
+
+  // loads all the invoked statement ids
+  def invoked(file: File): Seq[Int] = {
+    val reader = new BufferedReader(new FileReader(Env.measurementFile))
+    var line: String = null
+    val ids = new ListBuffer[Int]
+    while ((line = reader.readLine()) != null) {
+      ids.append(line.trim.toInt)
+    }
+    ids.toArray
   }
 
   def serialize(coverage: Coverage, file: File) {

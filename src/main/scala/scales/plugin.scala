@@ -5,6 +5,7 @@ import scala.tools.nsc.Global
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
 import scala.tools.nsc.ast.TreeDSL
 import scala.reflect.internal.util.SourceFile
+import scala.reflect.runtime.{universe => u}
 
 /** @author Stephen Samuel */
 class ScalesPlugin(val global: Global) extends Plugin {
@@ -64,7 +65,7 @@ class ScalesComponent(val global: Global)
         Select(
           Select(
             Ident("scales"),
-            newTermName("InstrumentationRuntime")
+            newTermName("Invoker")
           ),
           newTermName("invoked")
         ),
