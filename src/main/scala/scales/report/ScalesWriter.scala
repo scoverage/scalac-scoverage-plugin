@@ -4,6 +4,5 @@ import scales.Coverage
 
 /** @author Stephen Samuel */
 trait ScalesWriter {
-
-    def write(coverage: Coverage)
+  def write(coverage: Coverage): String
 }

@@ -5,7 +5,8 @@ import scala.reflect.internal.util.SourceFile
 
 /**
  * @author Stephen Samuel */
-class Coverage extends StatementCoverage with java.io.Serializable {
+class Coverage
+  extends StatementCoverage with MethodBuilders with java.io.Serializable with ClassBuilders with PackageBuilders {
 
   val statements = new ListBuffer[MeasuredStatement]
 
@@ -22,19 +23,6 @@ class Coverage extends StatementCoverage with java.io.Serializable {
   //      .count(_ == '\n')).sum
   //  }
 
-  def packageCount = packages.size
-  def packages: Seq[MeasuredPackage] = {
-    statements.groupBy(_.location._package).map(arg => MeasuredPackage(arg._1, arg._2)).toSeq.sortBy(_.name)
-  }
-
-  def classCount = classes.size
-  def classes: Seq[MeasuredClass] = {
-    statements.groupBy(_.location.fqn).map(arg => MeasuredClass(arg._1, arg._2)).toSeq.sortBy(_.name)
-  }
-
-  def methodCount = methods.size
-  def methods: Set[String] = statements.flatMap(_.location.method).toSet
-
   def avgClassesPerPackage = classCount / packageCount.toDouble
   def avgMethodsPerClass = methodCount / classCount.toDouble
 
@@ -45,15 +33,40 @@ class Coverage extends StatementCoverage with java.io.Serializable {
   def invoked(id: Int): Unit = statements.find(_.id == id).foreach(_.invoked())
 }
 
-case class MeasuredClass(name: String, statements: Iterable[MeasuredStatement]) extends StatementCoverage
+trait MethodBuilders {
+  val statements: Iterable[MeasuredStatement]
+  def methodCount = methods.size
+  def methods: Seq[MeasuredMethod] = {
+    statements.groupBy(_.location._package).map(arg => MeasuredMethod(arg._1, arg._2)).toSeq
+  }
+}
+
+trait PackageBuilders {
+  val statements: Iterable[MeasuredStatement]
+  def packageCount = packages.size
+  def packages: Seq[MeasuredPackage] = {
+    statements.groupBy(_.location._package).map(arg => MeasuredPackage(arg._1, arg._2)).toSeq.sortBy(_.name)
+  }
+}
+
+trait ClassBuilders {
+  val statements: Iterable[MeasuredStatement]
+  def classes = statements.groupBy(_.location._class).map(arg => MeasuredClass(arg._1, arg._2))
+  def classCount: Int = classes.size
+}
+
+case class MeasuredMethod(name: String, statements: Iterable[MeasuredStatement]) extends StatementCoverage
+
+case class MeasuredClass(name: String, statements: Iterable[MeasuredStatement])
+  extends StatementCoverage with MethodBuilders
 
 case class MeasuredPackage(name: String, statements: Iterable[MeasuredStatement])
-  extends StatementCoverage with ClassCoverage {
+  extends StatementCoverage with ClassCoverage with ClassBuilders {
   def files = Nil //statements.groupBy(_.source).map(arg => MeasuredFile(arg._1, arg._2))
 }
 
 case class MeasuredFile(source: SourceFile, statements: Iterable[MeasuredStatement])
-  extends StatementCoverage with ClassCoverage {
+  extends StatementCoverage with ClassCoverage with ClassBuilders {
   def lineStatus(lineNumber: Int): LineStatus = {
     statements.filter(_.line == lineNumber) match {
       case i if i.isEmpty => NotInstrumented
@@ -87,9 +100,8 @@ trait StatementCoverage {
 }
 
 trait ClassCoverage {
+  this: ClassBuilders =>
   val statements: Iterable[MeasuredStatement]
-  def classes = statements.groupBy(_.location._class).map(arg => MeasuredClass(arg._1, arg._2))
-  def classCount: Int = classes.size
   def invokedClasses: Int = classes.count(_.statements.count(_.count > 0) > 0)
   def classCoverage: Double = invokedClasses / classes.size.toDouble
 }
