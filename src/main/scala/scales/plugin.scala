@@ -6,7 +6,6 @@ import scala.tools.nsc.transform.{Transform, TypingTransformers}
 import scala.tools.nsc.ast.TreeDSL
 import scala.reflect.internal.util.SourceFile
 import scala.reflect.runtime.{universe => u}
-import scales.ClassType.Trait
 
 /** @author Stephen Samuel */
 class ScalesPlugin(val global: Global) extends Plugin {
@@ -57,10 +56,7 @@ class ScalesComponent(val global: Global)
       cases.map(c => treeCopy.CaseDef(c, c.pat, c.guard, instrument(c.body)))
     }
 
-    /**
-     * Creates a call to invoked(id) which in turn sets the statement
-     * with the given id to invoked.
-     */
+    // Creates a call to the invoker
     def invokeCall(id: Int): Apply = {
       Apply(
         Select(
