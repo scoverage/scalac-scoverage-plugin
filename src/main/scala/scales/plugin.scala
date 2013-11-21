@@ -24,14 +24,14 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
       // run after the parent transformer to output the report after that phase
       super.run()
 
-      val stmtCoverage = Instrumentation.coverage.statementCoverage
-      val stmts = Instrumentation.coverage.statements.size
+      val stmtCoverage = InstrumentationRuntime.coverage.statementCoverage
+      val stmts = InstrumentationRuntime.coverage.statements.size
 
       println("** Coverage completed **")
       println(s"Statement coverage: $stmtCoverage from $stmts statments")
-      println("Statements=" + Instrumentation.coverage.statements)
-      ScalesHtmlWriter.write(Instrumentation.coverage)
-      ScalesXmlWriter.write(Instrumentation.coverage)
+      println("Statements=" + InstrumentationRuntime.coverage.statements)
+      ScalesHtmlWriter.write(InstrumentationRuntime.coverage)
+      ScalesXmlWriter.write(InstrumentationRuntime.coverage)
     }
   }
 
@@ -40,7 +40,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
   protected def newTransformer(unit: CompilationUnit): CoverageTransformer = new CoverageTransformer(unit)
 
   class CoverageTransformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
-    Instrumentation.coverage.sources.append(unit.source)
+    InstrumentationRuntime.coverage.sources.append(unit.source)
 
     import global._
 
@@ -66,16 +66,24 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
         case None => tree
         case Some(source) =>
           val instruction =
-            Instrumentation.add(source, _package, _class, _method, _safeStart(tree), _safeLine(tree), tree.toString())
+            InstrumentationRuntime.add(source, _package, _class, _method, _safeStart(tree), _safeLine(tree), tree.toString())
           val apply = invokeCall(instruction.id)
           localTyper.typed(atPos(tree.pos)(apply))
       }
     }
 
-    def invokeCall(id: Int) =
-      Apply(Select(Select(Ident("scales"),
-        newTermName("Instrumentation")),
-        newTermName("invoked")), List(Literal(Constant(id))))
+    /**
+     * Creates a call to invoked(id) which in turn sets the statement
+     * with the given id to invoked.
+     */
+    def invokeCall(id: Int) = {
+      Apply(
+        Select(Select(Ident("scales"),
+          newTermName("Instrumentation")),
+          newTermName("invoked")),
+        List(Literal(Constant(id)))
+      )
+    }
 
     def setPackageAndClass(s: Symbol) {
       _package = s.owner.enclosingPackage.nameString
@@ -85,8 +93,8 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
       _method = s.owner.enclMethod.fullNameString
     }
 
-    def registerPackage(p: PackageDef): Unit = Instrumentation.coverage.packageNames.add(p.name.toString)
-    def registerClass(p: ClassDef): Unit = Instrumentation.coverage.classNames.append(p.name.toString)
+    def registerPackage(p: PackageDef): Unit = InstrumentationRuntime.coverage.packageNames.add(p.name.toString)
+    def registerClass(p: ClassDef): Unit = InstrumentationRuntime.coverage.classNames.append(p.name.toString)
 
     def process(tree: Tree): Tree = {
 
@@ -124,7 +132,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
         case d: DefDef =>
           setPackageAndClass(d.symbol)
           setMethod(d.symbol)
-          Instrumentation.coverage.methodNames.append(d.name.toString)
+          InstrumentationRuntime.coverage.methodNames.append(d.name.toString)
           super.transform(tree)
 
         case s: Select => super.transform(tree) // should only inside something we are instrumenting.
