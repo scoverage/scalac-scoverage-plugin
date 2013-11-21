@@ -4,39 +4,61 @@ import scala.tools.nsc.plugins.{PluginComponent, Plugin}
 import scala.tools.nsc.Global
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
 import scala.tools.nsc.ast.TreeDSL
-import scales.report.{ScalesXmlWriter, ScalesHtmlWriter}
+import scales.report.ScalesXmlWriter
 import scala.reflect.internal.util.SourceFile
+import scala.reflect.internal.Phase
 
 /** @author Stephen Samuel */
 class ScalesPlugin(val global: Global) extends Plugin {
   val name: String = "scales_coverage_plugin"
-  val components: List[PluginComponent] = List(new ScalesComponent(global))
+  val components: List[PluginComponent] = List(new ProfilingComponent(global), new ReportingComponent(global))
   val description: String = "scales code coverage compiler plugin"
 }
 
-class ScalesComponent(val global: Global) extends PluginComponent with TypingTransformers with Transform with TreeDSL {
+class ReportingComponent(val global: Global) extends PluginComponent {
 
   import global._
 
-  override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
+  val phaseName: String = "scales-reporting-phase"
+  val runsAfter: List[String] = List("typer")
+  override def newPhase(prev: scala.tools.nsc.Phase): Phase = new StdPhase(prev) {
+
+    def apply(unit: CompilationUnit): Unit = {
+
+    }
 
     override def run(): Unit = {
-      // run after the parent transformer to output the report after that phase
       super.run()
+      println("Reporting phase")
 
       val stmtCoverage = InstrumentationRuntime.coverage.statementCoverage
       val stmts = InstrumentationRuntime.coverage.statements.size
 
-      println("** Coverage completed **")
+      println(InstrumentationRuntime.coverage.statements.size + " statements")
       println(s"Statement coverage: $stmtCoverage from $stmts statments")
-      println("Statements=" + InstrumentationRuntime.coverage.statements)
-      ScalesHtmlWriter.write(InstrumentationRuntime.coverage)
       ScalesXmlWriter.write(InstrumentationRuntime.coverage)
     }
   }
+}
 
-  val phaseName: String = "coverage setup phase"
+class ProfilingComponent(val global: Global)
+  extends PluginComponent with TypingTransformers with Transform with TreeDSL {
+
+  import global._
+
+  val phaseName: String = "scales-profiling-phase"
   val runsAfter: List[String] = List("typer")
+
+  override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
+
+    override def run(): Unit = {
+      println("Profiling phase")
+      super.run()
+      println("Profiling completed")
+      println(InstrumentationRuntime.coverage.statements.size + " statements")
+    }
+  }
+
   protected def newTransformer(unit: CompilationUnit): CoverageTransformer = new CoverageTransformer(unit)
 
   class CoverageTransformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
@@ -48,7 +70,6 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
     def safeStart(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.startOrPoint else -1
     def safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.safeLine else -1
-    def safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
 
     override def transform(tree: Tree) = process(tree)
     def transformStatements(trees: List[Tree]): List[Tree] = trees.map(tree => process(tree))
@@ -58,6 +79,29 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
       cases.map(c => treeCopy.CaseDef(c, c.pat, c.guard, instrument(c.body)))
     }
 
+    /**
+     * Creates a call to invoked(id) which in turn sets the statement
+     * with the given id to invoked.
+     */
+    def invokeCall(id: Int): Apply = {
+      Apply(
+        Select(
+          Select(
+            Ident("scales"),
+            newTermName("InstrumentationRuntime")
+          ),
+          newTermName("invoked")
+        ),
+        List(
+          Literal(
+            Constant(id)
+          )
+        )
+      )
+    }
+
+    def safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
+
     // wraps the given tree with an Instrumentation call
     def instrument(tree: Tree) = {
       safeSource(tree) match {
@@ -66,21 +110,9 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
           val instruction =
             InstrumentationRuntime.add(source, location, safeStart(tree), safeLine(tree), tree.toString())
           val apply = invokeCall(instruction.id)
-          localTyper.typed(atPos(tree.pos)(apply))
+          val block = Block(apply, tree)
+          localTyper.typed(atPos(tree.pos)(block))
       }
-    }
-
-    /**
-     * Creates a call to invoked(id) which in turn sets the statement
-     * with the given id to invoked.
-     */
-    def invokeCall(id: Int) = {
-      Apply(
-        Select(Select(Ident("scales"),
-          newTermName("Instrumentation")),
-          newTermName("invoked")),
-        List(Literal(Constant(id)))
-      )
     }
 
     def updateLocation(s: Symbol) {
@@ -95,6 +127,8 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
     def process(tree: Tree): Tree = {
 
       tree match {
+
+        case EmptyTree => super.transform(tree)
 
         case _: Import => tree
         case p: PackageDef =>
@@ -112,7 +146,8 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
         case _: If => super.transform(tree)
         case _: Ident => super.transform(tree)
         case _: Block => super.transform(tree)
-        case EmptyTree => super.transform(tree)
+
+        case l: Literal => instrument(l)
 
         case f: Function => treeCopy.Function(tree, f.vparams, transform(f.body))
 
@@ -130,7 +165,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
           InstrumentationRuntime.coverage.methodNames.append(d.name.toString)
           super.transform(tree)
 
-        case s: Select => super.transform(tree) // should only inside something we are instrumenting.
+        case s: Select => super.transform(tree) // should only occur inside something we are instrumenting.
 
         case m: ModuleDef if m.symbol.isSynthetic => tree // a generated object, such as case class companion
         case m: ModuleDef => super.transform(tree)
@@ -147,8 +182,8 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
         case Match(clause: Tree, cases: List[CaseDef]) => treeCopy.Match(tree, clause, transformCases(cases))
         case Try(t: Tree, cases: List[CaseDef], f: Tree) =>
           treeCopy.Try(tree, instrument(t), transformCases(cases), instrument(f))
+
         //       println("Instrumenting apply " + apply)
-        //        case literal: Literal => instrument(literal)
         //    case select: Select => instrument(select)
 
         case _ =>
