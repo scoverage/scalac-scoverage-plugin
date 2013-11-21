@@ -13,6 +13,7 @@
     <artifactId>scalac-scales-plugin</artifactId>
     <packaging>jar</packaging>
     <version>0.1.0-SNAPSHOT</version>
+
     <name>scales</name>
     <url>https://github.com/sksamuel/scales</url>
 

@@ -103,6 +103,7 @@ object ClassType {
 trait StatementCoverage {
   val statements: Iterable[MeasuredStatement]
   def statementCoverage: Double = invokedStatements / statements.size.toDouble
+  def statementCoverageFormatted: String = "%.2f".format(statementCoverage)
   def statementCount: Int = statements.size
   def invokedStatements: Int = statements.count(_.count > 0)
 }
