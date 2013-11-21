@@ -139,7 +139,6 @@ class ScalesComponent(val global: Global)
         case d: DefDef if d.symbol.isSynthetic => tree // such as auto generated hash code methods in case classes
         case d: DefDef =>
           updateLocation(d.symbol)
-          InstrumentationRuntime.coverage.methodNames.append(d.name.toString)
           super.transform(tree)
 
         case s: Select => super.transform(tree) // should only occur inside something we are instrumenting.

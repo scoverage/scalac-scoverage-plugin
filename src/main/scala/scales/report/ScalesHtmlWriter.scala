@@ -11,10 +11,7 @@ object ScalesHtmlWriter extends ScalesWriter {
 
   def write(coverage: Coverage) {
     writeIndex(coverage)
-    for ( file <- coverage.files ) {
-      val data = html(file)
-      IOUtils.write("classname.html", data)
-    }
+
   }
 
   def risks(coverage: Coverage) = {
@@ -70,11 +67,11 @@ object ScalesHtmlWriter extends ScalesWriter {
         </td>
         <td>Clases per package:</td>
         <td>
-          {coverage.classesPerPackage.toString}
+          {coverage.avgClassesPerPackage.toString}
         </td>
         <td>Methods per class:</td>
         <td>
-          {coverage.methodsPerClass.toString}
+          {coverage.avgMethodsPerClass.toString}
         </td>
       </tr>
       <tr>

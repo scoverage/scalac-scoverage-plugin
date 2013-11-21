@@ -2,16 +2,14 @@ package scales
 
 import scala.collection.mutable.ListBuffer
 import scala.reflect.internal.util.SourceFile
-import scala.collection.mutable
 
 /**
  * @author Stephen Samuel */
 class Coverage extends StatementCoverage with java.io.Serializable {
 
   val statements = new ListBuffer[MeasuredStatement]
-  val packageNames = mutable.Set[String]()
-  val classNames = new ListBuffer[String]()
-  val methodNames = new ListBuffer[String]()
+
+  def add(stmt: MeasuredStatement): Unit = statements.append(stmt)
 
   def loc = 0 //sources.map(src => new String(src.content).replaceAll("^\\s.*$", "").split("\n").length).sum
 
@@ -24,26 +22,30 @@ class Coverage extends StatementCoverage with java.io.Serializable {
   //      .count(_ == '\n')).sum
   //  }
 
-  def packageCount = packageNames.size
-  def classCount = classNames.size
-  def methodCount = methodNames.size
-  def classesPerPackage = classCount / packageCount.toDouble
-  def methodsPerClass = methodCount / classCount.toDouble
+  def packageCount = packages.size
+  def packages: Seq[MeasuredPackage] = {
+    statements.groupBy(_.location._package).map(arg => MeasuredPackage(arg._1, arg._2)).toSeq.sortBy(_.name)
+  }
 
-  def add(stmt: MeasuredStatement): Unit = statements.append(stmt)
+  def classCount = classes.size
+  def classes: Seq[MeasuredClass] = {
+    statements.groupBy(_.location.fqn).map(arg => MeasuredClass(arg._1, arg._2)).toSeq.sortBy(_.name)
+  }
+
+  def methodCount = methods.size
   def methods: Set[String] = statements.flatMap(_.location.method).toSet
-  def files = Nil
-  //statements.groupBy(_.source.path).map(arg => MeasuredFile(arg._2.head.source, arg._2))
-  def packages: Iterable[MeasuredPackage] = statements
-    .groupBy(_.location._package)
-    .map(arg => MeasuredPackage(arg._1, arg._2))
-  def classes = statements.groupBy(_.location.fqn).map(arg => MeasuredClass(arg._1, arg._2))
 
+  def avgClassesPerPackage = classCount / packageCount.toDouble
+  def avgMethodsPerClass = methodCount / classCount.toDouble
+
+  // returns the classes by least coverage
   def risks(limit: Int) = classes.toSeq.sortBy(_.statementCoverage).take(limit)
 
   def apply(ids: Iterable[Int]): Unit = ids foreach invoked
   def invoked(id: Int): Unit = statements.find(_.id == id).foreach(_.invoked())
 }
+
+case class MeasuredClass(name: String, statements: Iterable[MeasuredStatement]) extends StatementCoverage
 
 case class MeasuredPackage(name: String, statements: Iterable[MeasuredStatement])
   extends StatementCoverage with ClassCoverage {
@@ -63,8 +65,6 @@ case class MeasuredFile(source: SourceFile, statements: Iterable[MeasuredStateme
     .groupBy(_.location._package)
     .map(arg => MeasuredPackage(arg._1, arg._2))
 }
-
-case class MeasuredClass(name: String, statements: Iterable[MeasuredStatement]) extends StatementCoverage
 
 case class MeasuredStatement(location: Location,
                              id: Int,
