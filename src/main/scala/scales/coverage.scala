@@ -4,23 +4,25 @@ import scala.collection.mutable.ListBuffer
 import scala.reflect.internal.util.SourceFile
 import scala.collection.mutable
 
-/** @author Stephen Samuel */
-class Coverage extends StatementCoverage {
+/**
+ * @author Stephen Samuel */
+class Coverage extends StatementCoverage with java.io.Serializable {
 
   val statements = new ListBuffer[MeasuredStatement]
-  val sources = new ListBuffer[SourceFile]
   val packageNames = mutable.Set[String]()
   val classNames = new ListBuffer[String]()
   val methodNames = new ListBuffer[String]()
 
-  def loc = sources.map(src => new String(src.content).replaceAll("^\\s.*$", "").split("\n").length).sum
-  def ncloc =
-    sources
-      .map(src => new String(src.content)
-      .replaceAll("/\\*.*?\\*/", "")
-      .replace("//.*$", "")
-      .split("\n")
-      .count(_ == '\n')).sum
+  def loc = 0 //sources.map(src => new String(src.content).replaceAll("^\\s.*$", "").split("\n").length).sum
+
+  def ncloc = 0 //{
+  //    sources
+  //      .map(src => new String(src.content)
+  //      .replaceAll("/\\*.*?\\*/", "")
+  //      .replace("//.*$", "")
+  //      .split("\n")
+  //      .count(_ == '\n')).sum
+  //  }
 
   def packageCount = packageNames.size
   def classCount = classNames.size
@@ -31,7 +33,9 @@ class Coverage extends StatementCoverage {
   def add(stmt: MeasuredStatement): Unit = statements.append(stmt)
   def invoked(id: Int): Unit = statements.find(_.id == id).foreach(_.invoked())
 
-  def files = statements.groupBy(_.source.path).map(arg => MeasuredFile(arg._2.head.source, arg._2))
+  def methods: Set[String] = statements.flatMap(_.location.method).toSet
+  def files = Nil
+  //statements.groupBy(_.source.path).map(arg => MeasuredFile(arg._2.head.source, arg._2))
   def packages: Iterable[MeasuredPackage] = statements
     .groupBy(_.location._package)
     .map(arg => MeasuredPackage(arg._1, arg._2))
@@ -42,7 +46,7 @@ class Coverage extends StatementCoverage {
 
 case class MeasuredPackage(name: String, statements: Iterable[MeasuredStatement])
   extends StatementCoverage with ClassCoverage {
-  def files = statements.groupBy(_.source).map(arg => MeasuredFile(arg._1, arg._2))
+  def files = Nil //statements.groupBy(_.source).map(arg => MeasuredFile(arg._1, arg._2))
 }
 
 case class MeasuredFile(source: SourceFile, statements: Iterable[MeasuredStatement])
@@ -61,17 +65,16 @@ case class MeasuredFile(source: SourceFile, statements: Iterable[MeasuredStateme
 
 case class MeasuredClass(name: String, statements: Iterable[MeasuredStatement]) extends StatementCoverage
 
-case class MeasuredStatement(source: SourceFile,
-                             location: Location,
+case class MeasuredStatement(location: Location,
                              id: Int,
                              start: Int,
                              line: Int,
-                             desc: String) {
+                             desc: String) extends java.io.Serializable {
   var count = 0
   def invoked(): Unit = count = count + 1
 }
 
-case class Location(_package: String, _class: String, method: Option[String]) {
+case class Location(_package: String, _class: String, method: Option[String]) extends java.io.Serializable {
   val fqn = (_package + ".").replace("<empty>.", "") + _class
 }
 

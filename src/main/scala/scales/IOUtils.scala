@@ -24,6 +24,12 @@ object IOUtils {
     writer.close()
   }
 
+  def serialize(coverage: Coverage, file: File) {
+    val out = new FileOutputStream(file)
+    out.write(serialize(coverage))
+    out.close()
+  }
+
   def serialize(coverage: Coverage): Array[Byte] = {
     val baos = new ByteArrayOutputStream
     val oos = new ObjectOutputStream(baos)
@@ -32,6 +38,7 @@ object IOUtils {
     baos.toByteArray
   }
 
+  def deserialize(file: File): Coverage = deserialize(new FileInputStream(file))
   def deserialize(in: InputStream): Coverage = {
     val oos = new ObjectInputStream(in)
     val coverage = oos.readObject().asInstanceOf[Coverage]

@@ -15,7 +15,7 @@ object ScalesXmlWriter extends ScalesWriter {
 
   def statements2xml(statements: Iterable[MeasuredStatement]) = statements.map(arg => statement2xml(arg))
   def statement2xml(statement: MeasuredStatement) =
-    <statement source={statement.source.path}
+    <statement source="notimpl"
                package={statement.location._package}
                class={statement.location._class}
                method={statement.location.method.orNull}

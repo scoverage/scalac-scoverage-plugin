@@ -8,7 +8,7 @@ import scala.reflect.internal.util.SourceFile
 
 /** @author Stephen Samuel */
 class ScalesPlugin(val global: Global) extends Plugin {
-  val name: String = "scales_coverage_plugin"
+  val name: String = "scales-plugin"
   val components: List[PluginComponent] = List(new ScalesComponent(global))
   val description: String = "scales code coverage compiler plugin"
 }
@@ -30,13 +30,15 @@ class ScalesComponent(val global: Global)
       println("scales: Profiling transformation completed")
       println("scales: " + InstrumentationRuntime.coverage.statements.size + " statements profiled")
       println(InstrumentationRuntime.coverage.statements)
+      IOUtils.serialize(InstrumentationRuntime.coverage, Env.coverageFile)
+      println("scales: Written coverage file to " + Env.coverageFile.getAbsolutePath)
     }
   }
 
   protected def newTransformer(unit: CompilationUnit): CoverageTransformer = new CoverageTransformer(unit)
 
   class CoverageTransformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
-    InstrumentationRuntime.coverage.sources.append(unit.source)
+    //InstrumentationRuntime.coverage.sources.append(unit.source)
 
     import global._
 

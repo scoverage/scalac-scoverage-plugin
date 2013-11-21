@@ -13,7 +13,7 @@ object ScalesHtmlWriter extends ScalesWriter {
     writeIndex(coverage)
     for ( file <- coverage.files ) {
       val data = html(file)
-      IOUtils.write(file.source.file.path + ".html", data)
+      IOUtils.write("classname.html", data)
     }
   }
 

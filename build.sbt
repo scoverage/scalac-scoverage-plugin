@@ -1,6 +1,6 @@
-name := "scales"
+name := "scalac-scales-plugin"
 
-organization := "com.sksamuel.scales"
+organization := "org.scalescc"
 
 version := "0.1.0-SNAPSHOT"
 

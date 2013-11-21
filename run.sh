@@ -7,4 +7,4 @@ mvn clean install
 
 #javap -c Test.class
 
-cp target/scales.jar /home/sam/development/workspace/scales-test/lib/
+cp target/scalac-scales-plugin.jar /home/sam/development/workspace/scales-test/lib/scales.jar

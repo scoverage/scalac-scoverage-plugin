@@ -7,7 +7,9 @@ import scala.reflect.internal.util.SourceFile
 object InstrumentationRuntime {
 
   val ids = new AtomicInteger(0)
-  val coverage = new Coverage
+  var coverage = new Coverage
+
+  def setCoverage(coverage: Coverage): Unit = this.coverage = coverage
 
   /**
    * Registers a new MeasuredStatement that will be potentially invoked during the test phase.
@@ -19,7 +21,7 @@ object InstrumentationRuntime {
           line: Int,
           desc: String) = {
     val id = ids.incrementAndGet()
-    val stmt = MeasuredStatement(source, location, id, start, line, desc)
+    val stmt = MeasuredStatement(location, id, start, line, desc)
     coverage.add(stmt)
     stmt
   }

@@ -9,8 +9,8 @@
         <version>7</version>
     </parent>
 
-    <groupId>scales</groupId>
-    <artifactId>scales</artifactId>
+    <groupId>org.scalescc</groupId>
+    <artifactId>scalac-scales-plugin</artifactId>
     <packaging>jar</packaging>
     <version>0.1.0-SNAPSHOT</version>
     <name>scales</name>
