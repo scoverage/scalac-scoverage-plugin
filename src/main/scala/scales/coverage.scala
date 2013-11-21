@@ -59,10 +59,6 @@ case class MeasuredFile(source: SourceFile, statements: Iterable[MeasuredStateme
     .map(arg => MeasuredPackage(arg._1, arg._2))
 }
 
-case class Location(_package: String, _class: String, method: Option[String]) {
-  val fqn = (_package + ".").replace("<empty>.", "") + _class
-}
-
 case class MeasuredClass(name: String, statements: Iterable[MeasuredStatement]) extends StatementCoverage
 
 case class MeasuredStatement(source: SourceFile,
@@ -73,6 +69,10 @@ case class MeasuredStatement(source: SourceFile,
                              desc: String) {
   var count = 0
   def invoked(): Unit = count = count + 1
+}
+
+case class Location(_package: String, _class: String, method: Option[String]) {
+  val fqn = (_package + ".").replace("<empty>.", "") + _class
 }
 
 trait StatementCoverage {

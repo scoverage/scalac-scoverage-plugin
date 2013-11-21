@@ -4,58 +4,32 @@ import scala.tools.nsc.plugins.{PluginComponent, Plugin}
 import scala.tools.nsc.Global
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
 import scala.tools.nsc.ast.TreeDSL
-import scales.report.ScalesXmlWriter
 import scala.reflect.internal.util.SourceFile
-import scala.reflect.internal.Phase
 
 /** @author Stephen Samuel */
 class ScalesPlugin(val global: Global) extends Plugin {
   val name: String = "scales_coverage_plugin"
-  val components: List[PluginComponent] = List(new ProfilingComponent(global), new ReportingComponent(global))
+  val components: List[PluginComponent] = List(new ScalesComponent(global))
   val description: String = "scales code coverage compiler plugin"
 }
 
-class ReportingComponent(val global: Global) extends PluginComponent {
-
-  import global._
-
-  val phaseName: String = "scales-reporting-phase"
-  val runsAfter: List[String] = List("typer")
-  override def newPhase(prev: scala.tools.nsc.Phase): Phase = new StdPhase(prev) {
-
-    def apply(unit: CompilationUnit): Unit = {
-
-    }
-
-    override def run(): Unit = {
-      super.run()
-      println("Reporting phase")
-
-      val stmtCoverage = InstrumentationRuntime.coverage.statementCoverage
-      val stmts = InstrumentationRuntime.coverage.statements.size
-
-      println(InstrumentationRuntime.coverage.statements.size + " statements")
-      println(s"Statement coverage: $stmtCoverage from $stmts statments")
-      ScalesXmlWriter.write(InstrumentationRuntime.coverage)
-    }
-  }
-}
-
-class ProfilingComponent(val global: Global)
+class ScalesComponent(val global: Global)
   extends PluginComponent with TypingTransformers with Transform with TreeDSL {
 
   import global._
 
-  val phaseName: String = "scales-profiling-phase"
+  val phaseName: String = "scales-phase"
   val runsAfter: List[String] = List("typer")
+  override val runsBefore = List[String]("patmat")
 
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
 
     override def run(): Unit = {
-      println("Profiling phase")
+      println("scales: Begin profiling phase")
       super.run()
-      println("Profiling completed")
-      println(InstrumentationRuntime.coverage.statements.size + " statements")
+      println("scales: Profiling transformation completed")
+      println("scales: " + InstrumentationRuntime.coverage.statements.size + " statements profiled")
+      println(InstrumentationRuntime.coverage.statements)
     }
   }
 
@@ -121,8 +95,8 @@ class ProfilingComponent(val global: Global)
         Option(s.owner.enclMethod.fullNameString))
     }
 
-    def registerPackage(p: PackageDef): Unit = InstrumentationRuntime.coverage.packageNames.add(p.name.toString)
-    def registerClass(p: ClassDef): Unit = InstrumentationRuntime.coverage.classNames.append(p.name.toString)
+    //def registerPackage(p: PackageDef): Unit = InstrumentationRuntime.coverage.packageNames.add(p.name.toString)
+    //def registerClass(p: ClassDef): Unit = InstrumentationRuntime.coverage.classNames.append(p.name.toString)
 
     def process(tree: Tree): Tree = {
 
@@ -132,13 +106,13 @@ class ProfilingComponent(val global: Global)
 
         case _: Import => tree
         case p: PackageDef =>
-          registerPackage(p)
+          //registerPackage(p)
           super.transform(tree)
 
         case c: ClassDef if c.symbol.isAnonymousClass || c.symbol.isAnonymousFunction => super.transform(tree)
         case c: ClassDef =>
           updateLocation(c.symbol)
-          registerClass(c)
+          //registerClass(c)
           super.transform(tree)
 
         case t: Template => treeCopy.Template(tree, t.parents, t.self, transformStatements(t.body))
