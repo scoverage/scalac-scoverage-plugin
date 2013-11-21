@@ -4,7 +4,7 @@ import scales.{MeasuredMethod, MeasuredClass, MeasuredPackage, Coverage}
 import scala.xml.Node
 
 /** @author Stephen Samuel */
-class CoberturaXmlWriter extends ReportWriter {
+object CoberturaXmlWriter extends ReportWriter {
 
   def write(coverage: Coverage): String = xml(coverage).toString()
 
@@ -14,7 +14,7 @@ class CoberturaXmlWriter extends ReportWriter {
             line-rate={method.statementCoverage.toString}
             branch-rate="0">
       <lines>
-        <line number="23" hits="3" branch="false"/>
+        {method.statements.map(stmt => <line number={stmt.line} hits={stmt.count} branch="false"/>)}
       </lines>
     </method>
   }
