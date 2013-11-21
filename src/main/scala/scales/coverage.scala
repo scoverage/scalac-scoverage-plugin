@@ -21,6 +21,7 @@ class Coverage extends StatementCoverage {
       .replace("//.*$", "")
       .split("\n")
       .count(_ == '\n')).sum
+
   def packageCount = packageNames.size
   def classCount = classNames.size
   def methodCount = methodNames.size
@@ -31,8 +32,10 @@ class Coverage extends StatementCoverage {
   def invoked(id: Int): Unit = statements.find(_.id == id).foreach(_.invoked())
 
   def files = statements.groupBy(_.source.path).map(arg => MeasuredFile(arg._2.head.source, arg._2))
-  def packages: Iterable[MeasuredPackage] = statements.groupBy(_._package).map(arg => MeasuredPackage(arg._1, arg._2))
-  def classes = statements.groupBy(_.fqn).map(arg => MeasuredClass(arg._1, arg._2))
+  def packages: Iterable[MeasuredPackage] = statements
+    .groupBy(_.location._package)
+    .map(arg => MeasuredPackage(arg._1, arg._2))
+  def classes = statements.groupBy(_.location.fqn).map(arg => MeasuredClass(arg._1, arg._2))
 
   def risks(limit: Int) = classes.toSeq.sortBy(_.statementCoverage).take(limit)
 }
@@ -51,20 +54,23 @@ case class MeasuredFile(source: SourceFile, statements: Iterable[MeasuredStateme
       case _ => Covered
     }
   }
-  def packages: Iterable[MeasuredPackage] = statements.groupBy(_._package).map(arg => MeasuredPackage(arg._1, arg._2))
+  def packages: Iterable[MeasuredPackage] = statements
+    .groupBy(_.location._package)
+    .map(arg => MeasuredPackage(arg._1, arg._2))
+}
+
+case class Location(_package: String, _class: String, method: Option[String]) {
+  val fqn = (_package + ".").replace("<empty>.", "") + _class
 }
 
 case class MeasuredClass(name: String, statements: Iterable[MeasuredStatement]) extends StatementCoverage
 
 case class MeasuredStatement(source: SourceFile,
-                             _package: String,
-                             _class: String,
-                             _method: String,
+                             location: Location,
                              id: Int,
                              start: Int,
                              line: Int,
                              desc: String) {
-  val fqn = (_package + ".").replace("<empty>.", "") + _class
   var count = 0
   def invoked(): Unit = count = count + 1
 }
@@ -78,7 +84,7 @@ trait StatementCoverage {
 
 trait ClassCoverage {
   val statements: Iterable[MeasuredStatement]
-  def classes = statements.groupBy(_._class).map(arg => MeasuredClass(arg._1, arg._2))
+  def classes = statements.groupBy(_.location._class).map(arg => MeasuredClass(arg._1, arg._2))
   def classCount: Int = classes.size
   def invokedClasses: Int = classes.count(_.statements.count(_.count > 0) > 0)
   def classCoverage: Double = invokedClasses / classes.size.toDouble

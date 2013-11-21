@@ -14,14 +14,12 @@ object InstrumentationRuntime {
    * Each MeasuredStatement has a unique id which is used when calling invoked(id).
    */
   def add(source: SourceFile,
-          _package: String,
-          _class: String,
-          _method: String,
+          location: Location,
           start: Int,
           line: Int,
           desc: String) = {
     val id = ids.incrementAndGet()
-    val stmt = MeasuredStatement(source, _package, _class, _method: String, id, start, line, desc)
+    val stmt = MeasuredStatement(source, location, id, start, line, desc)
     coverage.add(stmt)
     stmt
   }

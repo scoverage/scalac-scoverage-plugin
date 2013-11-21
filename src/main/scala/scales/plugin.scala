@@ -35,7 +35,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
     }
   }
 
-  val phaseName: String = "coverage inspector phase"
+  val phaseName: String = "coverage setup phase"
   val runsAfter: List[String] = List("typer")
   protected def newTransformer(unit: CompilationUnit): CoverageTransformer = new CoverageTransformer(unit)
 
@@ -44,13 +44,11 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
     import global._
 
-    var _package: String = null
-    var _class: String = null
-    var _method: String = null
+    var location: Location = null
 
-    def _safeStart(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.startOrPoint else -1
-    def _safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.safeLine else -1
-    def _safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
+    def safeStart(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.startOrPoint else -1
+    def safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.safeLine else -1
+    def safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
 
     override def transform(tree: Tree) = process(tree)
     def transformStatements(trees: List[Tree]): List[Tree] = trees.map(tree => process(tree))
@@ -62,11 +60,11 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
     // wraps the given tree with an Instrumentation call
     def instrument(tree: Tree) = {
-      _safeSource(tree) match {
+      safeSource(tree) match {
         case None => tree
         case Some(source) =>
           val instruction =
-            InstrumentationRuntime.add(source, _package, _class, _method, _safeStart(tree), _safeLine(tree), tree.toString())
+            InstrumentationRuntime.add(source, location, safeStart(tree), safeLine(tree), tree.toString())
           val apply = invokeCall(instruction.id)
           localTyper.typed(atPos(tree.pos)(apply))
       }
@@ -85,12 +83,10 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
       )
     }
 
-    def setPackageAndClass(s: Symbol) {
-      _package = s.owner.enclosingPackage.nameString
-      _class = s.owner.enclClass.fullNameString
-    }
-    def setMethod(s: Symbol) {
-      _method = s.owner.enclMethod.fullNameString
+    def updateLocation(s: Symbol) {
+      location = Location(s.owner.enclosingPackage.nameString,
+        s.owner.enclClass.fullNameString,
+        Option(s.owner.enclMethod.fullNameString))
     }
 
     def registerPackage(p: PackageDef): Unit = InstrumentationRuntime.coverage.packageNames.add(p.name.toString)
@@ -107,7 +103,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
         case c: ClassDef if c.symbol.isAnonymousClass || c.symbol.isAnonymousFunction => super.transform(tree)
         case c: ClassDef =>
-          setPackageAndClass(c.symbol)
+          updateLocation(c.symbol)
           registerClass(c)
           super.transform(tree)
 
@@ -130,8 +126,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
         case d: DefDef if tree.symbol.isDeferred => tree // abstract methods
         case d: DefDef if d.symbol.isSynthetic => tree // such as auto generated hash code methods in case classes
         case d: DefDef =>
-          setPackageAndClass(d.symbol)
-          setMethod(d.symbol)
+          updateLocation(d.symbol)
           InstrumentationRuntime.coverage.methodNames.append(d.name.toString)
           super.transform(tree)
 
@@ -142,8 +137,7 @@ class ScalesComponent(val global: Global) extends PluginComponent with TypingTra
 
         case v: ValDef if v.symbol.isParamAccessor && v.symbol.isCaseAccessor => tree // case param accessors
         case v: ValDef =>
-          setPackageAndClass(v.symbol)
-          setMethod(v.symbol)
+          updateLocation(v.symbol)
           treeCopy.ValDef(tree, v.mods, v.name, v.tpt, transform(v.rhs))
 
         case apply: Apply => instrument(apply)
