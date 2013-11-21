@@ -2,7 +2,7 @@ package scales.report
 
 import scales._
 import scala.reflect.internal.util.SourceFile
-import scala.xml.{Unparsed, Node}
+import scala.xml.Node
 import scales.MeasuredFile
 import java.util.Date
 
@@ -13,6 +13,16 @@ object ScalesHtmlWriter extends ReportWriter {
     null
   }
 
+  def packages(coverage: Coverage): Node = {
+    <ul>
+      {coverage.packages.map(arg =>
+      <li>
+        {arg.name}{arg.statementCoverage.toString}
+        %
+      </li>)}
+    </ul>
+  }
+
   def risks(coverage: Coverage) = {
     <div id="risks">
       <div>Total 20 Project Risks</div>{coverage.risks(20).map(arg => <div>
@@ -21,7 +31,7 @@ object ScalesHtmlWriter extends ReportWriter {
     </div>
   }
 
-  def packages(coverage: Coverage) = {
+  def packages2(coverage: Coverage) = {
     val rows = coverage.packages.map(arg => {
       <tr>
         <td>
@@ -108,7 +118,6 @@ object ScalesHtmlWriter extends ReportWriter {
   }
 
   def lines(source: SourceFile): Seq[String] = new String(source.content).split("\n")
-  def formatLine(line: String) = line.replace(" ", "&nbsp;").replace("\t", "&nbsp;&nbsp;&nbsp;")
 
   def table(file: MeasuredFile): Seq[Node] = {
     var lineNumber = 0
@@ -121,7 +130,7 @@ object ScalesHtmlWriter extends ReportWriter {
           {lineNumber.toString}
         </td>
         <td style={css}>
-          {Unparsed(formatLine(line))}
+
         </td>
       </tr>
     })
@@ -133,28 +142,29 @@ object ScalesHtmlWriter extends ReportWriter {
     case NotInstrumented => "background: white"
   }
 
-  def html(file: MeasuredFile) = <html>
-    <head>
-      <title>
-        {file.source}
-      </title>
-      <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.2.0/pure-nr-min.css"/>
-    </head>
-    <body>
-      <h1>
-        Filename:
-        {file.source}
-      </h1>
-      <div>Statement Coverage:
-        {file.invokedStatements.toString}
-        /
-        {file.statementCount.toString}{file.statementCoverage.toString}
-        %
-      </div>
-      <table>
-        {table(file)}
-      </table>
-    </body>
-  </html>
+  def html(file: MeasuredFile) =
+    <html>
+      <head>
+        <title>
+          {file.source}
+        </title>
+        <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.2.0/pure-nr-min.css"/>
+      </head>
+      <body>
+        <h1>
+          Filename:
+          {file.source}
+        </h1>
+        <div>Statement Coverage:
+          {file.invokedStatements.toString}
+          /
+          {file.statementCount.toString}{file.statementCoverage.toString}
+          %
+        </div>
+        <table>
+          {table(file)}
+        </table>
+      </body>
+    </html>
 }
 

@@ -88,8 +88,16 @@ case class MeasuredStatement(location: Location,
   def invoked(): Unit = count = count + 1
 }
 
-case class Location(_package: String, _class: String, method: Option[String]) extends java.io.Serializable {
+case class Location(_package: String, _class: String, classType: ClassType, method: Option[String])
+  extends java.io.Serializable {
   val fqn = (_package + ".").replace("<empty>.", "") + _class
+}
+
+sealed trait ClassType
+object ClassType {
+  case object Object extends ClassType
+  case object Class extends ClassType
+  case object Trait extends ClassType
 }
 
 trait StatementCoverage {

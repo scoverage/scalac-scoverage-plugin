@@ -6,6 +6,7 @@ import scala.tools.nsc.transform.{Transform, TypingTransformers}
 import scala.tools.nsc.ast.TreeDSL
 import scala.reflect.internal.util.SourceFile
 import scala.reflect.runtime.{universe => u}
+import scales.ClassType.Trait
 
 /** @author Stephen Samuel */
 class ScalesPlugin(val global: Global) extends Plugin {
@@ -93,9 +94,17 @@ class ScalesComponent(val global: Global)
     }
 
     def updateLocation(s: Symbol) {
-      location = Location(s.owner.enclosingPackage.nameString,
+      val classType = {
+        if (s.owner.enclClass.isTrait) ClassType.Trait
+        else if (s.owner.enclClass.isModule) ClassType.Object
+        else ClassType.Class
+      }
+      location = Location(
+        s.owner.enclosingPackage.nameString,
         s.owner.enclClass.fullNameString,
-        Option(s.owner.enclMethod.fullNameString))
+        classType,
+        Option(s.owner.enclMethod.fullNameString)
+      )
     }
 
     //def registerPackage(p: PackageDef): Unit = InstrumentationRuntime.coverage.packageNames.add(p.name.toString)
