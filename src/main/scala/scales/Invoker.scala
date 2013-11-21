@@ -8,7 +8,7 @@ object Invoker {
   def invoked(id: Int) = {
     val writer = new FileWriter(Env.measurementFile, true)
     writer.append(id.toString)
-    writer.append("\n")
+    writer.append(';')
     writer.close()
   }
 }
