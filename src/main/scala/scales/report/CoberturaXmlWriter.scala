@@ -4,7 +4,7 @@ import scales.{MeasuredMethod, MeasuredClass, MeasuredPackage, Coverage}
 import scala.xml.Node
 
 /** @author Stephen Samuel */
-class CoberturaXmlWriter extends ScalesWriter {
+class CoberturaXmlWriter extends ReportWriter {
 
   def write(coverage: Coverage): String = xml(coverage).toString()
 
@@ -45,7 +45,7 @@ class CoberturaXmlWriter extends ScalesWriter {
     <coverage line-rate={coverage.statementCoverage.toString}
               branch-rate="0"
               version="1.0"
-              timestamp={System.currentTimeMillis}>
+              timestamp={System.currentTimeMillis.toString}>
       <sources>
         <source>C:/local/mvn-coverage-example/src/main/java</source>
       </sources>

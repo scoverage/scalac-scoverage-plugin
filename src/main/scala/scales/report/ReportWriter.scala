@@ -3,6 +3,6 @@ package scales.report
 import scales.Coverage
 
 /** @author Stephen Samuel */
-trait ScalesWriter {
+trait ReportWriter {
   def write(coverage: Coverage): String
 }
