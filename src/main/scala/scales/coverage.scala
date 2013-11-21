@@ -31,11 +31,6 @@ class Coverage extends StatementCoverage with java.io.Serializable {
   def methodsPerClass = methodCount / classCount.toDouble
 
   def add(stmt: MeasuredStatement): Unit = statements.append(stmt)
-  def invoked(id: Int): Unit = {
-    println("Invoked " + id + " on Coverage: " + System.identityHashCode(this))
-    statements.find(_.id == id).foreach(_.invoked())
-  }
-
   def methods: Set[String] = statements.flatMap(_.location.method).toSet
   def files = Nil
   //statements.groupBy(_.source.path).map(arg => MeasuredFile(arg._2.head.source, arg._2))
@@ -45,6 +40,9 @@ class Coverage extends StatementCoverage with java.io.Serializable {
   def classes = statements.groupBy(_.location.fqn).map(arg => MeasuredClass(arg._1, arg._2))
 
   def risks(limit: Int) = classes.toSeq.sortBy(_.statementCoverage).take(limit)
+
+  def apply(ids: Iterable[Int]): Unit = ids foreach invoked
+  def invoked(id: Int): Unit = statements.find(_.id == id).foreach(_.invoked())
 }
 
 case class MeasuredPackage(name: String, statements: Iterable[MeasuredStatement])
