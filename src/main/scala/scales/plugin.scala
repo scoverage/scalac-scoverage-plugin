@@ -98,7 +98,7 @@ class ScalesComponent(val global: Global)
         s.owner.enclosingPackage.fullName,
         s.owner.enclClass.fullNameString,
         classType,
-        Option(s.owner.enclMethod.fullNameString)
+        Option(s.owner.enclMethod.nameString).getOrElse("<none>")
       )
     }
 
@@ -135,36 +135,45 @@ class ScalesComponent(val global: Global)
         //todo literals are wrapped to make sure we access them, but wouldn't we do that from a val?
         case l: Literal => instrument(l)
 
-        // handle function bodies
+        // handle function bodies. This AST node corresponds to the following Scala code:    vparams => body
         case f: Function =>
           treeCopy.Function(tree, f.vparams, transform(f.body))
 
+        // labeldefs are never written natively in scala
         case l: LabelDef =>
-          println("what is a label? " + l)
           treeCopy.LabelDef(tree, l.name, l.params, transform(l.rhs))
 
         // type aliases, type parameters, abstract types
-        case t: TypeDef => tree
+        case t: TypeDef => super.transform(tree)
 
         case d: DefDef if tree.symbol.isConstructor && (tree.symbol.isTrait || tree.symbol.isModule) => tree
 
         // todo handle constructors, as a method?
         case d: DefDef if tree.symbol.isConstructor => tree
 
-        // ignore case accessors as they are generated
+        // ignore case param/accessors
         case d: DefDef if d.symbol.isCaseAccessor => tree
 
         // ignore accessors as they are generated
         case d: DefDef if d.symbol.isStable && d.symbol.isAccessor => tree // hidden accessor methods
 
-        // ignore accessors as they are generated
+        // for field definitions generated for primary constructor
         case d: DefDef if d.symbol.isParamAccessor && d.symbol.isAccessor => tree
+
+        // generated setters // todo check the accessor flag is not set on user setters
+        case d: DefDef if d.symbol.isAccessor && d.symbol.isSetter => tree
 
         // abstract methods ??
         case d: DefDef if tree.symbol.isDeferred => tree
 
         // generated methods
-        case d: DefDef if d.symbol.isSynthetic => tree
+        case d: DefDef if d.symbol.isSynthetic =>
+          super.transform(tree)
+
+        case d: DefDef if d.symbol.isCaseApplyOrUnapply =>
+          println("Case apply/unapply")
+          updateLocation(d.symbol)
+          super.transform(tree)
 
         // user defined methods
         case d: DefDef =>

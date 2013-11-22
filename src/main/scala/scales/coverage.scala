@@ -31,7 +31,7 @@ trait MethodBuilders {
   val statements: Iterable[MeasuredStatement]
   def methodCount = methods.size
   def methods: Seq[MeasuredMethod] = {
-    statements.groupBy(_.location._package).map(arg => MeasuredMethod(arg._1, arg._2)).toSeq
+    statements.groupBy(_.location.method).map(arg => MeasuredMethod(arg._1, arg._2)).toSeq
   }
 }
 
