@@ -56,7 +56,7 @@ class ScalesComponent(val global: Global)
 
     // instrument the given case defintions not changing the patterns or guards
     def transformCases(cases: List[CaseDef]): List[CaseDef] = {
-      cases.map(c => treeCopy.CaseDef(c, c.pat, c.guard, instrument(instrument(c.body), true)))
+      cases.map(c => treeCopy.CaseDef(c, c.pat, process(c.guard), instrument(process(c.body), true)))
     }
 
     def transformIf(tree: Tree) = {
@@ -196,7 +196,7 @@ class ScalesComponent(val global: Global)
 
         // pattern match clauses will be instrumented per case
         case Match(clause: Tree, cases: List[CaseDef]) =>
-          treeCopy.Match(tree, clause, transformCases(cases))
+          treeCopy.Match(tree, instrument(clause), transformCases(cases))
 
         // a synthetic object is a generated object, such as case class companion
         case m: ModuleDef if m.symbol.isSynthetic => tree
