@@ -18,7 +18,10 @@ class Coverage
   def add(stmt: MeasuredStatement): Unit = statements.append(stmt)
 
   def avgClassesPerPackage = classCount / packageCount.toDouble
+  def avgClassesPerPackageFormatted: String = "%.2f".format(avgClassesPerPackage * 100)
+
   def avgMethodsPerClass = methodCount / classCount.toDouble
+  def avgMethodsPerClassFormatted: String = "%.2f".format(avgMethodsPerClass * 100)
 
   // returns the classes by least coverage
   def risks(limit: Int) = classes.toSeq.sortBy(_.statementCount).reverse.sortBy(_.statementCoverage).take(limit)
@@ -29,10 +32,10 @@ class Coverage
 
 trait MethodBuilders {
   val statements: Iterable[MeasuredStatement]
-  def methodCount = methods.size
   def methods: Seq[MeasuredMethod] = {
     statements.groupBy(_.location.method).map(arg => MeasuredMethod(arg._1, arg._2)).toSeq
   }
+  def methodCount = methods.size
 }
 
 trait PackageBuilders {

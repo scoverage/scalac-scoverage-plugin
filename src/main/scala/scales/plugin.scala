@@ -122,12 +122,14 @@ class ScalesComponent(val global: Global)
 
         case EmptyTree => super.transform(tree)
 
-        // This AST node corresponds to the following Scala code:   fun(args)
+        // This AST node corresponds to the following Scala code: fun(args)
         case apply: Apply =>
           instrument(treeCopy.Apply(apply, apply.fun, transformStatements(apply.args)))
 
         // just carry on as normal with a block, we'll process the children
-        case _: Block => super.transform(tree)
+        case b: Block =>
+          treeCopy.Block(b, transformStatements(b.stats), transform(b.expr))
+
         case _: Import => super.transform(tree)
         case p: PackageDef => super.transform(tree)
 
@@ -183,9 +185,9 @@ class ScalesComponent(val global: Global)
         case i: If =>
           treeCopy.If(i, i.cond, transformIf(i.thenp), transformIf(i.elsep))
 
-        // handle function bodies. This AST node corresponds to the following Scala code:    vparams => body
+        // handle function bodies. This AST node corresponds to the following Scala code: vparams => body
         case f: Function =>
-          treeCopy.Function(tree, f.vparams, transform(f.body))
+          treeCopy.Function(tree, f.vparams, process(f.body))
 
         // labeldefs are never written natively in scala
         case l: LabelDef =>
