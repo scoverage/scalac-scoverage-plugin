@@ -194,12 +194,21 @@ class ScalesComponent(val global: Global)
         // profile access to a literal for function args todo do we need to do this?
         case l: Literal => instrument(l)
 
+        // pattern match clauses will be instrumented per case
+        case Match(clause: Tree, cases: List[CaseDef]) =>
+          treeCopy.Match(tree, clause, transformCases(cases))
+
+        // a synthetic object is a generated object, such as case class companion
+        case m: ModuleDef if m.symbol.isSynthetic => tree
+
+        // user defined objects
+        case m: ModuleDef =>
+          updateLocation(m.symbol)
+          super.transform(tree)
+
         // This AST node corresponds to the following Scala code:  `return` expr
         case r: Return =>
           treeCopy.Return(r, transform(r.expr))
-
-        // type aliases, type parameters, abstract types
-        case t: TypeDef => super.transform(tree)
 
         // This AST node corresponds to the following Scala code: expr: tpt
         case t: Typed => super.transform(tree)
@@ -211,19 +220,18 @@ class ScalesComponent(val global: Global)
         //case s: Super =>
         // treeCopy.Super(s, s.qual, s.mix)
 
-        // a synthetic object is a generated object, such as case class companion
-        case m: ModuleDef if m.symbol.isSynthetic => tree
-
-        // user defined objects
-        case m: ModuleDef =>
-          updateLocation(m.symbol)
-          super.transform(tree)
-
         // This AST node corresponds to the following Scala code:    qual.this
         case t: This => super.transform(tree)
 
         // This AST node corresponds to the following Scala code:    `throw` expr
         case t: Throw => instrument(tree)
+
+        // instrument trys, catches and finally as seperate blocks
+        case Try(t: Tree, cases: List[CaseDef], f: Tree) =>
+          treeCopy.Try(tree, instrument(process(t), true), transformCases(cases), instrument(process(f), true))
+
+        // type aliases, type parameters, abstract types
+        case t: TypeDef => super.transform(tree)
 
         // case param accessors are auto generated
         case v: ValDef if v.symbol.isCaseAccessor => super.transform(tree)
@@ -235,14 +243,6 @@ class ScalesComponent(val global: Global)
 
         case tapply: TypeApply => instrument(tapply)
         case assign: Assign => instrument(assign)
-
-        // pattern match clauses will be instrumented per case
-        case Match(clause: Tree, cases: List[CaseDef]) =>
-          treeCopy.Match(tree, clause, transformCases(cases))
-
-        // instrument trys, catches and finally as seperate blocks
-        case Try(t: Tree, cases: List[CaseDef], f: Tree) =>
-          treeCopy.Try(tree, instrument(t), transformCases(cases), instrument(f))
 
         case _ =>
           println("Unexpected construct: " + tree.getClass + " " + tree.symbol)
