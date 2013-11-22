@@ -47,6 +47,7 @@ class ScalesComponent(val global: Global)
     var location: Location = null
 
     def safeStart(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.startOrPoint else -1
+    def safeEnd(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.endOrPoint else -1
     def safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.safeLine else -1
     def safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
 
@@ -89,6 +90,7 @@ class ScalesComponent(val global: Global)
             source.path,
             location, id,
             safeStart(tree),
+            safeEnd(tree),
             safeLine(tree),
             tree.toString(),
             branch
