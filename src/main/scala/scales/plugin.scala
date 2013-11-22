@@ -146,7 +146,6 @@ class ScalesComponent(val global: Global)
           treeCopy.Template(tree, t.parents, t.self, transformStatements(t.body))
 
         case _: TypeTree => super.transform(tree)
-        case _: Ident => super.transform(tree)
 
         case d: DefDef if tree.symbol.isConstructor && (tree.symbol.isTrait || tree.symbol.isModule) => tree
 
@@ -182,8 +181,11 @@ class ScalesComponent(val global: Global)
           updateLocation(d.symbol)
           super.transform(tree)
 
+        case _: Ident =>
+          super.transform(tree)
+
         case i: If =>
-          treeCopy.If(i, i.cond, transformIf(i.thenp), transformIf(i.elsep))
+          treeCopy.If(i, process(i.cond), transformIf(i.thenp), transformIf(i.elsep))
 
         // handle function bodies. This AST node corresponds to the following Scala code: vparams => body
         case f: Function =>
