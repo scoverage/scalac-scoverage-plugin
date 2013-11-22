@@ -6,7 +6,7 @@ import scala.reflect.internal.util.SourceFile
 /**
  * @author Stephen Samuel */
 class Coverage
-  extends StatementCoverage with
+  extends CoverageMetrics with
   MethodBuilders with
   java.io.Serializable with
   ClassBuilders with
@@ -49,18 +49,18 @@ trait ClassBuilders {
   def classCount: Int = classes.size
 }
 
-case class MeasuredMethod(name: String, statements: Iterable[MeasuredStatement]) extends StatementCoverage
+case class MeasuredMethod(name: String, statements: Iterable[MeasuredStatement]) extends CoverageMetrics
 
 case class MeasuredClass(name: String, statements: Iterable[MeasuredStatement])
-  extends StatementCoverage with MethodBuilders with Numerics
+  extends CoverageMetrics with MethodBuilders with Numerics
 
 case class MeasuredPackage(name: String, statements: Iterable[MeasuredStatement])
-  extends StatementCoverage with ClassCoverage with ClassBuilders {
+  extends CoverageMetrics with ClassCoverage with ClassBuilders {
   def files = Nil //statements.groupBy(_.source).map(arg => MeasuredFile(arg._1, arg._2))
 }
 
 case class MeasuredFile(source: SourceFile, statements: Iterable[MeasuredStatement])
-  extends StatementCoverage with ClassCoverage with ClassBuilders {
+  extends CoverageMetrics with ClassCoverage with ClassBuilders {
   def lineStatus(lineNumber: Int): LineStatus = {
     statements.filter(_.line == lineNumber) match {
       case i if i.isEmpty => NotInstrumented
@@ -78,6 +78,7 @@ case class MeasuredStatement(location: Location,
                              start: Int,
                              line: Int,
                              desc: String,
+                             branch: Boolean,
                              var count: Int = 0) extends java.io.Serializable {
   def invoked(): Unit = count = count + 1
 }
@@ -87,17 +88,24 @@ trait Numerics {
   def loc = statements.map(stmt => stmt.location.fqn + ":" + stmt.line).toSet.size
 }
 
-case class Location(_package: String, _class: String, classType: ClassType, method: Option[String])
+case class Location(_package: String, _class: String, classType: ClassType, method: String)
   extends java.io.Serializable {
   val fqn = (_package + ".").replace("<empty>.", "") + _class
 }
 
-trait StatementCoverage {
+trait CoverageMetrics {
   val statements: Iterable[MeasuredStatement]
-  def statementCoverage: Double = invokedStatements / statements.size.toDouble
+  def statementCount: Int = statements.count(!_.branch)
+  def invokedStatements: Iterable[MeasuredStatement] = statements.filter(_.count > 0)
+  def invokedStatementCount = invokedStatements.size
+  def statementCoverage: Double = invokedStatements / statementCount.toDouble
   def statementCoverageFormatted: String = "%.2f".format(statementCoverage * 100)
-  def statementCount: Int = statements.size
-  def invokedStatements: Int = statements.count(_.count > 0)
+  def branches: Iterable[MeasuredStatement] = statements.filter(_.branch)
+  def branchCount: Int = branches.size
+  def invokedBranches: Iterable[MeasuredStatement] = branches.filter(_.count > 0)
+  def invokedBranchesCount = invokedBranches.size
+  def branchCoverage: Double = invokedBranchesCount / branchCount.toDouble
+  def branchCoverageFormatted: String = "%.2f".format(branchCoverage * 100)
 }
 
 trait ClassCoverage {

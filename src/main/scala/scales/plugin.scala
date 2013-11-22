@@ -52,7 +52,11 @@ class ScalesComponent(val global: Global)
 
     // instrument the given case defintions not changing the patterns or guards
     def transformCases(cases: List[CaseDef]): List[CaseDef] = {
-      cases.map(c => treeCopy.CaseDef(c, c.pat, c.guard, instrument(c.body)))
+      cases.map(c => treeCopy.CaseDef(c, c.pat, c.guard, instrument(instrument(c.body), true)))
+    }
+
+    def transformIf(tree: Tree) = {
+      instrument(process(tree), true)
     }
 
     // Creates a call to the invoker
@@ -76,12 +80,12 @@ class ScalesComponent(val global: Global)
     def safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
 
     // wraps the given tree with an Instrumentation call
-    def instrument(tree: Tree) = {
+    def instrument(tree: Tree, branch: Boolean = false) = {
       safeSource(tree) match {
         case None => tree
         case Some(source) =>
           val instruction =
-            InstrumentationRuntime.add(source, location, safeStart(tree), safeLine(tree), tree.toString())
+            InstrumentationRuntime.add(source, location, safeStart(tree), safeLine(tree), tree.toString(), branch)
           val apply = invokeCall(instruction.id)
           val block = Block(apply, tree)
           localTyper.typed(atPos(tree.pos)(block))
@@ -125,10 +129,10 @@ class ScalesComponent(val global: Global)
           //registerClass(c)
           super.transform(tree)
 
-        case t: Template => treeCopy.Template(tree, t.parents, t.self, transformStatements(t.body))
+        case t: Template =>
+          treeCopy.Template(tree, t.parents, t.self, transformStatements(t.body))
 
         case _: TypeTree => super.transform(tree)
-        case _: If => super.transform(tree)
         case _: Ident => super.transform(tree)
         case _: Block => super.transform(tree)
 
@@ -171,7 +175,7 @@ class ScalesComponent(val global: Global)
           super.transform(tree)
 
         case d: DefDef if d.symbol.isCaseApplyOrUnapply =>
-          println("Case apply/unapply")
+          println("Case apply/unapply " + d)
           updateLocation(d.symbol)
           super.transform(tree)
 
@@ -179,6 +183,9 @@ class ScalesComponent(val global: Global)
         case d: DefDef =>
           updateLocation(d.symbol)
           super.transform(tree)
+
+        case i: If =>
+          treeCopy.If(i, i.cond, transformIf(i.thenp), transformIf(i.elsep))
 
         // should only occur inside something we are instrumenting.
         case s: Select =>
