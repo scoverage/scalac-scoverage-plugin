@@ -34,8 +34,10 @@ This is a paradigm shift that we hope will take hold.
 
 ### Alternatives
 
-* [SCCT](https://github.com/SCCT/scct)
-* [Jacoco4sbt](https://github.com/sbt/jacoco4sbt)
+There are still only a few code coverage tools for Scala.
+
+* [SCCT](https://github.com/SCCT/scct) - Offers line coverage
+* [Jacoco4sbt](https://github.com/sbt/jacoco4sbt) - Instruments bytecode
 
 ## License
 ```
