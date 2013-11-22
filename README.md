@@ -4,6 +4,25 @@ scales
 Scales is a free Apache licensed code coverage tool for scala that offers statement and branch coverage.
 Scales is available for both maven and sbt.
 
+### Statement Coverage
+
+In traditional code coverage tools, line coverage has been the main metric. 
+This is fine for languages such as Java which are very verbose and very rarely have more than one
+statement per line, and more usually have one statement spread across multiple lines.
+
+In powerful, expressive languages like Scala, quite often multiple statements, or even branches
+are included on a single line, eg a very simple example:
+
+```
+val status = if (age < 18) "No beer" else "Beer for you"
+```
+
+If you had a unit test that ran through the value 18 you would get 100% line coverage
+yet you only have 50% statement coverage
+
+That's why in Scales we focus on statement coverage, and don't even include line coverage as a metric.
+This is a paradigm shift that we hope will take hold.
+
 
 ### Alternatives
 
