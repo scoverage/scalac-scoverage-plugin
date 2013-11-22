@@ -98,13 +98,13 @@ trait CoverageMetrics {
   def statementCount: Int = statements.count(!_.branch)
   def invokedStatements: Iterable[MeasuredStatement] = statements.filter(_.count > 0)
   def invokedStatementCount = invokedStatements.size
-  def statementCoverage: Double = invokedStatementCount / statementCount.toDouble
+  def statementCoverage: Double = if (invokedStatementCount == 0) 0 else invokedStatementCount / statementCount.toDouble
   def statementCoverageFormatted: String = "%.2f".format(statementCoverage * 100)
   def branches: Iterable[MeasuredStatement] = statements.filter(_.branch)
   def branchCount: Int = branches.size
   def invokedBranches: Iterable[MeasuredStatement] = branches.filter(_.count > 0)
   def invokedBranchesCount = invokedBranches.size
-  def branchCoverage: Double = invokedBranchesCount / branchCount.toDouble
+  def branchCoverage: Double = if (branchCount == 0) 0 else invokedBranchesCount / branchCount.toDouble
   def branchCoverageFormatted: String = "%.2f".format(branchCoverage * 100)
 }
 
