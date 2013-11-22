@@ -1,17 +1,17 @@
 package scales
 
 import scala.collection.mutable.ListBuffer
-import scala.reflect.internal.util.SourceFile
 
 /**
  * @author Stephen Samuel */
 class Coverage
-  extends CoverageMetrics with
-  MethodBuilders with
-  java.io.Serializable with
-  ClassBuilders with
-  PackageBuilders with
-  Numerics {
+  extends CoverageMetrics
+  with MethodBuilders
+  with java.io.Serializable
+  with ClassBuilders
+  with PackageBuilders
+  with FileBuilders
+  with Numerics {
 
   val statements = new ListBuffer[MeasuredStatement]
 
@@ -49,17 +49,25 @@ trait ClassBuilders {
   def classCount: Int = classes.size
 }
 
+trait FileBuilders {
+  val statements: Iterable[MeasuredStatement]
+  def files: Iterable[MeasuredFile] = statements.groupBy(_.source).map(arg => MeasuredFile(arg._1, arg._2))
+  def fileCount: Int = files.size
+}
+
 case class MeasuredMethod(name: String, statements: Iterable[MeasuredStatement]) extends CoverageMetrics
 
 case class MeasuredClass(name: String, statements: Iterable[MeasuredStatement])
-  extends CoverageMetrics with MethodBuilders with Numerics
+  extends CoverageMetrics with MethodBuilders with Numerics {
+  def source = statements.head.source
+}
 
 case class MeasuredPackage(name: String, statements: Iterable[MeasuredStatement])
   extends CoverageMetrics with ClassCoverage with ClassBuilders {
   def files = Nil //statements.groupBy(_.source).map(arg => MeasuredFile(arg._1, arg._2))
 }
 
-case class MeasuredFile(source: SourceFile, statements: Iterable[MeasuredStatement])
+case class MeasuredFile(source: String, statements: Iterable[MeasuredStatement])
   extends CoverageMetrics with ClassCoverage with ClassBuilders {
   def lineStatus(lineNumber: Int): LineStatus = {
     statements.filter(_.line == lineNumber) match {
