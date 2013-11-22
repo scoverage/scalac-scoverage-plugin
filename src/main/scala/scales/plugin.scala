@@ -115,6 +115,13 @@ class ScalesComponent(val global: Global)
 
         case EmptyTree => super.transform(tree)
 
+        // This AST node corresponds to the following Scala code:   fun(args)
+        case apply: Apply =>
+          treeCopy.Apply(apply, instrument(apply.fun), transformStatements(apply.args))
+
+        // just carry on as normal with a block, we'll process the children
+        case _: Block => super.transform(tree)
+
         case _: Import => tree
         case p: PackageDef =>
           super.transform(tree)
@@ -134,21 +141,6 @@ class ScalesComponent(val global: Global)
 
         case _: TypeTree => super.transform(tree)
         case _: Ident => super.transform(tree)
-        case _: Block => super.transform(tree)
-
-        //todo literals are wrapped to make sure we access them, but wouldn't we do that from a val?
-        case l: Literal => instrument(l)
-
-        // handle function bodies. This AST node corresponds to the following Scala code:    vparams => body
-        case f: Function =>
-          treeCopy.Function(tree, f.vparams, transform(f.body))
-
-        // labeldefs are never written natively in scala
-        case l: LabelDef =>
-          treeCopy.LabelDef(tree, l.name, l.params, transform(l.rhs))
-
-        // type aliases, type parameters, abstract types
-        case t: TypeDef => super.transform(tree)
 
         case d: DefDef if tree.symbol.isConstructor && (tree.symbol.isTrait || tree.symbol.isModule) => tree
 
@@ -187,6 +179,20 @@ class ScalesComponent(val global: Global)
         case i: If =>
           treeCopy.If(i, i.cond, transformIf(i.thenp), transformIf(i.elsep))
 
+        // handle function bodies. This AST node corresponds to the following Scala code:    vparams => body
+        case f: Function =>
+          treeCopy.Function(tree, f.vparams, transform(f.body))
+
+        // labeldefs are never written natively in scala
+        case l: LabelDef =>
+          treeCopy.LabelDef(tree, l.name, l.params, transform(l.rhs))
+
+        //todo literals are wrapped to make sure we access them, but wouldn't we do that from a val?
+        case l: Literal => instrument(l)
+
+        // type aliases, type parameters, abstract types
+        case t: TypeDef => super.transform(tree)
+
         // should only occur inside something we are instrumenting.
         case s: Select =>
           super.transform(tree)
@@ -200,20 +206,19 @@ class ScalesComponent(val global: Global)
           super.transform(tree)
 
         // This AST node corresponds to the following Scala code:    qual.this
-        case t: This => tree
+        case t: This => super.transform(tree)
 
         // This AST node corresponds to the following Scala code:    `throw` expr
         case t: Throw => instrument(tree)
 
         // case param accessors are auto generated
-        case v: ValDef if v.symbol.isCaseAccessor => tree
+        case v: ValDef if v.symbol.isCaseAccessor => super.transform(tree)
 
         // user defined value statements, we will instrument the RHS
         case v: ValDef =>
           updateLocation(v.symbol)
           treeCopy.ValDef(tree, v.mods, v.name, v.tpt, process(v.rhs))
 
-        case apply: Apply => instrument(apply)
         case tapply: TypeApply => instrument(tapply)
         case assign: Assign => instrument(assign)
         //    case select: Select => instrument(select)
