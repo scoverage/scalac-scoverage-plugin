@@ -21,7 +21,7 @@ class Coverage
   def avgMethodsPerClass = methodCount / classCount.toDouble
 
   // returns the classes by least coverage
-  def risks(limit: Int) = classes.toSeq.sortBy(_.statements).reverse.sortBy(_.statementCoverage).take(limit)
+  def risks(limit: Int) = classes.toSeq.sortBy(_.statementCount).reverse.sortBy(_.statementCoverage).take(limit)
 
   def apply(ids: Iterable[Int]): Unit = ids foreach invoked
   def invoked(id: Int): Unit = statements.find(_.id == id).foreach(_.invoked())
