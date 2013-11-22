@@ -73,7 +73,7 @@ case class MeasuredFile(source: SourceFile, statements: Iterable[MeasuredStateme
     .map(arg => MeasuredPackage(arg._1, arg._2))
 }
 
-case class MeasuredStatement(source: SourceFile,
+case class MeasuredStatement(source: String,
                              location: Location,
                              id: Int,
                              start: Int,

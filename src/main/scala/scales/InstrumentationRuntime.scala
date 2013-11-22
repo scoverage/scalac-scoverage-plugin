@@ -1,7 +1,6 @@
 package scales
 
 import java.util.concurrent.atomic.AtomicInteger
-import scala.reflect.internal.util.SourceFile
 
 /** @author Stephen Samuel */
 object InstrumentationRuntime {
@@ -15,7 +14,7 @@ object InstrumentationRuntime {
    * Registers a new MeasuredStatement that will be potentially invoked during the test phase.
    * Each MeasuredStatement has a unique id which is used when calling invoked(id).
    */
-  def add(source: SourceFile,
+  def add(source: String,
           location: Location,
           start: Int,
           line: Int,

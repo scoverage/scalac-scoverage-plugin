@@ -85,7 +85,7 @@ class ScalesComponent(val global: Global)
         case None => tree
         case Some(source) =>
           val instruction =
-            InstrumentationRuntime.add(source, location, safeStart(tree), safeLine(tree), tree.toString(), branch)
+            InstrumentationRuntime.add(source.path, location, safeStart(tree), safeLine(tree), tree.toString(), branch)
           val apply = invokeCall(instruction.id)
           val block = Block(apply, tree)
           localTyper.typed(atPos(tree.pos)(block))
