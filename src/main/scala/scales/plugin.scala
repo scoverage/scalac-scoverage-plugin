@@ -5,6 +5,7 @@ import scala.tools.nsc.Global
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
 import scala.tools.nsc.ast.TreeDSL
 import scala.reflect.internal.util.SourceFile
+import java.util.concurrent.atomic.AtomicInteger
 
 /** @author Stephen Samuel */
 class ScalesPlugin(val global: Global) extends Plugin {
@@ -18,6 +19,8 @@ class ScalesComponent(val global: Global)
 
   import global._
 
+  val statementIds = new AtomicInteger(0)
+  val coverage = new Coverage
   val phaseName: String = "scales-phase"
   val runsAfter: List[String] = List("typer")
   override val runsBefore = List[String]("patmat")
@@ -28,9 +31,9 @@ class ScalesComponent(val global: Global)
       println("scales: Begin profiling phase")
       super.run()
       println("scales: Profiling transformation completed")
-      println("scales: " + InstrumentationRuntime.coverage.statements.size + " statements profiled")
+      println("scales: " + coverage.statements.size + " statements profiled")
 
-      IOUtils.serialize(InstrumentationRuntime.coverage, Env.coverageFile)
+      IOUtils.serialize(coverage, Env.coverageFile)
       println("scales: Written coverage file to " + Env.coverageFile.getAbsolutePath)
     }
   }
@@ -38,7 +41,6 @@ class ScalesComponent(val global: Global)
   protected def newTransformer(unit: CompilationUnit): CoverageTransformer = new CoverageTransformer(unit)
 
   class CoverageTransformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
-    //InstrumentationRuntime.coverage.sources.append(unit.source)
 
     import global._
 
@@ -46,6 +48,7 @@ class ScalesComponent(val global: Global)
 
     def safeStart(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.startOrPoint else -1
     def safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.safeLine else -1
+    def safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
 
     override def transform(tree: Tree) = process(tree)
     def transformStatements(trees: List[Tree]): List[Tree] = trees.map(tree => process(tree))
@@ -59,7 +62,6 @@ class ScalesComponent(val global: Global)
       instrument(process(tree), true)
     }
 
-    // Creates a call to the invoker
     def invokeCall(id: Int): Apply = {
       Apply(
         Select(
@@ -77,16 +79,23 @@ class ScalesComponent(val global: Global)
       )
     }
 
-    def safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
-
-    // wraps the given tree with an Instrumentation call
     def instrument(tree: Tree, branch: Boolean = false) = {
       safeSource(tree) match {
         case None => tree
         case Some(source) =>
-          val instruction =
-            InstrumentationRuntime.add(source.path, location, safeStart(tree), safeLine(tree), tree.toString(), branch)
-          val apply = invokeCall(instruction.id)
+
+          val id = statementIds.incrementAndGet
+          val statement = MeasuredStatement(
+            source.path,
+            location, id,
+            safeStart(tree),
+            safeLine(tree),
+            tree.toString(),
+            branch
+          )
+          coverage.add(statement)
+
+          val apply = invokeCall(id)
           val block = Block(apply, tree)
           localTyper.typed(atPos(tree.pos)(block))
       }
@@ -106,11 +115,7 @@ class ScalesComponent(val global: Global)
       )
     }
 
-    //def registerPackage(p: PackageDef): Unit = InstrumentationRuntime.coverage.packageNames.add(p.name.toString)
-    //def registerClass(p: ClassDef): Unit = InstrumentationRuntime.coverage.classNames.append(p.name.toString)
-
     def process(tree: Tree): Tree = {
-
       tree match {
 
         case EmptyTree => super.transform(tree)
@@ -131,7 +136,6 @@ class ScalesComponent(val global: Global)
 
         case c: ClassDef =>
           updateLocation(c.symbol)
-          //registerClass(c)
           super.transform(tree)
 
         case t: Template =>
@@ -226,7 +230,7 @@ class ScalesComponent(val global: Global)
 
         case tapply: TypeApply => instrument(tapply)
         case assign: Assign => instrument(assign)
-        //    case select: Select => instrument(select)
+        // case select: Select => instrument(select)
 
         // pattern match clauses will be instrumented per case
         case Match(clause: Tree, cases: List[CaseDef]) =>
