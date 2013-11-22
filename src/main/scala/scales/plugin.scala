@@ -5,7 +5,6 @@ import scala.tools.nsc.Global
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
 import scala.tools.nsc.ast.TreeDSL
 import scala.reflect.internal.util.SourceFile
-import scala.reflect.runtime.{universe => u}
 
 /** @author Stephen Samuel */
 class ScalesPlugin(val global: Global) extends Plugin {
@@ -30,7 +29,7 @@ class ScalesComponent(val global: Global)
       super.run()
       println("scales: Profiling transformation completed")
       println("scales: " + InstrumentationRuntime.coverage.statements.size + " statements profiled")
-      println(InstrumentationRuntime.coverage.statements)
+
       IOUtils.serialize(InstrumentationRuntime.coverage, Env.coverageFile)
       println("scales: Written coverage file to " + Env.coverageFile.getAbsolutePath)
     }
@@ -96,7 +95,7 @@ class ScalesComponent(val global: Global)
         else ClassType.Class
       }
       location = Location(
-        s.owner.enclosingPackage.nameString,
+        s.owner.enclosingPackage.name.longString,
         s.owner.enclClass.fullNameString,
         classType,
         Option(s.owner.enclMethod.fullNameString)
@@ -117,55 +116,91 @@ class ScalesComponent(val global: Global)
           //registerPackage(p)
           super.transform(tree)
 
-        case c: ClassDef if c.symbol.isAnonymousClass || c.symbol.isAnonymousFunction => super.transform(tree)
+        // scalac generated classes, we just instrument the enclosed methods/statments
+        // the location would stay as the source class
+        case c: ClassDef if c.symbol.isAnonymousClass || c.symbol.isAnonymousFunction =>
+          super.transform(tree)
+
         case c: ClassDef =>
           updateLocation(c.symbol)
           //registerClass(c)
           super.transform(tree)
 
         case t: Template => treeCopy.Template(tree, t.parents, t.self, transformStatements(t.body))
+
         case _: TypeTree => super.transform(tree)
         case _: If => super.transform(tree)
         case _: Ident => super.transform(tree)
         case _: Block => super.transform(tree)
 
+        //todo literals are wrapped to make sure we access them, but wouldn't we do that from a val?
         case l: Literal => instrument(l)
 
-        case f: Function => treeCopy.Function(tree, f.vparams, transform(f.body))
+        // handle function bodies
+        case f: Function =>
+          treeCopy.Function(tree, f.vparams, transform(f.body))
 
-        case l: LabelDef => treeCopy.LabelDef(tree, l.name, l.params, transform(l.rhs))
+        case l: LabelDef =>
+          println("what is a label? " + l)
+          treeCopy.LabelDef(tree, l.name, l.params, transform(l.rhs))
 
         case d: DefDef if tree.symbol.isConstructor && (tree.symbol.isTrait || tree.symbol.isModule) => tree
+
+        // todo handle constructors, as a method?
         case d: DefDef if tree.symbol.isConstructor => tree
+
+        // ignore case accessors as they are generated
         case d: DefDef if d.symbol.isCaseAccessor => tree
+
+        // ignore accessors as they are generated
         case d: DefDef if d.symbol.isStable && d.symbol.isAccessor => tree // hidden accessor methods
-        case d: DefDef if d.symbol.isParamAccessor && d.symbol.isAccessor => tree // hidden setter methods
-        case d: DefDef if tree.symbol.isDeferred => tree // abstract methods
-        case d: DefDef if d.symbol.isSynthetic => tree // such as auto generated hash code methods in case classes
+
+        // ignore accessors as they are generated
+        case d: DefDef if d.symbol.isParamAccessor && d.symbol.isAccessor => tree
+
+        // abstract methods ??
+        case d: DefDef if tree.symbol.isDeferred => tree
+
+        // generated methods
+        case d: DefDef if d.symbol.isSynthetic => tree
+
+        // user defined methods
         case d: DefDef =>
           updateLocation(d.symbol)
           super.transform(tree)
 
-        case s: Select => super.transform(tree) // should only occur inside something we are instrumenting.
+        // should only occur inside something we are instrumenting.
+        case s: Select =>
+          super.transform(tree)
 
-        case m: ModuleDef if m.symbol.isSynthetic => tree // a generated object, such as case class companion
-        case m: ModuleDef => super.transform(tree)
+        // a synthetic object is a generated object, such as case class companion
+        case m: ModuleDef if m.symbol.isSynthetic => tree
 
-        case v: ValDef if v.symbol.isParamAccessor && v.symbol.isCaseAccessor => tree // case param accessors
+        // user defined objects
+        case m: ModuleDef =>
+          updateLocation(m.symbol)
+          super.transform(tree)
+
+        // case param accessors are auto generated
+        case v: ValDef if v.symbol.isCaseAccessor => tree
+
+        // user defined value statements, we will instrument the RHS
         case v: ValDef =>
           updateLocation(v.symbol)
-          treeCopy.ValDef(tree, v.mods, v.name, v.tpt, transform(v.rhs))
+          treeCopy.ValDef(tree, v.mods, v.name, v.tpt, process(v.rhs))
 
         case apply: Apply => instrument(apply)
         case tapply: TypeApply => instrument(tapply)
         case assign: Assign => instrument(assign)
+        //    case select: Select => instrument(select)
 
-        case Match(clause: Tree, cases: List[CaseDef]) => treeCopy.Match(tree, clause, transformCases(cases))
+        // pattern match clauses will be instrumented per case
+        case Match(clause: Tree, cases: List[CaseDef]) =>
+          treeCopy.Match(tree, clause, transformCases(cases))
+
+        // instrument trys, catches and finally as seperate blocks
         case Try(t: Tree, cases: List[CaseDef], f: Tree) =>
           treeCopy.Try(tree, instrument(t), transformCases(cases), instrument(f))
-
-        //       println("Instrumenting apply " + apply)
-        //    case select: Select => instrument(select)
 
         case _ =>
           println("Unexpected construct: " + tree.getClass + " " + tree.symbol)

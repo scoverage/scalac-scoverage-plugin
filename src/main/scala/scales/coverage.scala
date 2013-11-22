@@ -58,7 +58,7 @@ trait ClassBuilders {
 case class MeasuredMethod(name: String, statements: Iterable[MeasuredStatement]) extends StatementCoverage
 
 case class MeasuredClass(name: String, statements: Iterable[MeasuredStatement])
-  extends StatementCoverage with MethodBuilders
+  extends StatementCoverage with MethodBuilders with Numerics
 
 case class MeasuredPackage(name: String, statements: Iterable[MeasuredStatement])
   extends StatementCoverage with ClassCoverage with ClassBuilders {
@@ -88,16 +88,14 @@ case class MeasuredStatement(location: Location,
   def invoked(): Unit = count = count + 1
 }
 
+trait Numerics {
+  val statements: Iterable[MeasuredStatement]
+  def loc = statements.map(stmt => stmt.location.fqn + ":" + stmt.line).toSet.size
+}
+
 case class Location(_package: String, _class: String, classType: ClassType, method: Option[String])
   extends java.io.Serializable {
   val fqn = (_package + ".").replace("<empty>.", "") + _class
-}
-
-sealed trait ClassType
-object ClassType {
-  case object Object extends ClassType
-  case object Class extends ClassType
-  case object Trait extends ClassType
 }
 
 trait StatementCoverage {
