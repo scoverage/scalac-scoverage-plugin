@@ -22,7 +22,7 @@ object InstrumentationRuntime {
           desc: String,
           branch: Boolean) = {
     val id = ids.incrementAndGet()
-    val stmt = MeasuredStatement(location, id, start, line, desc, branch)
+    val stmt = MeasuredStatement(source, location, id, start, line, desc, branch)
     coverage.add(stmt)
     stmt
   }
