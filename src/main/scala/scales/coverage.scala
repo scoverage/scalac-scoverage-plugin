@@ -12,17 +12,6 @@ class Coverage
 
   def add(stmt: MeasuredStatement): Unit = statements.append(stmt)
 
-  def loc = 0 //sources.map(src => new String(src.content).replaceAll("^\\s.*$", "").split("\n").length).sum
-
-  def ncloc = 0 //{
-  //    sources
-  //      .map(src => new String(src.content)
-  //      .replaceAll("/\\*.*?\\*/", "")
-  //      .replace("//.*$", "")
-  //      .split("\n")
-  //      .count(_ == '\n')).sum
-  //  }
-
   def avgClassesPerPackage = classCount / packageCount.toDouble
   def avgMethodsPerClass = methodCount / classCount.toDouble
 
@@ -101,7 +90,7 @@ case class Location(_package: String, _class: String, classType: ClassType, meth
 trait StatementCoverage {
   val statements: Iterable[MeasuredStatement]
   def statementCoverage: Double = invokedStatements / statements.size.toDouble
-  def statementCoverageFormatted: String = "%.2f".format(statementCoverage)
+  def statementCoverageFormatted: String = "%.2f".format(statementCoverage * 100)
   def statementCount: Int = statements.size
   def invokedStatements: Int = statements.count(_.count > 0)
 }

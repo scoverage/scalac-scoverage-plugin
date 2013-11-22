@@ -95,7 +95,7 @@ class ScalesComponent(val global: Global)
         else ClassType.Class
       }
       location = Location(
-        s.owner.enclosingPackage.name.longString,
+        s.owner.enclosingPackage.fullName,
         s.owner.enclClass.fullNameString,
         classType,
         Option(s.owner.enclMethod.fullNameString)
@@ -113,7 +113,6 @@ class ScalesComponent(val global: Global)
 
         case _: Import => tree
         case p: PackageDef =>
-          //registerPackage(p)
           super.transform(tree)
 
         // scalac generated classes, we just instrument the enclosed methods/statments
@@ -180,6 +179,9 @@ class ScalesComponent(val global: Global)
         case m: ModuleDef =>
           updateLocation(m.symbol)
           super.transform(tree)
+
+        // This AST node corresponds to the following Scala code:    qual.this
+        case t: This => tree
 
         // case param accessors are auto generated
         case v: ValDef if v.symbol.isCaseAccessor => tree
