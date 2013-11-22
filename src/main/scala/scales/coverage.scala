@@ -63,12 +63,12 @@ case class MeasuredClass(name: String, statements: Iterable[MeasuredStatement])
 }
 
 case class MeasuredPackage(name: String, statements: Iterable[MeasuredStatement])
-  extends CoverageMetrics with ClassCoverage with ClassBuilders {
-  def files = Nil //statements.groupBy(_.source).map(arg => MeasuredFile(arg._1, arg._2))
+  extends CoverageMetrics with ClassCoverage with ClassBuilders with FileBuilders {
 }
 
 case class MeasuredFile(source: String, statements: Iterable[MeasuredStatement])
   extends CoverageMetrics with ClassCoverage with ClassBuilders {
+
   def lineStatus(lineNumber: Int): LineStatus = {
     statements.filter(_.line == lineNumber) match {
       case i if i.isEmpty => NotInstrumented
@@ -76,9 +76,6 @@ case class MeasuredFile(source: String, statements: Iterable[MeasuredStatement])
       case _ => Covered
     }
   }
-  def packages: Iterable[MeasuredPackage] = statements
-    .groupBy(_.location._package)
-    .map(arg => MeasuredPackage(arg._1, arg._2))
 }
 
 case class MeasuredStatement(source: String,
