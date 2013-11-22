@@ -117,14 +117,12 @@ class ScalesComponent(val global: Global)
 
         // This AST node corresponds to the following Scala code:   fun(args)
         case apply: Apply =>
-          treeCopy.Apply(apply, instrument(apply.fun), transformStatements(apply.args))
+          instrument(treeCopy.Apply(apply, apply.fun, transformStatements(apply.args)))
 
         // just carry on as normal with a block, we'll process the children
         case _: Block => super.transform(tree)
-
-        case _: Import => tree
-        case p: PackageDef =>
-          super.transform(tree)
+        case _: Import => super.transform(tree)
+        case p: PackageDef => super.transform(tree)
 
         // scalac generated classes, we just instrument the enclosed methods/statments
         // the location would stay as the source class
@@ -187,11 +185,18 @@ class ScalesComponent(val global: Global)
         case l: LabelDef =>
           treeCopy.LabelDef(tree, l.name, l.params, transform(l.rhs))
 
-        //todo literals are wrapped to make sure we access them, but wouldn't we do that from a val?
+        // profile access to a literal for function args todo do we need to do this?
         case l: Literal => instrument(l)
+
+        // This AST node corresponds to the following Scala code:  `return` expr
+        case r: Return =>
+          treeCopy.Return(r, transform(r.expr))
 
         // type aliases, type parameters, abstract types
         case t: TypeDef => super.transform(tree)
+
+        // This AST node corresponds to the following Scala code: expr: tpt
+        case t: Typed => super.transform(tree)
 
         // should only occur inside something we are instrumenting.
         case s: Select =>
