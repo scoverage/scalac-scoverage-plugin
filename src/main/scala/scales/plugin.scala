@@ -47,6 +47,7 @@ class ScalesComponent(val global: Global)
     var location: Location = null
 
     def safeStart(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.startOrPoint else -1
+    def safeEnd(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.endOrPoint else -1
     def safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.safeLine else -1
     def safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
 
@@ -89,6 +90,7 @@ class ScalesComponent(val global: Global)
             source.path,
             location, id,
             safeStart(tree),
+            safeEnd(tree),
             safeLine(tree),
             tree.toString(),
             branch
@@ -206,6 +208,9 @@ class ScalesComponent(val global: Global)
         case s: Select =>
           super.transform(tree)
 
+        //case s: Super =>
+        // treeCopy.Super(s, s.qual, s.mix)
+
         // a synthetic object is a generated object, such as case class companion
         case m: ModuleDef if m.symbol.isSynthetic => tree
 
@@ -230,7 +235,6 @@ class ScalesComponent(val global: Global)
 
         case tapply: TypeApply => instrument(tapply)
         case assign: Assign => instrument(assign)
-        // case select: Select => instrument(select)
 
         // pattern match clauses will be instrumented per case
         case Match(clause: Tree, cases: List[CaseDef]) =>
