@@ -143,6 +143,9 @@ class ScalesComponent(val global: Global)
           println("what is a label? " + l)
           treeCopy.LabelDef(tree, l.name, l.params, transform(l.rhs))
 
+        // type aliases, type parameters, abstract types
+        case t: TypeDef => tree
+
         case d: DefDef if tree.symbol.isConstructor && (tree.symbol.isTrait || tree.symbol.isModule) => tree
 
         // todo handle constructors, as a method?
