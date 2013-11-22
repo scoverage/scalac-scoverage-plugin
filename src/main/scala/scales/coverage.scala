@@ -6,7 +6,12 @@ import scala.reflect.internal.util.SourceFile
 /**
  * @author Stephen Samuel */
 class Coverage
-  extends StatementCoverage with MethodBuilders with java.io.Serializable with ClassBuilders with PackageBuilders {
+  extends StatementCoverage with
+  MethodBuilders with
+  java.io.Serializable with
+  ClassBuilders with
+  PackageBuilders with
+  Numerics {
 
   val statements = new ListBuffer[MeasuredStatement]
 
