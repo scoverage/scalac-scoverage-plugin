@@ -186,6 +186,9 @@ class ScalesComponent(val global: Global)
         // This AST node corresponds to the following Scala code:    qual.this
         case t: This => tree
 
+        // This AST node corresponds to the following Scala code:    `throw` expr
+        case t: Throw => instrument(tree)
+
         // case param accessors are auto generated
         case v: ValDef if v.symbol.isCaseAccessor => tree
 
