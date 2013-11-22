@@ -18,7 +18,15 @@ val status = if (age < 18) "No beer" else "Beer for you"
 ```
 
 If you had a unit test that ran through the value 18 you would get 100% line coverage
-yet you only have 50% statement coverage
+yet you only have 50% statement coverage.
+
+Let's expand this example out to be multifacted, albeit somewhat contrived:
+
+```
+val status = if (religion == "Pentecostalist") "Beer forbidden" else if (age < 18) "Underage" else "Beer for you"
+```
+
+Now we would get 100% code coverage for passing in the values ("Buddist", 34).
 
 That's why in Scales we focus on statement coverage, and don't even include line coverage as a metric.
 This is a paradigm shift that we hope will take hold.
