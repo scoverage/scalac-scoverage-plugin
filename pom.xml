@@ -15,7 +15,7 @@
     <version>0.1.0-SNAPSHOT</version>
 
     <name>scales</name>
-    <url>https://github.com/sksamuel/scales</url>
+    <url>https://github.com/scala-scales/scalac-scales-plugin</url>
 
     <prerequisites>
         <maven>3.0</maven>
@@ -30,9 +30,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git@github.com:sksamuel/scales.git</connection>
-        <developerConnection>scm:git:git@github.com:sksamuel/scales.git</developerConnection>
-        <url>git@github.com:sksamuel/scales.git</url>
+        <connection>scm:git:git@github.com:scala-scales/scalac-scales-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:scala-scales/scalac-scales-plugin.git</developerConnection>
+        <url>git@github.com:scala-scales/scalac-scales-plugin.git</url>
     </scm>
 
     <developers>
@@ -50,22 +50,17 @@
 
         <maven.plugin.resources.version>2.6</maven.plugin.resources.version>
         <maven.plugin.compiler.version>3.1</maven.plugin.compiler.version>
-        <maven.plugin.dependency.version>2.7</maven.plugin.dependency.version>
         <maven.plugin.gpg.version>1.4</maven.plugin.gpg.version>
         <maven.plugin.jar.version>2.4</maven.plugin.jar.version>
-        <maven.plugin.javadoc.version>2.9</maven.plugin.javadoc.version>
-        <maven.plugin.release.version>2.3.2</maven.plugin.release.version>
         <maven.plugin.surefire.version>2.14.1</maven.plugin.surefire.version>
         <maven.plugin.scala.version>3.1.6</maven.plugin.scala.version>
         <maven.plugin.scalatest.version>1.0-M2</maven.plugin.scalatest.version>
-        <maven.plugin.source.version>2.2.1</maven.plugin.source.version>
 
         <compiler.version.source>1.6</compiler.version.source>
         <compiler.version.target>1.6</compiler.version.target>
 
         <junit.version>4.11</junit.version>
         <mockito.version>1.9.5</mockito.version>
-        <slf4j.version>1.6.6</slf4j.version>
         <scala.test.version>2.0</scala.test.version>
         <scala.version>2.10.3</scala.version>
     </properties>
@@ -130,13 +125,11 @@
         </plugins>
     </build>
 
-
     <dependencies>
-
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-compiler</artifactId>
-            <version>2.10.3</version>
+            <version>${scala.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
