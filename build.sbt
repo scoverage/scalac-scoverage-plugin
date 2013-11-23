@@ -6,6 +6,8 @@ version := "0.1.0-SNAPSHOT"
 
 scalaVersion := "2.10.3"
 
+crossScalaVersions := Seq("2.10.3")
+
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
 publishMavenStyle := true
@@ -20,9 +22,7 @@ pomIncludeRepository := {
 
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
 
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.0" % "test"
-
-libraryDependencies += "org.scala-lang" % "scala-compiler" % "2.10.3"
+libraryDependencies += "org.scala-lang" % "scala-compiler" % "2.10.3" % "provided"
 
 publishTo <<= version {
   (v: String) =>
@@ -33,7 +33,7 @@ publishTo <<= version {
       Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
 
-pomExtra := (
+pomExtra := {
   <url>https://github.com/scala-scales/scalac-scales-plugin</url>
     <licenses>
       <license>
@@ -52,4 +52,5 @@ pomExtra := (
         <name>Stephen Samuel</name>
         <url>http://github.com/sksamuel</url>
       </developer>
-    </developers>)
+    </developers>
+}
