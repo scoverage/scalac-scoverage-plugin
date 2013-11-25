@@ -2,11 +2,9 @@ name := "scalac-scales-plugin"
 
 organization := "org.scalescc"
 
-version := "0.1.0-SNAPSHOT"
+version := "0.11.0-SNAPSHOT"
 
 scalaVersion := "2.10.3"
-
-crossScalaVersions := Seq("2.10.3")
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
