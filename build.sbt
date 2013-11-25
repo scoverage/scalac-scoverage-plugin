@@ -20,15 +20,16 @@ pomIncludeRepository := {
 
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
 
-libraryDependencies += "org.scala-lang" % "scala-compiler" % "2.10.3" % "provided"
+libraryDependencies ++= Seq(
+  "org.scala-lang" % "scala-compiler" % "2.10.3" % "provided",
+  "commons-io" % "commons-io" % "2.4"
+)
 
 publishTo <<= version {
   (v: String) =>
     val nexus = "https://oss.sonatype.org/"
-    if (v.trim.endsWith("SNAPSHOT"))
-      Some("snapshots" at nexus + "content/repositories/snapshots")
-    else
-      Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")
+    else Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
 
 pomExtra := {
