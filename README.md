@@ -31,6 +31,13 @@ Now we would get 100% code coverage for passing in the values ("Buddist", 34).
 That's why in Scales we focus on statement coverage, and don't even include line coverage as a metric.
 This is a paradigm shift that we hope will take hold.
 
+### How to use
+
+This project is the base functionality for instrumenting code via a scalac plugin. To actually use Scales in your
+project you will need to use one of the build plugins:
+
+* [maven-scales-plugin](https://github.com/scala-scales/maven-scales-plugin)
+* [sbt-scales](https://github.com/scala-scales/sbt-scales)
 
 ### Alternatives
 
