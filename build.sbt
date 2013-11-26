@@ -2,7 +2,7 @@ name := "scalac-scales-plugin"
 
 organization := "org.scalescc"
 
-version := "0.11.0-SNAPSHOT"
+version := "0.90.0"
 
 scalaVersion := "2.10.3"
 
@@ -53,3 +53,5 @@ pomExtra := {
       </developer>
     </developers>
 }
+
+credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
