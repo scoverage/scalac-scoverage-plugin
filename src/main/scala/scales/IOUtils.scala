@@ -20,18 +20,25 @@ object IOUtils {
   }
 
   def serialize(coverage: Coverage): Array[Byte] = {
-    val baos = new ByteArrayOutputStream
-    val oos = new ObjectOutputStream(baos)
-    oos.writeObject(coverage)
-    oos.close()
-    baos.toByteArray
+    val bos = new ByteArrayOutputStream
+    val out = new ObjectOutputStream(bos)
+    out.writeObject(coverage)
+    out.close()
+    bos.toByteArray
   }
 
-  def deserialize(file: File): Coverage = deserialize(new FileInputStream(file))
-  def deserialize(in: InputStream): Coverage = {
-    val oos = new ObjectInputStream(in)
-    val coverage = oos.readObject().asInstanceOf[Coverage]
-    oos.close()
-    coverage
+  def deserialize(classLoader: ClassLoader, file: File): Coverage = deserialize(classLoader, new FileInputStream(file))
+  def deserialize(classLoader: ClassLoader, in: InputStream): Coverage = {
+    val ois = new ClassLoaderObjectInputStream(classLoader, in)
+    val obj = ois.readObject
+    in.close()
+    obj.asInstanceOf[Coverage]
   }
+}
+
+class ClassLoaderObjectInputStream(classLoader: ClassLoader, is: InputStream) extends ObjectInputStream(is) {
+  override protected def resolveClass(objectStreamClass: ObjectStreamClass): Class[_] =
+    try Class.forName(objectStreamClass.getName, false, classLoader) catch {
+      case cnfe: ClassNotFoundException ⇒ super.resolveClass(objectStreamClass)
+    }
 }

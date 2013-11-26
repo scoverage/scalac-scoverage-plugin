@@ -4,7 +4,7 @@ import scala.collection.mutable.ListBuffer
 
 /**
  * @author Stephen Samuel */
-class Coverage
+case class Coverage()
   extends CoverageMetrics
   with MethodBuilders
   with java.io.Serializable
