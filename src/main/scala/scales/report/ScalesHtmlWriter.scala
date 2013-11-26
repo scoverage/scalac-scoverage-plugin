@@ -15,7 +15,7 @@ object ScalesHtmlWriter extends CoverageWriter {
     val packageFile = new File(dir.getAbsolutePath + "/packages.html")
     val overviewFile = new File(dir.getAbsolutePath + "/overview.html")
 
-    FileUtils.copyInputStreamToFile(getClass.getResourceAsStream("index.html"), indexFile)
+    FileUtils.copyInputStreamToFile(getClass.getResourceAsStream("/index.html"), indexFile)
     FileUtils.write(packageFile, packages(coverage).toString())
     FileUtils.write(overviewFile, overview(coverage).toString())
 
