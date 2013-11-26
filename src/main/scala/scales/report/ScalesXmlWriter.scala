@@ -1,12 +1,12 @@
-package scales.reporters
+package scales.report
 
-import scales._
 import scala.xml.Node
+import java.io.File
+import org.apache.commons.io.FileUtils
+import scales._
 import scales.MeasuredStatement
 import scales.MeasuredClass
 import scales.MeasuredMethod
-import java.io.File
-import org.apache.commons.io.FileUtils
 
 /** @author Stephen Samuel */
 object ScalesXmlWriter extends CoverageWriter {

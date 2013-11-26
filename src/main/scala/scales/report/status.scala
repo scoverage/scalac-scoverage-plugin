@@ -1,4 +1,4 @@
-package scales.reporters
+package scales.report
 
 /** @author Stephen Samuel */
 sealed trait StatementStatus

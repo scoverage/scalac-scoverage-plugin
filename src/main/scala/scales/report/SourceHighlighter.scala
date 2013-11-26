@@ -1,4 +1,4 @@
-package scales.reporters
+package scales.report
 
 import java.io.{FileInputStream, File}
 import scala.xml.{Unparsed, Node}

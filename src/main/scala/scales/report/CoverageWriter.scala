@@ -1,4 +1,4 @@
-package scales.reporters
+package scales.report
 
 import scales.Coverage
 import java.io.File

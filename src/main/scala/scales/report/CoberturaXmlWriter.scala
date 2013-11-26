@@ -1,4 +1,4 @@
-package scales.reporters
+package scales.report
 
 import scales.{MeasuredMethod, MeasuredClass, MeasuredPackage, Coverage}
 import scala.xml.Node
