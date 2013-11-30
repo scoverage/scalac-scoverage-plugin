@@ -1,8 +1,8 @@
-scales
+scoverage
 ======
 
-Scales is a free Apache licensed code coverage tool for scala that offers statement and branch coverage.
-Scales is available for both maven and sbt.
+scoverage is a free Apache licensed code coverage tool for scala that offers statement and branch coverage.
+scoverage is available for both maven and sbt.
 
 ### Statement Coverage
 
@@ -28,16 +28,16 @@ val status = if (religion == "Pentecostalist") "Beer forbidden" else if (age < 1
 
 Now we would get 100% code coverage for passing in the values ("Buddist", 34).
 
-That's why in Scales we focus on statement coverage, and don't even include line coverage as a metric.
+That's why in scoverage we focus on statement coverage, and don't even include line coverage as a metric.
 This is a paradigm shift that we hope will take hold.
 
 ### How to use
 
-This project is the base functionality for instrumenting code via a scalac plugin. To actually use Scales in your
+This project is the base functionality for instrumenting code via a scalac plugin. To actually use scoverage in your
 project you will need to use one of the build plugins:
 
-* [maven-scales-plugin](https://github.com/scala-scales/maven-scales-plugin)
-* [sbt-scales](https://github.com/scala-scales/sbt-scales)
+* [maven-scoverage-plugin](https://github.com/scoverage/maven-scoverage-plugin)
+* [sbt-scoverage](https://github.com/scoverage/sbt-scoverage)
 
 ### Alternatives
 
