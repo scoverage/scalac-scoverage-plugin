@@ -135,8 +135,8 @@ class ScoverageComponent(val global: Global)
 
     def process(tree: Tree): Tree = {
       if (tree.hasSymbol) {
-        //    if (tree.symbol.isClassConstructor)
-        //    println("CLASS CONSTRUCTOR: " + tree.symbol + " " + tree)
+        if (tree.symbol.isSynthetic)
+          println("isDerivedValueClass!!!!: " + tree.symbol + " " + tree)
         //if (tree.symbol.is)
         //println("PRIMARY CONSTRUCTOR: " + tree.symbol + " " + tree)
       }
@@ -175,6 +175,10 @@ class ScoverageComponent(val global: Global)
         case _: Import => super.transform(tree)
         case p: PackageDef => super.transform(tree)
 
+        case d: ClassDef if d.symbol.isSynthetic =>
+          println("SYNTH CLASS: " + d.toString() + " " + d.symbol)
+          super.transform(tree)
+
         // scalac generated classes, we just instrument the enclosed methods/statments
         // the location would stay as the source class
         case c: ClassDef if c.symbol.isAnonymousClass || c.symbol.isAnonymousFunction =>
@@ -183,6 +187,10 @@ class ScoverageComponent(val global: Global)
         case c: ClassDef =>
           updateLocation(c.symbol)
           super.transform(tree)
+
+        case d: DefDef if d.symbol.isVariable =>
+          println("DefDef VAR: " + d.toString() + " " + d.symbol)
+          tree
 
         // todo do we really want to ignore?
         case d: DefDef if d.symbol.isPrimaryConstructor =>
@@ -207,19 +215,35 @@ class ScoverageComponent(val global: Global)
           println("CASE: " + d.toString() + " " + d.symbol)
           super.transform(tree)
 
-        // top level vals todo should instrument the rhs
-        case d: DefDef if d.symbol.isStable && d.symbol.isAccessor =>
-          super.transform(tree)
+        /**
+         * Stable getters are methods generated for access to a top level val.
+         * Should be ignored as this is compiler generated code. The val definition will be instrumented.
+         *
+         * Eg
+         * <stable> <accessor> def MaxCredit: scala.math.BigDecimal = CreditEngine.this.MaxCredit
+         * <stable> <accessor> def alwaysTrue: String = InstrumentLoader.this.alwaysTrue
+         * <stable> <accessor> lazy def instruments: Set[com.sksamuel.scoverage.samples.Instrument] = { ... }
+         */
+        case d: DefDef if d.symbol.isStable && d.symbol.isGetter => tree
+
+        /** Getters are auto generated and should be ignored.
+          *
+          * Eg
+          * <accessor> def cancellable: akka.actor.Cancellable
+          * <accessor> private def _clientName: String =
+          */
+        case d: DefDef if d.symbol.isGetter => tree
 
         case d: DefDef if d.symbol.isStable =>
           println("STABLE DEF: " + d.toString() + " " + d.symbol)
           super.transform(tree)
 
-        /** eg for top level vars todo should instrument the rhs
-          * <accessor> def cancellable: akka.actor.Cancellable
+        /** Accessors are auto generated setters and getters.
+          * Eg
+          * <accessor> def cancellable: akka.actor.Cancellable = PriceEngine.this.cancellable
+          * <accessor> def cancellable_=(x$1: akka.actor.Cancellable): Unit = PriceEngine.this.cancellable = x$1
           */
-        case d: DefDef if d.symbol.isGetter =>
-          super.transform(tree)
+        case d: DefDef if d.symbol.isAccessor => tree
 
         case d: DefDef if d.symbol.isParamAccessor && d.symbol.isAccessor =>
           println("PARAM ACCESSOR: " + d.toString() + " " + d.symbol)
@@ -250,6 +274,7 @@ class ScoverageComponent(val global: Global)
 
         // handle function bodies. This AST node corresponds to the following Scala code: vparams => body
         case f: Function =>
+          println("FUNCTION: " + f.toString() + " " + f.symbol)
           treeCopy.Function(tree, f.vparams, process(f.body))
 
         case _: Ident => super.transform(tree)
@@ -307,10 +332,29 @@ class ScoverageComponent(val global: Global)
 
         case _: TypeTree => super.transform(tree)
 
-        // case param accessors are auto generated
-        case v: ValDef if v.symbol.isCaseAccessor => super.transform(tree)
+        /**
+         * This AST node corresponds to any of the following Scala code:
+         *
+         * mods `val` name: tpt = rhs
+         *
+         * mods `var` name: tpt = rhs
+         *
+         * mods name: tpt = rhs        // in signatures of function and method definitions
+         *
+         * self: Bar =>                // self-types
+         *
+         * <synthetic> val default: A1 => B1 =
+         * <synthetic> val x1: Any = _
+         */
+        case v: ValDef if v.symbol.isSynthetic => tree
+
+        /**
+         * Vals declared in case constructors
+         */
+        case v: ValDef if v.symbol.isParamAccessor && v.symbol.isCaseAccessor => tree
 
         // user defined value statements, we will instrument the RHS
+        // This includes top level non-lazy vals. Lazy vals are generated as stable defs.
         case v: ValDef =>
           updateLocation(v.symbol)
           treeCopy.ValDef(tree, v.mods, v.name, v.tpt, process(v.rhs))
