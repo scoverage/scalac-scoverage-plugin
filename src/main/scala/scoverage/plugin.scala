@@ -124,7 +124,7 @@ class ScoverageComponent(val global: Global)
         className(s),
         s.fullNameString,
         Option(s.owner).map(_.fullNameString).getOrElse("<noowner>"),
-        s.toString,
+        s.toString(),
         s.flagString,
         Option(s.owner).map(_.toString()).getOrElse("<noowner>"),
         Option(s.owner).map(_.defString).getOrElse("<noowner>"),
@@ -135,8 +135,8 @@ class ScoverageComponent(val global: Global)
 
     def process(tree: Tree): Tree = {
       if (tree.hasSymbol) {
-        if (tree.symbol.isSynthetic)
-          println("isDerivedValueClass!!!!: " + tree.symbol + " " + tree)
+        //  if (tree.symbol.isSynthetic)
+        //  println("isDerivedValueClass!!!!: " + tree.symbol + " " + tree)
         //if (tree.symbol.is)
         //println("PRIMARY CONSTRUCTOR: " + tree.symbol + " " + tree)
       }
@@ -175,9 +175,10 @@ class ScoverageComponent(val global: Global)
         case _: Import => super.transform(tree)
         case p: PackageDef => super.transform(tree)
 
-        case d: ClassDef if d.symbol.isSynthetic =>
-          println("SYNTH CLASS: " + d.toString() + " " + d.symbol)
-          super.transform(tree)
+        // special support to ignore partial functions
+        // todo re-enable but fix to only instrument the case statements of applyOrElse
+        case c: ClassDef if c.symbol.isAnonymousFunction &&
+          c.symbol.enclClass.superClass.nameString.contains("AbstractPartialFunction") => tree
 
         // scalac generated classes, we just instrument the enclosed methods/statments
         // the location would stay as the source class
@@ -189,15 +190,13 @@ class ScoverageComponent(val global: Global)
           super.transform(tree)
 
         case d: DefDef if d.symbol.isVariable =>
-          println("DefDef VAR: " + d.toString() + " " + d.symbol)
+          println("DEF VAR: " + d.toString() + " " + d.symbol)
           tree
 
         // todo do we really want to ignore?
-        case d: DefDef if d.symbol.isPrimaryConstructor =>
-          tree
-
-        case d: DefDef if tree.symbol.isConstructor =>
-          super.transform(tree)
+        case d: DefDef if d.symbol.isPrimaryConstructor => tree
+        // todo definitely want to instrument user level constructors
+        case d: DefDef if tree.symbol.isConstructor => tree
 
         /**
          * Case class accessors for vals
@@ -205,14 +204,13 @@ class ScoverageComponent(val global: Global)
          * <stable> <caseaccessor> <accessor> <paramaccessor> def req: com.sksamuel.scoverage.samples.MarketOrderRequest
          * <stable> <caseaccessor> <accessor> <paramaccessor> def client: akka.actor.ActorRef
          */
-        case d: DefDef if d.symbol.isCaseAccessor =>
-          super.transform(tree)
+        case d: DefDef if d.symbol.isCaseAccessor => tree
 
         // Compiler generated case apply and unapply. Ignore these
         case d: DefDef if d.symbol.isCaseApplyOrUnapply => tree
 
         case d: DefDef if d.symbol.isCase =>
-          println("CASE: " + d.toString() + " " + d.symbol)
+          println("DEF CASE: " + d.toString() + " " + d.symbol)
           super.transform(tree)
 
         /**
