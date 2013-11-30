@@ -133,6 +133,12 @@ class ScoverageComponent(val global: Global)
       )
     }
 
+    def transformPartial(c: ClassDef) = {
+      val template = c.children.head.asInstanceOf[Template]
+      println(template.body.map(_.getClass))
+      c
+    }
+
     def process(tree: Tree): Tree = {
       if (tree.hasSymbol) {
         //  if (tree.symbol.isSynthetic)
@@ -156,11 +162,32 @@ class ScoverageComponent(val global: Global)
         case a: Apply if a.symbol.isCaseApplyOrUnapply =>
           treeCopy.Apply(a, a.fun, transformStatements(a.args))
 
-        /** This AST node corresponds to the following Scala code: fun(args)
-          * todo decide if we should instrument the outer call, or just the param applys
-          */
+        /**
+         * Object creation from new.
+         * Ignoring creation calls to anon functions
+         */
+        case a: Apply if a.symbol.isConstructor && a.symbol.enclClass.isAnonymousFunction => tree
+        case a: Apply if a.symbol.isConstructor => instrument(a)
+
+        /**
+         * When an apply has no parameters, or is an application of purely literals
+         * then we must instrument the outer call.
+         */
+        case a: Apply if a.args.isEmpty => instrument(a)
+        case a: Apply if a.args.forall(_.isInstanceOf[Literal]) => instrument(a)
+
         case a: Apply =>
-          treeCopy.Apply(a, a.fun, transformStatements(a.args))
+          a.args match {
+            // application of a single constant
+            case Literal(const) :: Nil =>
+              println("MISSED CONSTANT APPLY: " + a.toString() + " " + a.symbol + " ARGS: " + a.args)
+              instrument(a)
+            case _ =>
+              println("OTHER APPLY: " + a.toString() + " " + a.symbol + " ARGS: " + a.args)
+              treeCopy.Apply(a, a.fun, transformStatements(a.args))
+          }
+
+        case assign: Assign => instrument(assign)
 
         /** pattern match with syntax `Block(stats, expr)`.
           * This AST node corresponds to the following Scala code:
@@ -169,16 +196,15 @@ class ScoverageComponent(val global: Global)
           *
           * If the block is empty, the `expr` is set to `Literal(Constant(()))`.
           */
-        case b: Block => super.transform(tree)
-        //treeCopy.Block(b, transformStatements(b.stats), transform(b.expr))
+        case b: Block =>
+          treeCopy.Block(b, transformStatements(b.stats), transform(b.expr))
 
         case _: Import => super.transform(tree)
-        case p: PackageDef => super.transform(tree)
 
         // special support to ignore partial functions
         // todo re-enable but fix to only instrument the case statements of applyOrElse
         case c: ClassDef if c.symbol.isAnonymousFunction &&
-          c.symbol.enclClass.superClass.nameString.contains("AbstractPartialFunction") => tree
+          c.symbol.enclClass.superClass.nameString.contains("AbstractPartialFunction") => transformPartial(c)
 
         // scalac generated classes, we just instrument the enclosed methods/statments
         // the location would stay as the source class
@@ -224,20 +250,13 @@ class ScoverageComponent(val global: Global)
          */
         case d: DefDef if d.symbol.isStable && d.symbol.isGetter => tree
 
-        /** Getters are auto generated and should be ignored.
-          *
-          * Eg
-          * <accessor> def cancellable: akka.actor.Cancellable
-          * <accessor> private def _clientName: String =
-          */
-        case d: DefDef if d.symbol.isGetter => tree
-
         case d: DefDef if d.symbol.isStable =>
           println("STABLE DEF: " + d.toString() + " " + d.symbol)
           super.transform(tree)
 
         /** Accessors are auto generated setters and getters.
           * Eg
+          * <accessor> private def _clientName: String =
           * <accessor> def cancellable: akka.actor.Cancellable = PriceEngine.this.cancellable
           * <accessor> def cancellable_=(x$1: akka.actor.Cancellable): Unit = PriceEngine.this.cancellable = x$1
           */
@@ -299,6 +318,8 @@ class ScoverageComponent(val global: Global)
           updateLocation(m.symbol)
           super.transform(tree)
 
+        case p: PackageDef => super.transform(tree)
+
         // This AST node corresponds to the following Scala code:  `return` expr
         case r: Return =>
           treeCopy.Return(r, transform(r.expr))
@@ -306,6 +327,17 @@ class ScoverageComponent(val global: Global)
         // This AST node corresponds to the following Scala code: expr: tpt
         case t: Typed => super.transform(tree)
 
+        /** pattern match with syntax `Select(qual, name)`.
+          * This AST node corresponds to the following Scala code:
+          *
+          * qualifier.selector
+          *
+          * Should only be used with `qualifier` nodes which are terms, i.e. which have `isTerm` returning `true`.
+          * Otherwise `SelectFromTypeTree` should be used instead.
+          *
+          * foo.Bar // represented as Select(Ident(<foo>), <Bar>)
+          * Foo#Bar // represented as SelectFromTypeTree(Ident(<Foo>), <Bar>)
+          */
         // should only occur inside something we are instrumenting.
         case s: Select => super.transform(tree)
 
@@ -358,7 +390,6 @@ class ScoverageComponent(val global: Global)
           treeCopy.ValDef(tree, v.mods, v.name, v.tpt, process(v.rhs))
 
         case tapply: TypeApply => instrument(tapply)
-        case assign: Assign => instrument(assign)
 
         case _ =>
           println("Unexpected construct: " + tree.getClass + " " + tree.symbol)
