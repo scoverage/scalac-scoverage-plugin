@@ -88,11 +88,13 @@ class ScoverageComponent(val global: Global)
           val id = statementIds.incrementAndGet
           val statement = MeasuredStatement(
             source.path,
-            location, id,
+            location,
+            id,
             safeStart(tree),
             safeEnd(tree),
             safeLine(tree),
             tree.toString(),
+            tree.symbol.fullNameString,
             branch
           )
           coverage.add(statement)
@@ -103,6 +105,13 @@ class ScoverageComponent(val global: Global)
       }
     }
 
+    def className(s: Symbol): String = {
+      if (s.enclClass.isAnonymousFunction || s.enclClass.isAnonymousFunction)
+        className(s.owner)
+      else
+        s.enclClass.fullNameString
+    }
+
     def updateLocation(s: Symbol) {
       val classType = {
         if (s.owner.enclClass.isTrait) ClassType.Trait
@@ -111,7 +120,7 @@ class ScoverageComponent(val global: Global)
       }
       location = Location(
         s.owner.enclosingPackage.fullName,
-        s.owner.enclClass.fullNameString,
+        className(s),
         classType,
         Option(s.owner.enclMethod.nameString).getOrElse("<none>")
       )
@@ -126,9 +135,15 @@ class ScoverageComponent(val global: Global)
         case apply: Apply =>
           instrument(treeCopy.Apply(apply, apply.fun, transformStatements(apply.args)))
 
-        // just carry on as normal with a block, we'll process the children
-        case b: Block =>
-          treeCopy.Block(b, transformStatements(b.stats), transform(b.expr))
+        /** pattern match with syntax `Block(stats, expr)`.
+          * This AST node corresponds to the following Scala code:
+          *
+          * { stats; expr }
+          *
+          * If the block is empty, the `expr` is set to `Literal(Constant(()))`.
+          */
+        case b: Block => super.transform(tree)
+          //treeCopy.Block(b, transformStatements(b.stats), transform(b.expr))
 
         case _: Import => super.transform(tree)
         case p: PackageDef => super.transform(tree)
@@ -142,18 +157,13 @@ class ScoverageComponent(val global: Global)
           updateLocation(c.symbol)
           super.transform(tree)
 
-        case t: Template =>
-          treeCopy.Template(tree, t.parents, t.self, transformStatements(t.body))
-
-        case _: TypeTree => super.transform(tree)
-
         case d: DefDef if tree.symbol.isConstructor && (tree.symbol.isTrait || tree.symbol.isModule) => tree
 
         // todo handle constructors, as a method?
-        case d: DefDef if tree.symbol.isConstructor => tree
+        case d: DefDef if tree.symbol.isConstructor => super.transform(tree)
 
         // ignore case param/accessors
-        case d: DefDef if d.symbol.isCaseAccessor => tree
+        case d: DefDef if d.symbol.isCaseAccessor => super.transform(tree)
 
         // ignore accessors as they are generated
         case d: DefDef if d.symbol.isStable && d.symbol.isAccessor => tree // hidden accessor methods
@@ -165,31 +175,36 @@ class ScoverageComponent(val global: Global)
         case d: DefDef if d.symbol.isAccessor && d.symbol.isSetter => tree
 
         // abstract methods ??
-        case d: DefDef if tree.symbol.isDeferred => tree
+        case d: DefDef if tree.symbol.isDeferred => super.transform(tree)
 
         // generated methods
-        case d: DefDef if d.symbol.isSynthetic =>
-          super.transform(tree)
+        case d: DefDef if d.symbol.isSynthetic => super.transform(tree)
 
         case d: DefDef if d.symbol.isCaseApplyOrUnapply =>
-          println("Case apply/unapply " + d)
           updateLocation(d.symbol)
           super.transform(tree)
 
+        /** pattern match with syntax `DefDef(mods, name, tparams, vparamss, tpt, rhs)`.
+          * This AST node corresponds to the following Scala code:
+          *
+          * mods `def` name[tparams](vparams_1)...(vparams_n): tpt = rhs
+          *
+          * If the return type is not specified explicitly (i.e. is meant to be inferred),
+          * this is expressed by having `tpt` set to `TypeTree()` (but not to an `EmptyTree`!).
+          */
         // user defined methods
         case d: DefDef =>
           updateLocation(d.symbol)
           super.transform(tree)
 
-        case _: Ident =>
-          super.transform(tree)
-
-        case i: If =>
-          treeCopy.If(i, process(i.cond), transformIf(i.thenp), transformIf(i.elsep))
-
         // handle function bodies. This AST node corresponds to the following Scala code: vparams => body
         case f: Function =>
           treeCopy.Function(tree, f.vparams, process(f.body))
+
+        case _: Ident => super.transform(tree)
+
+        case i: If =>
+          treeCopy.If(i, process(i.cond), transformIf(i.thenp), transformIf(i.elsep))
 
         // labeldefs are never written natively in scala
         case l: LabelDef =>
@@ -203,7 +218,7 @@ class ScoverageComponent(val global: Global)
           treeCopy.Match(tree, instrument(clause), transformCases(cases))
 
         // a synthetic object is a generated object, such as case class companion
-        case m: ModuleDef if m.symbol.isSynthetic => tree
+        case m: ModuleDef if m.symbol.isSynthetic => super.transform(tree)
 
         // user defined objects
         case m: ModuleDef =>
@@ -218,8 +233,7 @@ class ScoverageComponent(val global: Global)
         case t: Typed => super.transform(tree)
 
         // should only occur inside something we are instrumenting.
-        case s: Select =>
-          super.transform(tree)
+        case s: Select => super.transform(tree)
 
         //case s: Super =>
         // treeCopy.Super(s, s.qual, s.mix)
@@ -236,6 +250,11 @@ class ScoverageComponent(val global: Global)
 
         // type aliases, type parameters, abstract types
         case t: TypeDef => super.transform(tree)
+
+        case t: Template =>
+          treeCopy.Template(tree, t.parents, t.self, transformStatements(t.body))
+
+        case _: TypeTree => super.transform(tree)
 
         // case param accessors are auto generated
         case v: ValDef if v.symbol.isCaseAccessor => super.transform(tree)

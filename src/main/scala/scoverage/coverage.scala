@@ -80,6 +80,7 @@ case class MeasuredStatement(source: String,
                              end: Int,
                              line: Int,
                              desc: String,
+                             symbolName: String,
                              branch: Boolean,
                              var count: Int = 0) extends java.io.Serializable {
   def invoked(): Unit = count = count + 1

@@ -1,6 +1,6 @@
 package scoverage.report
 
-import scala.xml.Node
+import scala.xml.{PrettyPrinter, Node}
 import java.io.File
 import org.apache.commons.io.FileUtils
 import scoverage._
@@ -12,7 +12,7 @@ import scoverage.MeasuredMethod
 object ScoverageXmlWriter extends CoverageWriter {
 
   def write(coverage: Coverage, dir: File): Unit = {
-    FileUtils.write(new File(dir.getAbsolutePath + "/scoverage.xml"), xml(coverage).toString())
+    FileUtils.write(new File(dir.getAbsolutePath + "/scoverage.xml"), new PrettyPrinter(120, 4).format(xml(coverage)))
   }
 
   def statement(stmt: MeasuredStatement): Node = {
@@ -21,6 +21,7 @@ object ScoverageXmlWriter extends CoverageWriter {
                method={stmt.location.method}
                start={stmt.start.toString}
                line={stmt.line.toString}
+               symbol={stmt.symbolName}
                invocation-count={stmt.count.toString}>
       {stmt.desc}
     </statement>
@@ -55,8 +56,8 @@ object ScoverageXmlWriter extends CoverageWriter {
 
   def xml(coverage: Coverage): Node = {
     <scoverage statement-rate={coverage.statementCoverage.toString}
-            version="1.0"
-            timestamp={System.currentTimeMillis.toString}>
+               version="1.0"
+               timestamp={System.currentTimeMillis.toString}>
       <packages>
         {coverage.packages.map(pack)}
       </packages>
