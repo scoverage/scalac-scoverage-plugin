@@ -94,7 +94,8 @@ class ScoverageComponent(val global: Global)
             safeEnd(tree),
             safeLine(tree),
             tree.toString(),
-            tree.symbol.fullNameString,
+            Option(tree.symbol).map(_.fullNameString).getOrElse("<nosymbol>"),
+            tree.getClass.getSimpleName,
             branch
           )
           coverage.add(statement)
@@ -121,6 +122,12 @@ class ScoverageComponent(val global: Global)
       location = Location(
         s.owner.enclosingPackage.fullName,
         className(s),
+        s.fullNameString,
+        Option(s.owner).map(_.fullNameString).getOrElse("<noowner>"),
+        s.toString,
+        s.flagString,
+        Option(s.owner).map(_.toString()).getOrElse("<noowner>"),
+        Option(s.owner).map(_.defString).getOrElse("<noowner>"),
         classType,
         Option(s.owner.enclMethod.nameString).getOrElse("<none>")
       )
@@ -143,7 +150,7 @@ class ScoverageComponent(val global: Global)
           * If the block is empty, the `expr` is set to `Literal(Constant(()))`.
           */
         case b: Block => super.transform(tree)
-          //treeCopy.Block(b, transformStatements(b.stats), transform(b.expr))
+        //treeCopy.Block(b, transformStatements(b.stats), transform(b.expr))
 
         case _: Import => super.transform(tree)
         case p: PackageDef => super.transform(tree)
@@ -162,37 +169,57 @@ class ScoverageComponent(val global: Global)
         // todo handle constructors, as a method?
         case d: DefDef if tree.symbol.isConstructor => super.transform(tree)
 
-        // ignore case param/accessors
-        case d: DefDef if d.symbol.isCaseAccessor => super.transform(tree)
+        /**
+         * EG for case class CreditReject(req: MarketOrderRequest, client: ActorRef)
+         * <stable> <caseaccessor> <accessor> <paramaccessor> def req: com.sksamuel.scoverage.samples.MarketOrderRequest
+         * <stable> <caseaccessor> <accessor> <paramaccessor> def client: akka.actor.ActorRef
+         */
+        case d: DefDef if d.symbol.isCaseAccessor =>
+          super.transform(tree)
 
-        // ignore accessors as they are generated
-        case d: DefDef if d.symbol.isStable && d.symbol.isAccessor => tree // hidden accessor methods
+        case d: DefDef if d.symbol.isCase =>
+          //println("CASE: " + d.toString() + " " + d.symbol)
+          super.transform(tree)
+
+        // top level vals todo should instrument the rhs
+        case d: DefDef if d.symbol.isStable && d.symbol.isAccessor =>
+          super.transform(tree)
+
+        case d: DefDef if d.symbol.isStable =>
+          println("STABLE DEF: " + d.toString() + " " + d.symbol)
+          super.transform(tree)
+
+        /** eg for top level vars todo should instrument the rhs
+          * <accessor> def cancellable: akka.actor.Cancellable
+          */
+        case d: DefDef if d.symbol.isGetter =>
+          super.transform(tree)
 
         // for field definitions generated for primary constructor
         case d: DefDef if d.symbol.isParamAccessor && d.symbol.isAccessor => tree
 
-        // generated setters // todo check the accessor flag is not set on user setters
+        // generated setters  todo check the accessor flag is not set on user setters
         case d: DefDef if d.symbol.isAccessor && d.symbol.isSetter => tree
 
         // abstract methods ??
         case d: DefDef if tree.symbol.isDeferred => super.transform(tree)
 
-        // generated methods
-        case d: DefDef if d.symbol.isSynthetic => super.transform(tree)
+        /** eg
+          * override <synthetic> def hashCode(): Int
+          * <synthetic> def copy$default$1: com.sksamuel.scoverage.samples.MarketOrderRequest
+          */
+        case d: DefDef if d.symbol.isSynthetic => tree
 
         case d: DefDef if d.symbol.isCaseApplyOrUnapply =>
+          println("isCaseApplyOrUnapply: " + d.toString() + " " + d.symbol)
           updateLocation(d.symbol)
           super.transform(tree)
 
-        /** pattern match with syntax `DefDef(mods, name, tparams, vparamss, tpt, rhs)`.
-          * This AST node corresponds to the following Scala code:
-          *
-          * mods `def` name[tparams](vparams_1)...(vparams_n): tpt = rhs
+        /** Match all remaining def definitions
           *
           * If the return type is not specified explicitly (i.e. is meant to be inferred),
           * this is expressed by having `tpt` set to `TypeTree()` (but not to an `EmptyTree`!).
           */
-        // user defined methods
         case d: DefDef =>
           updateLocation(d.symbol)
           super.transform(tree)

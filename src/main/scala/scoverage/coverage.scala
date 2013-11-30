@@ -81,6 +81,7 @@ case class MeasuredStatement(source: String,
                              line: Int,
                              desc: String,
                              symbolName: String,
+                             treeName: String,
                              branch: Boolean,
                              var count: Int = 0) extends java.io.Serializable {
   def invoked(): Unit = count = count + 1
@@ -91,7 +92,16 @@ trait Numerics {
   def loc = statements.map(stmt => stmt.location.fqn + ":" + stmt.line).toSet.size
 }
 
-case class Location(_package: String, _class: String, classType: ClassType, method: String)
+case class Location(_package: String,
+                    _class: String,
+                    fullName: String,
+                    owner: String,
+                    defString: String,
+                    flagString: String,
+                    ownerFlagString: String,
+                    ownerDefString: String,
+                    classType: ClassType,
+                    method: String)
   extends java.io.Serializable {
   val fqn = (_package + ".").replace("<empty>.", "") + _class
 }
