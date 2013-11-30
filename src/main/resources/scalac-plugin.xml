@@ -1,4 +1,4 @@
 <plugin>
-    <name>scales</name>
-    <classname>scales.ScalesPlugin</classname>
+    <name>scoverage</name>
+    <classname>scoverage.ScoveragePlugin</classname>
 </plugin>

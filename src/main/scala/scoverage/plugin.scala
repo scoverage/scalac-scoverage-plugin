@@ -1,4 +1,4 @@
-package scales
+package scoverage
 
 import scala.tools.nsc.plugins.{PluginComponent, Plugin}
 import scala.tools.nsc.Global
@@ -8,33 +8,33 @@ import scala.reflect.internal.util.SourceFile
 import java.util.concurrent.atomic.AtomicInteger
 
 /** @author Stephen Samuel */
-class ScalesPlugin(val global: Global) extends Plugin {
-  val name: String = "scales-plugin"
-  val components: List[PluginComponent] = List(new ScalesComponent(global))
-  val description: String = "scales code coverage compiler plugin"
+class ScoveragePlugin(val global: Global) extends Plugin {
+  val name: String = "scoverage-plugin"
+  val components: List[PluginComponent] = List(new ScoverageComponent(global))
+  val description: String = "scoverage code coverage compiler plugin"
 }
 
-class ScalesComponent(val global: Global)
+class ScoverageComponent(val global: Global)
   extends PluginComponent with TypingTransformers with Transform with TreeDSL {
 
   import global._
 
   val statementIds = new AtomicInteger(0)
   val coverage = new Coverage
-  val phaseName: String = "scales-phase"
+  val phaseName: String = "scoverage-phase"
   val runsAfter: List[String] = List("typer")
   override val runsBefore = List[String]("patmat")
 
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
 
     override def run(): Unit = {
-      println("scales: Begin profiling phase")
+      println("scoverage: Begin profiling phase")
       super.run()
-      println("scales: Profiling transformation completed")
-      println("scales: " + coverage.statements.size + " statements profiled")
+      println("scoverage: Profiling transformation completed")
+      println("scoverage: " + coverage.statements.size + " statements profiled")
 
       IOUtils.serialize(coverage, Env.coverageFile)
-      println("scales: Written coverage file to " + Env.coverageFile.getAbsolutePath)
+      println("scoverage: Written coverage file to " + Env.coverageFile.getAbsolutePath)
     }
   }
 
@@ -67,7 +67,7 @@ class ScalesComponent(val global: Global)
       Apply(
         Select(
           Select(
-            Ident("scales"),
+            Ident("scoverage"),
             newTermName("Invoker")
           ),
           newTermName("invoked")

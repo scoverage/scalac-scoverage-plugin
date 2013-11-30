@@ -1,6 +1,6 @@
-package scales.report
+package scoverage.report
 
-import scales.Coverage
+import scoverage.Coverage
 import java.io.File
 
 /** @author Stephen Samuel */

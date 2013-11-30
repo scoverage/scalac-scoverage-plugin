@@ -1,4 +1,4 @@
-package scales
+package scoverage
 
 import scala.collection.mutable.ListBuffer
 

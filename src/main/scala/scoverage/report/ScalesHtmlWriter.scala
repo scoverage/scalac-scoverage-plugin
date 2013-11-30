@@ -1,8 +1,8 @@
-package scales.report
+package scoverage.report
 
-import scales._
+import scoverage._
 import scala.xml.Node
-import scales.MeasuredFile
+import scoverage.MeasuredFile
 import java.util.Date
 import java.io.File
 import org.apache.commons.io.{FilenameUtils, FileUtils}

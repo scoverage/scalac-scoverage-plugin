@@ -1,6 +1,6 @@
-package scales.report
+package scoverage.report
 
-import scales.{MeasuredMethod, MeasuredClass, MeasuredPackage, Coverage}
+import scoverage.{MeasuredMethod, MeasuredClass, MeasuredPackage, Coverage}
 import scala.xml.Node
 import java.io.File
 import org.apache.commons.io.FileUtils

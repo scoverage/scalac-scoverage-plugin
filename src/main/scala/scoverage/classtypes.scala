@@ -1,4 +1,4 @@
-package scales
+package scoverage
 
 /** @author Stephen Samuel */
 sealed trait ClassType

@@ -1,18 +1,18 @@
-package scales.report
+package scoverage.report
 
 import scala.xml.Node
 import java.io.File
 import org.apache.commons.io.FileUtils
-import scales._
-import scales.MeasuredStatement
-import scales.MeasuredClass
-import scales.MeasuredMethod
+import scoverage._
+import scoverage.MeasuredStatement
+import scoverage.MeasuredClass
+import scoverage.MeasuredMethod
 
 /** @author Stephen Samuel */
-object ScalesXmlWriter extends CoverageWriter {
+object ScoverageXmlWriter extends CoverageWriter {
 
   def write(coverage: Coverage, dir: File): Unit = {
-    FileUtils.write(new File(dir.getAbsolutePath + "/scales.xml"), xml(coverage).toString())
+    FileUtils.write(new File(dir.getAbsolutePath + "/scoverage.xml"), xml(coverage).toString())
   }
 
   def statement(stmt: MeasuredStatement): Node = {
@@ -54,12 +54,12 @@ object ScalesXmlWriter extends CoverageWriter {
   }
 
   def xml(coverage: Coverage): Node = {
-    <scales statement-rate={coverage.statementCoverage.toString}
+    <scoverage statement-rate={coverage.statementCoverage.toString}
             version="1.0"
             timestamp={System.currentTimeMillis.toString}>
       <packages>
         {coverage.packages.map(pack)}
       </packages>
-    </scales>
+    </scoverage>
   }
 }
