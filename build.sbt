@@ -1,8 +1,8 @@
-name := "scalac-scales-plugin"
+name := "scalac-scoverage-plugin"
 
-organization := "org.scalescc"
+organization := "com.sksamuel.scoverage"
 
-version := "0.90.0"
+version := "0.92.0"
 
 scalaVersion := "2.10.3"
 
@@ -33,7 +33,7 @@ publishTo <<= version {
 }
 
 pomExtra := {
-  <url>https://github.com/scala-scales/scalac-scales-plugin</url>
+  <url>https://github.com/scoverage/scalac-scoverage-plugin</url>
     <licenses>
       <license>
         <name>Apache 2</name>
@@ -42,8 +42,8 @@ pomExtra := {
       </license>
     </licenses>
     <scm>
-      <url>git@github.com:scala-scales/scalac-scales-plugin.git</url>
-      <connection>scm:git@github.com:scala-scales/scalac-scales-plugin.git</connection>
+      <url>git@github.com:scoverage/scalac-scoverage-plugin.git</url>
+      <connection>scm:git@github.com:scoverage/scalac-scoverage-plugin.git</connection>
     </scm>
     <developers>
       <developer>
