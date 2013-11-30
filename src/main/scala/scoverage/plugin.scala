@@ -134,6 +134,12 @@ class ScoverageComponent(val global: Global)
     }
 
     def process(tree: Tree): Tree = {
+      if (tree.hasSymbol) {
+        //    if (tree.symbol.isClassConstructor)
+        //    println("CLASS CONSTRUCTOR: " + tree.symbol + " " + tree)
+        //if (tree.symbol.is)
+        //println("PRIMARY CONSTRUCTOR: " + tree.symbol + " " + tree)
+      }
       tree match {
 
         case EmptyTree => super.transform(tree)
@@ -178,17 +184,11 @@ class ScoverageComponent(val global: Global)
           updateLocation(c.symbol)
           super.transform(tree)
 
-        case d: DefDef if d.symbol.isConstructor && d.symbol.isPrimaryConstructor && d.symbol.isCase =>
-          println("CASE CONSTRUCTOR 1: " + d.toString() + " " + d.symbol)
+        // todo do we really want to ignore?
+        case d: DefDef if d.symbol.isPrimaryConstructor =>
           tree
 
-        case d: DefDef if d.symbol.isConstructor && (d.symbol.isTrait || d.symbol.isModule) =>
-          println("DefDef isConstructor 1: " + d.toString() + " " + d.symbol)
-          tree
-
-        // todo handle constructors, as a method?
         case d: DefDef if tree.symbol.isConstructor =>
-          println("DefDef isConstructor 2: " + d.toString() + " " + d.symbol)
           super.transform(tree)
 
         /**
