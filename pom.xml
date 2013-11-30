@@ -9,13 +9,13 @@
         <version>7</version>
     </parent>
 
-    <groupId>com.github.scala-scales</groupId>
-    <artifactId>scalac-scales-plugin</artifactId>
+    <groupId>com.github.scoverage</groupId>
+    <artifactId>scalac-scoverage-plugin</artifactId>
     <packaging>jar</packaging>
     <version>0.11.0</version>
 
-    <name>scalac-scales-plugin</name>
-    <url>https://github.com/scala-scales/scalac-scales-plugin</url>
+    <name>scalac-scoverage-plugin</name>
+    <url>https://github.com/scoverage/scalac-scoverage-plugin</url>
 
     <prerequisites>
         <maven>3.0</maven>
@@ -30,9 +30,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git@github.com:scala-scales/scalac-scales-plugin.git</connection>
-        <developerConnection>scm:git:git@github.com:scala-scales/scalac-scales-plugin.git</developerConnection>
-        <url>git@github.com:scala-scales/scalac-scales-plugin.git</url>
+        <connection>scm:git:git@github.com:scoverage/scalac-scoverage-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:scoverage/scalac-scoverage-plugin.git</developerConnection>
+        <url>git@github.com:scoverage/scalac-scoverage-plugin.git</url>
     </scm>
 
     <developers>
