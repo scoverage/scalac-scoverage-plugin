@@ -138,9 +138,23 @@ class ScoverageComponent(val global: Global)
 
         case EmptyTree => super.transform(tree)
 
-        // This AST node corresponds to the following Scala code: fun(args)
-        case apply: Apply =>
-          instrument(treeCopy.Apply(apply, apply.fun, transformStatements(apply.args)))
+        case a: ApplyDynamic =>
+          println("ApplyDynamic: " + a.toString() + " " + a.symbol)
+          tree
+
+        /** This AST node corresponds to the following Scala code: fun(args)
+          * With the guard, we are checking for case only applications
+          * eg Currency.apply("USD")
+          * todo decide if we should instrument the outer call, or just the param applys
+          */
+        case a: Apply if a.symbol.isCaseApplyOrUnapply =>
+          treeCopy.Apply(a, a.fun, transformStatements(a.args))
+
+        /** This AST node corresponds to the following Scala code: fun(args)
+          * todo decide if we should instrument the outer call, or just the param applys
+          */
+        case a: Apply =>
+          treeCopy.Apply(a, a.fun, transformStatements(a.args))
 
         /** pattern match with syntax `Block(stats, expr)`.
           * This AST node corresponds to the following Scala code:
@@ -164,12 +178,21 @@ class ScoverageComponent(val global: Global)
           updateLocation(c.symbol)
           super.transform(tree)
 
-        case d: DefDef if tree.symbol.isConstructor && (tree.symbol.isTrait || tree.symbol.isModule) => tree
+        case d: DefDef if d.symbol.isConstructor && d.symbol.isPrimaryConstructor && d.symbol.isCase =>
+          println("CASE CONSTRUCTOR 1: " + d.toString() + " " + d.symbol)
+          tree
+
+        case d: DefDef if d.symbol.isConstructor && (d.symbol.isTrait || d.symbol.isModule) =>
+          println("DefDef isConstructor 1: " + d.toString() + " " + d.symbol)
+          tree
 
         // todo handle constructors, as a method?
-        case d: DefDef if tree.symbol.isConstructor => super.transform(tree)
+        case d: DefDef if tree.symbol.isConstructor =>
+          println("DefDef isConstructor 2: " + d.toString() + " " + d.symbol)
+          super.transform(tree)
 
         /**
+         * Case class accessors for vals
          * EG for case class CreditReject(req: MarketOrderRequest, client: ActorRef)
          * <stable> <caseaccessor> <accessor> <paramaccessor> def req: com.sksamuel.scoverage.samples.MarketOrderRequest
          * <stable> <caseaccessor> <accessor> <paramaccessor> def client: akka.actor.ActorRef
@@ -177,8 +200,11 @@ class ScoverageComponent(val global: Global)
         case d: DefDef if d.symbol.isCaseAccessor =>
           super.transform(tree)
 
+        // Compiler generated case apply and unapply. Ignore these
+        case d: DefDef if d.symbol.isCaseApplyOrUnapply => tree
+
         case d: DefDef if d.symbol.isCase =>
-          //println("CASE: " + d.toString() + " " + d.symbol)
+          println("CASE: " + d.toString() + " " + d.symbol)
           super.transform(tree)
 
         // top level vals todo should instrument the rhs
@@ -195,25 +221,23 @@ class ScoverageComponent(val global: Global)
         case d: DefDef if d.symbol.isGetter =>
           super.transform(tree)
 
-        // for field definitions generated for primary constructor
-        case d: DefDef if d.symbol.isParamAccessor && d.symbol.isAccessor => tree
+        case d: DefDef if d.symbol.isParamAccessor && d.symbol.isAccessor =>
+          println("PARAM ACCESSOR: " + d.toString() + " " + d.symbol)
+          tree
 
         // generated setters  todo check the accessor flag is not set on user setters
-        case d: DefDef if d.symbol.isAccessor && d.symbol.isSetter => tree
+        case d: DefDef if d.symbol.isAccessor && d.symbol.isSetter =>
+          println("PARAM isAccessor isSetter: " + d.toString() + " " + d.symbol)
+          tree
 
-        // abstract methods ??
-        case d: DefDef if tree.symbol.isDeferred => super.transform(tree)
+        // was `abstract' for members | trait is virtual
+        case d: DefDef if tree.symbol.isDeferred => tree
 
         /** eg
           * override <synthetic> def hashCode(): Int
           * <synthetic> def copy$default$1: com.sksamuel.scoverage.samples.MarketOrderRequest
           */
         case d: DefDef if d.symbol.isSynthetic => tree
-
-        case d: DefDef if d.symbol.isCaseApplyOrUnapply =>
-          println("isCaseApplyOrUnapply: " + d.toString() + " " + d.symbol)
-          updateLocation(d.symbol)
-          super.transform(tree)
 
         /** Match all remaining def definitions
           *
