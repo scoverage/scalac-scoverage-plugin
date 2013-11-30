@@ -3,6 +3,7 @@ scoverage
 
 scoverage is a free Apache licensed code coverage tool for scala that offers statement and branch coverage.
 scoverage is available for both maven and sbt.
+scoverage was originally based on SCCT.
 
 ### Statement Coverage
 
@@ -43,7 +44,7 @@ project you will need to use one of the build plugins:
 
 There are still only a few code coverage tools for Scala.
 
-* [SCCT](https://github.com/SCCT/scct) - Offers line coverage
+* [SCCT](http://mtkopone.github.io/scct/) - Offers line coverage
 * [Jacoco4sbt](https://github.com/sbt/jacoco4sbt) - Instruments bytecode
 
 ## License
