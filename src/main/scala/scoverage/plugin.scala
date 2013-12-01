@@ -223,7 +223,7 @@ class ScoverageComponent(val global: Global)
           * This AST node corresponds to the following Scala code:
           * lhs = rhs
           */
-        case assign: Assign => assign
+        case assign: Assign => treeCopy.Assign(assign, assign.lhs, process(assign.rhs))
 
         /** pattern match with syntax `Block(stats, expr)`.
           * This AST node corresponds to the following Scala code:
@@ -280,9 +280,14 @@ class ScoverageComponent(val global: Global)
         // Compiler generated case apply and unapply. Ignore these
         case d: DefDef if d.symbol.isCaseApplyOrUnapply => tree
 
+        /**
+         * Lazy stable DefDefs are generated as the impl for lazy vals.
+         */
         case d: DefDef if d.symbol.isStable && d.symbol.isGetter && d.symbol.isLazy =>
-          println("LAZY DEF: " + d.toString() + " " + d.symbol)
-          tree
+          import scala.reflect.runtime.{universe => u}
+          println("LAZY RAW: " + u.showRaw(d.rhs))
+          println("LAZY DEF: " + d.toString() + " " + d.symbol + " RHS=" + d.rhs + " " + d.rhs.shortClass)
+          d
 
         /**
          * Stable getters are methods generated for access to a top level val.
@@ -427,6 +432,10 @@ class ScoverageComponent(val global: Global)
           treeCopy.Template(tree, t.parents, t.self, transformStatements(t.body))
 
         case _: TypeTree => super.transform(tree)
+
+        case v: ValDef if v.symbol.isLazy =>
+          println("LAZY VALDEF: " + v.toString() + " " + v.symbol)
+          v
 
         /**
          * <synthetic> val default: A1 => B1 =
