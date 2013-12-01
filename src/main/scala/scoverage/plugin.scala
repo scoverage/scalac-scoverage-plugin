@@ -280,7 +280,9 @@ class ScoverageComponent(val global: Global)
         // Compiler generated case apply and unapply. Ignore these
         case d: DefDef if d.symbol.isCaseApplyOrUnapply => tree
 
-        case d: DefDef if d.symbol.isStable && d.symbol.isGetter => tree
+        case d: DefDef if d.symbol.isStable && d.symbol.isGetter && d.symbol.isLazy =>
+          println("LAZY DEF: " + d.toString() + " " + d.symbol)
+          tree
 
         /**
          * Stable getters are methods generated for access to a top level val.
@@ -347,9 +349,33 @@ class ScoverageComponent(val global: Global)
           updateLocation(m.symbol)
           super.transform(tree)
 
-        case n: New =>
-          println("NEW " + n)
-          super.transform(n)
+        /**
+         * match with syntax `New(tpt)`.
+         * This AST node corresponds to the following Scala code:
+         *
+         * `new` T
+         *
+         * This node always occurs in the following context:
+         *
+         * (`new` tpt).<init>[targs](args)
+         *
+         * For example, an AST representation of:
+         *
+         * new Example[Int](2)(3)
+         *
+         * is the following code:
+         *
+         * Apply(
+         * Apply(
+         * TypeApply(
+         * Select(New(TypeTree(typeOf[Example])), nme.CONSTRUCTOR)
+         * TypeTree(typeOf[Int])),
+         * List(Literal(Constant(2)))),
+         * List(Literal(Constant(3))))
+         *
+         * We can ignore New as they should be profiled by the outer select.
+         */
+        case n: New => super.transform(n)
 
         case p: PackageDef => super.transform(p)
 
@@ -369,14 +395,15 @@ class ScoverageComponent(val global: Global)
           * Foo#Bar // represented as SelectFromTypeTree(Ident(<Foo>), <Bar>)
           */
         case s: Select if location == null => super.transform(s)
-        case s: Select if location.classType == ClassType.Class => instrument(s)
-        case s: Select => super.transform(s)
-        //          def nested(s: Tree): Tree = {
-        //            s.children.head match {
-        //              case _: Select => nested(s.children.head)
-        //              case _ => process(s.children.head)
-        //            }
-        //          }
+        case s: Select => // instrument outer select only until we hit an apply or run out of selects
+          def nested(s: Tree): Tree = {
+            s.children.head match {
+              case a: Apply => process(a)
+              case s: Select => nested(s.children.head)
+              case _ => s
+            }
+          }
+          instrument(s)
 
         case s: Super => tree
 
