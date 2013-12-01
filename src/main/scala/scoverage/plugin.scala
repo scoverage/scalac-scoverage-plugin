@@ -163,12 +163,6 @@ class ScoverageComponent(val global: Global)
     }
 
     def process(tree: Tree): Tree = {
-      if (tree.hasSymbol) {
-        //  if (tree.symbol.isSynthetic)
-        //  println("isDerivedValueClass!!!!: " + tree.symbol + " " + tree)
-        //if (tree.symbol.is)
-        //println("PRIMARY CONSTRUCTOR: " + tree.symbol + " " + tree)
-      }
       tree match {
 
         case EmptyTree => super.transform(tree)
@@ -181,14 +175,6 @@ class ScoverageComponent(val global: Global)
           println("ApplyToImplicitArgs not yet implemented. " + a.toString() + " " + a.symbol)
           treeCopy.Apply(a, a.fun, transformStatements(a.args))
           a
-
-        //        /** This AST node corresponds to the following Scala code: fun(args)
-        //          * With the guard, we are checking for case only applications
-        //          * eg Currency.apply("USD")
-        //          * todo decide if we should instrument the outer call, or just the param applys
-        //          */
-        //        case a: Apply if a.symbol.isCaseApplyOrUnapply =>
-        //          treeCopy.Apply(a, a.fun, transformStatements(a.args))
 
         /**
          * Object creation from new.
@@ -227,9 +213,7 @@ class ScoverageComponent(val global: Global)
 
         /** pattern match with syntax `Block(stats, expr)`.
           * This AST node corresponds to the following Scala code:
-          *
           * { stats; expr }
-          *
           * If the block is empty, the `expr` is set to `Literal(Constant(()))`.
           */
         case b: Block =>
@@ -249,16 +233,6 @@ class ScoverageComponent(val global: Global)
         case c: ClassDef =>
           updateLocation(c.symbol)
           super.transform(tree)
-
-        //        case d: DefDef if d.symbol.name.toString == "randomInstrument" =>
-        //          //import scala.reflect.runtime.{universe => u}
-        //          //println("QQQQQ: " + d.toString() + " " + d.symbol + " " + u.showRaw(d) + " CHILDREN=" + d
-        //          //  .rhs.children.map(_.shortClass))
-        //          println("QQQQ" + d.rhs.shortClass)
-        //          println("QQQQ" + d.rhs.asInstanceOf[Block].stats)
-        //          println("QQQQ" + d.rhs.asInstanceOf[Block].expr)
-        //          val rhs = treeCopy.Block(d.rhs, d.rhs.asInstanceOf[Block].stats, instrument(d.rhs.asInstanceOf[Block].expr))
-        //          treeCopy.DefDef(d, d.mods, d.name, d.tparams, d.vparamss, d.tpt, rhs)
 
         case d: DefDef if d.symbol.isVariable =>
           println("DEF VAR: " + d.toString() + " " + d.symbol)
@@ -434,7 +408,8 @@ class ScoverageComponent(val global: Global)
         case _: TypeTree => super.transform(tree)
 
         case v: ValDef if v.symbol.isLazy =>
-          println("LAZY VALDEF: " + v.toString() + " " + v.symbol)
+          import scala.reflect.runtime.universe
+          println("LAZY VALDEF: " + v.toString() + " " + v.symbol + " TREE: " + universe.showRaw(v))
           v
 
         /**
