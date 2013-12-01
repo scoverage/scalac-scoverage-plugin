@@ -23,12 +23,7 @@ object ScoverageXmlWriter extends CoverageWriter {
                line={stmt.line.toString}
                symbol={stmt.symbolName}
                tree={stmt.treeName}
-               full={stmt.location.fullName}
-               owner={stmt.location.owner}
-               def={stmt.location.defString}
-               flags={stmt.location.flagString}
-               ownerFlags={stmt.location.ownerFlagString}
-               ownerDef={stmt.location.ownerDefString}
+               branch={stmt.branch.toString}
                invocation-count={stmt.count.toString}>
       {stmt.desc}
     </statement>

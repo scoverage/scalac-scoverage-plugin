@@ -94,12 +94,6 @@ trait Numerics {
 
 case class Location(_package: String,
                     _class: String,
-                    fullName: String,
-                    owner: String,
-                    defString: String,
-                    flagString: String,
-                    ownerFlagString: String,
-                    ownerDefString: String,
                     classType: ClassType,
                     method: String)
   extends java.io.Serializable {
