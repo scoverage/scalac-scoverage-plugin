@@ -42,6 +42,10 @@ as a percentage of the total branches. Symbols that are deemed as branch stateme
 * Partial function cases
 * Try / catch / finally clauses
 
+In this screenshot you can see the coverage HTML report that shows one branch of the if statement was not
+executed during the test run. In addition two of the cases in the partial function were not executed.
+![Screenshot of scoverage report html](src/main/misc/screenshot1.png)
+
 ### How to use
 
 This project is the base module for instrumenting code via a scalac compiler plugin. To use scoverage in your
