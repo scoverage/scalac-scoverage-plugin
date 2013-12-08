@@ -12,11 +12,9 @@ object ScoverageHtmlWriter extends CoverageWriter {
 
   def write(coverage: Coverage, dir: File): Unit = {
     val indexFile = new File(dir.getAbsolutePath + "/index.html")
-    val packageFile = new File(dir.getAbsolutePath + "/packages.html")
     val overviewFile = new File(dir.getAbsolutePath + "/overview.html")
 
     FileUtils.copyInputStreamToFile(getClass.getResourceAsStream("/index.html"), indexFile)
-    FileUtils.write(packageFile, packages(coverage).toString())
     FileUtils.write(overviewFile, overview(coverage).toString())
 
     coverage.packages.foreach(write(_, dir))
@@ -138,38 +136,27 @@ object ScoverageHtmlWriter extends CoverageWriter {
   }
 
   def packages(coverage: Coverage): Node = {
-    <html>
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title id='title'>Scales Code Coverage</title>
-        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-      </head>
-      <body>
-        <table class="table table-striped" style="font-size: 12px">
-          <tbody>
-            <tr>
-              <td>
-                <a href="overview.html" target="mainFrame">
-                  All packages
-                </a>{coverage.statementCoverageFormatted}
-                %
-              </td>
-            </tr>{coverage.packages.map(arg =>
-            <tr>
-              <td>
-                <a href={arg.name.replace('.', '/') + "/package.html"} target="mainFrame">
-                  {arg.name}
-                </a>{arg.statementCoverageFormatted}
-                %
-              </td>
-            </tr>
-          )}
-          </tbody>
-        </table>
-      </body>
-    </html>
+    <table class="table table-striped" style="font-size: 12px">
+      <tbody>
+        <tr>
+          <td>
+            <a href="overview.html" target="mainFrame">
+              All packages
+            </a>{coverage.statementCoverageFormatted}
+            %
+          </td>
+        </tr>{coverage.packages.map(arg =>
+        <tr>
+          <td>
+            <a href={arg.name.replace('.', '/') + "/package.html"} target="mainFrame">
+              {arg.name}
+            </a>{arg.statementCoverageFormatted}
+            %
+          </td>
+        </tr>
+      )}
+      </tbody>
+    </table>
   }
 
   def risks(coverage: Coverage, limit: Int) = {
@@ -251,12 +238,21 @@ object ScoverageHtmlWriter extends CoverageWriter {
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id='title'>Scales Code Coverage</title>
-        <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.3.0/pure-min.css"/>
+        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
       </head>
       <body>
-        <div class="overview">
-          {stats(coverage)}{risks(coverage, 20)}
-        </div>
+        <table>
+          <tr>
+            <td class="packaglist">
+              {packages(coverage)}
+            </td>
+            <td class="overview">
+              {stats(coverage)}{risks(coverage, 20)}
+            </td>
+          </tr>
+        </table>
       </body>
     </html>
   }
