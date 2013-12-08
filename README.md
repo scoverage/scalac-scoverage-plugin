@@ -55,6 +55,7 @@ project you will need to use one of the build plugins:
 
 * [maven-scoverage-plugin](https://github.com/scoverage/maven-scoverage-plugin)
 * [sbt-scoverage](https://github.com/scoverage/sbt-scoverage)
+* [sbt-coveralls[(https://github.com/scoverage/sbt-coveralls)
 
 If you want to write a tool that uses this code coverage library then it is available on maven central.
 Search for scalac-scoverage-plugin.
