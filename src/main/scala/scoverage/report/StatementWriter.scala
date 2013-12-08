@@ -20,7 +20,7 @@ class StatementWriter(mfile: MeasuredFile) {
       {mfile.statements.filter(!_.branch).toSeq.sortBy(_.line).map(stmt => {
       <tr>
         <td>
-          {stmt.line.toString}
+          {stmt.treeName}
         </td>
         <td>
           {stmt.symbolName}

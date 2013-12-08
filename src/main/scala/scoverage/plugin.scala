@@ -149,7 +149,8 @@ class ScoverageComponent(val global: Global)
                   treeCopy.DefDef(
                     d, d.mods, d.name, d.tparams, d.vparamss, d.tpt,
                     treeCopy.Match(
-                      d.rhs, selector, transformCases(cases)
+                      // note: do not transform last case as that is the default handling
+                      d.rhs, selector, transformCases(cases.init) :+ cases.last
                     )
                   )
                 case _ =>
@@ -166,6 +167,8 @@ class ScoverageComponent(val global: Global)
       import scala.reflect.runtime.{universe => u}
       println(t.getClass.getSimpleName + ": " + t + " " + t.symbol + " LINE: " + safeLine(t) + " RAW: " + u.showRaw(t))
     }
+
+    def isPartialFunctionApply(d: DefDef) = d.symbol.nameString == "scala.Function1.apply"
 
     def allConstArgs(args: List[Tree]) = args.forall(arg => arg.isInstanceOf[Literal] || arg.isInstanceOf[Ident])
 
@@ -207,9 +210,11 @@ class ScoverageComponent(val global: Global)
         case b: Block =>
           treeCopy.Block(b, transformStatements(b.stats), transform(b.expr))
 
-        // special support to ignore partial functions
+        // special support to handle partial functions
         case c: ClassDef if c.symbol.isAnonymousFunction &&
-          c.symbol.enclClass.superClass.nameString.contains("AbstractPartialFunction") => transformPartial(c)
+          c.symbol.enclClass.superClass.nameString.contains("AbstractPartialFunction") =>
+          debug(c)
+          transformPartial(c)
 
         // scalac generated classes, we just instrument the enclosed methods/statments
         // the location would stay as the source class
@@ -224,6 +229,10 @@ class ScoverageComponent(val global: Global)
         case d: DefDef if d.symbol.isPrimaryConstructor => tree
         // todo definitely want to instrument user level constructors
         case d: DefDef if tree.symbol.isConstructor => tree
+
+        case d: DefDef if isPartialFunctionApply(d) =>
+          debug(d)
+          d
 
         /**
          * Case class accessors for vals
@@ -284,7 +293,6 @@ class ScoverageComponent(val global: Global)
 
         // handle function bodies. This AST node corresponds to the following Scala code: vparams => body
         case f: Function =>
-          debug(f)
           treeCopy.Function(tree, f.vparams, process(f.body))
 
         case _: Ident => tree
