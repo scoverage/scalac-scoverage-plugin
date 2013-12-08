@@ -35,7 +35,42 @@ object ScoverageHtmlWriter extends CoverageWriter {
     FileUtils.write(file, _file(mfile).toString())
   }
 
-  def _file(mfile: MeasuredFile): Node = new CodeGrid(mfile).output
+  def _file(mfile: MeasuredFile): Node = {
+    val css = "table.codegrid { font-family: Courier; font-size: 12px } " +
+      "table.linenumber { width: 40px } "
+    <html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id='title'>
+          {mfile.source}
+        </title>
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+        <style>
+          {css}
+        </style>
+      </head>
+      <body style="font-family: monospace;">
+        <ul class="nav nav-tabs">
+          <li>
+            <a href="#codegrid" data-toggle="tab">Codegrid</a>
+          </li>
+          <li>
+            <a href="#statementlist" data-toggle="tab">Statement List</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane active" id="codegrid">
+            {new CodeGrid(mfile).output}
+          </div>
+          <div class="tab-pane" id="statementlist">
+            {new StatementWriter(mfile).output}
+          </div>
+        </div>
+      </body>
+    </html>
+
+  }
 
   def _package(pack: MeasuredPackage): Node = {
     <html>
@@ -115,10 +150,11 @@ object ScoverageHtmlWriter extends CoverageWriter {
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id='title'>Scales Code Coverage</title>
-        <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.3.0/pure-min.css"/>
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
       </head>
       <body>
-        <table class="pure-table pure-table-bordered pure-table-striped" style="font-size: 12px">
+        <table class="table table-striped" style="font-size: 12px">
           <tbody>
             <tr>
               <td>
@@ -144,7 +180,7 @@ object ScoverageHtmlWriter extends CoverageWriter {
   }
 
   def risks(coverage: Coverage, limit: Int) = {
-    <table class="pure-table pure-table-bordered pure-table-striped" style="font-size: 12px">
+    <table class="table table-striped" style="font-size: 12px">
       <caption>Top 20 Class Risks</caption>
       <thead>
         <tr>

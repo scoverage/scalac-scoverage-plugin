@@ -9,9 +9,6 @@ import scala.xml.{Unparsed, Node}
 class CodeGrid(mfile: MeasuredFile) {
   case class Cell(char: Char, var status: StatementStatus)
 
-  val GREEN = "#AEF1AE"
-  val RED = "#F0ADAD"
-
   val sep = System.getProperty("line.separator").charAt(0)
 
   // note: we must reinclude the line sep to keep source positions correct.
@@ -34,47 +31,30 @@ class CodeGrid(mfile: MeasuredFile) {
     }
   }
 
-  val css = "table.codegrid { font-family: Courier; font-size: 12px } " +
-    "table.linenumber { width: 40px } "
-
   def output: Node = {
     var lineNumber = 0
-    <html>
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title id='title'>
-          {mfile.source}
-        </title>
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-        <style>
-          {css}
-        </style>
-      </head>
-      <body style="font-family: monospace;">
-        <table cellspacing="0" cellpadding="0" class="table codegrid">
-          {lines.map(line => {
-          lineNumber = lineNumber + 1
-          <tr>
-            <td class="linenumber">
-              {lineNumber.toString}
-            </td>{line.map(cell => {
-            <td style={cellStyle(cell.status)}>
-              {Unparsed(cell.char.toString.replace(" ", "&nbsp;"))}
-            </td>
-          })}
-          </tr>
-        })}
-        </table>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-      </body>
-    </html>
+    <table cellspacing="0" cellpadding="0" class="table codegrid">
+      {lines.map(line => {
+      lineNumber = lineNumber + 1
+      <tr>
+        <td class="linenumber">
+          {lineNumber.toString}
+        </td>{line.map(cell => {
+        <td style={cellStyle(cell.status)}>
+          {Unparsed(cell.char.toString.replace(" ", "&nbsp;"))}
+        </td>
+      })}
+      </tr>
+    })}
+    </table>
+
   }
 
+  val GREEN = "#AEF1AE"
+  val RED = "#F0ADAD"
+
   def cellStyle(status: StatementStatus): String = status match {
+
     case Invoked => s"background: $GREEN"
     case NotInvoked => s"background: $RED"
     case NotInstrumented => "background: white"
