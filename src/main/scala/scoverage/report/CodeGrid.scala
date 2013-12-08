@@ -60,7 +60,7 @@ class CodeGrid(mfile: MeasuredFile) {
               {lineNumber.toString}
             </td>{line.map(cell => {
             <td style={cellStyle(cell.status)}>
-              {Unparsed(cell.char.toString)}
+              {Unparsed(cell.char.toString.replace(" ", "&nbsp;"))}
             </td>
           })}
           </tr>
