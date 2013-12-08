@@ -65,7 +65,7 @@ case class MeasuredMethod(name: String, statements: Iterable[MeasuredStatement])
 
 case class MeasuredClass(name: String, statements: Iterable[MeasuredStatement])
   extends CoverageMetrics with MethodBuilders with Numerics {
-  def source = statements.head.source
+  def source: String = statements.head.source
   def simpleName = name.split('.').last
 }
 

@@ -9,10 +9,13 @@ import scoverage.MeasuredClass
 import scoverage.MeasuredMethod
 
 /** @author Stephen Samuel */
-object ScoverageXmlWriter extends CoverageWriter {
+class ScoverageXmlWriter(outputDir: File) {
 
-  def write(coverage: Coverage, dir: File): Unit = {
-    FileUtils.write(new File(dir.getAbsolutePath + "/scoverage.xml"), new PrettyPrinter(120, 4).format(xml(coverage)))
+  def write(coverage: Coverage): Unit = {
+    FileUtils.write(
+      new File(outputDir.getAbsolutePath + "/scoverage.xml"),
+      new PrettyPrinter(120, 4).format(xml(coverage))
+    )
   }
 
   def statement(stmt: MeasuredStatement): Node = {

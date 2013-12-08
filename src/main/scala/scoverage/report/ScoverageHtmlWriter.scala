@@ -8,13 +8,14 @@ import java.io.File
 import org.apache.commons.io.{FilenameUtils, FileUtils}
 
 /** @author Stephen Samuel */
-class ScoverageHtmlWriter(baseDir: File) extends CoverageWriter {
-  println(baseDir)
+class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
+  println("sourceDirectory:" + sourceDirectory)
+  println("outputDir:" + outputDir)
 
-  def write(coverage: Coverage, baseDir: File): Unit = {
-    val indexFile = new File(baseDir.getAbsolutePath + "/index.html")
-    val packageFile = new File(baseDir.getAbsolutePath + "/packages.html")
-    val overviewFile = new File(baseDir.getAbsolutePath + "/overview.html")
+  def write(coverage: Coverage): Unit = {
+    val indexFile = new File(outputDir.getAbsolutePath + "/index.html")
+    val packageFile = new File(outputDir.getAbsolutePath + "/packages.html")
+    val overviewFile = new File(outputDir.getAbsolutePath + "/overview.html")
 
     FileUtils.copyInputStreamToFile(getClass.getResourceAsStream("/index.html"), indexFile)
     FileUtils.write(packageFile, packages(coverage).toString())
@@ -24,14 +25,14 @@ class ScoverageHtmlWriter(baseDir: File) extends CoverageWriter {
   }
 
   def write(pack: MeasuredPackage) {
-    val file = new File(baseDir.getAbsolutePath + "/" + pack.name.replace('.', '/') + "/package.html")
+    val file = new File(outputDir.getAbsolutePath + "/" + pack.name.replace('.', '/') + "/package.html")
     file.getParentFile.mkdirs()
     FileUtils.write(file, packageClasses(pack).toString())
     pack.files.foreach(write(_, file.getParentFile))
   }
 
   def write(mfile: MeasuredFile, dir: File) {
-    val file = new File(dir.getAbsolutePath + "/" + FilenameUtils.getBaseName(mfile.source) + ".html")
+    val file = new File(dir.getAbsolutePath + "/" + FilenameUtils.getName(mfile.source) + ".html")
     file.getParentFile.mkdirs()
     FileUtils.write(file, _file(mfile).toString())
   }
@@ -138,9 +139,10 @@ class ScoverageHtmlWriter(baseDir: File) extends CoverageWriter {
   }
 
   def _class(klass: MeasuredClass): Node = {
-    val filename =
-      baseDir + "/" + klass.source.replaceAll(".*?/src/main/scala", "").replaceAll("*.?/src/main/java", "") + ".html"
-
+    val filename = {
+      outputDir + klass.source.replace(sourceDirectory.getAbsolutePath, "") + ".html"
+    }
+    println(filename)
     val simpleClassName = klass.name.split('.').last
     <tr>
       <td>

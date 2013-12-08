@@ -29,7 +29,7 @@ publishTo <<= version {
   (v: String) =>
     val nexus = "https://oss.sonatype.org/"
     if (v.trim.endsWith("SNAPSHOT"))
-      Some(Resolver.file("file", new File(Path.userHome.absolutePath + "/.m2/repository")))
+      Some(Resolver.mavenLocal)
     else
       Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }
@@ -55,5 +55,3 @@ pomExtra := {
       </developer>
     </developers>
 }
-
-credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")

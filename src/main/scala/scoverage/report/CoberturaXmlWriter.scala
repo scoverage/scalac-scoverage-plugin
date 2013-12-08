@@ -6,10 +6,10 @@ import java.io.File
 import org.apache.commons.io.FileUtils
 
 /** @author Stephen Samuel */
-object CoberturaXmlWriter extends CoverageWriter {
+class CoberturaXmlWriter(outputDir: File) {
 
-  def write(coverage: Coverage, dir: File): Unit = {
-    FileUtils.write(new File(dir.getAbsolutePath + "/cobertura.xml"), xml(coverage).toString())
+  def write(coverage: Coverage): Unit = {
+    FileUtils.write(new File(outputDir.getAbsolutePath + "/cobertura.xml"), xml(coverage).toString())
   }
 
   def method(method: MeasuredMethod): Node = {
