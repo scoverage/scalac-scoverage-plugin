@@ -25,7 +25,7 @@ object ScoverageHtmlWriter extends CoverageWriter {
   def write(pack: MeasuredPackage, dir: File) {
     val file = new File(dir.getAbsolutePath + "/" + pack.name.replace('.', '/') + "/package.html")
     file.getParentFile.mkdirs()
-    FileUtils.write(file, _package(pack).toString())
+    FileUtils.write(file, classes(pack).toString())
     pack.files.foreach(write(_, file.getParentFile))
   }
 
@@ -37,8 +37,8 @@ object ScoverageHtmlWriter extends CoverageWriter {
 
   def _file(mfile: MeasuredFile): Node = {
     val css =
-      """table.codegrid { font-family: "Courier New", Courier, monospace; font-size: 12px; width: auto!important; } """ +
-        "table.statementlist { width: auto!important; } " +
+      "table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }" +
+        "table.statementlist { width: auto!important; font-size: 13px; } " +
         "table.codegrid td { padding: 0!important; border: 0!important } " +
         "table td.linenumber { width: 40px!important; } "
     <html>
@@ -76,7 +76,7 @@ object ScoverageHtmlWriter extends CoverageWriter {
 
   }
 
-  def _package(pack: MeasuredPackage): Node = {
+  def classes(pack: MeasuredPackage): Node = {
     <html>
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -85,8 +85,8 @@ object ScoverageHtmlWriter extends CoverageWriter {
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
       </head>
-      <body>
-        <table class="table table-striped" style="font-size:12px">
+      <body style="font-family: monospace;">
+        <table class="table table-striped" style="font-size:13px">
           <thead>
             <tr>
               <th>Class</th>
@@ -159,7 +159,7 @@ object ScoverageHtmlWriter extends CoverageWriter {
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
       </head>
-      <body>
+      <body style="font-family: monospace;">
         <table class="table table-striped" style="font-size: 13px">
           <tbody>
             <tr>

@@ -17,8 +17,11 @@ class StatementWriter(mfile: MeasuredFile) {
     }
 
     <table cellspacing="0" cellpadding="0" class="table statementlist">
-      {mfile.statements.map(stmt => {
+      {mfile.statements.filter(!_.branch).toSeq.sortBy(_.line).map(stmt => {
       <tr>
+        <td>
+          {stmt.line.toString}
+        </td>
         <td>
           {stmt.symbolName}
         </td>
