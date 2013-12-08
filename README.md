@@ -50,11 +50,14 @@ executed during the test run. In addition two of the cases in the partial functi
 
 ### How to use
 
-This project is the base module for instrumenting code via a scalac compiler plugin. To use scoverage in your
+This project is the base library for instrumenting code via a scalac compiler plugin. To use scoverage in your
 project you will need to use one of the build plugins:
 
 * [maven-scoverage-plugin](https://github.com/scoverage/maven-scoverage-plugin)
 * [sbt-scoverage](https://github.com/scoverage/sbt-scoverage)
+
+If you want to write a tool that uses this code coverage library then it is available on maven central.
+Search for scalac-scoverage-plugin.
 
 ### Alternatives
 
