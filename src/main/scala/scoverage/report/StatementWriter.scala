@@ -16,12 +16,14 @@ class StatementWriter(mfile: MeasuredFile) {
       case false => s"background: $RED"
     }
 
-
-    <table cellspacing="0" cellpadding="0" class="table">
+    <table cellspacing="0" cellpadding="0" class="table statementlist">
       {mfile.statements.map(stmt => {
       <tr>
+        <td>
+          {stmt.symbolName}
+        </td>
         <td style={cellStyle(stmt.isInvoked)}>
-          {stmt.source}
+          {stmt.desc}
         </td>
       </tr>
     })}

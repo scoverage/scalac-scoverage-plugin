@@ -1,6 +1,7 @@
 package scoverage
 
 import scala.collection.mutable.ListBuffer
+import java.io.File
 
 /**
  * @author Stephen Samuel */
@@ -71,7 +72,9 @@ case class MeasuredPackage(name: String, statements: Iterable[MeasuredStatement]
 }
 
 case class MeasuredFile(source: String, statements: Iterable[MeasuredStatement])
-  extends CoverageMetrics with ClassCoverage with ClassBuilders
+  extends CoverageMetrics with ClassCoverage with ClassBuilders {
+  def filename = new File(source).getName
+}
 
 case class MeasuredStatement(source: String,
                              location: Location,

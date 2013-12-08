@@ -12,9 +12,11 @@ object ScoverageHtmlWriter extends CoverageWriter {
 
   def write(coverage: Coverage, dir: File): Unit = {
     val indexFile = new File(dir.getAbsolutePath + "/index.html")
+    val packageFile = new File(dir.getAbsolutePath + "/packages.html")
     val overviewFile = new File(dir.getAbsolutePath + "/overview.html")
 
     FileUtils.copyInputStreamToFile(getClass.getResourceAsStream("/index.html"), indexFile)
+    FileUtils.write(packageFile, packages(coverage).toString())
     FileUtils.write(overviewFile, overview(coverage).toString())
 
     coverage.packages.foreach(write(_, dir))
@@ -34,9 +36,11 @@ object ScoverageHtmlWriter extends CoverageWriter {
   }
 
   def _file(mfile: MeasuredFile): Node = {
-    val css = "table.codegrid { font-family: Courier; font-size: 12px } " +
-      "table.codegrid td { padding: 0 } " +
-      "table.linenumber { width: 40px } "
+    val css =
+      """table.codegrid { font-family: "Courier New", Courier, monospace; font-size: 12px; width: auto!important; } """ +
+        "table.statementlist { width: auto!important; } " +
+        "table.codegrid td { padding: 0!important; border: 0!important } " +
+        "table td.linenumber { width: 40px!important; } "
     <html>
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -44,7 +48,7 @@ object ScoverageHtmlWriter extends CoverageWriter {
           {mfile.source}
         </title>
         <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
         <style>
           {css}
@@ -73,25 +77,36 @@ object ScoverageHtmlWriter extends CoverageWriter {
   }
 
   def _package(pack: MeasuredPackage): Node = {
-    <table class="table table-striped" style="font-size:12px">
-      <thead>
-        <tr>
-          <th>Class</th>
-          <th>Source</th>
-          <th>Lines</th>
-          <th>Methods</th>
-          <th>Statements</th>
-          <th>Statements Invoked</th>
-          <th>Statement Coverage</th>
-          <th>Branches</th>
-          <th>Branches Invoked</th>
-          <th>Branch Coverage</th>
-        </tr>
-      </thead>
-      <tbody>
-        {pack.classes.map(_class)}
-      </tbody>
-    </table>
+    <html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id='title'>Scales Code Coverage</title>
+        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+      </head>
+      <body>
+        <table class="table table-striped" style="font-size:12px">
+          <thead>
+            <tr>
+              <th>Class</th>
+              <th>Source file</th>
+              <th>Lines</th>
+              <th>Methods</th>
+              <th>Statements</th>
+              <th>Stmt Invoked</th>
+              <th>Stmt Coverage</th>
+              <th>Branches</th>
+              <th>Br Invoked</th>
+              <th>Br Coverage</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pack.classes.map(_class)}
+          </tbody>
+        </table>
+      </body>
+    </html>
   }
 
   def _class(klass: MeasuredClass): Node = {
@@ -136,27 +151,38 @@ object ScoverageHtmlWriter extends CoverageWriter {
   }
 
   def packages(coverage: Coverage): Node = {
-    <table class="table table-striped" style="font-size: 12px">
-      <tbody>
-        <tr>
-          <td>
-            <a href="overview.html" target="mainFrame">
-              All packages
-            </a>{coverage.statementCoverageFormatted}
-            %
-          </td>
-        </tr>{coverage.packages.map(arg =>
-        <tr>
-          <td>
-            <a href={arg.name.replace('.', '/') + "/package.html"} target="mainFrame">
-              {arg.name}
-            </a>{arg.statementCoverageFormatted}
-            %
-          </td>
-        </tr>
-      )}
-      </tbody>
-    </table>
+    <html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title id='title'>Scales Code Coverage</title>
+        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+      </head>
+      <body>
+        <table class="table table-striped" style="font-size: 13px">
+          <tbody>
+            <tr>
+              <td>
+                <a href="overview.html" target="mainFrame">
+                  All packages
+                </a>{coverage.statementCoverageFormatted}
+                %
+              </td>
+            </tr>{coverage.packages.map(arg =>
+            <tr>
+              <td>
+                <a href={arg.name.replace('.', '/') + "/package.html"} target="mainFrame">
+                  {arg.name}
+                </a>{arg.statementCoverageFormatted}
+                %
+              </td>
+            </tr>
+          )}
+          </tbody>
+        </table>
+      </body>
+    </html>
   }
 
   def risks(coverage: Coverage, limit: Int) = {
@@ -239,26 +265,19 @@ object ScoverageHtmlWriter extends CoverageWriter {
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id='title'>Scales Code Coverage</title>
         <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
       </head>
       <body>
-        <table>
-          <tr>
-            <td class="packaglist">
-              {packages(coverage)}
-            </td>
-            <td class="overview">
-              {stats(coverage)}{risks(coverage, 20)}
-            </td>
-          </tr>
-        </table>
+        <div class="overview">
+          {stats(coverage)}{risks(coverage, 20)}
+        </div>
       </body>
     </html>
   }
 
   def stats(coverage: Coverage): Node = {
-    <table>
+    <table class="table">
       <caption>Statistics generated at
         {new Date().toString}
       </caption>
