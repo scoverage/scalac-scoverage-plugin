@@ -28,12 +28,12 @@ class ScoverageComponent(val global: Global)
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
 
     override def run(): Unit = {
-      println("scoverage: Begin profiling phase")
+      println("[scoverage]: Begin profiling phase")
       super.run()
-      println("scoverage: Profiling completed: " + coverage.statements + " profiled")
+      println("[scoverage]: Profiling completed: " + coverage.statements.size + " statements profiled")
 
       IOUtils.serialize(coverage, Env.coverageFile)
-      println("scoverage: Written profile-file to " + Env.coverageFile.getAbsolutePath)
+      println("[scoverage]: Written profile-file to " + Env.coverageFile.getAbsolutePath)
     }
   }
 
