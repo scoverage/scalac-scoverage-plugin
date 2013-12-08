@@ -9,12 +9,32 @@ import java.util.concurrent.atomic.AtomicInteger
 
 /** @author Stephen Samuel */
 class ScoveragePlugin(val global: Global) extends Plugin {
-  val name: String = "scoverage-plugin"
-  val components: List[PluginComponent] = List(new ScoverageComponent(global))
+
+  val name: String = "scoverage"
   val description: String = "scoverage code coverage compiler plugin"
+  val options = new ScoverageOptions
+  val components: List[PluginComponent] = List(new ScoverageComponent(global, options))
+
+  override def processOptions(opts: List[String], error: String => Unit) {
+    for ( opt <- opts ) {
+      if (opt.startsWith("excludedPackages:")) {
+        options.excludedPackages = opt.substring("excludedPackages:".length).split(",").map(_.trim).filterNot(_.isEmpty)
+      } else {
+        error("Unknown option: " + opt)
+      }
+    }
+  }
+
+  override val optionsHelp: Option[String] = Some(
+    "-P:scoverage:excludedPackages:<regex>,<regex>         comma separated list of regexs for packages to exclude\n"
+  )
 }
 
-class ScoverageComponent(val global: Global)
+class ScoverageOptions {
+  var excludedPackages: Seq[String] = Nil
+}
+
+class ScoverageComponent(val global: Global, options: ScoverageOptions)
   extends PluginComponent with TypingTransformers with Transform with TreeDSL {
 
   import global._
@@ -107,6 +127,14 @@ class ScoverageComponent(val global: Global)
           val block = Block(List(apply), tree)
           localTyper.typed(atPos(tree.pos)(block))
       }
+    }
+
+    def isIncluded(p: PackageDef): Boolean = {
+      new CoverageFilter(options.excludedPackages).isIncluded(p.symbol.fullNameString)
+    }
+
+    def isIncluded(c: ClassDef): Boolean = {
+      new CoverageFilter(options.excludedPackages).isIncluded(c.symbol.fullNameString)
     }
 
     def className(s: Symbol): String = {
@@ -341,7 +369,9 @@ class ScoverageComponent(val global: Global)
          */
         case n: New => super.transform(n)
 
-        case p: PackageDef => super.transform(p)
+        case p: PackageDef =>
+          if (isIncluded(p)) super.transform(p)
+          else p
 
         // This AST node corresponds to the following Scala code:  `return` expr
         case r: Return =>

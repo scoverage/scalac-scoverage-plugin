@@ -14,7 +14,6 @@ case class Coverage()
   with FileBuilders {
 
   val statements = new ListBuffer[MeasuredStatement]
-
   def add(stmt: MeasuredStatement): Unit = statements.append(stmt)
 
   def avgClassesPerPackage = classCount / packageCount.toDouble
@@ -106,7 +105,7 @@ case class Location(_package: String,
 }
 
 trait CoverageMetrics {
-  val statements: Iterable[MeasuredStatement]
+  def statements: Iterable[MeasuredStatement]
   def statementCount: Int = statements.count(!_.branch)
   def invokedStatements: Iterable[MeasuredStatement] = statements.filter(_.count > 0).filter(!_.branch)
   def invokedStatementCount = invokedStatements.size
