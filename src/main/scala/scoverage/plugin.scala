@@ -30,11 +30,10 @@ class ScoverageComponent(val global: Global)
     override def run(): Unit = {
       println("scoverage: Begin profiling phase")
       super.run()
-      println("scoverage: Profiling transformation completed")
-      println("scoverage: " + coverage.statements.size + " statements profiled")
+      println("scoverage: Profiling completed: " + coverage.statements + " profiled")
 
       IOUtils.serialize(coverage, Env.coverageFile)
-      println("scoverage: Written coverage file to " + Env.coverageFile.getAbsolutePath)
+      println("scoverage: Written profile-file to " + Env.coverageFile.getAbsolutePath)
     }
   }
 
