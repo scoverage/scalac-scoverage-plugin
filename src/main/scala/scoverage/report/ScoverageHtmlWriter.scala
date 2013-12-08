@@ -37,6 +37,7 @@ object ScoverageHtmlWriter extends CoverageWriter {
 
   def _file(mfile: MeasuredFile): Node = {
     val css = "table.codegrid { font-family: Courier; font-size: 12px } " +
+      "table.codegrid td { padding: 0 } " +
       "table.linenumber { width: 40px } "
     <html>
       <head>
@@ -44,8 +45,9 @@ object ScoverageHtmlWriter extends CoverageWriter {
         <title id='title'>
           {mfile.source}
         </title>
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
         <style>
           {css}
         </style>
@@ -73,35 +75,25 @@ object ScoverageHtmlWriter extends CoverageWriter {
   }
 
   def _package(pack: MeasuredPackage): Node = {
-    <html>
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title id='title'>Scales Code Coverage</title>
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-      </head>
-      <body>
-        <table class="table table-striped" style="font-size:12px">
-          <thead>
-            <tr>
-              <th>Class</th>
-              <th>Source</th>
-              <th>Lines</th>
-              <th>Methods</th>
-              <th>Statements</th>
-              <th>Statements Invoked</th>
-              <th>Statement Coverage</th>
-              <th>Branches</th>
-              <th>Branches Invoked</th>
-              <th>Branch Coverage</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pack.classes.map(_class)}
-          </tbody>
-        </table>
-      </body>
-    </html>
+    <table class="table table-striped" style="font-size:12px">
+      <thead>
+        <tr>
+          <th>Class</th>
+          <th>Source</th>
+          <th>Lines</th>
+          <th>Methods</th>
+          <th>Statements</th>
+          <th>Statements Invoked</th>
+          <th>Statement Coverage</th>
+          <th>Branches</th>
+          <th>Branches Invoked</th>
+          <th>Branch Coverage</th>
+        </tr>
+      </thead>
+      <tbody>
+        {pack.classes.map(_class)}
+      </tbody>
+    </table>
   }
 
   def _class(klass: MeasuredClass): Node = {
@@ -150,8 +142,9 @@ object ScoverageHtmlWriter extends CoverageWriter {
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id='title'>Scales Code Coverage</title>
-        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
-        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
       </head>
       <body>
         <table class="table table-striped" style="font-size: 12px">
