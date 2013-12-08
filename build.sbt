@@ -2,7 +2,7 @@ name := "scalac-scoverage-plugin"
 
 organization := "com.sksamuel.scoverage"
 
-version := "0.92.0"
+version := "0.92.0-SNAPSHOT"
 
 scalaVersion := "2.10.3"
 
@@ -29,7 +29,7 @@ publishTo <<= version {
   (v: String) =>
     val nexus = "https://oss.sonatype.org/"
     if (v.trim.endsWith("SNAPSHOT"))
-      Some(Resolver.mavenLocal)
+      Some(Resolver.file("file", new File(Path.userHome.absolutePath + "/.m2/repository")))
     else
       Some("releases" at nexus + "service/local/staging/deploy/maven2")
 }

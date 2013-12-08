@@ -6,7 +6,7 @@ import java.io.File
 import org.apache.commons.io.FileUtils
 
 /** @author Stephen Samuel */
-class CoberturaXmlWriter(sourceDir: File, outputDir: File) {
+class CoberturaXmlWriter(baseDir: File, outputDir: File) {
 
   def write(coverage: Coverage): Unit = {
     FileUtils.write(new File(outputDir.getAbsolutePath + "/cobertura.xml"), xml(coverage).toString())
@@ -15,7 +15,7 @@ class CoberturaXmlWriter(sourceDir: File, outputDir: File) {
   def method(method: MeasuredMethod): Node = {
     <method name={method.name}
             signature="()V"
-            line-rate={method.statementCoverage.toString}
+            line-rate={method.statementCoverageFormatted}
             branch-rate={method.branchCoverageFormatted}>
       <lines>
         {method.statements.map(stmt =>
@@ -30,8 +30,8 @@ class CoberturaXmlWriter(sourceDir: File, outputDir: File) {
 
   def klass(klass: MeasuredClass): Node = {
     <class name={klass.name}
-           filename={klass.source.replace(sourceDir.getAbsolutePath, "")}
-           line-rate={klass.statementCoverage.toString}
+           filename={klass.source.replace(baseDir.getAbsolutePath, "")}
+           line-rate={klass.statementCoverageFormatted}
            branch-rate={klass.branchCoverageFormatted}
            complexity="0">
       <methods>
@@ -42,8 +42,8 @@ class CoberturaXmlWriter(sourceDir: File, outputDir: File) {
 
   def pack(pack: MeasuredPackage): Node = {
     <package name={pack.name}
-             line-rate={pack.statementCoverage.toString}
-             branch-rate="0"
+             line-rate={pack.statementCoverageFormatted}
+             branch-rate={pack.branchCoverageFormatted}
              complexity="0">
       <classes>
         {pack.classes.map(klass)}
@@ -52,7 +52,7 @@ class CoberturaXmlWriter(sourceDir: File, outputDir: File) {
   }
 
   def xml(coverage: Coverage): Node = {
-    <coverage line-rate={coverage.statementCoverage.toString}
+    <coverage line-rate={coverage.statementCoverageFormatted}
               branch-rate={coverage.branchCoverageFormatted}
               version="1.0"
               timestamp={System.currentTimeMillis.toString}>
