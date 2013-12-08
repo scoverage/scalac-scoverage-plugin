@@ -85,6 +85,7 @@ case class MeasuredStatement(source: String,
                              branch: Boolean,
                              var count: Int = 0) extends java.io.Serializable {
   def invoked(): Unit = count = count + 1
+  def isInvoked = count > 0
 }
 
 trait Numerics {

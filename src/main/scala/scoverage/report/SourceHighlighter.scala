@@ -10,18 +10,19 @@ class SourceHighlighter {
 
   val sep = System.getProperty("line.separator")
 
+  def source(mfile: MeasuredFile) = IOUtils.toString(new FileInputStream(new File(mfile.source)), "UTF-8")
+
   def print(mfile: MeasuredFile): Node = {
-    val file = new File(mfile.source)
-    val source = IOUtils.toString(new FileInputStream(file), "UTF-8")
+    val s = source(mfile)
     val ranges = mfile.invokedStatements.map(arg => arg.start to arg.end)
     val intersection = collapse(ranges)
-    val highlighted = highlight(source, intersection)
+    val highlighted = highlight(s, intersection)
     val lines = highlighted.split(sep)
     print(lines)
   }
 
   // attribution dave @ http://stackoverflow.com/a/9219395/2048448
-  def collapse(ranges: Iterable[Range]): Seq[Range] = {
+  private def collapse(ranges: Iterable[Range]): Seq[Range] = {
     // sorting the list puts overlapping ranges adjacent to one another in the list
     // foldLeft runs a function on successive elements. it's a great way to process
     // a list when the results are not a 1:1 mapping.
@@ -40,7 +41,7 @@ class SourceHighlighter {
     }.reverse
   }
 
-  def highlight(source: String, statements: Seq[Range]) = {
+  private def highlight(source: String, statements: Seq[Range]) = {
     var offset = 0
     val opening = "[invoked]"
     val closing = "[/invoked]"
@@ -90,8 +91,8 @@ class SourceHighlighter {
   }
 
   def statementCss(status: StatementStatus): String = status match {
-    case Covered => "background: green"
-    case MissingCoverage => "background: red"
+    case Invoked => "background: green"
+    case NotInvoked => "background: red"
     case NotInstrumented => "background: white"
   }
 }

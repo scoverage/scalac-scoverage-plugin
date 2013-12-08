@@ -35,19 +35,18 @@ object ScoverageHtmlWriter extends CoverageWriter {
     FileUtils.write(file, _file(mfile).toString())
   }
 
-  def _file(mfile: MeasuredFile): Node = {
-    new SourceHighlighter().print(mfile)
-  }
+  def _file(mfile: MeasuredFile): Node = new CodeGrid(mfile).output
 
   def _package(pack: MeasuredPackage): Node = {
     <html>
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id='title'>Scales Code Coverage</title>
-        <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.3.0/pure-min.css"/>
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
       </head>
       <body>
-        <table class="pure-table pure-table-bordered pure-table-striped" style="font-size:12px">
+        <table class="table table-striped" style="font-size:12px">
           <thead>
             <tr>
               <th>Class</th>
