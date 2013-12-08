@@ -168,8 +168,6 @@ class ScoverageComponent(val global: Global)
       println(t.getClass.getSimpleName + ": " + t + " " + t.symbol + " LINE: " + safeLine(t) + " RAW: " + u.showRaw(t))
     }
 
-    def isPartialFunctionApply(d: DefDef) = d.symbol.nameString == "scala.Function1.apply"
-
     def allConstArgs(args: List[Tree]) = args.forall(arg => arg.isInstanceOf[Literal] || arg.isInstanceOf[Ident])
 
     def process(tree: Tree): Tree = {
@@ -213,7 +211,6 @@ class ScoverageComponent(val global: Global)
         // special support to handle partial functions
         case c: ClassDef if c.symbol.isAnonymousFunction &&
           c.symbol.enclClass.superClass.nameString.contains("AbstractPartialFunction") =>
-          debug(c)
           transformPartial(c)
 
         // scalac generated classes, we just instrument the enclosed methods/statments
@@ -229,10 +226,6 @@ class ScoverageComponent(val global: Global)
         case d: DefDef if d.symbol.isPrimaryConstructor => tree
         // todo definitely want to instrument user level constructors
         case d: DefDef if tree.symbol.isConstructor => tree
-
-        case d: DefDef if isPartialFunctionApply(d) =>
-          debug(d)
-          d
 
         /**
          * Case class accessors for vals

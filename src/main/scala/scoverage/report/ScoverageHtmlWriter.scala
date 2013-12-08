@@ -25,7 +25,7 @@ object ScoverageHtmlWriter extends CoverageWriter {
   def write(pack: MeasuredPackage, dir: File) {
     val file = new File(dir.getAbsolutePath + "/" + pack.name.replace('.', '/') + "/package.html")
     file.getParentFile.mkdirs()
-    FileUtils.write(file, classes(pack).toString())
+    FileUtils.write(file, packageClasses(pack).toString())
     pack.files.foreach(write(_, file.getParentFile))
   }
 
@@ -76,41 +76,74 @@ object ScoverageHtmlWriter extends CoverageWriter {
 
   }
 
-  def classes(pack: MeasuredPackage): Node = {
+  def head = {
+    <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+      <title id='title'>Scales Code Coverage</title>
+      <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+      <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    </head>
+  }
+
+  def packageClasses(pack: MeasuredPackage): Node = {
     <html>
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title id='title'>Scales Code Coverage</title>
-        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-      </head>
-      <body style="font-family: monospace;">
-        <table class="table table-striped" style="font-size:13px">
-          <thead>
-            <tr>
-              <th>Class</th>
-              <th>Source file</th>
-              <th>Lines</th>
-              <th>Methods</th>
-              <th>Statements</th>
-              <th>Stmt Invoked</th>
-              <th>Stmt Coverage</th>
-              <th>Branches</th>
-              <th>Br Invoked</th>
-              <th>Br Coverage</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pack.classes.map(_class)}
-          </tbody>
-        </table>
-      </body>
+      {head}<body style="font-family: monospace;">
+      {classes(pack.classes, false)}
+    </body>
     </html>
   }
 
-  def _class(klass: MeasuredClass): Node = {
-    val filename = FilenameUtils.getBaseName(klass.source) + ".html"
+  def classes(classes: Iterable[MeasuredClass], fullPath: Boolean): Node = {
+    <table class="table table-striped" style="font-size:13px">
+      <thead>
+        <tr>
+          <th>
+            Class
+          </th>
+          <th>
+            Source file
+          </th>
+          <th>
+            Lines
+          </th>
+          <th>
+            Methods
+          </th>
+          <th>
+            Statements
+          </th>
+          <th>
+            Stmt Invoked
+          </th>
+          <th>
+            Stmt Coverage
+          </th>
+          <th>
+            Branches
+          </th>
+          <th>
+            Br Invoked
+          </th>
+          <th>
+            Br Coverage
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {classes.toSeq.sortBy(_.simpleName) map (_class(_, fullPath))}
+      </tbody>
+    </table>
+  }
+
+  def _class(klass: MeasuredClass, fullPath: Boolean): Node = {
+    val filename = {
+      if (fullPath)
+        klass.source.replace("src/main/scala", "") + ".html"
+      else
+        FilenameUtils.getBaseName(klass.source) + ".html"
+    }
+
     val simpleClassName = klass.name.split('.').last
     <tr>
       <td>
@@ -154,7 +187,9 @@ object ScoverageHtmlWriter extends CoverageWriter {
     <html>
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title id='title'>Scales Code Coverage</title>
+        <title id='title'>
+          Scales Code Coverage
+        </title>
         <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
@@ -187,16 +222,29 @@ object ScoverageHtmlWriter extends CoverageWriter {
 
   def risks(coverage: Coverage, limit: Int) = {
     <table class="table table-striped" style="font-size: 12px">
-      <caption>Top 20 Class Risks</caption>
       <thead>
         <tr>
-          <th>Class</th>
-          <th>Lines</th>
-          <th>Methods</th>
-          <th>Statements</th>
-          <th>Statement Rate</th>
-          <th>Branches</th>
-          <th>Branch Rate</th>
+          <th>
+            Class
+          </th>
+          <th>
+            Lines
+          </th>
+          <th>
+            Methods
+          </th>
+          <th>
+            Statements
+          </th>
+          <th>
+            Statement Rate
+          </th>
+          <th>
+            Branches
+          </th>
+          <th>
+            Branch Rate
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -261,63 +309,80 @@ object ScoverageHtmlWriter extends CoverageWriter {
 
   def overview(coverage: Coverage): Node = {
     <html>
-      <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title id='title'>Scales Code Coverage</title>
-        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-      </head>
-      <body>
-        <div class="overview">
-          {stats(coverage)}{risks(coverage, 20)}
+      {head}<body style="font-family: monospace;">
+      <div class="well">
+        <h4>
+          SCoverage generated at
+          {new Date().toString}
+        </h4>
+      </div>
+      <div class="overview">
+        <div class="stats">
+          {stats(coverage)}
         </div>
-      </body>
+        <div>
+          {classes(coverage.classes, true)}
+        </div>
+      </div>
+    </body>
     </html>
   }
 
   def stats(coverage: Coverage): Node = {
-    <table class="table">
-      <caption>Statistics generated at
-        {new Date().toString}
-      </caption>
+    <table class="table table-striped">
       <tr>
-        <td>Lines of code:</td>
+        <td>
+          Lines of code:
+        </td>
         <td>
           {coverage.loc.toString}
         </td>
-        <td>Statements:</td>
+        <td>
+          Instrumented Statements:
+        </td>
         <td>
           {coverage.statementCount}
         </td>
-        <td>Clases per package:</td>
         <td>
-          {coverage.avgClassesPerPackageFormatted}
+          Classes:
         </td>
-        <td>Methods per class:</td>
-        <td>
-          {coverage.avgMethodsPerClassFormatted}
-        </td>
-      </tr>
-      <tr>
-        <td>to be completed</td>
-        <td>
-        </td>
-        <td>Packages:</td>
         <td>
           {coverage.classCount.toString}
         </td>
-        <td>Classes:</td>
         <td>
-          {coverage.packageCount.toString}
+          Methods:
         </td>
-        <td>Methods:</td>
         <td>
           {coverage.methodCount.toString}
         </td>
       </tr>
+      <tr>
+        <td>
+          Branches
+        </td>
+        <td>
+          {coverage.branchCount.toString}
+        </td>
+        <td>
+          Packages:
+        </td>
+        <td>
+          {coverage.packageCount.toString}
+        </td>
+        <td>
+          Clases per package:
+        </td>
+        <td>
+          {coverage.avgClassesPerPackageFormatted}
+        </td>
+        <td>
+          Methods per class:
+        </td>
+        <td>
+          {coverage.avgMethodsPerClassFormatted}
+        </td>
+      </tr>
     </table>
   }
-
 }
 
