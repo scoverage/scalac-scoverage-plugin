@@ -9,7 +9,7 @@ import scoverage.MeasuredClass
 import scoverage.MeasuredMethod
 
 /** @author Stephen Samuel */
-class ScoverageXmlWriter(outputDir: File) {
+class ScoverageXmlWriter(sourceDir: File, outputDir: File) {
 
   def write(coverage: Coverage): Unit = {
     FileUtils.write(
@@ -34,7 +34,8 @@ class ScoverageXmlWriter(outputDir: File) {
 
   def method(method: MeasuredMethod): Node = {
     <method name={method.name}
-            statement-rate={method.statementCoverage.toString}>
+            statement-rate={method.statementCoverageFormatted}
+            branch-rate={method.branchCoverageFormatted}>
       <statements>
         {method.statements.map(statement)}
       </statements>
@@ -43,7 +44,9 @@ class ScoverageXmlWriter(outputDir: File) {
 
   def klass(klass: MeasuredClass): Node = {
     <class name={klass.name}
-           statement-rate={klass.statementCoverage.toString}>
+           filename={klass.source.replace(sourceDir.getAbsolutePath, "")}
+           statement-rate={klass.statementCoverageFormatted}
+           branch-rate={klass.branchCoverageFormatted}>
       <methods>
         {klass.methods.map(method)}
       </methods>
@@ -52,7 +55,7 @@ class ScoverageXmlWriter(outputDir: File) {
 
   def pack(pack: MeasuredPackage): Node = {
     <package name={pack.name}
-             statement-rate={pack.statementCoverage.toString}>
+             statement-rate={pack.statementCoverageFormatted}>
       <classes>
         {pack.classes.map(klass)}
       </classes>
@@ -60,7 +63,8 @@ class ScoverageXmlWriter(outputDir: File) {
   }
 
   def xml(coverage: Coverage): Node = {
-    <scoverage statement-rate={coverage.statementCoverage.toString}
+    <scoverage statement-rate={coverage.statementCoverageFormatted}
+               branch-rate={coverage.branchCoverageFormatted}
                version="1.0"
                timestamp={System.currentTimeMillis.toString}>
       <packages>
