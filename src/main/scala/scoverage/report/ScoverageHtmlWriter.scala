@@ -79,12 +79,60 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
   }
 
   def head = {
+    val css = """.meter {
+                |        height: 14px;
+                |        position: relative;
+                |        background: #BB2020;
+                |}
+                |.meter span {
+                |	display: block;
+                |	height: 100%;
+                |	background-color: rgb(43,194,83);
+                |	background-image: -webkit-gradient(
+                |	  linear,
+                |	  left bottom,
+                |	  left top,
+                |	  color-stop(0, rgb(43,194,83)),
+                |	  color-stop(1, rgb(84,240,84))
+                |	 );
+                |	background-image: -webkit-linear-gradient(
+                |	  center bottom,
+                |	  rgb(43,194,83) 37%,
+                |	  rgb(84,240,84) 69%
+                |	 );
+                |	background-image: -moz-linear-gradient(
+                |	  center bottom,
+                |	  rgb(43,194,83) 37%,
+                |	  rgb(84,240,84) 69%
+                |	 );
+                |	background-image: -ms-linear-gradient(
+                |	  center bottom,
+                |	  rgb(43,194,83) 37%,
+                |	  rgb(84,240,84) 69%
+                |	 );
+                |	background-image: -o-linear-gradient(
+                |	  center bottom,
+                |	  rgb(43,194,83) 37%,
+                |	  rgb(84,240,84) 69%
+                |	 );
+                |	-webkit-box-shadow:
+                |	  inset 0 2px 9px  rgba(255,255,255,0.3),
+                |	  inset 0 -2px 6px rgba(0,0,0,0.4);
+                |	-moz-box-shadow:
+                |	  inset 0 2px 9px  rgba(255,255,255,0.3),
+                |	  inset 0 -2px 6px rgba(0,0,0,0.4);
+                |	position: relative;
+                |	overflow: hidden;
+                |}""".stripMargin
     <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
       <title id='title'>Scales Code Coverage</title>
       <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
       <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
       <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+      <style>
+        {css}
+      </style>
     </head>
   }
 
@@ -116,19 +164,23 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
             Statements
           </th>
           <th>
-            Stmt Invoked
+            Invoked
           </th>
           <th>
-            Stmt Coverage
+            Coverage
+          </th>
+          <th>
           </th>
           <th>
             Branches
           </th>
           <th>
-            Br Invoked
+            Invoked
           </th>
           <th>
-            Br Coverage
+            Coverage
+          </th>
+          <th>
           </th>
         </tr>
       </thead>
@@ -139,10 +191,14 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
   }
 
   def _class(klass: MeasuredClass): Node = {
+
     val filename = {
       outputDir + klass.source.replace(sourceDirectory.getAbsolutePath, "") + ".html"
     }
-    println(filename)
+
+    val statement0f = Math.round(klass.statementCoveragePercent).toInt.toString
+    val branch0f = Math.round(klass.branchCoveragePercent).toInt.toString
+
     val simpleClassName = klass.name.split('.').last
     <tr>
       <td>
@@ -166,6 +222,11 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
         {klass.invokedStatementCount.toString}
       </td>
       <td>
+        <div class="meter">
+          <span style={s"width: $statement0f%"}></span>
+        </div>
+      </td>
+      <td>
         {klass.statementCoverageFormatted}
         %
       </td>
@@ -174,7 +235,11 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
       </td>
       <td>
         {klass.invokedBranchesCount.toString}
-      </td>
+      </td> <td>
+      <div class="meter">
+        <span style={s"width: $branch0f%"}></span>
+      </div>
+    </td>
       <td>
         {klass.branchCoverageFormatted}
         %
@@ -310,7 +375,9 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
     <html>
       {head}<body style="font-family: monospace;">
       <div class="alert alert-info">
-        <b>SCoverage</b>
+        <b>
+          SCoverage
+        </b>
         generated at
         {new Date().toString}
       </div>
