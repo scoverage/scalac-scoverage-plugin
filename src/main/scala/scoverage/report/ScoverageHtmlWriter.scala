@@ -8,22 +8,23 @@ import java.io.File
 import org.apache.commons.io.{FilenameUtils, FileUtils}
 
 /** @author Stephen Samuel */
-object ScoverageHtmlWriter extends CoverageWriter {
+class ScoverageHtmlWriter(baseDir: File) extends CoverageWriter {
+  println(baseDir)
 
-  def write(coverage: Coverage, dir: File): Unit = {
-    val indexFile = new File(dir.getAbsolutePath + "/index.html")
-    val packageFile = new File(dir.getAbsolutePath + "/packages.html")
-    val overviewFile = new File(dir.getAbsolutePath + "/overview.html")
+  def write(coverage: Coverage, baseDir: File): Unit = {
+    val indexFile = new File(baseDir.getAbsolutePath + "/index.html")
+    val packageFile = new File(baseDir.getAbsolutePath + "/packages.html")
+    val overviewFile = new File(baseDir.getAbsolutePath + "/overview.html")
 
     FileUtils.copyInputStreamToFile(getClass.getResourceAsStream("/index.html"), indexFile)
     FileUtils.write(packageFile, packages(coverage).toString())
     FileUtils.write(overviewFile, overview(coverage).toString())
 
-    coverage.packages.foreach(write(_, dir))
+    coverage.packages.foreach(write)
   }
 
-  def write(pack: MeasuredPackage, dir: File) {
-    val file = new File(dir.getAbsolutePath + "/" + pack.name.replace('.', '/') + "/package.html")
+  def write(pack: MeasuredPackage) {
+    val file = new File(baseDir.getAbsolutePath + "/" + pack.name.replace('.', '/') + "/package.html")
     file.getParentFile.mkdirs()
     FileUtils.write(file, packageClasses(pack).toString())
     pack.files.foreach(write(_, file.getParentFile))
@@ -89,12 +90,12 @@ object ScoverageHtmlWriter extends CoverageWriter {
   def packageClasses(pack: MeasuredPackage): Node = {
     <html>
       {head}<body style="font-family: monospace;">
-      {classes(pack.classes, false)}
+      {classes(pack.classes)}
     </body>
     </html>
   }
 
-  def classes(classes: Iterable[MeasuredClass], fullPath: Boolean): Node = {
+  def classes(classes: Iterable[MeasuredClass]): Node = {
     <table class="table table-striped" style="font-size:13px">
       <thead>
         <tr>
@@ -131,18 +132,14 @@ object ScoverageHtmlWriter extends CoverageWriter {
         </tr>
       </thead>
       <tbody>
-        {classes.toSeq.sortBy(_.simpleName) map (_class(_, fullPath))}
+        {classes.toSeq.sortBy(_.simpleName) map _class}
       </tbody>
     </table>
   }
 
-  def _class(klass: MeasuredClass, fullPath: Boolean): Node = {
-    val filename = {
-      if (fullPath)
-        klass.source.replace("src/main/scala", "") + ".html"
-      else
-        FilenameUtils.getBaseName(klass.source) + ".html"
-    }
+  def _class(klass: MeasuredClass): Node = {
+    val filename =
+      baseDir + "/" + klass.source.replaceAll(".*?/src/main/scala", "").replaceAll("*.?/src/main/java", "") + ".html"
 
     val simpleClassName = klass.name.split('.').last
     <tr>
@@ -310,18 +307,17 @@ object ScoverageHtmlWriter extends CoverageWriter {
   def overview(coverage: Coverage): Node = {
     <html>
       {head}<body style="font-family: monospace;">
-      <div class="well">
-        <h4>
-          SCoverage generated at
-          {new Date().toString}
-        </h4>
+      <div class="alert alert-info">
+        <b>SCoverage</b>
+        generated at
+        {new Date().toString}
       </div>
       <div class="overview">
         <div class="stats">
           {stats(coverage)}
         </div>
         <div>
-          {classes(coverage.classes, true)}
+          {classes(coverage.classes)}
         </div>
       </div>
     </body>
@@ -329,7 +325,7 @@ object ScoverageHtmlWriter extends CoverageWriter {
   }
 
   def stats(coverage: Coverage): Node = {
-    <table class="table table-striped">
+    <table class="table">
       <tr>
         <td>
           Lines of code:
