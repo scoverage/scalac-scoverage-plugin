@@ -162,6 +162,11 @@ class ScoverageComponent(val global: Global)
       )
     }
 
+    def debug(t: Tree) {
+      import scala.reflect.runtime.{universe => u}
+      println(t.getClass.getSimpleName + ": " + t + " " + t.symbol + " LINE: " + safeLine(t) + " RAW: " + u.showRaw(t))
+    }
+
     def allConstArgs(args: List[Tree]) = args.forall(arg => arg.isInstanceOf[Literal] || arg.isInstanceOf[Ident])
 
     def process(tree: Tree): Tree = {
@@ -176,17 +181,17 @@ class ScoverageComponent(val global: Global)
 
         /**
          * When an apply has no parameters, or is an application of purely literals or idents
-         * then we can instrument the outer call.
+         * then we can simply instrument the outer call.
          * This will include calls to case apply.
          */
-        case a: GenericApply if allConstArgs(a.args) => instrument(a)
         case a: GenericApply if allConstArgs(a.args) => instrument(a)
 
         /**
          * Applications of methods with non trivial args means the args themselves
          * must also be instrumented
          */
-        case a: GenericApply => treeCopy.Apply(a, a.fun, transformStatements(a.args))
+        case a: Apply => instrument(treeCopy.Apply(a, a.fun, transformStatements(a.args)))
+        case a: TypeApply => instrument(treeCopy.TypeApply(a, a.fun, transformStatements(a.args)))
 
         /** pattern match with syntax `Assign(lhs, rhs)`.
           * This AST node corresponds to the following Scala code:
@@ -201,7 +206,6 @@ class ScoverageComponent(val global: Global)
           */
         case b: Block =>
           treeCopy.Block(b, transformStatements(b.stats), transform(b.expr))
-
 
         // special support to ignore partial functions
         case c: ClassDef if c.symbol.isAnonymousFunction &&
@@ -236,8 +240,7 @@ class ScoverageComponent(val global: Global)
          * Lazy stable DefDefs are generated as the impl for lazy vals.
          */
         case d: DefDef if d.symbol.isStable && d.symbol.isGetter && d.symbol.isLazy =>
-          import scala.reflect.runtime.{universe => u}
-          println("LAZY DEF:" + d.toString() + " " + d.symbol + " RHS:" + u.showRaw(d.rhs) + " LINE: " + safeLine(d))
+
           updateLocation(d.symbol)
           treeCopy.DefDef(d, d.mods, d.name, d.tparams, d.vparamss, d.tpt, process(d.rhs))
 
@@ -281,7 +284,7 @@ class ScoverageComponent(val global: Global)
 
         // handle function bodies. This AST node corresponds to the following Scala code: vparams => body
         case f: Function =>
-          println("FUNCTION: " + f.toString() + " " + f.symbol)
+          debug(f)
           treeCopy.Function(tree, f.vparams, process(f.body))
 
         case _: Ident => tree
@@ -359,12 +362,9 @@ class ScoverageComponent(val global: Global)
 
         /**
          * I think lazy selects are the LHS of a lazy assign.
-         * todo confirm this
+         * todo confirm we can ignore
          */
-        case s: Select if s.symbol.isLazy =>
-          import scala.reflect.runtime.{universe => u}
-          println("LAZY SELECT: " + s + " sym=" + s.symbol + " RAW: " + u.showRaw(s) + "LINE:" + safeLine(s))
-          s
+        case s: Select if s.symbol.isLazy => s
 
         case s: Select => // instrument outer select only until we hit an apply or run out of selects
           //          def nested(s: Tree): Tree = {
