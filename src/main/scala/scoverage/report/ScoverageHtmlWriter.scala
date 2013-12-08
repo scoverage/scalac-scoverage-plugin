@@ -235,11 +235,12 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
       </td>
       <td>
         {klass.invokedBranchesCount.toString}
-      </td> <td>
-      <div class="meter">
-        <span style={s"width: $branch0f%"}></span>
-      </div>
-    </td>
+      </td>
+      <td>
+        <div class="meter">
+          <span style={s"width: $branch0f%"}></span>
+        </div>
+      </td>
       <td>
         {klass.branchCoverageFormatted}
         %
@@ -394,19 +395,24 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
   }
 
   def stats(coverage: Coverage): Node = {
+
+    val statement0f = Math.round(coverage.statementCoveragePercent).toInt.toString
+    val branch0f = Math.round(coverage.branchCoveragePercent).toInt.toString
+
+
     <table class="table">
       <tr>
         <td>
           Lines of code:
         </td>
         <td>
-          {coverage.loc.toString}
+          {coverage.loc.toInt.toString}
         </td>
         <td>
-          Instrumented Statements:
+          Files:
         </td>
         <td>
-          {coverage.statementCount}
+          {coverage.fileCount.toString}
         </td>
         <td>
           Classes:
@@ -423,10 +429,10 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
       </tr>
       <tr>
         <td>
-          Branches
+          Lines per file
         </td>
         <td>
-          {coverage.branchCount.toString}
+          {coverage.linesPerFile.toString}
         </td>
         <td>
           Packages:
@@ -445,6 +451,58 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
         </td>
         <td>
           {coverage.avgMethodsPerClassFormatted}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Total statements:
+        </td>
+        <td>
+          {coverage.statementCount.toString}
+        </td>
+        <td>
+          Invoked statements:
+        </td>
+        <td>
+          {coverage.invokedStatementCount.toString}
+        </td>
+        <td>
+          Total branches:
+        </td>
+        <td>
+          {coverage.branchCount.toString}
+        </td>
+        <td>
+          Invoked branches:
+        </td>
+        <td>
+          {coverage.invokedBranchesCount.toString}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Statement coverage:
+        </td>
+        <td>
+          {coverage.statementCoverageFormatted}
+          %
+        </td>
+        <td colspan="2">
+          <div class="meter">
+            <span style={s"width: $statement0f%"}></span>
+          </div>
+        </td>
+        <td>
+          Branch coverage:
+        </td>
+        <td>
+          {coverage.branchCoverageFormatted}
+          %
+        </td>
+        <td colspan="2">
+          <div class="meter">
+            <span style={s"width: $branch0f%"}></span>
+          </div>
         </td>
       </tr>
     </table>

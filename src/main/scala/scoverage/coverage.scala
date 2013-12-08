@@ -24,6 +24,8 @@ case class Coverage()
   def avgMethodsPerClass = methodCount / classCount.toDouble
   def avgMethodsPerClassFormatted: String = "%.2f".format(avgMethodsPerClass)
 
+  def linesPerFile = loc / fileCount.toDouble
+
   // returns the classes by least coverage
   def risks(limit: Int) = classes.toSeq.sortBy(_.statementCount).reverse.sortBy(_.statementCoverage).take(limit)
 
