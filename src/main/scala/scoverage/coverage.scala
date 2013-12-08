@@ -11,8 +11,7 @@ case class Coverage()
   with java.io.Serializable
   with ClassBuilders
   with PackageBuilders
-  with FileBuilders
-  with Numerics {
+  with FileBuilders {
 
   val statements = new ListBuffer[MeasuredStatement]
 
@@ -24,6 +23,7 @@ case class Coverage()
   def avgMethodsPerClass = methodCount / classCount.toDouble
   def avgMethodsPerClassFormatted: String = "%.2f".format(avgMethodsPerClass)
 
+  def loc = files.map(_.loc).sum
   def linesPerFile = loc / fileCount.toDouble
 
   // returns the classes by least coverage
@@ -66,9 +66,10 @@ trait FileBuilders {
 case class MeasuredMethod(name: String, statements: Iterable[MeasuredStatement]) extends CoverageMetrics
 
 case class MeasuredClass(name: String, statements: Iterable[MeasuredStatement])
-  extends CoverageMetrics with MethodBuilders with Numerics {
+  extends CoverageMetrics with MethodBuilders {
   def source: String = statements.head.source
   def simpleName = name.split('.').last
+  def loc = statements.map(_.line).max
 }
 
 case class MeasuredPackage(name: String, statements: Iterable[MeasuredStatement])
@@ -78,6 +79,7 @@ case class MeasuredPackage(name: String, statements: Iterable[MeasuredStatement]
 case class MeasuredFile(source: String, statements: Iterable[MeasuredStatement])
   extends CoverageMetrics with ClassCoverage with ClassBuilders {
   def filename = new File(source).getName
+  def loc = statements.map(_.line).max
 }
 
 case class MeasuredStatement(source: String,
@@ -93,11 +95,6 @@ case class MeasuredStatement(source: String,
                              var count: Int = 0) extends java.io.Serializable {
   def invoked(): Unit = count = count + 1
   def isInvoked = count > 0
-}
-
-trait Numerics {
-  val statements: Iterable[MeasuredStatement]
-  def loc = statements.map(stmt => stmt.location.fqn + ":" + stmt.line).toSet.size
 }
 
 case class Location(_package: String,
