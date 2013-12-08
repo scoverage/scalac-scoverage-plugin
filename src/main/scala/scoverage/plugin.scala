@@ -75,7 +75,8 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
     def safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.safeLine else -1
     def safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
 
-    def invokeCall(id: Int): Apply = {
+    def invokeCall(id: Int): Tree = {
+      val file = Env.measurementFile(options.dataDir).getAbsolutePath
       Apply(
         Select(
           Select(
@@ -89,7 +90,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
             Constant(id)
           ),
           Literal(
-            Constant(Env.measurementFile(options.dataDir))
+            Constant(file)
           )
         )
       )
