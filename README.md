@@ -5,6 +5,8 @@ scoverage is a free Apache licensed code coverage tool for scala that offers sta
 scoverage is available for both maven and sbt.
 scoverage was originally based on SCCT.
 
+![Screenshot of scoverage report html](src/main/misc/screenshot2.png)
+
 ### Statement Coverage
 
 In traditional code coverage tools, line coverage has been the main metric. 
