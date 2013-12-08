@@ -32,9 +32,19 @@ Now we would get 100% code coverage for passing in the values ("Buddist", 34).
 That's why in scoverage we focus on statement coverage, and don't even include line coverage as a metric.
 This is a paradigm shift that we hope will take hold.
 
+### Branch Coverage
+
+Branch coverage is very useful to ensure all code paths are covered. Scoverage produces branch coverage metrics
+as a percentage of the total branches. Symbols that are deemed as branch statements are:
+
+* If / else statements
+* Match statements
+* Partial function cases
+* Try / catch / finally clauses
+
 ### How to use
 
-This project is the base functionality for instrumenting code via a scalac plugin. To actually use scoverage in your
+This project is the base module for instrumenting code via a scalac compiler plugin. To use scoverage in your
 project you will need to use one of the build plugins:
 
 * [maven-scoverage-plugin](https://github.com/scoverage/maven-scoverage-plugin)
@@ -42,7 +52,7 @@ project you will need to use one of the build plugins:
 
 ### Alternatives
 
-There are still only a few code coverage tools for Scala.
+There are still only a few code coverage tools for Scala. Here are two that we know of:
 
 * [SCCT](http://mtkopone.github.io/scct/) - Offers line coverage
 * [Jacoco4sbt](https://github.com/sbt/jacoco4sbt) - Instruments bytecode
