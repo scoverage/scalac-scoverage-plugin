@@ -6,7 +6,7 @@ import java.io.File
 import org.apache.commons.io.FileUtils
 
 /** @author Stephen Samuel */
-class CoberturaXmlWriter(outputDir: File) {
+class CoberturaXmlWriter(sourceDir: File, outputDir: File) {
 
   def write(coverage: Coverage): Unit = {
     FileUtils.write(new File(outputDir.getAbsolutePath + "/cobertura.xml"), xml(coverage).toString())
@@ -30,7 +30,7 @@ class CoberturaXmlWriter(outputDir: File) {
 
   def klass(klass: MeasuredClass): Node = {
     <class name={klass.name}
-           filename={klass.source}
+           filename={klass.source.replace(sourceDir.getAbsolutePath, "")}
            line-rate={klass.statementCoverage.toString}
            branch-rate={klass.branchCoverageFormatted}
            complexity="0">
