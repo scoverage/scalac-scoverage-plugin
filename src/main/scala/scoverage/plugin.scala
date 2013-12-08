@@ -162,48 +162,31 @@ class ScoverageComponent(val global: Global)
       )
     }
 
+    def allConstArgs(args: List[Tree]) = args.forall(arg => arg.isInstanceOf[Literal] || arg.isInstanceOf[Ident])
+
     def process(tree: Tree): Tree = {
       tree match {
-
-        case EmptyTree => super.transform(tree)
-
-        case a: ApplyDynamic =>
-          println("ApplyDynamic not yet implemented. " + a.toString() + " " + a.symbol)
-          tree
-
-        case a: ApplyToImplicitArgs =>
-          println("ApplyToImplicitArgs not yet implemented. " + a.toString() + " " + a.symbol)
-          treeCopy.Apply(a, a.fun, transformStatements(a.args))
-          a
 
         /**
          * Object creation from new.
          * Ignoring creation calls to anon functions
          */
-        case a: Apply if a.symbol.isConstructor && a.symbol.enclClass.isAnonymousFunction => tree
-        case a: Apply if a.symbol.isConstructor => instrument(a)
+        case a: GenericApply if a.symbol.isConstructor && a.symbol.enclClass.isAnonymousFunction => tree
+        case a: GenericApply if a.symbol.isConstructor => instrument(a)
 
         /**
          * When an apply has no parameters, or is an application of purely literals or idents
          * then we can instrument the outer call.
          * This will include calls to case apply.
          */
-        case a: Apply if a.args.isEmpty => instrument(a)
-        case a: Apply if a.args.forall(arg => arg.isInstanceOf[Literal] || arg.isInstanceOf[Ident]) =>
-          instrument(a)
+        case a: GenericApply if allConstArgs(a.args) => instrument(a)
+        case a: GenericApply if allConstArgs(a.args) => instrument(a)
 
         /**
          * Applications of methods with non trivial args means the args themselves
          * must also be instrumented
          */
-        case a: Apply =>
-          //      println("APPLY fun=" + a.fun)
-          treeCopy.Apply(a, a.fun, transformStatements(a.args))
-          a
-
-        case a: TypeApply =>
-          treeCopy.TypeApply(a, a.fun, transformStatements(a.args))
-          a
+        case a: GenericApply => treeCopy.Apply(a, a.fun, transformStatements(a.args))
 
         /** pattern match with syntax `Assign(lhs, rhs)`.
           * This AST node corresponds to the following Scala code:
@@ -219,7 +202,6 @@ class ScoverageComponent(val global: Global)
         case b: Block =>
           treeCopy.Block(b, transformStatements(b.stats), transform(b.expr))
 
-        case _: Import => super.transform(tree)
 
         // special support to ignore partial functions
         case c: ClassDef if c.symbol.isAnonymousFunction &&
@@ -233,10 +215,6 @@ class ScoverageComponent(val global: Global)
         case c: ClassDef =>
           updateLocation(c.symbol)
           super.transform(tree)
-
-        case d: DefDef if d.symbol.isVariable =>
-          println("DEF VAR: " + d.toString() + " " + d.symbol)
-          tree
 
         // todo do we really want to ignore?
         case d: DefDef if d.symbol.isPrimaryConstructor => tree
@@ -259,9 +237,9 @@ class ScoverageComponent(val global: Global)
          */
         case d: DefDef if d.symbol.isStable && d.symbol.isGetter && d.symbol.isLazy =>
           import scala.reflect.runtime.{universe => u}
-          println("LAZY RAW: " + u.showRaw(d.rhs))
-          println("LAZY DEF: " + d.toString() + " " + d.symbol + " RHS=" + d.rhs + " " + d.rhs.shortClass)
-          d
+          println("LAZY DEF:" + d.toString() + " " + d.symbol + " RHS:" + u.showRaw(d.rhs) + " LINE: " + safeLine(d))
+          updateLocation(d.symbol)
+          treeCopy.DefDef(d, d.mods, d.name, d.tparams, d.vparamss, d.tpt, process(d.rhs))
 
         /**
          * Stable getters are methods generated for access to a top level val.
@@ -299,6 +277,8 @@ class ScoverageComponent(val global: Global)
           updateLocation(d.symbol)
           super.transform(tree)
 
+        case EmptyTree => super.transform(tree)
+
         // handle function bodies. This AST node corresponds to the following Scala code: vparams => body
         case f: Function =>
           println("FUNCTION: " + f.toString() + " " + f.symbol)
@@ -308,6 +288,8 @@ class ScoverageComponent(val global: Global)
 
         case i: If =>
           treeCopy.If(i, process(i.cond), transformIf(i.thenp), transformIf(i.elsep))
+
+        case _: Import => tree
 
         // labeldefs are never written natively in scala
         case l: LabelDef =>
@@ -373,15 +355,27 @@ class ScoverageComponent(val global: Global)
           * foo.Bar // represented as Select(Ident(<foo>), <Bar>)
           * Foo#Bar // represented as SelectFromTypeTree(Ident(<Foo>), <Bar>)
           */
-        case s: Select if location == null => super.transform(s)
+        case s: Select if location == null => s
+
+        /**
+         * I think lazy selects are the LHS of a lazy assign.
+         * todo confirm this
+         */
+        case s: Select if s.symbol.isLazy =>
+          import scala.reflect.runtime.{universe => u}
+          println("LAZY SELECT: " + s + " sym=" + s.symbol + " RAW: " + u.showRaw(s) + "LINE:" + safeLine(s))
+          s
+
         case s: Select => // instrument outer select only until we hit an apply or run out of selects
-          def nested(s: Tree): Tree = {
-            s.children.head match {
-              case a: Apply => process(a)
-              case s: Select => nested(s.children.head)
-              case _ => s
-            }
-          }
+          //          def nested(s: Tree): Tree = {
+          //            s.children.head match {
+          //              case a: Apply => process(a)
+          //              case s: Select => nested(s)
+          //              case _ => s
+          //            }
+          //          }
+          //  import scala.reflect.runtime.{universe => u}
+          //  println("SELECT: " + s + " sym=" + s.symbol + " RAW: " + u.showRaw(s))
           instrument(s)
 
         case s: Super => tree
@@ -407,10 +401,10 @@ class ScoverageComponent(val global: Global)
 
         case _: TypeTree => super.transform(tree)
 
-        case v: ValDef if v.symbol.isLazy =>
-          import scala.reflect.runtime.universe
-          println("LAZY VALDEF: " + v.toString() + " " + v.symbol + " TREE: " + universe.showRaw(v))
-          v
+        /**
+         * We can ignore lazy val defs as they are implemented by a generated defdef
+         */
+        case v: ValDef if v.symbol.isLazy => v
 
         /**
          * <synthetic> val default: A1 => B1 =
