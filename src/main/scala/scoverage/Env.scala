@@ -4,10 +4,12 @@ import java.io.File
 
 /** @author Stephen Samuel */
 object Env {
-  def measurementFile = {
-    new File(Option(System.getenv("scoverage.measurement.file")).getOrElse("target/scoverage.measurement"))
+  def coverageFile(dir: File): File = coverageFile(dir.getAbsolutePath)
+  def coverageFile(dir: String): File = {
+    new File(dir + "/" + Option(System.getenv("scoverage.coverage.file")).getOrElse("scoverage.coverage"))
   }
-  def coverageFile = {
-    new File(Option(System.getenv("scoverage.coverage.file")).getOrElse("target/scoverage.coverage"))
+  def measurementFile(dir: File): File = measurementFile(dir.getAbsolutePath)
+  def measurementFile(dir: String): File = {
+    new File(dir + "/" + Option(System.getenv("scoverage.measurement.file")).getOrElse("scoverage.measurement"))
   }
 }

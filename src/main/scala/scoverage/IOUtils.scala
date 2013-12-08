@@ -7,7 +7,7 @@ object IOUtils {
 
   // loads all the invoked statement ids
   def invoked(file: File): Seq[Int] = {
-    val reader = new BufferedReader(new FileReader(Env.measurementFile))
+    val reader = new BufferedReader(new FileReader(file))
     val line = reader.readLine()
     reader.close()
     line.split(";").filterNot(_.isEmpty).map(_.toInt)

@@ -19,19 +19,23 @@ class ScoveragePlugin(val global: Global) extends Plugin {
     for ( opt <- opts ) {
       if (opt.startsWith("excludedPackages:")) {
         options.excludedPackages = opt.substring("excludedPackages:".length).split(",").map(_.trim).filterNot(_.isEmpty)
+      } else if (opt.startsWith("dataDir:")) {
+        options.dataDir = opt.substring("dataDir:".length)
       } else {
         error("Unknown option: " + opt)
       }
     }
   }
 
-  override val optionsHelp: Option[String] = Some(
+  override val optionsHelp: Option[String] = Some(Seq(
+    "-P:scoverage:dataDir:<pathtodatadir>                  where the coverage files should be written\n",
     "-P:scoverage:excludedPackages:<regex>,<regex>         comma separated list of regexs for packages to exclude\n"
-  )
+  ).mkString("\n"))
 }
 
 class ScoverageOptions {
   var excludedPackages: Seq[String] = Nil
+  var dataDir: String = _
 }
 
 class ScoverageComponent(val global: Global, options: ScoverageOptions)
@@ -41,7 +45,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
 
   val statementIds = new AtomicInteger(0)
   val coverage = new Coverage
-  val phaseName: String = "scoverage-phase"
+  val phaseName: String = "scoverage"
   val runsAfter: List[String] = List("typer")
   override val runsBefore = List[String]("patmat")
 
@@ -52,8 +56,9 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
       super.run()
       println("[scoverage]: Profiling completed: " + coverage.statements.size + " statements profiled")
 
-      IOUtils.serialize(coverage, Env.coverageFile)
-      println("[scoverage]: Written profile-file to " + Env.coverageFile.getAbsolutePath)
+      IOUtils.serialize(coverage, Env.coverageFile(options.dataDir))
+      println("[scoverage]: Written profile-file to " + Env.coverageFile(options.dataDir))
+      println("[scoverage]: Will write measurement data to " + Env.measurementFile(options.dataDir))
     }
   }
 
@@ -82,6 +87,9 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
         List(
           Literal(
             Constant(id)
+          ),
+          Literal(
+            Constant(Env.measurementFile(options.dataDir))
           )
         )
       )
