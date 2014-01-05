@@ -7,7 +7,24 @@ scoverage was originally based on SCCT.
 
 [![Build Status](https://travis-ci.org/scoverage/scalac-scoverage-plugin.png?branch=master)](https://travis-ci.org/scoverage/scalac-scoverage-plugin)
 
+[![Coverage Status](https://coveralls.io/repos/scoverage/scalac-scoverage-plugin/badge.png)](https://coveralls.io/r/scoverage/scalac-scoverage-plugin)
+
 ![Screenshot of scoverage report html](src/main/misc/screenshot2.png)
+
+### Release History
+
+##### 0.95.3  5/1/2014
+* Fixed support for for comprehensions. 
+* Optimzed support for nested method calls.
+* Fixed exclude package bug
+* Now supports nested packages
+
+##### 0.95.0 9/12/2013
+* First stable release.
+* Statement level coverage.
+* Branch coverage for if, pattern match, partial function.
+* HTML Generator.
+* Cobertura report generator.
 
 ### Statement Coverage
 
