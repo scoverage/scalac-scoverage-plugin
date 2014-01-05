@@ -7,6 +7,8 @@ scoverage was originally based on SCCT.
 
 [![Build Status](https://travis-ci.org/scoverage/scalac-scoverage-plugin.png?branch=master)](https://travis-ci.org/scoverage/scalac-scoverage-plugin)
 
+[![Coverage Status](https://coveralls.io/repos/scoverage/scalac-scoverage-plugin/badge.png)](https://coveralls.io/r/scoverage/scalac-scoverage-plugin)
+
 ![Screenshot of scoverage report html](src/main/misc/screenshot2.png)
 
 ### Release History
