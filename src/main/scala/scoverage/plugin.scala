@@ -102,7 +102,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
       instrument(process(tree), true)
     }
 
-    def transformStatements(trees: List[Tree]): List[Tree] = trees.map(tree => process(tree))
+    def transformStatements(trees: List[Tree]): List[Tree] = trees.map(process)
 
     def transformCases(cases: List[CaseDef]): List[CaseDef] = {
       cases.map(c => {
@@ -114,7 +114,9 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
 
     def instrument(tree: Tree, branch: Boolean = false) = {
       safeSource(tree) match {
-        case None => tree
+        case None =>
+          println("COULD NOT INSTRUMENT BECAUSE NO SOURCE. Is source positions enabled in the compiler?")
+          tree
         case Some(source) =>
 
           val id = statementIds.incrementAndGet
@@ -190,7 +192,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
                     )
                   )
                 case _ =>
-                  println("Cannot instrument partial apply. Please file bug report")
+                  println("Cannot instrument partial function apply. Please file bug report")
                   d
               }
             case other => other
@@ -201,7 +203,21 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
 
     def debug(t: Tree) {
       import scala.reflect.runtime.{universe => u}
-      println(t.getClass.getSimpleName + ": " + t + " " + t.symbol + " LINE: " + safeLine(t) + " RAW: " + u.showRaw(t))
+      println(t.getClass.getSimpleName + ": LINE " + safeLine(t) + ": " + u.showRaw(t))
+    }
+
+    def traverseApplication(t: Tree): Tree = {
+      t match {
+        case a: ApplyToImplicitArgs => treeCopy.Apply(a, traverseApplication(a.fun), transformStatements(a.args))
+        case a: Apply => treeCopy.Apply(a, traverseApplication(a.fun), transformStatements(a.args))
+        case a: TypeApply => treeCopy.TypeApply(a, traverseApplication(a.fun), transformStatements(a.args))
+        case s: Select => treeCopy.Select(s, traverseApplication(s.qualifier), s.name)
+        case i: Ident => i
+        case t: This => t
+        case other =>
+          println("######" + other)
+          process(other)
+      }
     }
 
     def allConstArgs(args: List[Tree]) = args.forall(arg => arg.isInstanceOf[Literal] || arg.isInstanceOf[Ident])
@@ -227,8 +243,13 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
          * Applications of methods with non trivial args means the args themselves
          * must also be instrumented
          */
-        case a: Apply => instrument(treeCopy.Apply(a, a.fun, transformStatements(a.args)))
-        case a: TypeApply => instrument(treeCopy.TypeApply(a, a.fun, transformStatements(a.args)))
+        //todo remove once scala merges into Apply proper
+        case a: ApplyToImplicitArgs =>
+          instrument(treeCopy.Apply(a, traverseApplication(a.fun), transformStatements(a.args)))
+        case a: Apply =>
+          instrument(treeCopy.Apply(a, traverseApplication(a.fun), transformStatements(a.args)))
+        case a: TypeApply =>
+          instrument(treeCopy.TypeApply(a, traverseApplication(a.fun), transformStatements(a.args)))
 
         /** pattern match with syntax `Assign(lhs, rhs)`.
           * This AST node corresponds to the following Scala code:
@@ -405,17 +426,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
          */
         case s: Select if s.symbol.isLazy => s
 
-        case s: Select => // instrument outer select only until we hit an apply or run out of selects
-          //          def nested(s: Tree): Tree = {
-          //            s.children.head match {
-          //              case a: Apply => process(a)
-          //              case s: Select => nested(s)
-          //              case _ => s
-          //            }
-          //          }
-          //  import scala.reflect.runtime.{universe => u}
-          //  println("SELECT: " + s + " sym=" + s.symbol + " RAW: " + u.showRaw(s))
-          instrument(s)
+        case s: Select => instrument(treeCopy.Select(s, traverseApplication(s.qualifier), s.name))
 
         case s: Super => tree
 
@@ -473,7 +484,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
           treeCopy.ValDef(tree, v.mods, v.name, v.tpt, process(v.rhs))
 
         case _ =>
-          println("Unexpected construct: " + tree.getClass + " " + tree.symbol)
+          println("BUG: Unexpected construct: " + tree.getClass + " " + tree.symbol)
           super.transform(tree)
       }
     }

@@ -106,8 +106,8 @@ case class Location(_package: String,
 
 trait CoverageMetrics {
   def statements: Iterable[MeasuredStatement]
-  def statementCount: Int = statements.count(!_.branch)
-  def invokedStatements: Iterable[MeasuredStatement] = statements.filter(_.count > 0).filter(!_.branch)
+  def statementCount: Int = statements.size
+  def invokedStatements: Iterable[MeasuredStatement] = statements.filter(_.count > 0)
   def invokedStatementCount = invokedStatements.size
   def statementCoverage: Double = if (invokedStatementCount == 0) 100 else invokedStatementCount / statementCount.toDouble
   def statementCoveragePercent = statementCoverage * 100

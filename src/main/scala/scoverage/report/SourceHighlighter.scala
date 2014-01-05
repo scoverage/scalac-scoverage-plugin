@@ -93,6 +93,6 @@ class SourceHighlighter {
   def statementCss(status: StatementStatus): String = status match {
     case Invoked => "background: green"
     case NotInvoked => "background: red"
-    case NotInstrumented => "background: white"
+    case NoData => "background: white"
   }
 }

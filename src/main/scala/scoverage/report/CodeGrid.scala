@@ -12,7 +12,7 @@ class CodeGrid(mfile: MeasuredFile) {
   val sep = System.getProperty("line.separator").charAt(0)
 
   // note: we must reinclude the line sep to keep source positions correct.
-  val lines = source(mfile).split(sep).map(line => (line.toCharArray :+ '\n').map(Cell(_, NotInstrumented)))
+  val lines = source(mfile).split(sep).map(line => (line.toCharArray :+ '\n').map(Cell(_, NoData)))
   val cells = lines.flatten
 
   mfile.statements.foreach(highlight)
@@ -22,11 +22,10 @@ class CodeGrid(mfile: MeasuredFile) {
   def highlight(stmt: MeasuredStatement) {
     for ( k <- stmt.start until stmt.end ) {
       if (k < cells.size)
-        if (cells(k).status != NotInvoked) {
-          if (stmt.isInvoked)
-            cells(k).status = Invoked
-          else
-            cells(k).status = NotInvoked
+        if (stmt.isInvoked) {
+          cells(k).status = Invoked
+        } else if (cells(k).status == NoData) {
+          cells(k).status = NotInvoked
         }
     }
   }
@@ -53,11 +52,10 @@ class CodeGrid(mfile: MeasuredFile) {
   val GREEN = "#AEF1AE"
   val RED = "#F0ADAD"
 
-  def cellStyle(status: StatementStatus): String = status match {
-
+  private def cellStyle(status: StatementStatus): String = status match {
     case Invoked => s"background: $GREEN"
     case NotInvoked => s"background: $RED"
-    case NotInstrumented => "background: white"
+    case NoData => "background: white"
   }
 }
 

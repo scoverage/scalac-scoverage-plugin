@@ -4,4 +4,4 @@ package scoverage.report
 sealed trait StatementStatus
 case object Invoked extends StatementStatus
 case object NotInvoked extends StatementStatus
-case object NotInstrumented extends StatementStatus
+case object NoData extends StatementStatus
