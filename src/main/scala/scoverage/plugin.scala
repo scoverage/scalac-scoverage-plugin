@@ -214,9 +214,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
         case s: Select => treeCopy.Select(s, traverseApplication(s.qualifier), s.name)
         case i: Ident => i
         case t: This => t
-        case other =>
-          println("######" + other)
-          process(other)
+        case other => process(other)
       }
     }
 
