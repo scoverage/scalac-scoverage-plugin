@@ -9,6 +9,20 @@ scoverage was originally based on SCCT.
 
 ![Screenshot of scoverage report html](src/main/misc/screenshot2.png)
 
+### Release History
+
+##### 0.95.2 5/1/2014
+* Fixed support for for comprehensions. 
+* Optimzed support for nested method calls.
+* Fixed excludes bug
+
+##### 0.95.0 9/12/2013
+* First stable release.
+* Statement level coverage.
+* Branch coverage for if, pattern match, partial function.
+* HTML Generator.
+* Cobertura report generator.
+
 ### Statement Coverage
 
 In traditional code coverage tools, line coverage has been the main metric. 
