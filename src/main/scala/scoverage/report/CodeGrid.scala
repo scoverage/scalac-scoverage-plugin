@@ -20,12 +20,13 @@ class CodeGrid(mfile: MeasuredFile) {
   def source(mfile: MeasuredFile): String = IOUtils.toString(new FileInputStream(new File(mfile.source)), "UTF-8")
 
   def highlight(stmt: MeasuredStatement) {
+    // notinvoked is a stronger property than invoked
     for ( k <- stmt.start until stmt.end ) {
       if (k < cells.size)
-        if (stmt.isInvoked) {
-          cells(k).status = Invoked
-        } else if (cells(k).status == NoData) {
+        if (!stmt.isInvoked) {
           cells(k).status = NotInvoked
+        } else if (cells(k).status == NoData) {
+          cells(k).status = Invoked
         }
     }
   }
