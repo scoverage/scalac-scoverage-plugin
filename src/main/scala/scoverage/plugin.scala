@@ -379,7 +379,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
         case n: New => super.transform(n)
 
         case p: PackageDef =>
-          if (isIncluded(p)) super.transform(p)
+          if (isIncluded(p)) treeCopy.PackageDef(p, p.pid, transformStatements(p.stats))
           else p
 
         // This AST node corresponds to the following Scala code:  `return` expr
