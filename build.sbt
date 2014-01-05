@@ -2,7 +2,7 @@ name := "scalac-scoverage-plugin"
 
 organization := "com.sksamuel.scoverage"
 
-version := "0.95.2"
+version := "0.95.3"
 
 scalaVersion := "2.10.3"
 
@@ -21,8 +21,10 @@ pomIncludeRepository := {
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
 
 libraryDependencies ++= Seq(
-  "org.scala-lang" % "scala-compiler" % "2.10.3" % "provided",
-  "commons-io" % "commons-io" % "2.4"
+  "commons-io"          % "commons-io"        % "2.4",
+  "org.scala-lang"      % "scala-compiler"    % "2.10.3" % "provided",
+  "org.scalatest"       %% "scalatest"        % "2.0" % "test",
+  "org.mockito"         % "mockito-all"       % "1.9.5" % "test"
 )
 
 publishTo <<= version {

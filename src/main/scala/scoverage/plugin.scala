@@ -115,7 +115,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
     def instrument(tree: Tree, branch: Boolean = false) = {
       safeSource(tree) match {
         case None =>
-          println("COULD NOT INSTRUMENT BECAUSE NO SOURCE. Is source positions enabled in the compiler?")
+          println(s"[warn] Could not instrument [${tree.getClass.getSimpleName}/${tree.symbol}]. No position.")
           tree
         case Some(source) =>
 
