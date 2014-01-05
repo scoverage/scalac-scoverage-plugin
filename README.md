@@ -11,7 +11,7 @@ scoverage was originally based on SCCT.
 
 ### Release History
 
-##### 0.95.3 
+##### 0.95.3  5/1/2014
 * Fixed support for for comprehensions. 
 * Optimzed support for nested method calls.
 * Fixed exclude package bug
