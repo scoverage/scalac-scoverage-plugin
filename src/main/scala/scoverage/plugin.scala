@@ -18,7 +18,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
   override def processOptions(opts: List[String], error: String => Unit) {
     for ( opt <- opts ) {
       if (opt.startsWith("excludedPackages:")) {
-        options.excludedPackages = opt.substring("excludedPackages:".length).split(",").map(_.trim).filterNot(_.isEmpty)
+        options.excludedPackages = opt.substring("excludedPackages:".length).split(";").map(_.trim).filterNot(_.isEmpty)
       } else if (opt.startsWith("dataDir:")) {
         options.dataDir = opt.substring("dataDir:".length)
       } else {
@@ -29,7 +29,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
 
   override val optionsHelp: Option[String] = Some(Seq(
     "-P:scoverage:dataDir:<pathtodatadir>                  where the coverage files should be written\n",
-    "-P:scoverage:excludedPackages:<regex>,<regex>         comma separated list of regexs for packages to exclude\n"
+    "-P:scoverage:excludedPackages:<regex>;<regex>         semicolon separated list of regexs for packages to exclude\n"
   ).mkString("\n"))
 }
 
@@ -266,16 +266,26 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
         // special support to handle partial functions
         case c: ClassDef if c.symbol.isAnonymousFunction &&
           c.symbol.enclClass.superClass.nameString.contains("AbstractPartialFunction") =>
-          transformPartial(c)
+          if (isIncluded(c))
+            transformPartial(c)
+          else
+            c
 
         // scalac generated classes, we just instrument the enclosed methods/statments
         // the location would stay as the source class
         case c: ClassDef if c.symbol.isAnonymousClass || c.symbol.isAnonymousFunction =>
-          super.transform(tree)
+          if (isIncluded(c))
+            super.transform(tree)
+          else
+            c
 
         case c: ClassDef =>
-          updateLocation(c.symbol)
-          super.transform(tree)
+          if (isIncluded(c)) {
+            updateLocation(c.symbol)
+            super.transform(tree)
+          }
+          else
+            c
 
         // todo do we really want to ignore?
         case d: DefDef if d.symbol.isPrimaryConstructor => tree

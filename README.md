@@ -5,9 +5,7 @@ scoverage is a free Apache licensed code coverage tool for scala that offers sta
 scoverage is available for both maven and sbt.
 scoverage was originally based on SCCT.
 
-[![Build Status](https://travis-ci.org/scoverage/scalac-scoverage-plugin.png?branch=master)](https://travis-ci.org/scoverage/scalac-scoverage-plugin)
-
-[![Coverage Status](https://coveralls.io/repos/scoverage/scalac-scoverage-plugin/badge.png)](https://coveralls.io/r/scoverage/scalac-scoverage-plugin)
+[![Build Status](https://travis-ci.org/scoverage/scalac-scoverage-plugin.png?branch=master)](https://travis-ci.org/scoverage/scalac-scoverage-plugin) [![Coverage Status](https://coveralls.io/repos/scoverage/scalac-scoverage-plugin/badge.png)](https://coveralls.io/r/scoverage/scalac-scoverage-plugin)
 
 ![Screenshot of scoverage report html](src/main/misc/screenshot2.png)
 
