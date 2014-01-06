@@ -266,16 +266,26 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
         // special support to handle partial functions
         case c: ClassDef if c.symbol.isAnonymousFunction &&
           c.symbol.enclClass.superClass.nameString.contains("AbstractPartialFunction") =>
-          transformPartial(c)
+          if (isIncluded(c))
+            transformPartial(c)
+          else
+            c
 
         // scalac generated classes, we just instrument the enclosed methods/statments
         // the location would stay as the source class
         case c: ClassDef if c.symbol.isAnonymousClass || c.symbol.isAnonymousFunction =>
-          super.transform(tree)
+          if (isIncluded(c))
+            super.transform(tree)
+          else
+            c
 
         case c: ClassDef =>
-          updateLocation(c.symbol)
-          super.transform(tree)
+          if (isIncluded(c)) {
+            updateLocation(c.symbol)
+            super.transform(tree)
+          }
+          else
+            c
 
         // todo do we really want to ignore?
         case d: DefDef if d.symbol.isPrimaryConstructor => tree
