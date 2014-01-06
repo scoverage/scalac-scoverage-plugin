@@ -18,7 +18,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
   override def processOptions(opts: List[String], error: String => Unit) {
     for ( opt <- opts ) {
       if (opt.startsWith("excludedPackages:")) {
-        options.excludedPackages = opt.substring("excludedPackages:".length).split(",").map(_.trim).filterNot(_.isEmpty)
+        options.excludedPackages = opt.substring("excludedPackages:".length).split(";").map(_.trim).filterNot(_.isEmpty)
       } else if (opt.startsWith("dataDir:")) {
         options.dataDir = opt.substring("dataDir:".length)
       } else {
@@ -29,7 +29,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
 
   override val optionsHelp: Option[String] = Some(Seq(
     "-P:scoverage:dataDir:<pathtodatadir>                  where the coverage files should be written\n",
-    "-P:scoverage:excludedPackages:<regex>,<regex>         comma separated list of regexs for packages to exclude\n"
+    "-P:scoverage:excludedPackages:<regex>;<regex>         semicolon separated list of regexs for packages to exclude\n"
   ).mkString("\n"))
 }
 
