@@ -9,7 +9,9 @@ import org.apache.commons.io.FileUtils
 class CoberturaXmlWriter(baseDir: File, outputDir: File) {
 
   def write(coverage: Coverage): Unit = {
-    FileUtils.write(new File(outputDir.getAbsolutePath + "/cobertura.xml"), xml(coverage).toString())
+    FileUtils.write(new File(outputDir.getAbsolutePath + "/cobertura.xml"),
+      "<?xml version=\"1.0\"?>\n<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-04.dtd\">\n" +
+        xml(coverage))
   }
 
   def method(method: MeasuredMethod): Node = {
@@ -37,6 +39,14 @@ class CoberturaXmlWriter(baseDir: File, outputDir: File) {
       <methods>
         {klass.methods.map(method)}
       </methods>
+      <lines>
+        {klass.statements.map(stmt =>
+          <line
+          number={stmt.line.toString}
+          hits={stmt.count.toString}
+          branch="false"/>
+      )}
+      </lines>
     </class>
   }
 
@@ -53,7 +63,12 @@ class CoberturaXmlWriter(baseDir: File, outputDir: File) {
 
   def xml(coverage: Coverage): Node = {
     <coverage line-rate={coverage.statementCoverageFormatted}
+              lines-covered={coverage.statementCount.toString}
+              lines-valid={coverage.invokedStatementCount.toString}
+              branches-covered={coverage.branchCount.toString}
+              branches-valid={coverage.invokedBranchesCount.toString}
               branch-rate={coverage.branchCoverageFormatted}
+              complexity="0"
               version="1.0"
               timestamp={System.currentTimeMillis.toString}>
       <sources>

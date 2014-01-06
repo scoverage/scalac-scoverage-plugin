@@ -1,5 +1,5 @@
 language: scala
-script: "sbt clean coveralls"
+script: "sbt clean scct:coverage coveralls"
 scala:
    - 2.10.3
 jdk:

@@ -8,6 +8,15 @@ scalaVersion := "2.10.3"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
 
+crossScalaVersions := Seq("2.9.2", "2.10.0")
+
+libraryDependencies ++= Seq(
+  "commons-io"          % "commons-io"        % "2.4",
+  "org.scala-lang"      % "scala-compiler"    % "2.10.3"  % "provided",
+  "org.scalatest"       %% "scalatest"        % "2.0"     % "test",
+  "org.mockito"         % "mockito-all"       % "1.9.5"   % "test"
+)
+
 publishMavenStyle := true
 
 publishArtifact in Test := false
@@ -19,13 +28,6 @@ pomIncludeRepository := {
 }
 
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
-
-libraryDependencies ++= Seq(
-  "commons-io"          % "commons-io"        % "2.4",
-  "org.scala-lang"      % "scala-compiler"    % "2.10.3" % "provided",
-  "org.scalatest"       %% "scalatest"        % "2.0" % "test",
-  "org.mockito"         % "mockito-all"       % "1.9.5" % "test"
-)
 
 publishTo <<= version {
   (v: String) =>
