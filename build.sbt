@@ -2,7 +2,7 @@ name := "scalac-scoverage-plugin"
 
 organization := "com.sksamuel.scoverage"
 
-version := "0.95.3"
+version := "0.95.4"
 
 scalaVersion := "2.10.3"
 
