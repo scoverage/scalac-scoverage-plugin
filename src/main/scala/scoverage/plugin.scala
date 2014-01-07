@@ -152,7 +152,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
       if (s.enclClass.isAnonymousFunction || s.enclClass.isAnonymousFunction)
         className(s.owner)
       else
-        s.enclClass.fullNameString
+        s.enclClass.nameString
     }
 
     def enclosingMethod(s: Symbol): String = {
@@ -169,7 +169,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
         else ClassType.Class
       }
       location = Location(
-        s.owner.enclosingPackage.fullName,
+        s.enclosingPackage.fullName,
         className(s),
         classType,
         enclosingMethod(s)
