@@ -140,19 +140,15 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
       }
     }
 
-    def isIncluded(p: PackageDef): Boolean = {
-      new CoverageFilter(options.excludedPackages).isIncluded(p.symbol.fullNameString)
-    }
-
-    def isIncluded(c: ClassDef): Boolean = {
-      new CoverageFilter(options.excludedPackages).isIncluded(c.symbol.fullNameString)
+    def isIncluded(t: Tree): Boolean = {
+      new CoverageFilter(options.excludedPackages).isIncluded(t.symbol.fullNameString)
     }
 
     def className(s: Symbol): String = {
       if (s.enclClass.isAnonymousFunction || s.enclClass.isAnonymousFunction)
         className(s.owner)
       else
-        s.enclClass.fullNameString
+        s.enclClass.nameString
     }
 
     def enclosingMethod(s: Symbol): String = {
@@ -169,7 +165,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
         else ClassType.Class
       }
       location = Location(
-        s.owner.enclosingPackage.fullName,
+        s.enclosingPackage.fullName,
         className(s),
         classType,
         enclosingMethod(s)
@@ -377,8 +373,12 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
 
         // user defined objects
         case m: ModuleDef =>
-          updateLocation(m.symbol)
-          super.transform(tree)
+          if (isIncluded(m)) {
+            updateLocation(m.symbol)
+            super.transform(tree)
+          }
+          else
+            m
 
         /**
          * match with syntax `New(tpt)`.
