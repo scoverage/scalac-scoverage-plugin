@@ -7,6 +7,10 @@ scoverage was originally based on SCCT.
 
 [![Build Status](https://travis-ci.org/scoverage/scalac-scoverage-plugin.png?branch=master)](https://travis-ci.org/scoverage/scalac-scoverage-plugin) [![Coverage Status](https://coveralls.io/repos/scoverage/scalac-scoverage-plugin/badge.png)](https://coveralls.io/r/scoverage/scalac-scoverage-plugin)
 
+Join the [scoverage](http://groups.google.com/group/scala-code-coverage-tool)
+google group for help, bug reports, feature requests, and general
+discussion on scoverage.
+
 ![Screenshot of scoverage report html](src/main/misc/screenshot2.png)
 
 ### Release History
