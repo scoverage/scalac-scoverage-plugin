@@ -347,7 +347,8 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
           updateLocation(d.symbol)
           super.transform(tree)
 
-        case EmptyTree => super.transform(tree)
+        case EmptyTree =>
+          super.transform(tree)
 
         // handle function bodies. This AST node corresponds to the following Scala code: vparams => body
         case f: Function =>

@@ -3,4 +3,5 @@ script: "sbt clean scct:scoverage coveralls"
 scala:
    - 2.10.3
 jdk:
-   - oraclejdk7
+  - oraclejdk7
+  - openjdk7
