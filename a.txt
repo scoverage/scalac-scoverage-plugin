@@ -1,1 +1,0 @@
-credentials += Credentials(Artifactory Realm, dominionmarinemedia.artifactoryonline.com, deployer, 7DuiQM97R0)
