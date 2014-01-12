@@ -15,6 +15,11 @@ discussion on scoverage.
 
 ### Release History
 
+##### 0.95.7 12/1/2014
+* Fixed bug with return value in pattern match
+* Improved support for classname excludes
+* Fixed spurious trailing green line breaks
+
 ##### 0.95.3  5/1/2014
 * Fixed support for for comprehensions. 
 * Optimzed support for nested method calls.
