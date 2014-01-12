@@ -40,9 +40,12 @@ class CodeGrid(mfile: MeasuredFile) {
         <td class="linenumber">
           {lineNumber.toString}
         </td>{line.map(cell => {
-        <td style={cellStyle(cell.status)}>
-          {Unparsed(cell.char.toString.replace(" ", "&nbsp;"))}
-        </td>
+        // don't need to output the final \n but don't ever exclude from cells
+        if (cell.char != '\n') {
+          <td style={cellStyle(cell.status)}>
+            {Unparsed(cell.char.toString.replace(" ", "&nbsp;"))}
+          </td>
+        }
       })}
       </tr>
     })}
