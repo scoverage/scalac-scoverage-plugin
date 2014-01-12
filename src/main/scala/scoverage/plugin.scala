@@ -107,7 +107,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
     def transformCases(cases: List[CaseDef]): List[CaseDef] = {
       cases.map(c => {
         treeCopy.CaseDef(
-          c, c.pat, process(c.guard), process(c.body)
+          c, c.pat, process(c.guard), instrument(process(c.body))
         )
       })
     }
