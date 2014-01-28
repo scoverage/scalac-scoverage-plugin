@@ -38,6 +38,11 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
   }
 
   def _file(mfile: MeasuredFile): Node = {
+
+    val filename = {
+      mfile.source.replace(sourceDirectory.getAbsolutePath + "/", "") + ".html"
+    }
+
     val css =
       "table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }" +
         "table.statementlist { width: auto!important; font-size: 13px; } " +
@@ -47,7 +52,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <title id='title'>
-          {mfile.source}
+          {filename}
         </title>
         <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -139,12 +144,12 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
   def packageClasses(pack: MeasuredPackage): Node = {
     <html>
       {head}<body style="font-family: monospace;">
-      {classes(pack.classes)}
+      {classes(pack.classes, false)}
     </body>
     </html>
   }
 
-  def classes(classes: Iterable[MeasuredClass]): Node = {
+  def classes(classes: Iterable[MeasuredClass], addPath: Boolean): Node = {
     <table class="table table-striped" style="font-size:13px">
       <thead>
         <tr>
@@ -185,15 +190,26 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
         </tr>
       </thead>
       <tbody>
-        {classes.toSeq.sortBy(_.simpleName) map _class}
+        {classes.toSeq.sortBy(_.simpleName) map (_class(_, addPath))}
       </tbody>
     </table>
   }
 
-  def _class(klass: MeasuredClass): Node = {
+  def _class(klass: MeasuredClass, addPath: Boolean): Node = {
 
     val filename = {
-      outputDir + klass.source.replace(sourceDirectory.getAbsolutePath, "") + ".html"
+      val Match = "(.*/)?([^/]+.scala.html)$".r
+      klass.source.replace(sourceDirectory.getAbsolutePath + "/", "") + ".html" match {
+        case Match(path, value) => {
+          if (addPath && path.eq(null)) {
+            "<empty>/" + value
+          } else if (addPath && path.ne("")) {
+            path + value
+          } else {
+            value
+          }
+        }
+      }
     }
 
     val statement0f = Math.round(klass.statementCoveragePercent).toInt.toString
@@ -387,7 +403,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
           {stats(coverage)}
         </div>
         <div>
-          {classes(coverage.classes)}
+          {classes(coverage.classes, true)}
         </div>
       </div>
     </body>
