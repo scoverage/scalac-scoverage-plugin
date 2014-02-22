@@ -12,10 +12,11 @@ import scoverage.MeasuredMethod
 class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
 
   def write(coverage: Coverage): Unit = {
-    FileUtils.write(
-      new File(outputDir.getAbsolutePath + "/scoverage.xml"),
-      new PrettyPrinter(120, 4).format(xml(coverage))
-    )
+    val file = debug match {
+      case true => new File(outputDir.getAbsolutePath + "/scoverage-debug.xml")
+      case false => new File(outputDir.getAbsolutePath + "/scoverage.xml")
+    }
+    FileUtils.write(file, new PrettyPrinter(120, 4).format(xml(coverage)))
   }
 
   def statement(stmt: MeasuredStatement): Node = {
