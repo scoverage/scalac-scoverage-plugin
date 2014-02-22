@@ -9,7 +9,7 @@ import scoverage.MeasuredClass
 import scoverage.MeasuredMethod
 
 /** @author Stephen Samuel */
-class ScoverageXmlWriter(sourceDir: File, outputDir: File) {
+class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
 
   def write(coverage: Coverage): Unit = {
     FileUtils.write(
@@ -19,17 +19,32 @@ class ScoverageXmlWriter(sourceDir: File, outputDir: File) {
   }
 
   def statement(stmt: MeasuredStatement): Node = {
-    <statement package={stmt.location._package}
-               class={stmt.location._class}
-               method={stmt.location.method}
-               start={stmt.start.toString}
-               line={stmt.line.toString}
-               symbol={stmt.symbolName}
-               tree={stmt.treeName}
-               branch={stmt.branch.toString}
-               invocation-count={stmt.count.toString}>
-      {stmt.desc}
-    </statement>
+    debug match {
+
+      case true =>
+        <statement package={stmt.location._package}
+                   class={stmt.location._class}
+                   method={stmt.location.method}
+                   start={stmt.start.toString}
+                   line={stmt.line.toString}
+                   symbol={stmt.symbolName}
+                   tree={stmt.treeName}
+                   branch={stmt.branch.toString}
+                   invocation-count={stmt.count.toString}>
+          {stmt.desc}
+        </statement>
+
+      case false =>
+          <statement package={stmt.location._package}
+                     class={stmt.location._class}
+                     method={stmt.location.method}
+                     start={stmt.start.toString}
+                     line={stmt.line.toString}
+                     symbol={stmt.symbolName}
+                     tree={stmt.treeName}
+                     branch={stmt.branch.toString}
+                     invocation-count={stmt.count.toString}/>
+    }
   }
 
   def method(method: MeasuredMethod): Node = {
