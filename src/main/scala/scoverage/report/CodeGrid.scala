@@ -9,10 +9,15 @@ import scala.xml.{Unparsed, Node}
 class CodeGrid(mfile: MeasuredFile) {
   case class Cell(char: Char, var status: StatementStatus)
 
-  val sep = System.getProperty("line.separator").charAt(0)
+  /**
+   * Regardless of whether the source is Unix (\n) or DOS (\r\n), the lines will end
+   * with \n. We split on \n and allow an optional trailing \r on the line.
+   * This lets us split on lines while keep the source positions matching up.
+   */
+  val lineBreak = '\n'
 
   // note: we must reinclude the line sep to keep source positions correct.
-  val lines = source(mfile).split(sep).map(line => (line.toCharArray :+ '\n').map(Cell(_, NoData)))
+  val lines = source(mfile).split(lineBreak).map(line => (line.toCharArray :+ lineBreak).map(Cell(_, NoData)))
   val cells = lines.flatten
 
   mfile.statements.foreach(highlight)
