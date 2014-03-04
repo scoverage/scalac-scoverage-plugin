@@ -197,18 +197,22 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
 
   def _class(klass: MeasuredClass, addPath: Boolean): Node = {
 
-    val filename = {
-      val Match = "(.*/)?([^/]+.scala.html)$".r
-      klass.source.replace(sourceDirectory.getAbsolutePath + "/", "") + ".html" match {
-        case Match(path, value) => {
-          if (addPath && path.eq(null)) {
-            "<empty>/" + value
-          } else if (addPath && path.ne("")) {
-            path + value
-          } else {
-            value
-          }
-        }
+    val filename: String = {
+
+      val fileRelativeToSource = new File(
+        klass.source.replace(
+          sourceDirectory.getAbsolutePath + File.separator,
+          "") + ".html")
+      val path = fileRelativeToSource.getParent
+      val value = fileRelativeToSource.getName
+
+      if (addPath && path.eq(null)) {
+        "<empty>/" + value
+      } else if (addPath && path.ne("")) {
+        // (Normalise the pathSeparator to "/" in case we are running on Windows)
+        fileRelativeToSource.toString.replace(File.separator, "/")
+      } else {
+        value
       }
     }
 
@@ -223,7 +227,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
         </a>
       </td>
       <td>
-        {klass.statements.headOption.map(_.source.split('/').last).getOrElse("")}
+        {klass.statements.headOption.map(_.source.split(File.separatorChar).last).getOrElse("")}
       </td>
       <td>
         {klass.loc.toString}
