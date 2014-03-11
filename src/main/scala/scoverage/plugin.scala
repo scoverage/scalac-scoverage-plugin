@@ -70,9 +70,9 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
 
     var location: Location = null
 
-    def safeStart(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.startOrPoint else -1
-    def safeEnd(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.endOrPoint else -1
-    def safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.safeLine else -1
+    def safeStart(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.start else -1
+    def safeEnd(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.end else -1
+    def safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.line else -1
     def safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
 
     def invokeCall(id: Int): Tree = {
