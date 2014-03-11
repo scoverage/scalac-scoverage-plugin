@@ -8,14 +8,12 @@ scalaVersion := "2.10.3"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
 
-crossScalaVersions := Seq("2.9.2", "2.10.0")
 
 libraryDependencies ++= Seq(
   "commons-io"          % "commons-io"        % "2.4",
-  "org.scala-lang"      % "scala-compiler"    % "2.10.3"  % "provided",
-  "org.scalatest"       %% "scalatest"        % "2.0"     % "test",
-  "org.mockito"         % "mockito-all"       % "1.9.5"   % "test",
-  "org.specs2"          %% "specs2"           % "2.3.7"   % "test"
+  "org.scala-lang"      % "scala-compiler"    % "2.10.3"      % "provided",
+  "org.scalatest"       %% "scalatest"        % "2.1.0"       % "test",
+  "org.mockito"         % "mockito-all"       % "1.9.5"       % "test"
 )
 
 publishMavenStyle := true
@@ -29,6 +27,19 @@ pomIncludeRepository := {
 }
 
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
+
+scalaVersion := "2.10.3"
+
+//crossScalaVersions := Seq("2.10.3", "2.11.0-RC1")
+//
+//libraryDependencies := {
+//  CrossVersion.partialVersion(scalaVersion.value) match {
+//    case Some((2, scalaMajor)) if scalaMajor >= 11 =>
+//      libraryDependencies.value :+ "org.scala-lang.modules" %% "scala-xml" % "1.0.0"
+//    case _ =>
+//      libraryDependencies.value
+//  }
+//}
 
 publishTo <<= version {
   (v: String) =>
