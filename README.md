@@ -17,7 +17,7 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 
 ### Release History
 
-##### 0.95.9   8 March 2014
+##### 8 March 2014 - 0.95.9
 * SBT plugin import issue fixed
 * Fixed windows line ending issues
 * Use relative href for source view
