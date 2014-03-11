@@ -30,16 +30,21 @@ javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
 
 scalaVersion := "2.10.3"
 
-//crossScalaVersions := Seq("2.10.3", "2.11.0-RC1")
-//
-//libraryDependencies := {
-//  CrossVersion.partialVersion(scalaVersion.value) match {
-//    case Some((2, scalaMajor)) if scalaMajor >= 11 =>
-//      libraryDependencies.value :+ "org.scala-lang.modules" %% "scala-xml" % "1.0.0"
-//    case _ =>
-//      libraryDependencies.value
-//  }
-//}
+crossScalaVersions := Seq("2.10.3", "2.11.0-RC1")
+
+libraryDependencies := {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, scalaMajor)) if scalaMajor >= 11 =>
+      libraryDependencies.value :+ "org.scala-lang.modules" %% "scala-xml" % "1.0.0"
+    case _ =>
+      libraryDependencies.value
+  }
+}
+
+libraryDependencies := {
+  val version = CrossVersion.binaryScalaVersion(scalaVersion.value)
+  libraryDependencies.value :+ "org.scala-lang" % "scala-compiler" % version % "provided"
+}
 
 publishTo <<= version {
   (v: String) =>

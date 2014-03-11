@@ -12,15 +12,15 @@ class ScoveragePlugin(val global: Global) extends Plugin {
 
   val name: String = "scoverage"
   val description: String = "scoverage code coverage compiler plugin"
-  val options = new ScoverageOptions
-  val components: List[PluginComponent] = List(new ScoverageComponent(global, options))
+  val opts = new ScoverageOptions
+  val components: List[PluginComponent] = List(new ScoverageComponent(global, opts))
 
-  override def processOptions(opts: List[String], error: String => Unit) {
-    for ( opt <- opts ) {
+  override def processOptions(options: List[String], error: String => Unit) {
+    for ( opt <- options ) {
       if (opt.startsWith("excludedPackages:")) {
-        options.excludedPackages = opt.substring("excludedPackages:".length).split(";").map(_.trim).filterNot(_.isEmpty)
+        opts.excludedPackages = opt.substring("excludedPackages:".length).split(";").map(_.trim).filterNot(_.isEmpty)
       } else if (opt.startsWith("dataDir:")) {
-        options.dataDir = opt.substring("dataDir:".length)
+        opts.dataDir = opt.substring("dataDir:".length)
       } else {
         error("Unknown option: " + opt)
       }
