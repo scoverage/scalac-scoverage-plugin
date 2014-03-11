@@ -1,6 +1,6 @@
 package scoverage
 
-import java.io.FileWriter
+import java.io.{File, FileWriter}
 
 /** @author Stephen Samuel */
 object Invoker {
@@ -16,7 +16,10 @@ object Invoker {
    * @see http://stackoverflow.com/questions/3032482/is-appending-to-a-file-atomic-with-windows-ntfs
    */
   def invoked(id: Int, path: String) = {
-    val writer = new FileWriter(path, true)
+    val dir = new File(path)
+    dir.mkdirs()
+    val file = new File(path + "/" + Thread.currentThread.getId)
+    val writer = new FileWriter(file, true)
     writer.append(id.toString + ';')
     writer.close()
   }
