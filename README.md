@@ -17,13 +17,7 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 
 ### Release History
 
-##### 0.95.9 8 March 2014
-* SBT plugin import issue fixed
-* Fixed windows line ending issues
-* Use relative href for source view
-* Add support for exclude by file name
-
-##### 0.95.7 12/1/2014
+##### 0.95.7  12/1/2014
 * Fixed bug with return value in pattern match
 * Improved support for classname excludes
 * Fixed spurious trailing green line breaks
