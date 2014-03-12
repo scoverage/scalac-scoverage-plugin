@@ -1,13 +1,10 @@
 name := "scalac-scoverage-plugin"
 
-organization := "com.sksamuel.scoverage"
+organization := "org.scoverage"
 
-version := "0.96.0"
-
-scalaVersion := "2.10.3"
+version := "0.97.0"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
-
 
 libraryDependencies ++= Seq(
   "commons-io"          % "commons-io"        % "2.4",
@@ -21,6 +18,7 @@ publishMavenStyle := true
 publishArtifact in Test := false
 
 parallelExecution in Test := false
+
 
 pomIncludeRepository := {
   _ => false
