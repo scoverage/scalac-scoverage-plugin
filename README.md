@@ -23,18 +23,18 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 * Use relative href for source view
 * Add support for exclude by file name
 
-##### 0.95.7  12/1/2014
+##### 12th Jan 2014 - 0.95.7
 * Fixed bug with return value in pattern match
 * Improved support for classname excludes
 * Fixed spurious trailing green line breaks
 
-##### 0.95.3  5/1/2014
+##### 5th Jan 2014 - 0.95.3
 * Fixed support for for comprehensions. 
 * Optimzed support for nested method calls.
 * Fixed exclude package bug
 * Now supports nested packages
 
-##### 0.95.0 9/12/2013
+##### 9th Dec 2013 - 0.95.0
 * First stable release.
 * Statement level coverage.
 * Branch coverage for if, pattern match, partial function.
