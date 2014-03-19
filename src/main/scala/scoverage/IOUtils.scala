@@ -7,12 +7,12 @@ object IOUtils {
 
   // loads all the invoked statement ids
   def invoked(dir: File): Seq[Int] = {
-    dir.listFiles.map(file => {
+    dir.listFiles.flatMap { file =>
       val reader = new BufferedReader(new FileReader(file))
       val line = reader.readLine()
       reader.close()
       line.split(";").filterNot(_.isEmpty).map(_.toInt)
-    }).flatten.toSeq
+    }
   }
 
   def serialize(coverage: Coverage, file: File) {

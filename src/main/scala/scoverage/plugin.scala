@@ -76,7 +76,6 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
     def safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
 
     def invokeCall(id: Int): Tree = {
-      val file = Env.measurementFile(options.dataDir).getAbsolutePath
       Apply(
         Select(
           Select(
@@ -90,7 +89,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
             Constant(id)
           ),
           Literal(
-            Constant(file)
+            Constant(getMeasurementFilesPath())
           )
         )
       )
@@ -138,6 +137,20 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
           val block = Block(List(apply), tree)
           localTyper.typed(atPos(tree.pos)(block))
       }
+    }
+
+    /**
+     * Get the configured dir in which the measurement files should be written
+     * (see [[Invoker.invoked()]])
+     *
+     * This path will be hardcoded into the instrumented class files.
+     *
+     * We create the dir now (rather than at client runtime), for efficiency.
+     */
+    def getMeasurementFilesPath(): String = {
+      val dir = Env.measurementFile(options.dataDir).getAbsoluteFile
+      dir.mkdirs()
+      dir.getPath
     }
 
     def isIncluded(t: Tree): Boolean = {
