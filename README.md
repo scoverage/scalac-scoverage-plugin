@@ -98,7 +98,6 @@ Search for scalac-scoverage-plugin.
 
 There are still only a few code coverage tools for Scala. Here are two that we know of:
 
-* [SCCT](http://mtkopone.github.io/scct/) - Offers line coverage
 * [Jacoco4sbt](https://github.com/sbt/jacoco4sbt) - Instruments bytecode
 
 ## License
