@@ -2,7 +2,7 @@ name := "scalac-scoverage-plugin"
 
 organization := "org.scoverage"
 
-version := "0.97.0"
+version := "0.98.0"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
 

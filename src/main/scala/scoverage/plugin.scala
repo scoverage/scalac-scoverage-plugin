@@ -10,26 +10,30 @@ import java.util.concurrent.atomic.AtomicInteger
 /** @author Stephen Samuel */
 class ScoveragePlugin(val global: Global) extends Plugin {
 
-  val name: String = "scoverage"
-  val description: String = "scoverage code coverage compiler plugin"
-  val opts = new ScoverageOptions
-  val components: List[PluginComponent] = List(new ScoverageComponent(global, opts))
+  override val name: String = "scoverage"
+  override val description: String = "scoverage code coverage compiler plugin"
+  val component = new ScoverageComponent(global)
+  override val components: List[PluginComponent] = List(component)
 
-  override def processOptions(options: List[String], error: String => Unit) {
-    for ( opt <- options ) {
+  override def processOptions(opts: List[String], error: String => Unit) {
+    val options = new ScoverageOptions
+    for ( opt <- opts ) {
       if (opt.startsWith("excludedPackages:")) {
-        opts.excludedPackages = opt.substring("excludedPackages:".length).split(";").map(_.trim).filterNot(_.isEmpty)
+        options.excludedPackages = opt.substring("excludedPackages:".length).split(";").map(_.trim).filterNot(_.isEmpty)
       } else if (opt.startsWith("dataDir:")) {
-        opts.dataDir = opt.substring("dataDir:".length)
+        options.dataDir = opt.substring("dataDir:".length)
       } else {
         error("Unknown option: " + opt)
       }
     }
+    component.setOptions(options)
   }
 
   override val optionsHelp: Option[String] = Some(Seq(
     "-P:scoverage:dataDir:<pathtodatadir>                  where the coverage files should be written\n",
-    "-P:scoverage:excludedPackages:<regex>;<regex>         semicolon separated list of regexs for packages to exclude\n"
+    "-P:scoverage:excludedPackages:<regex>;<regex>         semicolon separated list of regexs for packages to exclude",
+    "                                                      Any classes whose fully qualified name matches the regex will",
+    "                                                      be excluded from coverage."
   ).mkString("\n"))
 }
 
@@ -38,16 +42,38 @@ class ScoverageOptions {
   var dataDir: String = _
 }
 
-class ScoverageComponent(val global: Global, options: ScoverageOptions)
-  extends PluginComponent with TypingTransformers with Transform with TreeDSL {
+class ScoverageComponent(
+    val global: Global)
+  extends PluginComponent
+  with TypingTransformers
+  with Transform
+  with TreeDSL {
 
   import global._
 
   val statementIds = new AtomicInteger(0)
   val coverage = new Coverage
-  val phaseName: String = "scoverage"
-  val runsAfter: List[String] = List("typer")
+  override val phaseName: String = "scoverage"
+  override val runsAfter: List[String] = List("typer")
   override val runsBefore = List[String]("patmat")
+  /**
+   * Our options are not provided at construction time, but shortly after,
+   * so they start as None.
+   * You must call "setOptions" before running any commands that rely on
+   * the options.
+   */
+  private var _options: Option[ScoverageOptions] = None
+  private var coverageFilter: Option[CoverageFilter] = None
+
+  private def options: ScoverageOptions = {
+    require(_options.nonEmpty, "You must first call \"setOptions\"")
+    _options.get
+  }
+
+  def setOptions(options: ScoverageOptions): Unit = {
+    _options = Some(options)
+    coverageFilter = Some(new CoverageFilter(options.excludedPackages))
+  }
 
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
 
@@ -70,8 +96,14 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
 
     var location: Location = null
 
-    def safeStart(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.start else -1
-    def safeEnd(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.end else -1
+    /**
+     * The 'start' of the position, if it is available, else -1
+     * We cannot use 'isDefined' to test whether pos.start will work, as some
+     * classes (e.g. [[scala.reflect.internal.util.OffsetPosition]] have
+     * isDefined true, but throw on `start`
+     */
+    def safeStart(tree: Tree): Int = scala.util.Try(tree.pos.start).getOrElse(-1)
+    def safeEnd(tree: Tree): Int = scala.util.Try(tree.pos.end).getOrElse(-1)
     def safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.line else -1
     def safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
 
@@ -117,25 +149,28 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
           println(s"[warn] Could not instrument [${tree.getClass.getSimpleName}/${tree.symbol}]. No position.")
           tree
         case Some(source) =>
+          if (tree.pos.isDefined && !isStatementIncluded(tree.pos)) {
+            tree
+          } else {
+            val id = statementIds.incrementAndGet
+            val statement = MeasuredStatement(
+              source.path,
+              location,
+              id,
+              safeStart(tree),
+              safeEnd(tree),
+              safeLine(tree),
+              tree.toString(),
+              Option(tree.symbol).map(_.fullNameString).getOrElse("<nosymbol>"),
+              tree.getClass.getSimpleName,
+              branch
+            )
+            coverage.add(statement)
 
-          val id = statementIds.incrementAndGet
-          val statement = MeasuredStatement(
-            source.path,
-            location,
-            id,
-            safeStart(tree),
-            safeEnd(tree),
-            safeLine(tree),
-            tree.toString(),
-            Option(tree.symbol).map(_.fullNameString).getOrElse("<nosymbol>"),
-            tree.getClass.getSimpleName,
-            branch
-          )
-          coverage.add(statement)
-
-          val apply = invokeCall(id)
-          val block = Block(List(apply), tree)
-          localTyper.typed(atPos(tree.pos)(block))
+            val apply = invokeCall(id)
+            val block = Block(List(apply), tree)
+            localTyper.typed(atPos(tree.pos)(block))
+          }
       }
     }
 
@@ -153,8 +188,12 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
       dir.getPath
     }
 
-    def isIncluded(t: Tree): Boolean = {
-      new CoverageFilter(options.excludedPackages).isIncluded(t.symbol.fullNameString)
+    def isClassIncluded(symbol: Symbol): Boolean = {
+      coverageFilter.get.isClassIncluded(symbol.fullNameString)
+    }
+
+    def isStatementIncluded(pos: Position): Boolean = {
+      coverageFilter.get.isLineIncluded(pos)
     }
 
     def className(s: Symbol): String = {
@@ -275,7 +314,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
         // special support to handle partial functions
         case c: ClassDef if c.symbol.isAnonymousFunction &&
           c.symbol.enclClass.superClass.nameString.contains("AbstractPartialFunction") =>
-          if (isIncluded(c))
+          if (isClassIncluded(c.symbol))
             transformPartial(c)
           else
             c
@@ -283,13 +322,13 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
         // scalac generated classes, we just instrument the enclosed methods/statments
         // the location would stay as the source class
         case c: ClassDef if c.symbol.isAnonymousClass || c.symbol.isAnonymousFunction =>
-          if (isIncluded(c))
+          if (isClassIncluded(c.symbol))
             super.transform(tree)
           else
             c
 
         case c: ClassDef =>
-          if (isIncluded(c)) {
+          if (isClassIncluded(c.symbol)) {
             updateLocation(c.symbol)
             super.transform(tree)
           }
@@ -386,7 +425,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
 
         // user defined objects
         case m: ModuleDef =>
-          if (isIncluded(m)) {
+          if (isClassIncluded(m.symbol)) {
             updateLocation(m.symbol)
             super.transform(tree)
           }
@@ -422,7 +461,7 @@ class ScoverageComponent(val global: Global, options: ScoverageOptions)
         case n: New => super.transform(n)
 
         case p: PackageDef =>
-          if (isIncluded(p)) treeCopy.PackageDef(p, p.pid, transformStatements(p.stats))
+          if (isClassIncluded(p.symbol)) treeCopy.PackageDef(p, p.pid, transformStatements(p.stats))
           else p
 
         // This AST node corresponds to the following Scala code:  `return` expr
