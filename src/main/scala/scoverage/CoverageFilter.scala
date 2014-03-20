@@ -21,7 +21,7 @@ class CoverageFilter(excludedPackages: Seq[String]) {
     mutable.WeakHashMap.empty
 
   final val scoverageExclusionCommentsRegex =
-    """(?ms)^\s*//\s*(\$COVERAGE-OFF\$)\s*$.*?(^\s*//\s*\$COVERAGE-ON\$\s*$|\Z)""".r
+    """(?ms)^\s*//\s*(\$COVERAGE-OFF\$).*?(^\s*//\s*\$COVERAGE-ON\$|\Z)""".r
 
   /**
    * True if the given className has not been excluded by the

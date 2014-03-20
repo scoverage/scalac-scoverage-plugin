@@ -96,6 +96,29 @@ class CoverageFilterTest extends FlatSpec {
     numbers === List(Range(4,9), Range(12,16))
   }
 
+  "getExcludedLineNumbers" should "allow text comments on the same line as the markers" in {
+    val file =
+      """1
+        |2
+        |3
+        |  // $COVERAGE-OFF$ because the next lines are boring
+        |5
+        |6
+        |7
+        |8
+        |    // $COVERAGE-ON$ resume coverage here
+        |10
+        |11
+        |    // $COVERAGE-OFF$ but ignore this bit
+        |13
+        |14
+        |15
+      """.stripMargin
+
+    val numbers = new CoverageFilter(Nil).getExcludedLineNumbers(mockSourceFile(file))
+    numbers === List(Range(4,9), Range(12,16))
+  }
+
   private def mockSourceFile(contents: String): SourceFile = {
     new BatchSourceFile(NoFile, contents.toCharArray)
   }
