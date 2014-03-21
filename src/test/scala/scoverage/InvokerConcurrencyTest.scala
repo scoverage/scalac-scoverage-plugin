@@ -13,10 +13,11 @@ import scala.collection.breakOut
  */
 class InvokerConcurrencyTest extends FunSuite with BeforeAndAfter {
 
-  val measurementFile = new File("invoker-test.measurement")
+  val measurementDir = new File("invoker-test.measurement")
 
   before {
     deleteMeasurementFiles()
+    measurementDir.mkdirs()
   }
 
   test("calling Invoker.invoked on multiple threads does not corrupt the measurement file") {
@@ -27,25 +28,25 @@ class InvokerConcurrencyTest extends FunSuite with BeforeAndAfter {
     // the method
     val futures: List[Future[Unit]] = testIds.map { i: Int =>
       future {
-        Invoker.invoked(i, measurementFile.toString)
+        Invoker.invoked(i, measurementDir.toString)
       }
     }(breakOut)
 
     futures.foreach(Await.result(_, 1.second))
 
     // Now verify that the measurement file is not corrupted by loading it
-    val idsFromFile = IOUtils.invoked(measurementFile).toSet
+    val idsFromFile = IOUtils.invoked(measurementDir).toSet
 
     idsFromFile === testIds
   }
 
   after {
     deleteMeasurementFiles()
+    measurementDir.delete()
   }
 
   private def deleteMeasurementFiles(): Unit = {
-    measurementFile.getAbsoluteFile.getParentFile.listFiles()
-      .filter(_.getName.startsWith(measurementFile.getName))
-      .foreach(_.delete())
+    if (measurementDir.isDirectory)
+      measurementDir.listFiles().foreach(_.delete())
   }
 }
