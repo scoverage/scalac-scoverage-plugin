@@ -121,7 +121,7 @@ class ScoverageComponent(
             Constant(id)
           ),
           Literal(
-            Constant(getMeasurementFilesPath())
+            Constant(getMeasurementFilesPath)
           )
         )
       )
@@ -182,7 +182,7 @@ class ScoverageComponent(
      *
      * We create the dir now (rather than at client runtime), for efficiency.
      */
-    def getMeasurementFilesPath(): String = {
+    def getMeasurementFilesPath: String = {
       val dir = Env.measurementFile(options.dataDir).getAbsoluteFile
       dir.mkdirs()
       dir.getPath
