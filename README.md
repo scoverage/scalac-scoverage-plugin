@@ -94,6 +94,26 @@ project you will need to use one of the build plugins:
 If you want to write a tool that uses this code coverage library then it is available on maven central.
 Search for scalac-scoverage-plugin.
 
+#### Excluding code from coverage stats
+
+You can exclude whole classes or packages by name. Pass a semicolon separated
+list of regexes to the 'excludedPackages' option.
+
+For example:
+  -P:scoverage:excludedPackages:.*\.utils\..*;.*\.SomeClass;org\.apache\..*
+
+The regular expressions are matched against the fully qualified class name, and must match the entire string to take effect.
+
+Any matched classes will not be instrumented or included in the coverage report.
+
+You can also mark sections of code with comments like:
+
+    // $COVERAGE-OFF$
+    ...
+    // $COVERAGE-ON$
+
+Any code between two such comments will not be instrumented or included in the coverage report.
+
 ### Alternatives
 
 There are still only a few code coverage tools for Scala. Here are two that we know of:

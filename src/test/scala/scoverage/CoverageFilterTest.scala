@@ -1,34 +1,125 @@
 package scoverage
 
 import org.scalatest.FlatSpec
+import scala.reflect.internal.util.{NoFile, BatchSourceFile, SourceFile}
 
 class CoverageFilterTest extends FlatSpec {
 
-  "isIncluded" should "return true for empty excludes" in {
-    assert(new CoverageFilter(Nil).isIncluded("x"))
+  "isClassIncluded" should "return true for empty excludes" in {
+    assert(new CoverageFilter(Nil).isClassIncluded("x"))
   }
 
-  "isIncluded" should "not crash for empty input" in {
-    assert(new CoverageFilter(Nil).isIncluded(""))
+  "isClassIncluded" should "not crash for empty input" in {
+    assert(new CoverageFilter(Nil).isClassIncluded(""))
   }
 
-  "isIncluded" should "exclude scoverage -> scoverage" in {
-    assert(!new CoverageFilter(Seq("scoverage")).isIncluded("scoverage"))
+  "isClassIncluded" should "exclude scoverage -> scoverage" in {
+    assert(!new CoverageFilter(Seq("scoverage")).isClassIncluded("scoverage"))
   }
 
-  "isIncluded" should "include scoverage -> scoverageeee" in {
-    assert(new CoverageFilter(Seq("scoverage")).isIncluded("scoverageeee"))
+  "isClassIncluded" should "include scoverage -> scoverageeee" in {
+    assert(new CoverageFilter(Seq("scoverage")).isClassIncluded("scoverageeee"))
   }
 
-  "isIncluded" should "exclude scoverage* -> scoverageeee" in {
-    assert(!new CoverageFilter(Seq("scoverage*")).isIncluded("scoverageeee"))
+  "isClassIncluded" should "exclude scoverage* -> scoverageeee" in {
+    assert(!new CoverageFilter(Seq("scoverage*")).isClassIncluded("scoverageeee"))
   }
 
-  "isIncluded" should "include eee -> scoverageeee" in {
-    assert(new CoverageFilter(Seq("eee")).isIncluded("scoverageeee"))
+  "isClassIncluded" should "include eee -> scoverageeee" in {
+    assert(new CoverageFilter(Seq("eee")).isClassIncluded("scoverageeee"))
   }
 
-  "isIncluded" should "exclude .*eee -> scoverageeee" in {
-    assert(!new CoverageFilter(Seq(".*eee")).isIncluded("scoverageeee"))
+  "isClassIncluded" should "exclude .*eee -> scoverageeee" in {
+    assert(!new CoverageFilter(Seq(".*eee")).isClassIncluded("scoverageeee"))
+  }
+
+  "getExcludedLineNumbers" should "exclude no lines if no magic comments are found" in {
+    val file =
+      """1
+        |2
+        |3
+        |4
+        |5
+        |6
+        |7
+        |8
+      """.stripMargin
+
+    val numbers = new CoverageFilter(Nil).getExcludedLineNumbers(mockSourceFile(file))
+    numbers === List.empty
+  }
+
+  "getExcludedLineNumbers" should "exclude lines between magic comments" in {
+    val file =
+      """1
+        |2
+        |3
+        |  // $COVERAGE-OFF$
+        |5
+        |6
+        |7
+        |8
+        |    // $COVERAGE-ON$
+        |10
+        |11
+        |    // $COVERAGE-OFF$
+        |13
+        |    // $COVERAGE-ON$
+        |15
+        |16
+      """.stripMargin
+
+    val numbers = new CoverageFilter(Nil).getExcludedLineNumbers(mockSourceFile(file))
+    numbers === List(Range(4,9), Range(12,14))
+  }
+
+  "getExcludedLineNumbers" should "exclude all lines after an upaired magic comment" in {
+    val file =
+      """1
+        |2
+        |3
+        |  // $COVERAGE-OFF$
+        |5
+        |6
+        |7
+        |8
+        |    // $COVERAGE-ON$
+        |10
+        |11
+        |    // $COVERAGE-OFF$
+        |13
+        |14
+        |15
+      """.stripMargin
+
+    val numbers = new CoverageFilter(Nil).getExcludedLineNumbers(mockSourceFile(file))
+    numbers === List(Range(4,9), Range(12,16))
+  }
+
+  "getExcludedLineNumbers" should "allow text comments on the same line as the markers" in {
+    val file =
+      """1
+        |2
+        |3
+        |  // $COVERAGE-OFF$ because the next lines are boring
+        |5
+        |6
+        |7
+        |8
+        |    // $COVERAGE-ON$ resume coverage here
+        |10
+        |11
+        |    // $COVERAGE-OFF$ but ignore this bit
+        |13
+        |14
+        |15
+      """.stripMargin
+
+    val numbers = new CoverageFilter(Nil).getExcludedLineNumbers(mockSourceFile(file))
+    numbers === List(Range(4,9), Range(12,16))
+  }
+
+  private def mockSourceFile(contents: String): SourceFile = {
+    new BatchSourceFile(NoFile, contents.toCharArray)
   }
 }
