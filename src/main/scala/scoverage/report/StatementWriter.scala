@@ -17,10 +17,19 @@ class StatementWriter(mfile: MeasuredFile) {
     }
 
     <table cellspacing="0" cellpadding="0" class="table statementlist">
+      <tr>
+        <th>Line Number</th>
+        <th>Statement Id</th>
+        <th>Symbol</th>
+        <th>Code</th>
+      </tr>
       {mfile.statements.toSeq.sortBy(_.line).map(stmt => {
       <tr>
         <td>
-          {stmt.line.toString}
+          {stmt.line}
+        </td>
+        <td>
+          {stmt.id}
         </td>
         <td>
           {stmt.symbolName}
