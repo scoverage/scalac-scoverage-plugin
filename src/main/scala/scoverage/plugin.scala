@@ -42,8 +42,7 @@ class ScoverageOptions {
   var dataDir: String = _
 }
 
-class ScoverageComponent(
-    val global: Global)
+class ScoverageComponent(val global: Global)
   extends PluginComponent
   with TypingTransformers
   with Transform
@@ -99,7 +98,7 @@ class ScoverageComponent(
     /**
      * The 'start' of the position, if it is available, else -1
      * We cannot use 'isDefined' to test whether pos.start will work, as some
-     * classes (e.g. [[scala.reflect.internal.util.OffsetPosition]] have
+     * classes (e.g. scala.reflect.internal.util.OffsetPosition have
      * isDefined true, but throw on `start`
      */
     def safeStart(tree: Tree): Int = scala.util.Try(tree.pos.start).getOrElse(-1)
@@ -176,7 +175,7 @@ class ScoverageComponent(
 
     /**
      * Get the configured dir in which the measurement files should be written
-     * (see [[Invoker.invoked()]])
+     * (see Invoker.invoked)
      *
      * This path will be hardcoded into the instrumented class files.
      *
