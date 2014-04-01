@@ -17,6 +17,12 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 
 ### Release History
 
+##### 1st April 2014 - 0.98.0
+* Moved to org.scoverage groupId
+* Measurement files now thread safe
+* Add statement ID to report, to aid debugging (Richard Bradley)
+* Add support for coverage exclusion comments (Richard Bradley)
+
 ##### 8 March 2014 - 0.95.9
 * SBT plugin import issue fixed
 * Fixed windows line ending issues
