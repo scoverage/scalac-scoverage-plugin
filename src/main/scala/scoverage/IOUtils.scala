@@ -2,6 +2,9 @@ package scoverage
 
 import java.io._
 import scala.xml.{XML, Utility, Node}
+import scala.collection.Set
+import scala.collection.mutable
+import scala.io.Source
 
 /** @author Stephen Samuel */
 object IOUtils {
@@ -28,14 +31,18 @@ object IOUtils {
   })
 
   // loads all the invoked statement ids from the given files
-  def invoked(files: Seq[File]): Seq[Int] = {
-    files.flatMap {
-      file =>
-      val reader = new BufferedReader(new FileReader(file))
-      val line = reader.readLine()
+  def invoked(files: Seq[File]): Set[Int] = {
+    val acc = mutable.Set[Int]()
+    files.foreach { file =>
+      val reader = Source.fromFile(file)
+      for (line <- reader.getLines()) {
+        if (!line.isEmpty) {
+          acc += line.toInt
+        }
+      }
       reader.close()
-      line.split(";").filterNot(_.isEmpty).map(_.toInt)
     }
+    acc
   }
 
   /**
