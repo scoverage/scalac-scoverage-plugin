@@ -1,7 +1,7 @@
 package scoverage
 
-import scala.collection.mutable.ListBuffer
 import java.io.File
+import scala.collection.mutable
 
 /**
  * @author Stephen Samuel */
@@ -13,8 +13,9 @@ case class Coverage()
   with PackageBuilders
   with FileBuilders {
 
-  val statements = new ListBuffer[MeasuredStatement]
-  def add(stmt: MeasuredStatement): Unit = statements.append(stmt)
+  private val statementsById = mutable.Map[Int, MeasuredStatement]()
+  override def statements = statementsById.values
+  def add(stmt: MeasuredStatement): Unit = statementsById.put(stmt.id, stmt)
 
   def avgClassesPerPackage = classCount / packageCount.toDouble
   def avgClassesPerPackageFormatted: String = "%.2f".format(avgClassesPerPackage)
@@ -29,11 +30,11 @@ case class Coverage()
   def risks(limit: Int) = classes.toSeq.sortBy(_.statementCount).reverse.sortBy(_.statementCoverage).take(limit)
 
   def apply(ids: Iterable[Int]): Unit = ids foreach invoked
-  def invoked(id: Int): Unit = statements.find(_.id == id).foreach(_.invoked())
+  def invoked(id: Int): Unit = statementsById.get(id).foreach(_.invoked())
 }
 
 trait MethodBuilders {
-  val statements: Iterable[MeasuredStatement]
+  def statements: Iterable[MeasuredStatement]
   def methods: Seq[MeasuredMethod] = {
     statements.groupBy(stmt => stmt.location._package + "/" + stmt.location._class + "/" + stmt.location.method)
       .map(arg => MeasuredMethod(arg._1, arg._2))
@@ -43,7 +44,7 @@ trait MethodBuilders {
 }
 
 trait PackageBuilders {
-  val statements: Iterable[MeasuredStatement]
+  def statements: Iterable[MeasuredStatement]
   def packageCount = packages.size
   def packages: Seq[MeasuredPackage] = {
     statements.groupBy(_.location._package).map(arg => MeasuredPackage(arg._1, arg._2)).toSeq.sortBy(_.name)
@@ -51,13 +52,13 @@ trait PackageBuilders {
 }
 
 trait ClassBuilders {
-  val statements: Iterable[MeasuredStatement]
+  def statements: Iterable[MeasuredStatement]
   def classes = statements.groupBy(_.location._class).map(arg => MeasuredClass(arg._1, arg._2))
   def classCount: Int = classes.size
 }
 
 trait FileBuilders {
-  val statements: Iterable[MeasuredStatement]
+  def statements: Iterable[MeasuredStatement]
   def files: Iterable[MeasuredFile] = statements.groupBy(_.source).map(arg => MeasuredFile(arg._1, arg._2))
   def fileCount: Int = files.size
 }
