@@ -399,7 +399,7 @@ class ScoverageComponent(val global: Global)
           */
         case d: DefDef =>
           updateLocation(d.symbol)
-          super.transform(tree)
+          treeCopy.DefDef(d, d.mods, d.name, d.tparams, d.vparamss, d.tpt, process(d.rhs))
 
         case EmptyTree =>
           super.transform(tree)

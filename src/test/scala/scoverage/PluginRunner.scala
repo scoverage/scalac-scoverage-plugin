@@ -15,16 +15,17 @@ trait PluginSupport {
 
   val reporter = new scala.tools.nsc.reporters.ConsoleReporter(settings)
 
+  val compiler = new ScoverageAwareCompiler(settings, reporter)
+
   def writeCodeSnippetToTempFile(code: String): File = {
     val file = File.createTempFile("scoverage_snippet", ".scala")
     org.apache.commons.io.FileUtils.write(file, code)
     file
   }
 
-  def compileCodeSnippet(code: String): SimpleCompiler = compileSourceFiles(writeCodeSnippetToTempFile(code))
+  def compileCodeSnippet(code: String): ScoverageAwareCompiler = compileSourceFiles(writeCodeSnippetToTempFile(code))
 
-  def compileSourceFiles(files: File*): SimpleCompiler = {
-    val compiler = new SimpleCompiler(settings, reporter)
+  def compileSourceFiles(files: File*): ScoverageAwareCompiler = {
     val command = new scala.tools.nsc.CompilerCommand(files.map(_.getAbsolutePath).toList, settings)
     new compiler.Run().compile(command.files)
     compiler
@@ -51,7 +52,7 @@ trait PluginSupport {
 
 }
 
-class SimpleCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools.nsc.reporters.Reporter)
+class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools.nsc.reporters.Reporter)
   extends scala.tools.nsc.Global(settings, reporter) {
   val scoverageComponent = new ScoverageComponent(this)
   scoverageComponent.setOptions(new ScoverageOptions())
