@@ -3,7 +3,6 @@ package scoverage
 import scala.tools.nsc.plugins.{PluginComponent, Plugin}
 import scala.tools.nsc.Global
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
-import scala.tools.nsc.ast.TreeDSL
 import scala.reflect.internal.util.SourceFile
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -45,16 +44,17 @@ class ScoverageOptions {
 class ScoverageComponent(val global: Global)
   extends PluginComponent
   with TypingTransformers
-  with Transform
-  with TreeDSL {
+  with Transform {
 
   import global._
 
   val statementIds = new AtomicInteger(0)
   val coverage = new Coverage
+
   override val phaseName: String = "scoverage"
   override val runsAfter: List[String] = List("typer")
   override val runsBefore = List[String]("patmat")
+
   /**
    * Our options are not provided at construction time, but shortly after,
    * so they start as None.
@@ -87,6 +87,7 @@ class ScoverageComponent(val global: Global)
     }
   }
 
+  def createTestTransformer(): CoverageTransformer = new CoverageTransformer(NoCompilationUnit)
   protected def newTransformer(unit: CompilationUnit): CoverageTransformer = new CoverageTransformer(unit)
 
   class CoverageTransformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
