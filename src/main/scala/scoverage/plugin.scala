@@ -336,6 +336,11 @@ class ScoverageComponent(val global: Global)
           else
             c
 
+        // skip macros
+        case d: DefDef if d.symbol.annotations.size > 0
+          && d.symbol.annotations.head.atp.typeSymbol.nameString == "macroImpl" =>
+          tree
+
         // todo do we really want to ignore?
         case d: DefDef if d.symbol.isPrimaryConstructor => tree
         // todo definitely want to instrument user level constructors
