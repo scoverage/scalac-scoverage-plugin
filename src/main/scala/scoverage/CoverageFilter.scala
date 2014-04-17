@@ -9,7 +9,19 @@ import scala.reflect.internal.util.Position
  *
  * @author Stephen Samuel
  */
-class CoverageFilter(excludedPackages: Seq[String]) {
+trait CoverageFilter {
+  def isClassIncluded(className: String): Boolean
+  def isLineIncluded(position: Position): Boolean
+  def getExcludedLineNumbers(sourceFile: SourceFile): List[Range]
+}
+
+object AllCoverageFilter extends CoverageFilter {
+  override def getExcludedLineNumbers(sourceFile: SourceFile): List[Range] = Nil
+  override def isLineIncluded(position: Position): Boolean = true
+  override def isClassIncluded(className: String): Boolean = true
+}
+
+class RegexCoverageFilter(excludedPackages: Seq[String]) extends CoverageFilter {
 
   val excludedClassNamePatterns = excludedPackages.map(_.r.pattern)
   /**
@@ -55,7 +67,7 @@ class CoverageFilter(excludedPackages: Seq[String]) {
   def getExcludedLineNumbers(sourceFile: SourceFile): List[Range] = {
     linesExcludedByScoverageCommentsCache.get(sourceFile) match {
       case Some(lineNumbers) => lineNumbers
-      case None => {
+      case None =>
         val lineNumbers = scoverageExclusionCommentsRegex.findAllIn(sourceFile.content).matchData.map { m =>
           // Asking a SourceFile for the line number of the char after
           // the end of the file gives an exception
@@ -70,7 +82,6 @@ class CoverageFilter(excludedPackages: Seq[String]) {
         }.toList
         linesExcludedByScoverageCommentsCache.put(sourceFile, lineNumbers)
         lineNumbers
-      }
     }
   }
 }

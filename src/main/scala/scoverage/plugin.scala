@@ -5,6 +5,7 @@ import scala.tools.nsc.Global
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
 import scala.reflect.internal.util.SourceFile
 import java.util.concurrent.atomic.AtomicInteger
+import org.apache.commons.io.FileUtils
 
 /** @author Stephen Samuel */
 class ScoveragePlugin(val global: Global) extends Plugin {
@@ -38,7 +39,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
 
 class ScoverageOptions {
   var excludedPackages: Seq[String] = Nil
-  var dataDir: String = _
+  var dataDir: String = FileUtils.getTempDirectoryPath
 }
 
 class ScoverageComponent(val global: Global)
@@ -62,7 +63,7 @@ class ScoverageComponent(val global: Global)
    * the options.
    */
   private var _options: Option[ScoverageOptions] = None
-  private var coverageFilter: Option[CoverageFilter] = None
+  private var coverageFilter: CoverageFilter = AllCoverageFilter
 
   private def options: ScoverageOptions = {
     require(_options.nonEmpty, "You must first call \"setOptions\"")
@@ -71,7 +72,7 @@ class ScoverageComponent(val global: Global)
 
   def setOptions(options: ScoverageOptions): Unit = {
     _options = Some(options)
-    coverageFilter = Some(new CoverageFilter(options.excludedPackages))
+    coverageFilter = new RegexCoverageFilter(options.excludedPackages)
   }
 
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
@@ -189,11 +190,11 @@ class ScoverageComponent(val global: Global)
     }
 
     def isClassIncluded(symbol: Symbol): Boolean = {
-      coverageFilter.get.isClassIncluded(symbol.fullNameString)
+      coverageFilter.isClassIncluded(symbol.fullNameString)
     }
 
     def isStatementIncluded(pos: Position): Boolean = {
-      coverageFilter.get.isLineIncluded(pos)
+      coverageFilter.isLineIncluded(pos)
     }
 
     def className(s: Symbol): String = {

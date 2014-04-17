@@ -3,34 +3,34 @@ package scoverage
 import org.scalatest.FlatSpec
 import scala.reflect.internal.util.{NoFile, BatchSourceFile, SourceFile}
 
-class CoverageFilterTest extends FlatSpec {
+class RegexCoverageFilterTest extends FlatSpec {
 
   "isClassIncluded" should "return true for empty excludes" in {
-    assert(new CoverageFilter(Nil).isClassIncluded("x"))
+    assert(new RegexCoverageFilter(Nil).isClassIncluded("x"))
   }
 
   "isClassIncluded" should "not crash for empty input" in {
-    assert(new CoverageFilter(Nil).isClassIncluded(""))
+    assert(new RegexCoverageFilter(Nil).isClassIncluded(""))
   }
 
   "isClassIncluded" should "exclude scoverage -> scoverage" in {
-    assert(!new CoverageFilter(Seq("scoverage")).isClassIncluded("scoverage"))
+    assert(!new RegexCoverageFilter(Seq("scoverage")).isClassIncluded("scoverage"))
   }
 
   "isClassIncluded" should "include scoverage -> scoverageeee" in {
-    assert(new CoverageFilter(Seq("scoverage")).isClassIncluded("scoverageeee"))
+    assert(new RegexCoverageFilter(Seq("scoverage")).isClassIncluded("scoverageeee"))
   }
 
   "isClassIncluded" should "exclude scoverage* -> scoverageeee" in {
-    assert(!new CoverageFilter(Seq("scoverage*")).isClassIncluded("scoverageeee"))
+    assert(!new RegexCoverageFilter(Seq("scoverage*")).isClassIncluded("scoverageeee"))
   }
 
   "isClassIncluded" should "include eee -> scoverageeee" in {
-    assert(new CoverageFilter(Seq("eee")).isClassIncluded("scoverageeee"))
+    assert(new RegexCoverageFilter(Seq("eee")).isClassIncluded("scoverageeee"))
   }
 
   "isClassIncluded" should "exclude .*eee -> scoverageeee" in {
-    assert(!new CoverageFilter(Seq(".*eee")).isClassIncluded("scoverageeee"))
+    assert(!new RegexCoverageFilter(Seq(".*eee")).isClassIncluded("scoverageeee"))
   }
 
   "getExcludedLineNumbers" should "exclude no lines if no magic comments are found" in {
@@ -45,7 +45,7 @@ class CoverageFilterTest extends FlatSpec {
         |8
       """.stripMargin
 
-    val numbers = new CoverageFilter(Nil).getExcludedLineNumbers(mockSourceFile(file))
+    val numbers = new RegexCoverageFilter(Nil).getExcludedLineNumbers(mockSourceFile(file))
     numbers === List.empty
   }
 
@@ -69,7 +69,7 @@ class CoverageFilterTest extends FlatSpec {
         |16
       """.stripMargin
 
-    val numbers = new CoverageFilter(Nil).getExcludedLineNumbers(mockSourceFile(file))
+    val numbers = new RegexCoverageFilter(Nil).getExcludedLineNumbers(mockSourceFile(file))
     numbers === List(Range(4,9), Range(12,14))
   }
 
@@ -92,7 +92,7 @@ class CoverageFilterTest extends FlatSpec {
         |15
       """.stripMargin
 
-    val numbers = new CoverageFilter(Nil).getExcludedLineNumbers(mockSourceFile(file))
+    val numbers = new RegexCoverageFilter(Nil).getExcludedLineNumbers(mockSourceFile(file))
     numbers === List(Range(4,9), Range(12,16))
   }
 
@@ -115,7 +115,7 @@ class CoverageFilterTest extends FlatSpec {
         |15
       """.stripMargin
 
-    val numbers = new CoverageFilter(Nil).getExcludedLineNumbers(mockSourceFile(file))
+    val numbers = new RegexCoverageFilter(Nil).getExcludedLineNumbers(mockSourceFile(file))
     numbers === List(Range(4,9), Range(12,16))
   }
 
