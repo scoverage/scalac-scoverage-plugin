@@ -32,7 +32,7 @@ trait PluginSupport {
   }
 
   def getScalaJars: List[File] = {
-    val scalaJars = List("scala-compiler.jar", "scala-library.jar")
+    val scalaJars = List("scala-compiler.jar", "scala-library.jar", "scala-reflect.jar")
     scalaJars.map(findScalaJar)
   }
 
