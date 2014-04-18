@@ -400,6 +400,7 @@ class ScoverageInstrumentationComponent(val global: Global)
         /** eg
           * override <synthetic> def hashCode(): Int
           * <synthetic> def copy$default$1: com.sksamuel.scoverage.samples.MarketOrderRequest
+          * <synthetic> def <init>$default$3: Option[org.joda.time.LocalDate] @scala.annotation.unchecked.uncheckedVariance = scala.None
           */
         case d: DefDef if d.symbol.isSynthetic => tree
 

@@ -66,30 +66,7 @@ class PluginASTSupportTest
     assert(!reporter.hasErrors)
   }
 
-  test("scoverage supports joda time #23") {
-    addToClassPath("org.joda", "joda-convert", "1.3.1")
-    addToClassPath("joda-time", "joda-time", "2.3")
-    compileCodeSnippet( """class Test {
-                          |
-                          |  import org.joda.time.LocalDate
-                          |  import org.joda.time.DateTime
-                          |
-                          |  case class Member(id: Long,
-                          |                    name: String,
-                          |                    activated: Boolean,
-                          |                    luckyNumber: Option[Long] = None,
-                          |                    birthday: Option[LocalDate] = None,
-                          |                    createdAt: DateTime,
-                          |                    updatedAt: DateTime)
-                          |} """.stripMargin)
-
-    assert(!reporter.hasErrors)
-
-  }
-
   test("scoverage supports skinny #23") {
-    addToClassPath("org.joda", "joda-convert", "1.3.1")
-    addToClassPath("joda-time", "joda-time", "2.3")
     addToClassPath("org.scalikejdbc", "scalikejdbc_2.10", "1.7.5")
     addToClassPath("org.scalikejdbc", "scalikejdbc-interpolation_2.10", "1.7.5")
     addToClassPath("org.scalikejdbc", "scalikejdbc-interpolation-core_2.10", "1.7.5")
@@ -99,25 +76,8 @@ class PluginASTSupportTest
     addToClassPath("org.skinny-framework", "skinny-framework_2.10", "1.0.8")
     addToClassPath("org.skinny-framework", "skinny-orm_2.10", "1.0.8")
     addToClassPath("org.slf4j", "slf4j-api", "1.7.7")
-    compileCodeSnippet( """case class Member(id: Long, name: String, birthday: Option[org.joda.time.LocalDate] = None)
-                          |
-                          |object Member extends skinny.orm.SkinnyCRUDMapper[Member] with skinny.orm.feature.TimestampsFeature[Member] {
-                          |
-                          |  import scalikejdbc._, SQLInterpolation._
-                          |
-                          |  override lazy val tableName = "members"
-                          |  override lazy val defaultAlias = createAlias("m")
-                          |
-                          |  override def extract(rs: scalikejdbc.WrappedResultSet, rn: ResultName[Member]): Member = new Member(
-                          |    id = rs.get(rn.id),
-                          |    name = rs.get(rn.name),
-                          |    birthday = rs.get(rn.birthday)
-                          |  )
-                          |}
-                          | """.stripMargin)
-
+    compileSourceResources(getClass.getResource("/scoverage/skinny/Member.scala"))
     assert(!reporter.hasErrors)
-
   }
 }
 

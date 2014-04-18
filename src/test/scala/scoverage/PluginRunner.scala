@@ -1,9 +1,10 @@
 package scoverage
 
 import java.io.{FileNotFoundException, File}
+import scala.tools.nsc.transform.{TypingTransformers, Transform}
+import java.net.URL
 import scala.tools.nsc.plugins.PluginComponent
 import scala.tools.nsc.Global
-import scala.tools.nsc.transform.{TypingTransformers, Transform}
 import scala.collection.mutable.ListBuffer
 
 /** @author Stephen Samuel */
@@ -32,7 +33,9 @@ trait PluginSupport {
   }
 
   def compileCodeSnippet(code: String): ScoverageAwareCompiler = compileSourceFiles(writeCodeSnippetToTempFile(code))
-
+  def compileSourceResources(urls: URL*): ScoverageAwareCompiler = {
+    compileSourceFiles(urls.map(_.getFile).map(new File(_)): _*)
+  }
   def compileSourceFiles(files: File*): ScoverageAwareCompiler = {
     val command = new scala.tools.nsc.CompilerCommand(files.map(_.getAbsolutePath).toList, settings)
     new compiler.Run().compile(command.files)
