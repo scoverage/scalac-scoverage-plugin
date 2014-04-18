@@ -195,7 +195,7 @@ class ScoverageInstrumentationComponent(val global: Global)
 
             val apply = invokeCall(id)
             val block = Block(List(apply), tree)
-            localTyper.typed(atPos(tree.pos)(block))
+            localTyper.typed(atPos(tree.duplicate.pos)(block))
           }
       }
     }
@@ -326,31 +326,33 @@ class ScoverageInstrumentationComponent(val global: Global)
         // special support to handle partial functions
         case c: ClassDef if c.symbol.isAnonymousFunction &&
           c.symbol.enclClass.superClass.nameString.contains("AbstractPartialFunction") =>
-          if (isClassIncluded(c.symbol))
+          if (isClassIncluded(c.symbol)) {
             transformPartial(c)
-          else
+          } else {
             c
+          }
 
         // scalac generated classes, we just instrument the enclosed methods/statments
         // the location would stay as the source class
         case c: ClassDef if c.symbol.isAnonymousClass || c.symbol.isAnonymousFunction =>
           if (isClassIncluded(c.symbol))
             super.transform(tree)
-          else
+          else {
             c
+          }
 
         case c: ClassDef =>
           if (isClassIncluded(c.symbol)) {
             updateLocation(c.symbol)
             super.transform(tree)
-          }
-          else
+          } else {
             c
+          }
 
         // skip macros
         case d: DefDef if d.symbol != null && d.symbol.annotations.size > 0
           && d.symbol.annotations.head.atp.typeSymbol.nameString == "macroImpl" =>
-          tree
+          tree.duplicate
 
         // todo do we really want to ignore?
         case d: DefDef if d.symbol.isPrimaryConstructor => tree
@@ -372,7 +374,6 @@ class ScoverageInstrumentationComponent(val global: Global)
          * Lazy stable DefDefs are generated as the impl for lazy vals.
          */
         case d: DefDef if d.symbol.isStable && d.symbol.isGetter && d.symbol.isLazy =>
-
           updateLocation(d.symbol)
           treeCopy.DefDef(d, d.mods, d.name, d.tparams, d.vparamss, d.tpt, process(d.rhs))
 
@@ -497,13 +498,13 @@ class ScoverageInstrumentationComponent(val global: Global)
           * foo.Bar // represented as Select(Ident(<foo>), <Bar>)
           * Foo#Bar // represented as SelectFromTypeTree(Ident(<Foo>), <Bar>)
           */
-        case s: Select if location == null => s
+        case s: Select if location == null => tree
 
         /**
          * I think lazy selects are the LHS of a lazy assign.
          * todo confirm we can ignore
          */
-        case s: Select if s.symbol.isLazy => s
+        case s: Select if s.symbol.isLazy => tree
 
         case s: Select => instrument(treeCopy.Select(s, traverseApplication(s.qualifier), s.name))
 
@@ -533,7 +534,7 @@ class ScoverageInstrumentationComponent(val global: Global)
         /**
          * We can ignore lazy val defs as they are implemented by a generated defdef
          */
-        case v: ValDef if v.symbol.isLazy => v
+        case v: ValDef if v.symbol.isLazy => tree
 
         /**
          * <synthetic> val default: A1 => B1 =

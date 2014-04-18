@@ -16,6 +16,7 @@ trait PluginSupport {
   val settings = new scala.tools.nsc.Settings
   val classPath = getScalaJars.map(_.getAbsolutePath) :+ sbtCompileDir.getAbsolutePath
   settings.Xprint.value = List("all")
+  settings.Yrangepos.value = true
   settings.classpath.value = classPath.mkString(":")
 
   val reporter = new scala.tools.nsc.reporters.ConsoleReporter(settings)
