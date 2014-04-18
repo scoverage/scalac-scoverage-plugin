@@ -1,6 +1,8 @@
 package scoverage
 
 import java.io.{FileNotFoundException, File}
+import scala.tools.nsc.plugins.PluginComponent
+import scala.tools.nsc.{Phase, Global}
 
 /** @author Stephen Samuel */
 trait PluginSupport {
@@ -54,15 +56,29 @@ trait PluginSupport {
 
 class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools.nsc.reporters.Reporter)
   extends scala.tools.nsc.Global(settings, reporter) {
-  val scoverageComponent = new ScoverageComponent(this)
-  scoverageComponent.setOptions(new ScoverageOptions())
+
+  val preComponent = new ScoveragePreComponent(this)
+  val instrumentationComponent = new ScoverageInstrumentationComponent(this)
+  val testStore = new ScoverageTestStoreComponent(this)
+  instrumentationComponent.setOptions(new ScoverageOptions())
+
+  class ScoverageTestStoreComponent(val global: Global) extends PluginComponent {
+    override def newPhase(prev: Phase): Phase = new Phase {
+
+    }
+    override val runsAfter: List[String] = List("dce")
+    override val phaseName: String = "scoverage-teststore"
+    override val global: Global = _
+  }
+
   override def computeInternalPhases() {
     val phs = List(
       syntaxAnalyzer -> "parse source into ASTs, perform simple desugaring",
+      preComponent -> "scoverage preComponent",
       analyzer.namerFactory -> "resolve names, attach symbols to named trees",
       analyzer.packageObjects -> "load package objects",
       analyzer.typerFactory -> "the meat and potatoes: type the trees",
-      scoverageComponent -> "scoverage",
+      instrumentationComponent -> "scoverage instrumentationComponent",
       patmat -> "translate match expressions",
       superAccessors -> "add super accessors in traits and nested classes",
       extensionMethods -> "add extension methods for inline classes",
@@ -84,6 +100,7 @@ class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala
       inlineExceptionHandlers -> "optimization: inline exception handlers",
       closureElimination -> "optimization: eliminate uncalled closures",
       deadCode -> "optimization: eliminate dead code",
+      teststore -> "scoverage teststore",
       terminal -> "The last phase in the compiler chain"
     )
     phs foreach (addToPhasesSet _).tupled

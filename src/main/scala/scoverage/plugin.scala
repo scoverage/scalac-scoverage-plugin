@@ -6,14 +6,16 @@ import scala.tools.nsc.transform.{Transform, TypingTransformers}
 import scala.reflect.internal.util.SourceFile
 import java.util.concurrent.atomic.AtomicInteger
 import org.apache.commons.io.FileUtils
+import scala.reflect.internal.ModifierFlags
 
 /** @author Stephen Samuel */
 class ScoveragePlugin(val global: Global) extends Plugin {
 
   override val name: String = "scoverage"
   override val description: String = "scoverage code coverage compiler plugin"
-  val component = new ScoverageComponent(global)
-  override val components: List[PluginComponent] = List(component)
+  val preComponent = new ScoveragePreComponent(global)
+  val instrumentationComponent = new ScoverageInstrumentationComponent(global)
+  override val components: List[PluginComponent] = List(preComponent, instrumentationComponent)
 
   override def processOptions(opts: List[String], error: String => Unit) {
     val options = new ScoverageOptions
@@ -26,7 +28,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
         error("Unknown option: " + opt)
       }
     }
-    component.setOptions(options)
+    instrumentationComponent.setOptions(options)
   }
 
   override val optionsHelp: Option[String] = Some(Seq(
@@ -42,7 +44,36 @@ class ScoverageOptions {
   var dataDir: String = FileUtils.getTempDirectoryPath
 }
 
-class ScoverageComponent(val global: Global)
+class ScoveragePreComponent(val global: Global) extends PluginComponent with TypingTransformers with Transform {
+
+  import global._
+
+  override val phaseName: String = "scoverage-pre"
+  override val runsAfter: List[String] = List("parser")
+  override val runsBefore = List[String]("namer")
+
+  override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
+    override def run(): Unit = {
+      println("[scoverage]: Begin pre-modification phase")
+      super.run()
+      println("[scoverage]: Instrumentation pre-modificiation complete")
+    }
+  }
+
+  protected def newTransformer(unit: CompilationUnit): Transformer = new Transformer(unit)
+  class Transformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
+    override def transform(tree: Tree) = {
+      tree match {
+        case v: ValDef if v.mods.isFinal =>
+          treeCopy.ValDef(v, v.mods.&~(ModifierFlags.FINAL), v.name, v.tpt, v.rhs)
+        case _ =>
+          super.transform(tree)
+      }
+    }
+  }
+}
+
+class ScoverageInstrumentationComponent(val global: Global)
   extends PluginComponent
   with TypingTransformers
   with Transform {
@@ -52,7 +83,7 @@ class ScoverageComponent(val global: Global)
   val statementIds = new AtomicInteger(0)
   val coverage = new Coverage
 
-  override val phaseName: String = "scoverage"
+  override val phaseName: String = "scoverage-instrumentation"
   override val runsAfter: List[String] = List("typer")
   override val runsBefore = List[String]("patmat")
 
@@ -88,10 +119,9 @@ class ScoverageComponent(val global: Global)
     }
   }
 
-  def createTestTransformer(): CoverageTransformer = new CoverageTransformer(NoCompilationUnit)
-  protected def newTransformer(unit: CompilationUnit): CoverageTransformer = new CoverageTransformer(unit)
+  protected def newTransformer(unit: CompilationUnit): Transformer = new Transformer(unit)
 
-  class CoverageTransformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
+  class Transformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
 
     import global._
 
@@ -533,6 +563,11 @@ class ScoverageComponent(val global: Global)
          * Vals declared in case constructors
          */
         case v: ValDef if v.symbol.isParamAccessor && v.symbol.isCaseAccessor => tree
+
+        // we need to remove the final mod so that we keep the code in order to check its invoked
+        case v: ValDef if v.mods.isFinal =>
+          updateLocation(v.symbol)
+          treeCopy.ValDef(v, v.mods.&~(ModifierFlags.FINAL), v.name, v.tpt, process(v.rhs))
 
         /**
          * This AST node corresponds to any of the following Scala code:

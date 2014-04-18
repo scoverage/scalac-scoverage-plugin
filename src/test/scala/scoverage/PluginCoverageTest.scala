@@ -19,7 +19,17 @@ class PluginCoverageTest
                           |  }
                           |} """.stripMargin)
     assert(!reporter.hasErrors)
-    // we should have 2 statements - executing the val and executing string sub in the def
-    assert(2 === compiler.scoverageComponent.coverage.statements.size)
+    // we should have 2 statements - initialising the val and executing string sub in the def
+    assert(2 === compiler.instrumentationComponent.coverage.statements.size)
+  }
+
+  test("scoverage should instrument private final vals") {
+    compileCodeSnippet( """ object FinalVals {
+                          |  private final val name = "sammy"
+                          |  println(name)
+                          |} """.stripMargin)
+    assert(!reporter.hasErrors)
+    // we should have 3 statements - initialising the val, entering the method, and executing the parameter
+    assert(3 === compiler.instrumentationComponent.coverage.statements.size)
   }
 }
