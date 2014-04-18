@@ -2,15 +2,15 @@ name := "scalac-scoverage-plugin"
 
 organization := "org.scoverage"
 
-version := "0.98.1"
+version := "0.98.2"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
 
 libraryDependencies ++= Seq(
-  "commons-io"          % "commons-io"        % "2.4",
-  "org.scala-lang"      % "scala-compiler"    % "2.10.3"      % "provided",
-  "org.scalatest"       %% "scalatest"        % "2.1.0"       % "test",
-  "org.mockito"         % "mockito-all"       % "1.9.5"       % "test"
+  "commons-io"          %     "commons-io"        % "2.4",
+  "org.scala-lang"      %     "scala-compiler"    % "2.10.3"      % "provided",
+  "org.scalatest"       %%    "scalatest"         % "2.1.0"       % "test",
+  "org.mockito"         %     "mockito-all"       % "1.9.5"       % "test"
 )
 
 publishMavenStyle := true

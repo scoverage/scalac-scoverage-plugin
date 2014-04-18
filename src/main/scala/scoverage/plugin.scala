@@ -5,8 +5,8 @@ import scala.tools.nsc.Global
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
 import scala.reflect.internal.util.SourceFile
 import java.util.concurrent.atomic.AtomicInteger
-import org.apache.commons.io.FileUtils
 import scala.reflect.internal.ModifierFlags
+import java.io.File
 
 /** @author Stephen Samuel */
 class ScoveragePlugin(val global: Global) extends Plugin {
@@ -41,7 +41,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
 
 class ScoverageOptions {
   var excludedPackages: Seq[String] = Nil
-  var dataDir: String = FileUtils.getTempDirectoryPath
+  var dataDir: String = File.createTempFile("scoverage_find_temp_dir", ".tmp").getParent
 }
 
 class ScoveragePreComponent(val global: Global) extends PluginComponent with TypingTransformers with Transform {
@@ -54,9 +54,9 @@ class ScoveragePreComponent(val global: Global) extends PluginComponent with Typ
 
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
     override def run(): Unit = {
-      println("[scoverage]: Begin pre-modification phase")
+      println("[scoverage]: Begin pre-instrumentation phase")
       super.run()
-      println("[scoverage]: Instrumentation pre-modificiation complete")
+      println("[scoverage]: Pre-instrumentation complete")
     }
   }
 
@@ -93,16 +93,11 @@ class ScoverageInstrumentationComponent(val global: Global)
    * You must call "setOptions" before running any commands that rely on
    * the options.
    */
-  private var _options: Option[ScoverageOptions] = None
+  private var options: ScoverageOptions = new ScoverageOptions()
   private var coverageFilter: CoverageFilter = AllCoverageFilter
 
-  private def options: ScoverageOptions = {
-    require(_options.nonEmpty, "You must first call \"setOptions\"")
-    _options.get
-  }
-
   def setOptions(options: ScoverageOptions): Unit = {
-    _options = Some(options)
+    this.options = options
     coverageFilter = new RegexCoverageFilter(options.excludedPackages)
   }
 
@@ -113,9 +108,9 @@ class ScoverageInstrumentationComponent(val global: Global)
       super.run()
       println("[scoverage]: Profiling completed: " + coverage.statements.size + " statements profiled")
 
-      IOUtils.serialize(coverage, Env.coverageFile(options.dataDir))
-      println("[scoverage]: Written profile-file to " + Env.coverageFile(options.dataDir))
-      println("[scoverage]: Will write measurement data to " + Env.measurementFile(options.dataDir))
+      IOUtils.serialize(coverage, IOUtils.coverageFile(options.dataDir))
+      println("[scoverage]: Written profile-file to " + IOUtils.coverageFile(options.dataDir))
+      println("[scoverage]: Will write measurement data to " + options.dataDir)
     }
   }
 
@@ -152,7 +147,7 @@ class ScoverageInstrumentationComponent(val global: Global)
             Constant(id)
           ),
           Literal(
-            Constant(getMeasurementFilesPath)
+            Constant(options.dataDir)
           )
         )
       )
@@ -203,20 +198,6 @@ class ScoverageInstrumentationComponent(val global: Global)
             localTyper.typed(atPos(tree.pos)(block))
           }
       }
-    }
-
-    /**
-     * Get the configured dir in which the measurement files should be written
-     * (see Invoker.invoked)
-     *
-     * This path will be hardcoded into the instrumented class files.
-     *
-     * We create the dir now (rather than at client runtime), for efficiency.
-     */
-    def getMeasurementFilesPath: String = {
-      val dir = Env.measurementFile(options.dataDir).getAbsoluteFile
-      dir.mkdirs()
-      dir.getPath
     }
 
     def isClassIncluded(symbol: Symbol): Boolean = {
