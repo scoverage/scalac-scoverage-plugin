@@ -15,7 +15,7 @@ libraryDependencies ++= Seq(
   "org.joda"             %     "joda-convert"      % "1.3.1" % "test",
   "org.skinny-framework" %%    "skinny-framework"  % "1.0.8" % "test",
   "org.skinny-framework" %%    "skinny-orm"        % "1.0.8" % "test",
-  "org.slf4j-api"        %     "slf4j-api"         % "1.7.7" % "test"
+  "org.slf4j"            %     "slf4j-api"         % "1.7.7" % "test"
 )
 
 publishMavenStyle := true

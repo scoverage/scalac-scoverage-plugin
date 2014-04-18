@@ -2,7 +2,7 @@ package scoverage
 
 import org.scalatest.mock.MockitoSugar
 import org.scalatest._
-import org.joda.time.DateTime
+import org.joda.time.LocalDate
 
 /** @author Stephen Samuel */
 class PluginASTSupportTest
@@ -99,9 +99,9 @@ class PluginASTSupportTest
     addToClassPath("org.skinny-framework", "skinny-framework_2.10", "1.0.8")
     addToClassPath("org.skinny-framework", "skinny-orm_2.10", "1.0.8")
     addToClassPath("org.slf4j", "slf4j-api", "1.7.7")
-    compileCodeSnippet( """case class Member(id: Long, name: String)
+    compileCodeSnippet( """case class Member(id: Long, name: String, birthday: Option[org.joda.time.LocalDate] = None)
                           |
-                          |object Member extends skinny.orm.SkinnyCRUDMapper[Member] {
+                          |object Member extends skinny.orm.SkinnyCRUDMapper[Member] with skinny.orm.feature.TimestampsFeature[Member] {
                           |
                           |  import scalikejdbc._, SQLInterpolation._
                           |
@@ -110,7 +110,8 @@ class PluginASTSupportTest
                           |
                           |  override def extract(rs: scalikejdbc.WrappedResultSet, rn: ResultName[Member]): Member = new Member(
                           |    id = rs.get(rn.id),
-                          |    name = rs.get(rn.name)
+                          |    name = rs.get(rn.name),
+                          |    birthday = rs.get(rn.birthday)
                           |  )
                           |}
                           | """.stripMargin)
