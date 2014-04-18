@@ -2,7 +2,9 @@ package scoverage
 
 import java.io.{FileNotFoundException, File}
 import scala.tools.nsc.plugins.PluginComponent
-import scala.tools.nsc.{Phase, Global}
+import scala.tools.nsc.Global
+import scala.tools.nsc.transform.{TypingTransformers, Transform}
+import scala.collection.mutable.ListBuffer
 
 /** @author Stephen Samuel */
 trait PluginSupport {
@@ -52,6 +54,11 @@ trait PluginSupport {
     else throw new FileNotFoundException(s"Could not locate SBT compile directory for plugin files [$dir]")
   }
 
+  def assertNMeasuredStatements(n: Int): Unit = {
+    for ( k <- 1 to n ) {
+      assert(compiler.testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked($k,"))
+    }
+  }
 }
 
 class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools.nsc.reporters.Reporter)
@@ -62,13 +69,22 @@ class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala
   val testStore = new ScoverageTestStoreComponent(this)
   instrumentationComponent.setOptions(new ScoverageOptions())
 
-  class ScoverageTestStoreComponent(val global: Global) extends PluginComponent {
-    override def newPhase(prev: Phase): Phase = new Phase {
+  class ScoverageTestStoreComponent(val global: Global) extends PluginComponent with TypingTransformers with Transform {
 
-    }
-    override val runsAfter: List[String] = List("dce")
+    val sources = new ListBuffer[String]
+
     override val phaseName: String = "scoverage-teststore"
-    override val global: Global = _
+    override val runsAfter: List[String] = List("dce")
+    override val runsBefore = List[String]("terminal")
+
+    override protected def newTransformer(unit: global.CompilationUnit): global.Transformer = new Transformer(unit)
+    class Transformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
+
+      override def transform(tree: global.Tree) = {
+        sources append tree.toString
+        tree
+      }
+    }
   }
 
   override def computeInternalPhases() {
@@ -100,7 +116,7 @@ class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala
       inlineExceptionHandlers -> "optimization: inline exception handlers",
       closureElimination -> "optimization: eliminate uncalled closures",
       deadCode -> "optimization: eliminate dead code",
-      teststore -> "scoverage teststore",
+      testStore -> "scoverage teststore",
       terminal -> "The last phase in the compiler chain"
     )
     phs foreach (addToPhasesSet _).tupled

@@ -20,7 +20,7 @@ class PluginCoverageTest
                           |} """.stripMargin)
     assert(!reporter.hasErrors)
     // we should have 2 statements - initialising the val and executing string sub in the def
-    assert(2 === compiler.instrumentationComponent.coverage.statements.size)
+    assertNMeasuredStatements(2)
   }
 
   test("scoverage should instrument private final vals") {
@@ -29,7 +29,7 @@ class PluginCoverageTest
                           |  println(name)
                           |} """.stripMargin)
     assert(!reporter.hasErrors)
-    // we should have 3 statements - initialising the val, entering the method, and executing the parameter
-    assert(3 === compiler.instrumentationComponent.coverage.statements.size)
+    // we should have 3 statements - initialising the val, executing println, and executing the parameter
+    assertNMeasuredStatements(3)
   }
 }
