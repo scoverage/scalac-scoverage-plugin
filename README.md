@@ -17,12 +17,13 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 
 ### Release History
 
-##### 18th April 2014 - 0.98.1
+##### 18th April 2014 - 0.98.2
 * Macros are now skipped instead of crashing
 * Final vals are corrected measured
 * Test runner added for compiler
 * Pre-compile phase added to run after typer and before namer
 * Default parameters are now handled
+* Improved handling of multiple measurement data
 
 ##### 1st April 2014 - 0.98.0
 * Moved to org.scoverage groupId
