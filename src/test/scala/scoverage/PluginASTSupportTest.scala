@@ -67,6 +67,8 @@ class PluginASTSupportTest
   }
 
   test("scoverage supports skinny #23") {
+    addToClassPath("org.joda", "joda-convert", "1.3.1")
+    addToClassPath("joda-time", "joda-time", "2.3")
     addToClassPath("org.scalikejdbc", "scalikejdbc_2.10", "1.7.5")
     addToClassPath("org.scalikejdbc", "scalikejdbc-interpolation_2.10", "1.7.5")
     addToClassPath("org.scalikejdbc", "scalikejdbc-interpolation-core_2.10", "1.7.5")
