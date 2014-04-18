@@ -348,7 +348,7 @@ class ScoverageInstrumentationComponent(val global: Global)
             c
 
         // skip macros
-        case d: DefDef if d.symbol.annotations.size > 0
+        case d: DefDef if d.symbol != null && d.symbol.annotations.size > 0
           && d.symbol.annotations.head.atp.typeSymbol.nameString == "macroImpl" =>
           tree
 

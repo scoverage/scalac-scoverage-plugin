@@ -2,6 +2,7 @@ package scoverage.skinny
 
 import skinny.orm._
 import scalikejdbc._, SQLInterpolation._
+import scala.language.dynamics
 
 // If your model has +23 fields, switch this to normal class and mixin scalikejdbc.EntityEquality.
 case class Member(id: Long, name: String)
