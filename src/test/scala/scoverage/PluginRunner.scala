@@ -27,6 +27,10 @@ trait PluginSupport {
     file
   }
 
+  def addToClassPath(groupId: String, artifactId: String, version: String): Unit = {
+    settings.classpath.value = settings.classpath.value + ":" + findIvyJar(groupId, artifactId, version).getAbsolutePath
+  }
+
   def compileCodeSnippet(code: String): ScoverageAwareCompiler = compileSourceFiles(writeCodeSnippetToTempFile(code))
 
   def compileSourceFiles(files: File*): ScoverageAwareCompiler = {
@@ -46,6 +50,14 @@ trait PluginSupport {
     val sbtScalaLibs = sbtHome + "/boot/scala-" + scalaVersion + "/lib"
     val file = new File(sbtScalaLibs + "/" + jarName)
     if (file.exists) file else throw new FileNotFoundException(s"Could not locate [$jarName]. Tests require SBT 0.13+")
+  }
+
+  def findIvyJar(groupId: String, artifactId: String, version: String): File = {
+    val userHome = System.getProperty("user.home")
+    val sbtHome = userHome + "/.ivy2"
+    val jarPath = sbtHome + "/cache/" + groupId + "/" + artifactId + "/jars/" + artifactId + "-" + version + ".jar"
+    val file = new File(jarPath)
+    if (file.exists) file else throw new FileNotFoundException(s"Could not locate [$jarPath]. Tests require SBT 0.13+")
   }
 
   def sbtCompileDir: File = {

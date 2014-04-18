@@ -64,4 +64,27 @@ class PluginASTSupportTest
                           |} """.stripMargin)
     assert(!reporter.hasErrors)
   }
+
+  test("scoverage supports joda time #23") {
+    addToClassPath("org.joda", "joda-convert", "1.3.1")
+    addToClassPath("joda-time", "joda-time", "2.3")
+    compileCodeSnippet( """class Test {
+                          |
+                          |  import org.joda.time.LocalDate
+                          |  import org.joda.time.DateTime
+                          |
+                          |  case class Member(id: Long,
+                          |                    name: String,
+                          |                    activated: Boolean,
+                          |                    luckyNumber: Option[Long] = None,
+                          |                    birthday: Option[LocalDate] = None,
+                          |                    createdAt: DateTime,
+                          |                    updatedAt: DateTime)
+                          |} """.stripMargin)
+
+    assert(!reporter.hasErrors)
+
+  }
 }
+
+

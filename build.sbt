@@ -10,7 +10,9 @@ libraryDependencies ++= Seq(
   "commons-io"          %     "commons-io"        % "2.4",
   "org.scala-lang"      %     "scala-compiler"    % "2.10.3"      % "provided",
   "org.scalatest"       %%    "scalatest"         % "2.1.0"       % "test",
-  "org.mockito"         %     "mockito-all"       % "1.9.5"       % "test"
+  "org.mockito"         %     "mockito-all"       % "1.9.5"       % "test",
+  "joda-time"           %     "joda-time"         % "2.2"         % "test",
+  "org.joda"            %     "joda-convert"      % "1.3.1"       % "test"
 )
 
 publishMavenStyle := true
