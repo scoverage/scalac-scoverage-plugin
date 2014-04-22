@@ -5,6 +5,8 @@ import java.io.FileWriter
 /** @author Stephen Samuel */
 object Invoker {
 
+  val threadFile = new ThreadLocal[FileWriter]
+
   /**
    * We record that the given id has been invoked by appending its id to the coverage
    * data file.
@@ -23,9 +25,12 @@ object Invoker {
   def invoked(id: Int, dataDir: String) = {
     // Each thread writes to a separate measurement file, to reduce contention
     // and because file appends via FileWriter are not atomic on Windows.
-    val file = IOUtils.measurementFile(dataDir)
-    val writer = new FileWriter(file, true)
-    writer.append(id.toString + ';')
-    writer.close()
+    var writer = threadFile.get()
+    if (writer == null) {
+      val file = IOUtils.measurementFile(dataDir)
+      writer = new FileWriter(file, true)
+      threadFile.set(writer)
+    }
+    writer.append(id.toString + ';').flush()
   }
 }
