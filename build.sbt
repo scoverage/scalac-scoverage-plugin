@@ -2,7 +2,7 @@ name := "scalac-scoverage-plugin"
 
 organization := "org.scoverage"
 
-version := "0.98.3"
+version := "0.98.4"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
 
@@ -12,10 +12,10 @@ libraryDependencies ++= Seq(
   "org.scalatest"        %%    "scalatest"         % "2.1.0"       % "test",
   "org.mockito"          %     "mockito-all"       % "1.9.5"       % "test",
   "joda-time"            %     "joda-time"         % "2.3"         % "test",
-  "org.joda"             %     "joda-convert"      % "1.3.1" % "test",
-  "org.skinny-framework" %%    "skinny-framework"  % "1.0.8" % "test",
-  "org.skinny-framework" %%    "skinny-orm"        % "1.0.8" % "test",
-  "org.slf4j"            %     "slf4j-api"         % "1.7.7" % "test"
+  "org.joda"             %     "joda-convert"      % "1.3.1"       % "test",
+  "org.skinny-framework" %%    "skinny-framework"  % "1.0.8"       % "test",
+  "org.skinny-framework" %%    "skinny-orm"        % "1.0.8"       % "test",
+  "org.slf4j"            %     "slf4j-api"         % "1.7.7"       % "test"
 )
 
 publishMavenStyle := true
@@ -24,16 +24,15 @@ publishArtifact in Test := false
 
 parallelExecution in Test := false
 
-
 pomIncludeRepository := {
   _ => false
 }
 
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
 
-scalaVersion := "2.10.3"
+scalaVersion := "2.10.4"
 
-crossScalaVersions := Seq("2.10.3", "2.11.0-RC1")
+crossScalaVersions := Seq("2.10.4", "2.11.0")
 
 libraryDependencies := {
   CrossVersion.partialVersion(scalaVersion.value) match {
