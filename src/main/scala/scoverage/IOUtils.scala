@@ -1,7 +1,7 @@
 package scoverage
 
 import java.io._
-import scala.xml.{Utility, Node}
+import scala.xml.{XML, Utility, Node}
 
 /** @author Stephen Samuel */
 object IOUtils {
@@ -93,18 +93,48 @@ object IOUtils {
     </statements>)
   }
 
-  def deserialize(classLoader: ClassLoader, file: File): Coverage = deserialize(classLoader, new FileInputStream(file))
-  def deserialize(classLoader: ClassLoader, in: InputStream): Coverage = {
-    val ois = new ClassLoaderObjectInputStream(classLoader, in)
-    val obj = ois.readObject
-    in.close()
-    obj.asInstanceOf[Coverage]
-  }
-}
+  def deserialize(str: String): Coverage = {
+    val xml = XML.loadString(str)
+    val statements = xml \ "statement" map (node => {
+      val source = (node \ "source").text
+      val count = (node \ "count").text.toInt
+      val branch = (node \ "branch").text.toBoolean
+      val _package = (node \ "package").text
+      val _class = (node \ "class").text
+      val method = (node \ "method").text
+      val treeName = (node \ "treeName").text
+      val symbolName = (node \ "symbolName").text
+      val id = (node \ "id").text.toInt
+      val line = (node \ "line").text.toInt
+      val desc = (node \ "description").text
+      val start = (node \ "start").text.toInt
+      val end = (node \ "end").text.toInt
+      val classType = (node \ "classType").text match {
+        case "Trait" => ClassType.Trait
+        case "Object" => ClassType.Object
+        case _ => ClassType.Class
+      }
+      MeasuredStatement(source, Location(_package, _class, classType, method), id, start, end, line, desc, symbolName,
+        treeName, branch, count)
+    })
 
-class ClassLoaderObjectInputStream(classLoader: ClassLoader, is: InputStream) extends ObjectInputStream(is) {
-  override protected def resolveClass(objectStreamClass: ObjectStreamClass): Class[_] =
-    try Class.forName(objectStreamClass.getName, false, classLoader) catch {
-      case cnfe: ClassNotFoundException ⇒ super.resolveClass(objectStreamClass)
+    val coverage = Coverage()
+    for ( statement <- statements )
+      coverage.add(statement)
+    coverage
+  }
+
+  def deserialize(file: File): Coverage = deserialize(new FileReader(file))
+  def deserialize(reader: Reader): Coverage = {
+    val reader = new BufferedReader(reader)
+    val sb = new StringBuilder
+    var line = reader.readLine()
+    while (line != null) {
+      sb.append(line)
+      line = reader.readLine()
     }
+    val coverage = deserialize(sb.toString)
+    reader.close()
+    coverage
+  }
 }

@@ -8,7 +8,7 @@ import scala.xml.Utility
 /** @author Stephen Samuel */
 class IOUtilsTest extends FunSuite with MockitoSugar with OneInstancePerTest {
 
-  test("coverage should be serializable and deserializable") {
+  test("coverage should be serializable into xml") {
     val coverage = Coverage()
     coverage.add(
       MeasuredStatement(
@@ -25,6 +25,22 @@ class IOUtilsTest extends FunSuite with MockitoSugar with OneInstancePerTest {
     val actual = IOUtils.serialize(coverage)
     assert(Utility.trim(expected) === Utility.trim(actual))
   }
+
+  test("coverage should be deserializable from xml") {
+    val input = <statements>
+      <statement>
+        <source>mysource</source> <package>org.scoverage</package> <class>test</class> <classType>Trait</classType> <method>mymethod</method> <id>14</id> <start>100</start> <end>200</end> <line>4</line> <description>def test : String</description> <symbolName>test</symbolName> <treeName>DefDef</treeName> <branch>true</branch> <count>32</count>
+      </statement>
+    </statements>
+    val statements = List(MeasuredStatement(
+      "mysource",
+      Location("org.scoverage", "test", ClassType.Trait, "mymethod"),
+      14, 100, 200, 4, "def test : String", "test", "DefDef", true, 32
+    ))
+    val coverage = IOUtils.deserialize(input.toString())
+    assert(statements === coverage.statements.toList)
+  }
+
 
   test("io utils should parse measurement file") {
     val file = File.createTempFile("scoveragemeasurementtest", "txt")
