@@ -1,6 +1,7 @@
 package scoverage
 
 import java.io._
+import scala.xml.{Utility, Node}
 
 /** @author Stephen Samuel */
 object IOUtils {
@@ -35,16 +36,61 @@ object IOUtils {
    */
   def serialize(coverage: Coverage, dataDir: String): Unit = serialize(coverage, coverageFile(dataDir))
   def serialize(coverage: Coverage, file: File): Unit = {
-    val out = new FileOutputStream(file)
-    out.write(serialize(coverage))
+    val out = new BufferedWriter(new FileWriter(file))
+    out.write(serialize(coverage).toString())
     out.close()
   }
-  def serialize(coverage: Coverage): Array[Byte] = {
-    val bos = new ByteArrayOutputStream
-    val out = new ObjectOutputStream(bos)
-    out.writeObject(coverage)
-    out.close()
-    bos.toByteArray
+
+  def serialize(coverage: Coverage): Node = {
+    val lines = coverage.statements.map(stmt => {
+      <statement>
+        <source>
+          {stmt.source}
+        </source>
+        <package>
+          {stmt.location._package}
+        </package>
+        <class>
+          {stmt.location._class}
+        </class>
+        <classType>
+          {stmt.location.classType.toString}
+        </classType>
+        <method>
+          {stmt.location.method}
+        </method>
+        <id>
+          {stmt.id.toString}
+        </id>
+        <start>
+          {stmt.start.toString}
+        </start>
+        <end>
+          {stmt.end.toString}
+        </end>
+        <line>
+          {stmt.line.toString}
+        </line>
+        <description>
+          {stmt.desc}
+        </description>
+        <symbolName>
+          {stmt.symbolName}
+        </symbolName>
+        <treeName>
+          {stmt.treeName}
+        </treeName>
+        <branch>
+          {stmt.branch.toString}
+        </branch>
+        <count>
+          {stmt.count.toString}
+        </count>
+      </statement>
+    })
+    Utility.trim(<statements>
+      {lines}
+    </statements>)
   }
 
   def deserialize(classLoader: ClassLoader, file: File): Coverage = deserialize(classLoader, new FileInputStream(file))
