@@ -1,13 +1,16 @@
+import sbt.Keys._
+import scala.Some
+
 name := "scalac-scoverage-plugin"
 
 organization := "org.scoverage"
 
-version := "0.98.4"
+version := "0.98.5"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
 
 libraryDependencies ++= Seq(
-  "commons-io"           %     "commons-io"        % "2.4",
+  "commons-io"                     %     "commons-io"        % "2.4",
   "org.scala-lang"       %     "scala-compiler"    % "2.10.3"      % "provided",
   "org.scalatest"        %%    "scalatest"         % "2.1.3"       % "test",
   "org.mockito"          %     "mockito-all"       % "1.9.5"       % "test",
@@ -27,6 +30,8 @@ parallelExecution in Test := false
 pomIncludeRepository := {
   _ => false
 }
+
+resolvers := ("releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2") +: resolvers.value
 
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
 
