@@ -126,14 +126,14 @@ object IOUtils {
 
   def deserialize(file: File): Coverage = deserialize(new FileReader(file))
   def deserialize(reader: Reader): Coverage = {
-    val reader = new BufferedReader(reader)
+    val buffered = new BufferedReader(reader)
     val sb = new StringBuilder
-    var line = reader.readLine()
+    var line = buffered.readLine()
     while (line != null) {
       sb.append(line)
-      line = reader.readLine()
+      line = buffered.readLine()
     }
-    val coverage = deserialize(sb.toString)
+    val coverage = deserialize(sb.toString())
     reader.close()
     coverage
   }
