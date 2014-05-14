@@ -437,7 +437,10 @@ class ScoverageInstrumentationComponent(val global: Global)
 
         // pattern match clauses will be instrumented per case
         case m@Match(clause: Tree, cases: List[CaseDef]) =>
-          if (m.selector.tpe.annotations.mkString == "unchecked")
+          // we can be fairly sure this was generated as part of a for loop
+          if (m.selector.toString().contains("check$")
+            && m.selector.tpe.annotations.mkString == "unchecked"
+            && m.cases.last.toString == "case _ => false") // todo check these assumptions for 2.11
             treeCopy.Match(tree, instrument(clause), transformCases(cases.dropRight(1)) ++ cases.takeRight(1))
           else
             treeCopy.Match(tree, instrument(clause), transformCases(cases))
