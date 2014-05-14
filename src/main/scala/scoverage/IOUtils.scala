@@ -7,7 +7,8 @@ import scala.xml.{XML, Utility, Node}
 object IOUtils {
 
   private val MeasurementsPrefix = "scoverage.measurements."
-  private val CoverageFileName = "scoverage.coverage"
+  private val CoverageFileName = "scoverage.coverage.xml"
+  val DataDir = "scoverage-data"
 
   def coverageFile(dataDir: File): File = coverageFile(dataDir.getAbsolutePath)
   def coverageFile(dataDir: String): File = new File(dataDir + "/" + CoverageFileName)
