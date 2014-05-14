@@ -51,6 +51,7 @@ class PluginCoverageTest
                           |  def print1(list: List[String]) = for (string: String <- list) println(string)
                           |} """.stripMargin)
     assert(!reporter.hasErrors)
+    assert(!reporter.hasWarnings)
     // should have one statement for the withFilter invoke, one of the match selector,
     // one of the case block, one for the case string RHS value, one for the foreach block.
     assertNMeasuredStatements(5)
@@ -65,8 +66,26 @@ class PluginCoverageTest
                           |  }
                           |} """.stripMargin)
     assert(!reporter.hasErrors)
+    assert(!reporter.hasWarnings)
     // should have one statement for each literal, one for each case block, and one for the selector.
     assertNMeasuredStatements(7)
   }
 
+  test("scoverage component should not instrument any macro code") {
+    compileCodeSnippet( """
+                          | object MyMacro {
+                          | import scala.language.experimental.macros
+                          | import scala.reflect.macros.Context
+                          |  def test = macro testImpl
+                          |  def testImpl(c: Context): c.Expr[Unit] = {
+                          |    import c.universe._
+                          |    reify {
+                          |      println("macro test")
+                          |    }
+                          |  }
+                          |} """.stripMargin)
+    assert(!reporter.hasErrors)
+    assert(!reporter.hasWarnings)
+    assertNMeasuredStatements(0)
+  }
 }

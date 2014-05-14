@@ -75,6 +75,8 @@ trait PluginSupport {
       assert(compiler.testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked($k,"),
         s"Should be $n invoked statements but missing $k")
     }
+    assert(!compiler.testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked(${n + 1},"),
+      s"Found statement ${n + 1} but only expected $n")
   }
 }
 

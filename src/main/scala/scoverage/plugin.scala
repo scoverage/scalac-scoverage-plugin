@@ -349,10 +349,16 @@ class ScoverageInstrumentationComponent(val global: Global)
             c
           }
 
-        // skip macros
+        // this will catch methods defined as macros, eg def test = macro testImpl
+        // it will not catch macro implemenations
         case d: DefDef if d.symbol != null && d.symbol.annotations.size > 0
           && d.symbol.annotations.head.atp.typeSymbol.nameString == "macroImpl" =>
-          tree.duplicate
+          tree
+
+        // will catch macro implemenations, as they must end with Expr, however will catch
+        // any method that ends in Expr. // todo add way of allowing methods that return Expr
+        case d: DefDef if d.symbol != null && d.tpt.symbol.fullNameString == "scala.reflect.api.Exprs.Expr" =>
+          tree
 
         // todo do we really want to ignore?
         case d: DefDef if d.symbol.isPrimaryConstructor => tree
