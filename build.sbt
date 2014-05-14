@@ -5,13 +5,14 @@ name := "scalac-scoverage-plugin"
 
 organization := "org.scoverage"
 
-version := "0.99.0"
+version := "0.99.1"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
 
 libraryDependencies ++= Seq(
   "commons-io"                     %     "commons-io"        % "2.4",
   "org.scalatest"                  %%    "scalatest"         % "2.1.6"       % "test",
+  "com.typesafe.scala-logging"     %% "scala-logging-slf4j"  % "2.1.2" % "test",
   "org.mockito"                    %     "mockito-all"       % "1.9.5"       % "test",
   "joda-time"                      %     "joda-time"         % "2.3"         % "test",
   "org.joda"                       %     "joda-convert"      % "1.3.1"       % "test",
