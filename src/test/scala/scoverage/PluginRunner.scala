@@ -10,22 +10,20 @@ import scala.collection.mutable.ListBuffer
 /** @author Stephen Samuel */
 trait PluginSupport {
 
-  val scalaVersion = "2.11.0"
-  // System.getProperty("CrossBuildScalaVersion")
+  val scalaVersion = Option(System.getenv("CrossBuildScalaVersion")).getOrElse("2.11.0")
   val shortScalaVersion = scalaVersion.dropRight(2)
 
   val classPath = getScalaJars.map(_.getAbsolutePath) :+ sbtCompileDir.getAbsolutePath
 
   val settings = {
-    val settings = new scala.tools.nsc.Settings
-    settings.Xprint.value = List("all")
-    settings.Yrangepos.value = true
-    settings.classpath.value = classPath.mkString(":")
-    settings
+    val s = new scala.tools.nsc.Settings
+    s.Xprint.value = List("all")
+    s.Yrangepos.value = true
+    s.classpath.value = classPath.mkString(":")
+    s
   }
 
   val reporter = new scala.tools.nsc.reporters.ConsoleReporter(settings)
-
   val compiler = new ScoverageAwareCompiler(settings, reporter)
 
   def writeCodeSnippetToTempFile(code: String): File = {
@@ -82,6 +80,8 @@ trait PluginSupport {
       s"Found statement ${n + 1} but only expected $n")
   }
 }
+
+
 
 class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools.nsc.reporters.Reporter)
   extends scala.tools.nsc.Global(settings, reporter) {

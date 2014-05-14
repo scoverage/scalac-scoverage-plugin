@@ -39,10 +39,10 @@ crossScalaVersions := Seq("2.10.4", "2.11.0")
 libraryDependencies := {
   CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, scalaMajor)) if scalaMajor == 11 =>
-      System.setProperty("CrossBuildScalaVersion", "2.11.0")
+      EnvSupport.setEnv("CrossBuildScalaVersion", "2.11.0")
       libraryDependencies.value :+ "org.scala-lang.modules" %% "scala-xml" % "1.0.1"
     case _ =>
-      System.setProperty("CrossBuildScalaVersion", "2.10.4")
+      EnvSupport.setEnv("CrossBuildScalaVersion", "2.10.4")
       libraryDependencies.value
   }
 }
