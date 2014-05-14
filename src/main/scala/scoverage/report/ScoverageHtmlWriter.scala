@@ -9,8 +9,6 @@ import org.apache.commons.io.{FilenameUtils, FileUtils}
 
 /** @author Stephen Samuel */
 class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
-  println("sourceDirectory:" + sourceDirectory)
-  println("outputDir:" + outputDir)
 
   def write(coverage: Coverage): Unit = {
     val indexFile = new File(outputDir.getAbsolutePath + "/index.html")

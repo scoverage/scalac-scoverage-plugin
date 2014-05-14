@@ -33,7 +33,7 @@ class CoberturaXmlWriter(baseDir: File, outputDir: File) {
   def klass(klass: MeasuredClass): Node = {
     <class name={klass.name}
            filename={
-            val absPath = (baseDir.getAbsolutePath.last == File.separatorChar) match {
+            val absPath = baseDir.getAbsolutePath.last == File.separatorChar match {
               case true => baseDir.getAbsolutePath
               case false => baseDir.getAbsolutePath + File.separatorChar
             }
