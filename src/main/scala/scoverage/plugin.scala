@@ -107,6 +107,9 @@ class ScoverageInstrumentationComponent(val global: Global)
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
 
     override def run(): Unit = {
+      println("[scoverage]: Cleaning datadir")
+      IOUtils.clean(options.dataDir)
+
       println("[scoverage]: Begin instrumentation phase")
       super.run()
       println(s"[scoverage]: Instrumentation completed [${coverage.statements.size} statements]")

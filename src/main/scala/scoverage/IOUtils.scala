@@ -10,6 +10,9 @@ object IOUtils {
   private val CoverageFileName = "scoverage.coverage.xml"
   val DataDir = "scoverage-data"
 
+  def clean(dataDir: File): Unit = dataDir.listFiles.foreach(_.delete())
+  def clean(dataDir: String): Unit = clean(new File(dataDir))
+
   def coverageFile(dataDir: File): File = coverageFile(dataDir.getAbsolutePath)
   def coverageFile(dataDir: String): File = new File(dataDir + "/" + CoverageFileName)
 
