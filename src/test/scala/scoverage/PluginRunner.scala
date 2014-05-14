@@ -11,13 +11,18 @@ import scala.collection.mutable.ListBuffer
 trait PluginSupport {
 
   val scalaVersion = "2.11.0"
+  // System.getProperty("CrossBuildScalaVersion")
   val shortScalaVersion = scalaVersion.dropRight(2)
 
-  val settings = new scala.tools.nsc.Settings
   val classPath = getScalaJars.map(_.getAbsolutePath) :+ sbtCompileDir.getAbsolutePath
-  settings.Xprint.value = List("all")
-  settings.Yrangepos.value = true
-  settings.classpath.value = classPath.mkString(":")
+
+  val settings = {
+    val settings = new scala.tools.nsc.Settings
+    settings.Xprint.value = List("all")
+    settings.Yrangepos.value = true
+    settings.classpath.value = classPath.mkString(":")
+    settings
+  }
 
   val reporter = new scala.tools.nsc.reporters.ConsoleReporter(settings)
 
