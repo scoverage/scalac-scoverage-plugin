@@ -187,7 +187,7 @@ class ScoverageInstrumentationComponent(val global: Global)
               safeEnd(tree),
               safeLine(tree),
               tree.toString(),
-              Option(tree.symbol).map(_.fullNameString).getOrElse("<nosymbol>"),
+              Option(tree.symbol).fold("<nosymbol>")(_.fullNameString),
               tree.getClass.getSimpleName,
               branch
             )
@@ -436,8 +436,11 @@ class ScoverageInstrumentationComponent(val global: Global)
         case l: Literal => instrument(l)
 
         // pattern match clauses will be instrumented per case
-        case Match(clause: Tree, cases: List[CaseDef]) =>
-          treeCopy.Match(tree, instrument(clause), transformCases(cases))
+        case m@Match(clause: Tree, cases: List[CaseDef]) =>
+          if (m.selector.tpe.annotations.mkString == "unchecked")
+            treeCopy.Match(tree, instrument(clause), transformCases(cases.dropRight(1)) ++ cases.takeRight(1))
+          else
+            treeCopy.Match(tree, instrument(clause), transformCases(cases))
 
         // a synthetic object is a generated object, such as case class companion
         case m: ModuleDef if m.symbol.isSynthetic => super.transform(tree)
