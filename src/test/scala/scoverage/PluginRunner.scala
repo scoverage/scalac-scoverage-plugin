@@ -72,7 +72,8 @@ trait PluginSupport {
 
   def assertNMeasuredStatements(n: Int): Unit = {
     for ( k <- 1 to n ) {
-      assert(compiler.testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked($k,"))
+      assert(compiler.testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked($k,"),
+        s"Should be $n invoked statements but missing $k")
     }
   }
 }

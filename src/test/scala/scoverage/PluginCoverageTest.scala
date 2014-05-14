@@ -32,4 +32,15 @@ class PluginCoverageTest
     // we should have 3 statements - initialising the val, executing println, and executing the parameter
     assertNMeasuredStatements(3)
   }
+
+
+
+  // https://github.com/scoverage/sbt-scoverage/issues/16
+  test("scoverage should instrument for-loops") {
+    compileCodeSnippet( """ trait A {
+                          |  def print1(list: List[String]) = for (string: String <- list) println(string)
+                          |} """.stripMargin)
+    // we should have 3 statements
+    assertNMeasuredStatements(5)
+  }
 }
