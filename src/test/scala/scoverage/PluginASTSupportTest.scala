@@ -65,7 +65,20 @@ class PluginASTSupportTest
     assert(!reporter.hasErrors)
   }
 
-//  test("scoverage supports skinny #23") {
+
+  // https://github.com/scoverage/scalac-scoverage-plugin/issues/32
+  test("exhaustive warnings should not be generated for @unchecked") {
+    compileCodeSnippet( """object PartialMatchObject {
+                          |  def partialMatchExample(s: Option[String]): Unit = {
+                          |    (s: @unchecked) match {
+                          |      case Some(str) => println(str)
+                          |    }
+                          |  }
+                          |} """.stripMargin)
+    assert(!reporter.hasWarnings)
+  }
+
+  //  test("scoverage supports skinny #23") {
 //    addToClassPath("org.joda", "joda-convert", "1.3.1")
 //    addToClassPath("joda-time", "joda-time", "2.3")
 //    addToClassPath("org.scalikejdbc", "scalikejdbc_2.10", "1.7.5")

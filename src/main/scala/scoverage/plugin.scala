@@ -169,7 +169,7 @@ class ScoverageInstrumentationComponent(val global: Global)
       })
     }
 
-    def instrument(tree: Tree, branch: Boolean = false) = {
+    def instrument(tree: Tree, branch: Boolean = false): Tree = {
       safeSource(tree) match {
         case None =>
           println(s"[warn] Could not instrument [${tree.getClass.getSimpleName}/${tree.symbol}]. No position.")
@@ -436,14 +436,21 @@ class ScoverageInstrumentationComponent(val global: Global)
         case l: Literal => instrument(l)
 
         // pattern match clauses will be instrumented per case
-        case m@Match(clause: Tree, cases: List[CaseDef]) =>
+        case m@Match(selector: Tree, cases: List[CaseDef]) =>
           // we can be fairly sure this was generated as part of a for loop
-          if (m.selector.toString().contains("check$")
-            && m.selector.tpe.annotations.mkString == "unchecked"
-            && m.cases.last.toString == "case _ => false") // todo check these assumptions for 2.11
-            treeCopy.Match(tree, instrument(clause), transformCases(cases.dropRight(1)) ++ cases.takeRight(1))
-          else
-            treeCopy.Match(tree, instrument(clause), transformCases(cases))
+          if (selector.toString().contains("check$")
+            && selector.tpe.annotations.mkString == "unchecked"
+            && m.cases.last.toString == "case _ => false") {
+            // todo check these assumptions for 2.11
+            treeCopy.Match(tree, instrument(selector), transformCases(cases.dropRight(1)) ++ cases.takeRight(1))
+          } else {
+            //            import scala.reflect.runtime.universe.{reify, showRaw}
+            //            val _selector = reify {
+            //              Match(Annotated(Apply(Select(New(Ident(scala.unchecked)), nme.CONSTRUCTOR), List()),
+            //                Ident(newTermName("name")))
+            //          }
+            instrument(treeCopy.Match(tree, process(selector), transformCases(cases)))
+          }
 
         // a synthetic object is a generated object, such as case class companion
         case m: ModuleDef if m.symbol.isSynthetic => super.transform(tree)
@@ -581,5 +588,4 @@ class ScoverageInstrumentationComponent(val global: Global)
     }
   }
 }
-
 
