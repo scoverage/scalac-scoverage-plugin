@@ -5,20 +5,17 @@ name := "scalac-scoverage-plugin"
 
 organization := "org.scoverage"
 
-version := "0.98.5"
+version := "0.99.0"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
 
 libraryDependencies ++= Seq(
   "commons-io"                     %     "commons-io"        % "2.4",
-  "org.scala-lang"       %     "scala-compiler"    % "2.10.3"      % "provided",
-  "org.scalatest"        %%    "scalatest"         % "2.1.3"       % "test",
-  "org.mockito"          %     "mockito-all"       % "1.9.5"       % "test",
-  "joda-time"            %     "joda-time"         % "2.3"         % "test",
-  "org.joda"             %     "joda-convert"      % "1.3.1"       % "test",
-  //"org.skinny-framework" %%    "skinny-framework"  % "1.0.8"       % "test",
-  //"org.skinny-framework" %%    "skinny-orm"        % "1.0.8"       % "test",
-  "org.slf4j"            %     "slf4j-api"         % "1.7.7"       % "test"
+  "org.scalatest"                  %%    "scalatest"         % "2.1.6"       % "test",
+  "org.mockito"                    %     "mockito-all"       % "1.9.5"       % "test",
+  "joda-time"                      %     "joda-time"         % "2.3"         % "test",
+  "org.joda"                       %     "joda-convert"      % "1.3.1"       % "test",
+  "org.slf4j"                      %     "slf4j-api"         % "1.7.7"       % "test"
 )
 
 publishMavenStyle := true
