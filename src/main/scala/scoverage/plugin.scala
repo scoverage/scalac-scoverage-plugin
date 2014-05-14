@@ -28,6 +28,8 @@ class ScoveragePlugin(val global: Global) extends Plugin {
         error("Unknown option: " + opt)
       }
     }
+    if (!opts.exists(_.startsWith("dataDir:")))
+      throw new RuntimeException("Cannot invoke plugin without specifiying <dataDir>")
     instrumentationComponent.setOptions(options)
   }
 
@@ -41,7 +43,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
 
 class ScoverageOptions {
   var excludedPackages: Seq[String] = Nil
-  var dataDir: String = File.createTempFile("scoverage_find_temp_dir", ".tmp").getParent
+  var dataDir: String = File.createTempFile("scoverage_datadir_not_defined", ".tmp").getParent
 }
 
 class ScoveragePreComponent(val global: Global) extends PluginComponent with TypingTransformers with Transform {
@@ -99,6 +101,7 @@ class ScoverageInstrumentationComponent(val global: Global)
   def setOptions(options: ScoverageOptions): Unit = {
     this.options = options
     coverageFilter = new RegexCoverageFilter(options.excludedPackages)
+    new File(options.dataDir).mkdirs()
   }
 
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
@@ -288,7 +291,7 @@ class ScoverageInstrumentationComponent(val global: Global)
       tree match {
 
         // ignore synthetic trees that contain non-syths. Probably macros. Either way breaks due to range validation
-        case t if isSynthetic(t) && containsNonSynthetic(t) => super.transform(t)
+        case t if isSynthetic(t) && containsNonSynthetic(t) && !t.pos.isDefined => super.transform(t)
 
         /**
          * Object creation from new.
