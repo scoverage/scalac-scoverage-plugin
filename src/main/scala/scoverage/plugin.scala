@@ -113,7 +113,7 @@ class ScoverageInstrumentationComponent(val global: Global)
 
       IOUtils.serialize(coverage, IOUtils.coverageFile(options.dataDir))
       println(s"[scoverage]: Written instrumentation file [${IOUtils.coverageFile(options.dataDir)}]")
-      println(s"[scoverage]: Will write measurement data to [${options.dataDir}]")
+      println(s"[scoverage]: Writing measurements data to [${options.dataDir}]")
     }
   }
 
