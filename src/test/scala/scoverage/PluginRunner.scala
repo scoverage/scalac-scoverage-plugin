@@ -10,7 +10,7 @@ import scala.collection.mutable.ListBuffer
 /** @author Stephen Samuel */
 trait PluginSupport {
 
-  val scalaVersion = "2.10.3"
+  val scalaVersion = "2.10.4"
   val shortScalaVersion = "2.10"
 
   val settings = new scala.tools.nsc.Settings
@@ -26,6 +26,7 @@ trait PluginSupport {
   def writeCodeSnippetToTempFile(code: String): File = {
     val file = File.createTempFile("scoverage_snippet", ".scala")
     org.apache.commons.io.FileUtils.write(file, code)
+    file.deleteOnExit()
     file
   }
 
@@ -44,24 +45,21 @@ trait PluginSupport {
   }
 
   def getScalaJars: List[File] = {
-    val scalaJars = List("scala-compiler.jar", "scala-library.jar", "scala-reflect.jar")
+    val scalaJars = List("scala-compiler", "scala-library", "scala-reflect")
     scalaJars.map(findScalaJar)
   }
 
-  def findScalaJar(jarName: String): File = {
-    val userHome = System.getProperty("user.home")
-    val sbtHome = userHome + "/.sbt"
-    val sbtScalaLibs = sbtHome + "/boot/scala-" + scalaVersion + "/lib"
-    val file = new File(sbtScalaLibs + "/" + jarName)
-    if (file.exists) file else throw new FileNotFoundException(s"Could not locate [$jarName]. Tests require SBT 0.13+")
-  }
+  def findScalaJar(artifactId: String): File = findIvyJar("org.scala-lang", artifactId, scalaVersion)
 
   def findIvyJar(groupId: String, artifactId: String, version: String): File = {
     val userHome = System.getProperty("user.home")
     val sbtHome = userHome + "/.ivy2"
     val jarPath = sbtHome + "/cache/" + groupId + "/" + artifactId + "/jars/" + artifactId + "-" + version + ".jar"
     val file = new File(jarPath)
-    if (file.exists) file else throw new FileNotFoundException(s"Could not locate [$jarPath]. Tests require SBT 0.13+")
+    if (file.exists) {
+      println(s"Located ivy jar [$file]")
+      file
+    } else throw new FileNotFoundException(s"Could not locate [$jarPath]. Tests require SBT 0.13+")
   }
 
   def sbtCompileDir: File = {
@@ -93,7 +91,7 @@ class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala
     val sources = new ListBuffer[String]
 
     override val phaseName: String = "scoverage-teststore"
-    override val runsAfter: List[String] = List("dce")
+    override val runsAfter: List[String] = List("dce") // deadcode
     override val runsBefore = List[String]("terminal")
 
     override protected def newTransformer(unit: global.CompilationUnit): global.Transformer = new Transformer(unit)
