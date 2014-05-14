@@ -57,6 +57,15 @@ class PluginCoverageTest
     assertNMeasuredStatements(5)
   }
 
+  test("scoverage should instrument val RHS") {
+    compileCodeSnippet( """object A {
+                          |  val name = BigDecimal(50.0)
+                          |} """.stripMargin)
+    assert(!reporter.hasErrors)
+    assert(!reporter.hasWarnings)
+    assertNMeasuredStatements(1)
+  }
+
   test("scoverage should instrument all case statements in an explicit match") {
     compileCodeSnippet( """ trait A {
                           |  def foo(name: Any) = name match {

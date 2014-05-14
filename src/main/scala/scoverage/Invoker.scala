@@ -24,6 +24,7 @@ object Invoker {
     // Each thread writes to a separate measurement file, to reduce contention
     // and because file appends via FileWriter are not atomic on Windows.
     val file = IOUtils.measurementFile(dataDir)
+    println("Writing to " + file)
     val writer = new FileWriter(file, true)
     writer.append(id.toString + ';')
     writer.close()
