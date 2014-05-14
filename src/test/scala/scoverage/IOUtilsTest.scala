@@ -4,6 +4,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSuite, OneInstancePerTest}
 import java.io.{FileWriter, File}
 import scala.xml.Utility
+import org.apache.commons.io.FileUtils
 
 /** @author Stephen Samuel */
 class IOUtilsTest extends FunSuite with MockitoSugar with OneInstancePerTest {
@@ -54,6 +55,11 @@ class IOUtilsTest extends FunSuite with MockitoSugar with OneInstancePerTest {
   }
 
   test("io utils should parse multiple measurement files") {
+
+    // clean up any existing measurement files
+    for ( file <- IOUtils.findMeasurementFiles(FileUtils.getTempDirectoryPath) )
+      file.delete()
+
     val file1 = File.createTempFile("scoverage.measurements.1", "txt")
     val writer1 = new FileWriter(file1)
     writer1.write("1;5;9;;10;")
