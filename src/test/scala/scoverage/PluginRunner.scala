@@ -10,8 +10,8 @@ import scala.collection.mutable.ListBuffer
 /** @author Stephen Samuel */
 trait PluginSupport {
 
-  val scalaVersion = "2.10.4"
-  val shortScalaVersion = "2.10"
+  val scalaVersion = "2.11.0"
+  val shortScalaVersion = scalaVersion.dropRight(2)
 
   val settings = new scala.tools.nsc.Settings
   val classPath = getScalaJars.map(_.getAbsolutePath) :+ sbtCompileDir.getAbsolutePath

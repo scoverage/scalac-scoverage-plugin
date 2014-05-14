@@ -32,7 +32,7 @@ resolvers := ("releases" at "https://oss.sonatype.org/service/local/staging/depl
 
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.11.0"
 
 crossScalaVersions := Seq("2.10.4", "2.11.0")
 
