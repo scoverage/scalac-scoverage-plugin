@@ -107,7 +107,7 @@ class ScoverageInstrumentationComponent(val global: Global)
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
 
     override def run(): Unit = {
-      println("[scoverage]: Cleaning datadir")
+      println(s"[scoverage]: Cleaning datadir [${options.dataDir}]")
       IOUtils.clean(options.dataDir)
 
       println("[scoverage]: Begin instrumentation phase")
@@ -294,7 +294,11 @@ class ScoverageInstrumentationComponent(val global: Global)
       tree match {
 
         // ignore synthetic trees that contain non-syths. Probably macros. Either way breaks due to range validation
-        case t if isSynthetic(t) && containsNonSynthetic(t) && !t.pos.isDefined => super.transform(t)
+        //case t if isSynthetic(t) && containsNonSynthetic(t) && !t.pos.isDefined =>
+        //   super.transform(t)
+
+        // ignore macro expanded code
+        case tree if tree.attachments.all.toString().contains("MacroExpansionAttachment") => tree
 
         /**
          * Object creation from new.

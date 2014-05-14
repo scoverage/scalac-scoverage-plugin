@@ -94,7 +94,7 @@ class PluginCoverageTest
                           |  }
                           |} """.stripMargin)
     assert(!reporter.hasErrors)
-    assertNoCoverage
+    assertNoCoverage()
   }
 
   // https://github.com/skinny-framework/skinny-framework/issues/97
@@ -109,6 +109,6 @@ class PluginCoverageTest
                           |} """.stripMargin)
     assert(!reporter.hasErrors)
     assert(!reporter.hasWarnings)
-    assertNoCoverage
+    assertNoCoverage()
   }
 }
