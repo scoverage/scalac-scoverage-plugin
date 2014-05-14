@@ -278,10 +278,17 @@ class ScoverageInstrumentationComponent(val global: Global)
       }
     }
 
+    private def isSynthetic(t: Tree): Boolean = Option(t.symbol).fold(false)(_.isSynthetic)
+    private def isNonSynthetic(t: Tree): Boolean = !isSynthetic(t)
+    private def containsNonSynthetic(t: Tree): Boolean = isNonSynthetic(t) || t.children.exists(containsNonSynthetic)
+
     def allConstArgs(args: List[Tree]) = args.forall(arg => arg.isInstanceOf[Literal] || arg.isInstanceOf[Ident])
 
     def process(tree: Tree): Tree = {
       tree match {
+
+        // ignore synthetic trees that contain non-syths. Probably macros. Either way breaks due to range validation
+        case t if isSynthetic(t) && containsNonSynthetic(t) => super.transform(t)
 
         /**
          * Object creation from new.
@@ -348,6 +355,8 @@ class ScoverageInstrumentationComponent(val global: Global)
           } else {
             c
           }
+
+        //case d : DefDef => d
 
         // this will catch methods defined as macros, eg def test = macro testImpl
         // it will not catch macro implemenations

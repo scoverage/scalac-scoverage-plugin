@@ -71,7 +71,7 @@ class PluginCoverageTest
     assertNMeasuredStatements(7)
   }
 
-  test("scoverage component should not instrument any macro code") {
+  test("scoverage should not instrument local macro implementation") {
     compileCodeSnippet( """
                           | object MyMacro {
                           | import scala.language.experimental.macros
@@ -85,6 +85,21 @@ class PluginCoverageTest
                           |  }
                           |} """.stripMargin)
     assert(!reporter.hasErrors)
-    assertNMeasuredStatements(0)
+    assertNoCoverage
+  }
+
+  // https://github.com/skinny-framework/skinny-framework/issues/97
+  test("scoverage should not instrument expanded macro code") {
+    addToClassPath("org.slf4j", "slf4j-api", "1.7.7")
+    addToClassPath("com.typesafe.scala-logging", "scala-logging-api_" + shortScalaVersion, "2.1.2")
+    addToClassPath("com.typesafe.scala-logging", "scala-logging-slf4j_" + shortScalaVersion, "2.1.2")
+    compileCodeSnippet( """import com.typesafe.scalalogging.slf4j.StrictLogging
+                          |
+                          |object MacroTest extends StrictLogging {
+                          |  logger.info("will break")
+                          |} """.stripMargin)
+    assert(!reporter.hasErrors)
+    assert(!reporter.hasWarnings)
+    assertNoCoverage
   }
 }

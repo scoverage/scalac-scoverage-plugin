@@ -62,7 +62,7 @@ trait PluginSupport {
     if (file.exists) {
       println(s"Located ivy jar [$file]")
       file
-    } else throw new FileNotFoundException(s"Could not locate [$jarPath]. Tests require SBT 0.13+")
+    } else throw new FileNotFoundException(s"Could not locate [$jarPath].")
   }
 
   def sbtCompileDir: File = {
@@ -70,6 +70,8 @@ trait PluginSupport {
     if (dir.exists) dir
     else throw new FileNotFoundException(s"Could not locate SBT compile directory for plugin files [$dir]")
   }
+
+  def assertNoCoverage() = assert(!compiler.testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked"))
 
   def assertNMeasuredStatements(n: Int): Unit = {
     for ( k <- 1 to n ) {
