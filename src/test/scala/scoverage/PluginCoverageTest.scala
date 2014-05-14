@@ -85,7 +85,6 @@ class PluginCoverageTest
                           |  }
                           |} """.stripMargin)
     assert(!reporter.hasErrors)
-    assert(!reporter.hasWarnings)
     assertNMeasuredStatements(0)
   }
 }
