@@ -36,11 +36,24 @@ class PluginCoverageTest
 
 
   // https://github.com/scoverage/sbt-scoverage/issues/16
-  test("scoverage should instrument for-loops") {
+  test("scoverage should instrument for-loops but not the generated default case") {
     compileCodeSnippet( """ trait A {
                           |  def print1(list: List[String]) = for (string: String <- list) println(string)
                           |} """.stripMargin)
-    // we should have 3 statements
+    // should have one statement for the withFilter invoke, one of the match selector,
+    // one of the case block, one for the case string RHS value, one for the foreach block.
     assertNMeasuredStatements(5)
+  }
+
+  test("scoverage should instrument all case statements in an explicit match") {
+    compileCodeSnippet( """ trait A {
+                          |  def foo(name: Any) = name match {
+                          |    case i : Int => 1
+                          |    case b : Boolean => 2
+                          |    case _ => 3
+                          |  }
+                          |} """.stripMargin)
+    // should have one statement for each literal, one for each case block, and one for the selector.
+    assertNMeasuredStatements(7)
   }
 }
