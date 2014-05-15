@@ -46,7 +46,7 @@ class IOUtilsTest extends FunSuite with MockitoSugar with OneInstancePerTest {
   test("io utils should parse measurement file") {
     val file = File.createTempFile("scoveragemeasurementtest", "txt")
     val writer = new FileWriter(file)
-    writer.write("1;5;9;;10;")
+    writer.write("1\n5\n9\n\n10\n")
     writer.close()
     val invoked = IOUtils.invoked(Seq(file))
     assert(invoked.toSet === Set(1, 5, 9, 10))
@@ -62,12 +62,12 @@ class IOUtilsTest extends FunSuite with MockitoSugar with OneInstancePerTest {
 
     val file1 = File.createTempFile("scoverage.measurements.1", "txt")
     val writer1 = new FileWriter(file1)
-    writer1.write("1;5;9;;10;")
+    writer1.write("1\n5\n9\n\n10\n")
     writer1.close()
 
     val file2 = File.createTempFile("scoverage.measurements.2", "txt")
     val writer2 = new FileWriter(file2)
-    writer2.write("1;7;14;;2;")
+    writer2.write("1\n7\n14\n\n2\n")
     writer2.close()
 
     val files = IOUtils.findMeasurementFiles(file1.getParent)

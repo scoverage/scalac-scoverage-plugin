@@ -31,6 +31,6 @@ object Invoker {
       writer = new FileWriter(file, true)
       threadFile.set(writer)
     }
-    writer.append(id.toString + ';').flush()
+    writer.append(id.toString + '\n').flush()
   }
 }
