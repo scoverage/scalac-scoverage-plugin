@@ -5,13 +5,15 @@ import org.scalatest.BeforeAndAfter
 import java.io.File
 import scala.concurrent._
 import scala.concurrent.duration._
-import ExecutionContext.Implicits.global
 import scala.collection.breakOut
+import java.util.concurrent.Executors
 
 /**
  * Verify that [[Invoker.invoked()]] is thread-safe
  */
 class InvokerConcurrencyTest extends FunSuite with BeforeAndAfter {
+
+  implicit val executor = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(8))
 
   val measurementDir = new File("invoker-test.measurement")
 
