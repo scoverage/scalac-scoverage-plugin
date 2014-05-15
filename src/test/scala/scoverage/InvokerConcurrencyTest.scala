@@ -29,7 +29,7 @@ class InvokerConcurrencyTest extends FunSuite with BeforeAndAfter {
     // Create 1k "invoked" calls on the common thread pool, to stress test
     // the method
     val futures: List[Future[Unit]] = testIds.map { i: Int =>
-      future {
+      Future {
         Invoker.invoked(i, measurementDir.toString)
       }
     }(breakOut)
