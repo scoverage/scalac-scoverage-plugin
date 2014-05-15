@@ -101,7 +101,7 @@ class ScoverageInstrumentationComponent(val global: Global)
   def setOptions(options: ScoverageOptions): Unit = {
     this.options = options
     coverageFilter = new RegexCoverageFilter(options.excludedPackages)
-    new File(options.dataDir).mkdirs()
+    new File(options.dataDir).mkdirs() // ensure data directory is created
   }
 
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
