@@ -104,7 +104,6 @@ class PluginCoverageTest
     addToClassPath("com.typesafe.scala-logging", "scala-logging-slf4j_" + shortScalaVersion, "2.1.2")
     compileCodeSnippet( """import com.typesafe.scalalogging.slf4j.StrictLogging
                           |class MacroTest extends StrictLogging {
-                          |  val name = "sammy"
                           |  logger.info("will break")
                           |} """.stripMargin)
     assert(!reporter.hasErrors)
