@@ -17,6 +17,13 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 
 ### Release History
 
+##### 15th May 2014 - 0.99.1
+* 2.11 support
+* [2.10 support dropped](2.10.md)
+* Fixes for macro expansion
+* Fixes for @unchecked
+* Fixes for for-comprehensions
+
 ##### 18th April 2014 - 0.98.2
 * Macros are now skipped instead of crashing
 * Final vals are corrected measured
