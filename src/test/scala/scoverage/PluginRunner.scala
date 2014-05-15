@@ -10,7 +10,7 @@ import scala.collection.mutable.ListBuffer
 /** @author Stephen Samuel */
 trait PluginSupport {
 
-  val scalaVersion = Option(System.getenv("CrossBuildScalaVersion")).getOrElse("2.11.0")
+  val scalaVersion = "2.11.0"
   val shortScalaVersion = scalaVersion.dropRight(2)
 
   val classPath = getScalaJars.map(_.getAbsolutePath) :+ sbtCompileDir.getAbsolutePath
@@ -82,8 +82,6 @@ trait PluginSupport {
       s"Found statement ${n + 1} but only expected $n")
   }
 }
-
-
 
 class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools.nsc.reporters.Reporter)
   extends scala.tools.nsc.Global(settings, reporter) {

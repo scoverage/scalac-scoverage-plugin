@@ -15,19 +15,18 @@ javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
 scalaVersion := "2.11.0"
 
 libraryDependencies ++= Seq(
-  "commons-io"                     %     "commons-io"        % "2.4",
-  "org.scala-lang.modules"         %%    "scala-xml"         % "1.0.1",
-  "org.scalatest"                  %%    "scalatest"         % "2.1.6"       % "test",
-  "com.typesafe.scala-logging"     %% "scala-logging-slf4j"  % "2.1.2"       % "test",
-  "org.mockito"                    %     "mockito-all"       % "1.9.5"       % "test",
-  "joda-time"                      %     "joda-time"         % "2.3"         % "test",
-  "org.joda"                       %     "joda-convert"      % "1.3.1"       % "test",
-  "org.slf4j"                      %     "slf4j-api"         % "1.7.7"       % "test"
-
+  "commons-io"                     %     "commons-io"            % "2.4",
+  "org.scala-lang.modules"         %%    "scala-xml"             % "1.0.1",
+  "org.scalatest"                  %%    "scalatest"             % "2.1.6"       % "test",
+  "com.typesafe.scala-logging"     %%    "scala-logging-slf4j"   % "2.1.2"       % "test",
+  "org.mockito"                    %     "mockito-all"           % "1.9.5"       % "test",
+  "joda-time"                      %     "joda-time"             % "2.3"         % "test",
+  "org.joda"                       %     "joda-convert"          % "1.3.1"       % "test",
+  "org.slf4j"                      %     "slf4j-api"             % "1.7.7"       % "test"
 )
 
 libraryDependencies += {
-  libraryDependencies.value :+ "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided"
+  "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided"
 }
 
 publishTo <<= version {
