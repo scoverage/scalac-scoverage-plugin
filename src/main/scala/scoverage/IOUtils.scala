@@ -14,10 +14,13 @@ object IOUtils {
   def clean(dataDir: String): Unit = clean(new File(dataDir))
 
   def coverageFile(dataDir: File): File = coverageFile(dataDir.getAbsolutePath)
-  def coverageFile(dataDir: String): File = new File(dataDir + "/" + CoverageFileName)
+  def coverageFile(dataDir: String): File = new File(dataDir, CoverageFileName)
 
+  /**
+   * @return the measurement file for the current thread.
+   */
   def measurementFile(dataDir: File): File = measurementFile(dataDir.getAbsolutePath)
-  def measurementFile(dataDir: String): File = new File(dataDir + "/" + MeasurementsPrefix + Thread.currentThread.getId)
+  def measurementFile(dataDir: String): File = new File(dataDir, MeasurementsPrefix + Thread.currentThread.getId)
 
   def findMeasurementFiles(dataDir: String): Array[File] = findMeasurementFiles(new File(dataDir))
   def findMeasurementFiles(dataDir: File): Array[File] = dataDir.listFiles(new FileFilter {
