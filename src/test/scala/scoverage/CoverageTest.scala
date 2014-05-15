@@ -21,9 +21,9 @@ class CoverageTest extends FunSuite with BeforeAndAfter with OneInstancePerTest 
   test("coverage for invoked statements") {
     val coverage = Coverage()
     coverage.add(MeasuredStatement("", Location("", "", ClassType.Object, ""), 1, 2, 3, 4, "", "", "", false, 3))
-    coverage.add(MeasuredStatement("", Location("", "", ClassType.Object, ""), 1, 2, 3, 4, "", "", "", false, 0))
-    coverage.add(MeasuredStatement("", Location("", "", ClassType.Object, ""), 1, 2, 3, 4, "", "", "", false, 0))
-    coverage.add(MeasuredStatement("", Location("", "", ClassType.Object, ""), 1, 2, 3, 4, "", "", "", false, 0))
+    coverage.add(MeasuredStatement("", Location("", "", ClassType.Object, ""), 2, 2, 3, 4, "", "", "", false, 0))
+    coverage.add(MeasuredStatement("", Location("", "", ClassType.Object, ""), 3, 2, 3, 4, "", "", "", false, 0))
+    coverage.add(MeasuredStatement("", Location("", "", ClassType.Object, ""), 4, 2, 3, 4, "", "", "", false, 0))
     assert(0.25 === coverage.statementCoverage)
   }
 }
