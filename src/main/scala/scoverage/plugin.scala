@@ -1,12 +1,12 @@
 package scoverage
 
 import scala.tools.nsc.plugins.{PluginComponent, Plugin}
-import scala.tools.nsc.Global
+import scala.tools.nsc._
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
-import scala.reflect.internal.util.SourceFile
 import java.util.concurrent.atomic.AtomicInteger
 import scala.reflect.internal.ModifierFlags
 import java.io.File
+import scala.reflect.internal.util.SourceFile
 
 /** @author Stephen Samuel */
 class ScoveragePlugin(val global: Global) extends Plugin {
@@ -178,7 +178,8 @@ class ScoverageInstrumentationComponent(val global: Global)
     def instrument(tree: Tree, branch: Boolean = false): Tree = {
       safeSource(tree) match {
         case None =>
-          println(s"[warn] Could not instrument [${tree.getClass.getSimpleName}/${tree.symbol}]. No position.")
+          println(s"[warn] [scoverage] Could not instrument [${tree.getClass.getSimpleName}/${tree.symbol}]. No " +
+            s"position.")
           tree
         case Some(source) =>
           if (tree.pos.isDefined && !isStatementIncluded(tree.pos)) {
@@ -201,7 +202,7 @@ class ScoverageInstrumentationComponent(val global: Global)
 
             val apply = invokeCall(id)
             val block = Block(List(apply), tree)
-            localTyper.typed(atPos(tree.duplicate.pos)(block))
+            localTyper.typed(atPos(tree.pos)(block))
           }
       }
     }
@@ -293,12 +294,11 @@ class ScoverageInstrumentationComponent(val global: Global)
     def process(tree: Tree): Tree = {
       tree match {
 
-        // ignore synthetic trees that contain non-syths. Probably macros. Either way breaks due to range validation
-        //case t if isSynthetic(t) && containsNonSynthetic(t) && !t.pos.isDefined =>
-        //   super.transform(t)
+        //        // non ranged inside ranged will break validation after typer, which only kicks in for yrangepos.
+        //        case t if !t.pos.isRange => super.transform(t)
 
-        // ignore macro expanded code
-        case tree if tree.attachments.all.toString().contains("MacroExpansionAttachment") => tree
+        // ignore macro expanded code, do not send to super as we don't want any children to be instrumented
+        case t if t.attachments.all.toString().contains("MacroExpansionAttachment") => t
 
         /**
          * Object creation from new.
@@ -366,12 +366,11 @@ class ScoverageInstrumentationComponent(val global: Global)
             c
           }
 
-        //case d : DefDef => d
-
         // this will catch methods defined as macros, eg def test = macro testImpl
         // it will not catch macro implemenations
-        case d: DefDef if d.symbol != null && d.symbol.annotations.size > 0
-          && d.symbol.annotations.head.atp.typeSymbol.nameString == "macroImpl" =>
+        case d: DefDef if d.symbol != null
+          && d.symbol.annotations.size > 0
+          && d.symbol.annotations.toString() == "macroImpl" =>
           tree
 
         // will catch macro implemenations, as they must end with Expr, however will catch
@@ -439,8 +438,7 @@ class ScoverageInstrumentationComponent(val global: Global)
           updateLocation(d.symbol)
           treeCopy.DefDef(d, d.mods, d.name, d.tparams, d.vparamss, d.tpt, process(d.rhs))
 
-        case EmptyTree =>
-          super.transform(tree)
+        case EmptyTree => tree
 
         // handle function bodies. This AST node corresponds to the following Scala code: vparams => body
         case f: Function =>
@@ -469,11 +467,6 @@ class ScoverageInstrumentationComponent(val global: Global)
             // todo check these assumptions for 2.11
             treeCopy.Match(tree, instrument(selector), transformCases(cases.dropRight(1)) ++ cases.takeRight(1))
           } else {
-            //            import scala.reflect.runtime.universe.{reify, showRaw}
-            //            val _selector = reify {
-            //              Match(Annotated(Apply(Select(New(Ident(scala.unchecked)), nme.CONSTRUCTOR), List()),
-            //                Ident(newTermName("name")))
-            //          }
             instrument(treeCopy.Match(tree, process(selector), transformCases(cases)))
           }
 
