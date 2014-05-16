@@ -112,6 +112,7 @@ case class ClassRef(name: String) {
 }
 object ClassRef {
   def fromFilepath(path: String) = ClassRef(path.replace('/', '.'))
+  def apply(_package: String, className: String): ClassRef = ClassRef(_package.replace('/', '.') + "." + className)
 }
 
 trait CoverageMetrics {
