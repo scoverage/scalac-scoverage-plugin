@@ -88,8 +88,27 @@ class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala
 
   val preComponent = new ScoveragePreComponent(this)
   val instrumentationComponent = new ScoverageInstrumentationComponent(this)
-  val testStore = new ScoverageTestStoreComponent(this)
   instrumentationComponent.setOptions(new ScoverageOptions())
+  val testStore = new ScoverageTestStoreComponent(this)
+  val validator = new PositionValidator(this)
+
+  class PositionValidator(val global: Global) extends PluginComponent with TypingTransformers with Transform {
+
+    val sources = new ListBuffer[String]
+
+    override val phaseName: String = "scoverage-validator"
+    override val runsAfter: List[String] = List("typer")
+    override val runsBefore = List[String]("scoverage-instrumentation")
+
+    override protected def newTransformer(unit: global.CompilationUnit): global.Transformer = new Transformer(unit)
+    class Transformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
+
+      override def transform(tree: global.Tree) = {
+        global.validatePositions(tree)
+        tree
+      }
+    }
+  }
 
   class ScoverageTestStoreComponent(val global: Global) extends PluginComponent with TypingTransformers with Transform {
 
@@ -116,6 +135,7 @@ class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala
       analyzer.namerFactory -> "resolve names, attach symbols to named trees",
       analyzer.packageObjects -> "load package objects",
       analyzer.typerFactory -> "the meat and potatoes: type the trees",
+      validator -> "scoverage validator",
       instrumentationComponent -> "scoverage instrumentationComponent",
       patmat -> "translate match expressions",
       superAccessors -> "add super accessors in traits and nested classes",
