@@ -57,7 +57,7 @@ trait ClassBuilders {
   def classes = statements.groupBy(_.location._class).map(arg => MeasuredClass(arg._1, arg._2))
   def classCount: Int = classes.size
 }
-Bumped for next release version
+
 trait FileBuilders {
   def statements: Iterable[MeasuredStatement]
   def files: Iterable[MeasuredFile] = statements.groupBy(_.source).map(arg => MeasuredFile(arg._1, arg._2))
@@ -104,6 +104,14 @@ case class Location(_package: String,
                     method: String)
   extends java.io.Serializable {
   val fqn = (_package + ".").replace("<empty>.", "") + _class
+}
+
+case class ClassRef(name: String) {
+  lazy val simpleName = name.split(".").last
+  lazy val getPackage = name.split(".").dropRight(1).mkString(".")
+}
+object ClassRef {
+  def fromFilepath(path: String) = ClassRef(path.replace('/', '.'))
 }
 
 trait CoverageMetrics {
