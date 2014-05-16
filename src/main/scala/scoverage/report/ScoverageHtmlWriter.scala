@@ -450,7 +450,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
           Lines per file
         </td>
         <td>
-          {coverage.linesPerFile.toString}
+          {coverage.linesPerFileFormatted}
         </td>
         <td>
           Packages:

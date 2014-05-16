@@ -25,6 +25,7 @@ case class Coverage()
 
   def loc = files.map(_.loc).sum
   def linesPerFile = loc / fileCount.toDouble
+  def linesPerFileFormatted: String = "%.2f".format(linesPerFile)
 
   // returns the classes by least coverage
   def risks(limit: Int) = classes.toSeq.sortBy(_.statementCount).reverse.sortBy(_.statementCoverage).take(limit)
@@ -56,7 +57,7 @@ trait ClassBuilders {
   def classes = statements.groupBy(_.location._class).map(arg => MeasuredClass(arg._1, arg._2))
   def classCount: Int = classes.size
 }
-
+Bumped for next release version
 trait FileBuilders {
   def statements: Iterable[MeasuredStatement]
   def files: Iterable[MeasuredFile] = statements.groupBy(_.source).map(arg => MeasuredFile(arg._1, arg._2))
