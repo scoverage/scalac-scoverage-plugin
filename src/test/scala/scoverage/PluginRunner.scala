@@ -4,7 +4,7 @@ import java.io.{FileNotFoundException, File}
 import scala.tools.nsc.transform.{TypingTransformers, Transform}
 import java.net.URL
 import scala.tools.nsc.plugins.PluginComponent
-import scala.tools.nsc.Global
+import scala.tools.nsc.{Phase, Global}
 import scala.collection.mutable.ListBuffer
 
 /** @author Stephen Samuel */
@@ -19,6 +19,7 @@ trait PluginSupport {
     val s = new scala.tools.nsc.Settings
     s.Xprint.value = List("all")
     s.Yrangepos.value = true
+    s.Yposdebug.value = true
     s.classpath.value = classPath.mkString(":")
     s
   }
@@ -93,8 +94,6 @@ class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala
   val validator = new PositionValidator(this)
 
   class PositionValidator(val global: Global) extends PluginComponent with TypingTransformers with Transform {
-
-    val sources = new ListBuffer[String]
 
     override val phaseName: String = "scoverage-validator"
     override val runsAfter: List[String] = List("typer")

@@ -80,6 +80,22 @@ class PluginCoverageTest
     assertNMeasuredStatements(7)
   }
 
+
+
+  test("scoverage should support yields") {
+    compileCodeSnippet( """
+                          |  object Yielder {
+                          |    val holidays = for ( name <- Seq("sammy", "clint", "lee");
+                          |                         place <- Seq("london", "philly", "iowa") ) yield {
+                          |      name + " has been to " + place
+                          |    }
+                          |  }""".stripMargin)
+    assert(!reporter.hasErrors)
+    // 2 statements for the two applies in Seq, one for each literal which is 6, one for the flat map,
+    // one for the map, one for the yield op.
+    assertNMeasuredStatements(11)
+  }
+
   test("scoverage should not instrument local macro implementation") {
     compileCodeSnippet( """
                           | object MyMacro {

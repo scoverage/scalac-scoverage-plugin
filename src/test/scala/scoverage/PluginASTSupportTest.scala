@@ -93,5 +93,16 @@ class PluginASTSupportTest
     assert(!reporter.hasErrors)
     assert(!reporter.hasWarnings)
   }
+
+  test("type param with default arg supported") {
+    compileCodeSnippet( """   class TypeTreeObjects {
+                          |      class Container {
+                          |        def typeParamAndDefaultArg[C](name: String = "sammy"): String = name
+                          |      }
+                          |      new Container().typeParamAndDefaultArg[Any]()
+                          |    } """.stripMargin)
+    assert(!reporter.hasErrors)
+    assert(!reporter.hasWarnings)
+  }
 }
 
