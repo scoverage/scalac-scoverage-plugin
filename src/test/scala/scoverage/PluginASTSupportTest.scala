@@ -15,11 +15,6 @@ class PluginASTSupportTest
     assert(!reporter.hasErrors)
   }
 
-  test("scoverage component should handle simple class") {
-    compileCodeSnippet( """ class Test { val name = "sammy" } """)
-    assert(!reporter.hasErrors)
-  }
-
   test("scoverage component should ignore basic macros") {
     compileCodeSnippet( """
                           | object MyMacro {
