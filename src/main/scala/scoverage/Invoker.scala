@@ -7,7 +7,7 @@ import scala.collection.concurrent.TrieMap
 object Invoker {
 
   private val threadFile = new ThreadLocal[FileWriter]
-  private val invoked = TrieMap.empty[Int, Any]
+  private val ids = TrieMap.empty[Int, Any]
 
   /**
    * We record that the given id has been invoked by appending its id to the coverage
@@ -30,7 +30,7 @@ object Invoker {
     // times since for coverage we only care about 1 or more, (it just slows things down to
     // do it more than once), anything we can do to help is good. This helps especially with code
     // that is executed many times quickly, eg tight loops.
-    if (!invoked.contains(id)) {
+    if (!ids.contains(id)) {
       // Each thread writes to a separate measurement file, to reduce contention
       // and because file appends via FileWriter are not atomic on Windows.
       var writer = threadFile.get()
@@ -40,7 +40,7 @@ object Invoker {
         threadFile.set(writer)
       }
       writer.append(id.toString + '\n').flush()
-      invoked.put(id, ())
+      ids.put(id, ())
     }
   }
 }
