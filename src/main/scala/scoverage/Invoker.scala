@@ -1,11 +1,13 @@
 package scoverage
 
 import java.io.FileWriter
+import scala.collection.concurrent.TrieMap
 
 /** @author Stephen Samuel */
 object Invoker {
 
-  val threadFile = new ThreadLocal[FileWriter]
+  private val threadFile = new ThreadLocal[FileWriter]
+  private val invoked = TrieMap.empty[Int, Any]
 
   /**
    * We record that the given id has been invoked by appending its id to the coverage
@@ -23,14 +25,20 @@ object Invoker {
    * @param dataDir the directory where the measurement data is held
    */
   def invoked(id: Int, dataDir: String) = {
-    // Each thread writes to a separate measurement file, to reduce contention
-    // and because file appends via FileWriter are not atomic on Windows.
-    var writer = threadFile.get()
-    if (writer == null) {
-      val file = IOUtils.measurementFile(dataDir)
-      writer = new FileWriter(file, true)
-      threadFile.set(writer)
+    // [sam] we can do this simple check to save writing out to a file.
+    // This won't work across JVMs but since there's no harm in writing out the same id multiple
+    // times (it just slows things down), anything we can do to help is good.
+    if (!invoked.contains(id)) {
+      // Each thread writes to a separate measurement file, to reduce contention
+      // and because file appends via FileWriter are not atomic on Windows.
+      var writer = threadFile.get()
+      if (writer == null) {
+        val file = IOUtils.measurementFile(dataDir)
+        writer = new FileWriter(file, true)
+        threadFile.set(writer)
+      }
+      writer.append(id.toString + '\n').flush()
+      invoked.put(id, ())
     }
-    writer.append(id.toString + '\n').flush()
   }
 }
