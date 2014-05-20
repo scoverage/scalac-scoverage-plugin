@@ -27,7 +27,9 @@ object Invoker {
   def invoked(id: Int, dataDir: String) = {
     // [sam] we can do this simple check to save writing out to a file.
     // This won't work across JVMs but since there's no harm in writing out the same id multiple
-    // times (it just slows things down), anything we can do to help is good.
+    // times since for coverage we only care about 1 or more, (it just slows things down to
+    // do it more than once), anything we can do to help is good. This helps especially with code
+    // that is executed many times quickly, eg tight loops.
     if (!invoked.contains(id)) {
       // Each thread writes to a separate measurement file, to reduce contention
       // and because file appends via FileWriter are not atomic on Windows.
