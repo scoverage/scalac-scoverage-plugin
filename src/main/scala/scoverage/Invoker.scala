@@ -24,7 +24,7 @@ object Invoker {
    * @param id the id of the statement that was invoked
    * @param dataDir the directory where the measurement data is held
    */
-  def invoked(id: Int, dataDir: String) = {
+  def invoked(id: Int, dataDir: String): Unit = {
     // [sam] we can do this simple check to save writing out to a file.
     // This won't work across JVMs but since there's no harm in writing out the same id multiple
     // times since for coverage we only care about 1 or more, (it just slows things down to
