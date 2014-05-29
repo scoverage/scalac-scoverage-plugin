@@ -80,8 +80,6 @@ class PluginCoverageTest
     assertNMeasuredStatements(7)
   }
 
-
-
   test("scoverage should support yields") {
     compileCodeSnippet( """
                           |  object Yielder {
