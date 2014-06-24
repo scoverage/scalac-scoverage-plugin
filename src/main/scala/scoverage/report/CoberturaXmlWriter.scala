@@ -17,8 +17,8 @@ class CoberturaXmlWriter(baseDir: File, outputDir: File) {
   def method(method: MeasuredMethod): Node = {
     <method name={method.name}
             signature="()V"
-            line-rate={method.statementCoverageFormatted}
-            branch-rate={method.branchCoverageFormatted}>
+            line-rate={method.statementCoverage.toString}
+            branch-rate={method.branchCoverage.toString}>
       <lines>
         {method.statements.map(stmt =>
           <line
@@ -38,8 +38,8 @@ class CoberturaXmlWriter(baseDir: File, outputDir: File) {
               case false => baseDir.getAbsolutePath + File.separatorChar
             }
             klass.source.replace(absPath, "")}
-           line-rate={klass.statementCoverageFormatted}
-           branch-rate={klass.branchCoverageFormatted}
+           line-rate={klass.statementCoverage.toString}
+           branch-rate={klass.branchCoverage.toString}
            complexity="0">
       <methods>
         {klass.methods.map(method)}
@@ -57,8 +57,8 @@ class CoberturaXmlWriter(baseDir: File, outputDir: File) {
 
   def pack(pack: MeasuredPackage): Node = {
     <package name={pack.name}
-             line-rate={pack.statementCoverageFormatted}
-             branch-rate={pack.branchCoverageFormatted}
+             line-rate={pack.statementCoverage.toString}
+             branch-rate={pack.branchCoverage.toString}
              complexity="0">
       <classes>
         {pack.classes.map(klass)}
@@ -67,12 +67,12 @@ class CoberturaXmlWriter(baseDir: File, outputDir: File) {
   }
 
   def xml(coverage: Coverage): Node = {
-    <coverage line-rate={coverage.statementCoverageFormatted}
+    <coverage line-rate={coverage.statementCoverage.toString}
               lines-covered={coverage.statementCount.toString}
               lines-valid={coverage.invokedStatementCount.toString}
               branches-covered={coverage.branchCount.toString}
               branches-valid={coverage.invokedBranchesCount.toString}
-              branch-rate={coverage.branchCoverageFormatted}
+              branch-rate={coverage.branchCoverage.toString}
               complexity="0"
               version="1.0"
               timestamp={System.currentTimeMillis.toString}>
