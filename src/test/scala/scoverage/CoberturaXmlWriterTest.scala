@@ -45,7 +45,7 @@ class CoberturaXmlWriterTest extends FunSuite with BeforeAndAfter with OneInstan
     coverage.add(MeasuredStatement("d.scala", Location("com.sksamuel.scoverage4", "D", ClassType.Object, "delete2"),
       8, 2, 3, 14, "", "", "", false, 0))
 
-    val writer = new CoberturaXmlWriter(new File(""), tempDir)
+    val writer = new CoberturaXmlWriter(new File(""), dir)
     writer.write(coverage)
 
     val domFactory = DocumentBuilderFactory.newInstance()
