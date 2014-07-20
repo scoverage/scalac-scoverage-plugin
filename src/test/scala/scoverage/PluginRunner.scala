@@ -1,11 +1,12 @@
 package scoverage
 
-import java.io.{FileNotFoundException, File}
-import scala.tools.nsc.transform.{TypingTransformers, Transform}
+import java.io.{File, FileNotFoundException}
 import java.net.URL
-import scala.tools.nsc.plugins.PluginComponent
-import scala.tools.nsc.{Phase, Global}
+
 import scala.collection.mutable.ListBuffer
+import scala.tools.nsc.Global
+import scala.tools.nsc.plugins.PluginComponent
+import scala.tools.nsc.transform.{Transform, TypingTransformers}
 
 /** @author Stephen Samuel */
 trait PluginSupport {
@@ -87,7 +88,6 @@ trait PluginSupport {
 class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools.nsc.reporters.Reporter)
   extends scala.tools.nsc.Global(settings, reporter) {
 
-  val preComponent = new ScoveragePreComponent(this)
   val instrumentationComponent = new ScoverageInstrumentationComponent(this)
   instrumentationComponent.setOptions(new ScoverageOptions())
   val testStore = new ScoverageTestStoreComponent(this)
@@ -130,7 +130,6 @@ class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala
   override def computeInternalPhases() {
     val phs = List(
       syntaxAnalyzer -> "parse source into ASTs, perform simple desugaring",
-      preComponent -> "scoverage preComponent",
       analyzer.namerFactory -> "resolve names, attach symbols to named trees",
       analyzer.packageObjects -> "load package objects",
       analyzer.typerFactory -> "the meat and potatoes: type the trees",

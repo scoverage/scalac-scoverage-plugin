@@ -13,9 +13,8 @@ class ScoveragePlugin(val global: Global) extends Plugin {
 
   override val name: String = "scoverage"
   override val description: String = "scoverage code coverage compiler plugin"
-  val preComponent = new ScoveragePreComponent(global)
   val instrumentationComponent = new ScoverageInstrumentationComponent(global)
-  override val components: List[PluginComponent] = List(preComponent, instrumentationComponent)
+  override val components: List[PluginComponent] = List(instrumentationComponent)
 
   override def processOptions(opts: List[String], error: String => Unit) {
     val options = new ScoverageOptions
@@ -44,35 +43,6 @@ class ScoveragePlugin(val global: Global) extends Plugin {
 class ScoverageOptions {
   var excludedPackages: Seq[String] = Nil
   var dataDir: String = File.createTempFile("scoverage_datadir_not_defined", ".tmp").getParent
-}
-
-class ScoveragePreComponent(val global: Global) extends PluginComponent with TypingTransformers with Transform {
-
-  import global._
-
-  override val phaseName: String = "scoverage-pre"
-  override val runsAfter: List[String] = List("parser")
-  override val runsBefore = List[String]("namer")
-
-  override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
-    override def run(): Unit = {
-      println("[scoverage]: Begin pre-instrumentation phase")
-      super.run()
-      println("[scoverage]: Pre-instrumentation complete")
-    }
-  }
-
-  protected def newTransformer(unit: CompilationUnit): Transformer = new Transformer(unit)
-  class Transformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
-    override def transform(tree: Tree) = {
-      tree match {
-      //  case v: ValDef if v.mods.isFinal =>
-      //    treeCopy.ValDef(v, v.mods.&~(ModifierFlags.FINAL), v.name, v.tpt, v.rhs)
-        case _ =>
-          super.transform(tree)
-      }
-    }
-  }
 }
 
 class ScoverageInstrumentationComponent(val global: Global)
