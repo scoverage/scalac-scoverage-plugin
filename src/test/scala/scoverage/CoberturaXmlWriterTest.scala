@@ -1,19 +1,31 @@
 package scoverage
 
-import javax.xml.parsers.DocumentBuilderFactory
-import org.xml.sax.{ErrorHandler, SAXParseException}
 import java.io.File
-import scoverage.report.CoberturaXmlWriter
-import org.scalatest.{FunSuite, BeforeAndAfter, OneInstancePerTest}
+import java.util.UUID
+import javax.xml.parsers.DocumentBuilderFactory
+
 import org.apache.commons.io.FileUtils
+import org.scalatest.{BeforeAndAfter, FunSuite, OneInstancePerTest}
+import org.xml.sax.{ErrorHandler, SAXParseException}
+import scoverage.report.CoberturaXmlWriter
+
+import scala.xml.XML
 
 /** @author Stephen Samuel */
 class CoberturaXmlWriterTest extends FunSuite with BeforeAndAfter with OneInstancePerTest {
 
+  def tempDir(): File = {
+    val dir = new File(FileUtils.getTempDirectory, UUID.randomUUID().toString)
+    dir.mkdirs()
+    dir.deleteOnExit()
+    dir
+  }
+  
+  def fileIn(dir: File) = new File(dir, "cobertura.xml")
+  
   test("cobertura output validates") {
 
-    val file = new File(FileUtils.getTempDirectoryPath + "/cobertura.xml")
-    file.deleteOnExit()
+    val dir = tempDir()
 
     val coverage = Coverage()
     coverage.add(MeasuredStatement("a.scala", Location("com.sksamuel.scoverage", "A", ClassType.Object, "create"),
@@ -33,7 +45,7 @@ class CoberturaXmlWriterTest extends FunSuite with BeforeAndAfter with OneInstan
     coverage.add(MeasuredStatement("d.scala", Location("com.sksamuel.scoverage4", "D", ClassType.Object, "delete2"),
       8, 2, 3, 14, "", "", "", false, 0))
 
-    val writer = new CoberturaXmlWriter(new File(""), FileUtils.getTempDirectory)
+    val writer = new CoberturaXmlWriter(new File(""), dir)
     writer.write(coverage)
 
     val domFactory = DocumentBuilderFactory.newInstance()
@@ -57,6 +69,28 @@ class CoberturaXmlWriterTest extends FunSuite with BeforeAndAfter with OneInstan
         assert(false)
       }
     })
-    builder.parse(file)
+    builder.parse(fileIn(dir))
+  }
+
+  test("coverage rates are written as 2dp decimal values rather than percentage") {
+
+    val dir = tempDir()
+
+    val coverage = Coverage()
+    coverage.add(MeasuredStatement("a.scala", Location("com.sksamuel.scoverage", "A", ClassType.Object, "create"),
+      1, 2, 3, 12, "", "", "", false))
+    coverage.add(MeasuredStatement("a.scala", Location("com.sksamuel.scoverage", "A", ClassType.Object, "create2"),
+      2, 2, 3, 16, "", "", "", true))
+    coverage.add(MeasuredStatement("a.scala", Location("com.sksamuel.scoverage", "A", ClassType.Object, "create3"),
+      3, 3, 3, 20, "", "", "", true, 1))
+
+    val writer = new CoberturaXmlWriter(new File(""), dir)
+    writer.write(coverage)
+
+    val xml = XML.loadFile(fileIn(dir))
+
+    assert(xml \\ "coverage" \@ "line-rate" === "0.33", "line-rate")
+    assert(xml \\ "coverage" \@ "branch-rate" === "0.50", "branch-rate")
+
   }
 }

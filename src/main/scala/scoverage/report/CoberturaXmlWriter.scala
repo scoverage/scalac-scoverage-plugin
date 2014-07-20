@@ -8,6 +8,8 @@ import org.apache.commons.io.FileUtils
 /** @author Stephen Samuel */
 class CoberturaXmlWriter(baseDir: File, outputDir: File) {
 
+  def format(double: Double): String = "%.2f".format(double)
+
   def write(coverage: Coverage): Unit = {
     FileUtils.write(new File(outputDir.getAbsolutePath + "/cobertura.xml"),
       "<?xml version=\"1.0\"?>\n<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-04.dtd\">\n" +
@@ -17,8 +19,8 @@ class CoberturaXmlWriter(baseDir: File, outputDir: File) {
   def method(method: MeasuredMethod): Node = {
     <method name={method.name}
             signature="()V"
-            line-rate={method.statementCoverageFormatted}
-            branch-rate={method.branchCoverageFormatted}>
+            line-rate={format(method.statementCoverage)}
+            branch-rate={format(method.branchCoverage)}>
       <lines>
         {method.statements.map(stmt =>
           <line
@@ -38,8 +40,8 @@ class CoberturaXmlWriter(baseDir: File, outputDir: File) {
               case false => baseDir.getAbsolutePath + File.separatorChar
             }
             klass.source.replace(absPath, "")}
-           line-rate={klass.statementCoverageFormatted}
-           branch-rate={klass.branchCoverageFormatted}
+           line-rate={format(klass.statementCoverage)}
+           branch-rate={format(klass.branchCoverage)}
            complexity="0">
       <methods>
         {klass.methods.map(method)}
@@ -57,8 +59,8 @@ class CoberturaXmlWriter(baseDir: File, outputDir: File) {
 
   def pack(pack: MeasuredPackage): Node = {
     <package name={pack.name}
-             line-rate={pack.statementCoverageFormatted}
-             branch-rate={pack.branchCoverageFormatted}
+             line-rate={format(pack.statementCoverage)}
+             branch-rate={format(pack.branchCoverage)}
              complexity="0">
       <classes>
         {pack.classes.map(klass)}
@@ -67,12 +69,12 @@ class CoberturaXmlWriter(baseDir: File, outputDir: File) {
   }
 
   def xml(coverage: Coverage): Node = {
-    <coverage line-rate={coverage.statementCoverageFormatted}
+    <coverage line-rate={format(coverage.statementCoverage)}
               lines-covered={coverage.statementCount.toString}
               lines-valid={coverage.invokedStatementCount.toString}
               branches-covered={coverage.branchCount.toString}
               branches-valid={coverage.invokedBranchesCount.toString}
-              branch-rate={coverage.branchCoverageFormatted}
+              branch-rate={format(coverage.branchCoverage)}
               complexity="0"
               version="1.0"
               timestamp={System.currentTimeMillis.toString}>
