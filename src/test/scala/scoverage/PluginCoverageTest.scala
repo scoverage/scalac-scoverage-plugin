@@ -23,14 +23,19 @@ class PluginCoverageTest
     assertNMeasuredStatements(2)
   }
 
-  test("scoverage should instrument private final vals") {
+  test("scoverage should instrument final vals") {
     compileCodeSnippet( """ object FinalVals {
-                          |  private final val name = "sammy"
+                          |  final val name = {
+                          |     val name = "sammy"
+                          |     if (System.currentTimeMillis() > 0) {
+                          |      println(name)
+                          |     }
+                          |  }
                           |  println(name)
                           |} """.stripMargin)
     assert(!reporter.hasErrors)
     // we should have 3 statements - initialising the val, executing println, and executing the parameter
-    assertNMeasuredStatements(3)
+    assertNMeasuredStatements(8)
   }
 
   test("scoverage should instrument selectors in match") {

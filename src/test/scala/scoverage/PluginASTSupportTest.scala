@@ -89,6 +89,18 @@ class PluginASTSupportTest
     assert(!reporter.hasWarnings)
   }
 
+  // https://github.com/scoverage/scalac-scoverage-plugin/issues/45
+  test("compile final vals in annotations") {
+    compileCodeSnippet( """object Foo  {
+                          |  final val foo = 1L
+                          |}
+                          |@SerialVersionUID(value = Foo.foo)
+                          |class Bar
+                          |""".stripMargin)
+    assert(!reporter.hasErrors)
+    assert(!reporter.hasWarnings)
+  }
+
   //test("type param with default arg supported") {
   // compileCodeSnippet( """   class TypeTreeObjects {
   //                       |      class Container {

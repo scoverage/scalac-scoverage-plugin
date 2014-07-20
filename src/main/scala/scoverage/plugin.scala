@@ -66,8 +66,8 @@ class ScoveragePreComponent(val global: Global) extends PluginComponent with Typ
   class Transformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
     override def transform(tree: Tree) = {
       tree match {
-        case v: ValDef if v.mods.isFinal =>
-          treeCopy.ValDef(v, v.mods.&~(ModifierFlags.FINAL), v.name, v.tpt, v.rhs)
+      //  case v: ValDef if v.mods.isFinal =>
+      //    treeCopy.ValDef(v, v.mods.&~(ModifierFlags.FINAL), v.name, v.tpt, v.rhs)
         case _ =>
           super.transform(tree)
       }
