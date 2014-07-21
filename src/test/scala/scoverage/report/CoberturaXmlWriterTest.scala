@@ -1,4 +1,4 @@
-package scoverage
+package scoverage.report
 
 import java.io.File
 import java.util.UUID
@@ -7,7 +7,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 import org.apache.commons.io.FileUtils
 import org.scalatest.{BeforeAndAfter, FunSuite, OneInstancePerTest}
 import org.xml.sax.{ErrorHandler, SAXParseException}
-import scoverage.report.CoberturaXmlWriter
+import scoverage.{ClassType, Coverage, Location, MeasuredStatement}
 
 import scala.xml.XML
 

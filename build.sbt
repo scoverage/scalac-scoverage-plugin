@@ -18,7 +18,7 @@ crossScalaVersions := Seq("2.10.4", "2.11.1")
 
 libraryDependencies ++= Seq(
   "commons-io"                     %     "commons-io"            % "2.4",
-  "org.scalatest"                  %%    "scalatest"             % "2.1.6"       % "test",
+  "org.scalatest"                  %%    "scalatest"             % "2.2.0"       % "test",
   "com.typesafe.scala-logging"     %%    "scala-logging-slf4j"   % "2.1.2"       % "test",
   "org.mockito"                    %     "mockito-all"           % "1.9.5"       % "test",
   "joda-time"                      %     "joda-time"             % "2.3"         % "test",
