@@ -17,6 +17,20 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 
 ### Release History
 
+##### 20th July 2014 0.99.7
+* Fixes for final val constants
+* Fixed cobertura output for ratio values
+
+##### 21 May 2014 0.99.5
+
+* Major performance enhancements
+* Avoids issue with timeouts on tests
+
+##### 19 May 2014 0.99.3
+
+* Fixed issue with min coverage
+* Added highlighting option to avoid issues with overlapping trees
+
 ##### 15th May 2014 - 0.99.2
 * 2.11 support
 * [2.10 support dropped](2.10.md)
