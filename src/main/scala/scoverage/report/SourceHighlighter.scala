@@ -60,7 +60,7 @@ class SourceHighlighter {
     <html>
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title id='title'>Scales Code Coverage</title>
+        <title id='title'>Scoverage Code Coverage</title>
         <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.3.0/pure-min.css"/>
       </head>
       <body style="font-family: monospace;">
