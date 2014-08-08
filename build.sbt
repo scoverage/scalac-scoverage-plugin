@@ -14,7 +14,7 @@ javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
 
 scalaVersion := "2.11.1"
 
-crossScalaVersions := Seq("2.10.4", "2.11.1")
+crossScalaVersions := Seq("2.10.4", "2.11.1", "2.9.3")
 
 libraryDependencies ++= Seq(
   "commons-io"                     %     "commons-io"            % "2.4",
