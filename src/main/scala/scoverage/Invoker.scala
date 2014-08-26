@@ -34,13 +34,25 @@ object Invoker {
       // Each thread writes to a separate measurement file, to reduce contention
       // and because file appends via FileWriter are not atomic on Windows.
       var writer = threadFile.get()
+      
       if (writer == null) {
-        val file = IOUtils.measurementFile(dataDir)
-        writer = new FileWriter(file, true)
-        threadFile.set(writer)
+        //When using scoverage in a multi-project maven build with dependencies between projects (eg: classes that inherit
+        //from others in another project), this method gets called for classes higher up in the class hierarchy first.  If these
+        //classes are in a different project from the one where the coverage data should be written, the writer should not
+        //be set to write to that dataDir.  We assume that dependencies are built first and therefore we can recognize whether
+        //or not the dataDir is correct by looking for already existent measurement files.
+        val isNotInstrumented = IOUtils.findMeasurementFiles(dataDir).isEmpty
+        if (isNotInstrumented) {
+          val file = IOUtils.measurementFile(dataDir)
+          writer = new FileWriter(file, true)
+          threadFile.set(writer)
+        }
       }
-      writer.append(id.toString + '\n').flush()
-      ids.put(id, ())
+
+      if (writer != null) {
+        writer.append(id.toString + '\n').flush()
+        ids.put(id, ())
+      }
     }
   }
 }
