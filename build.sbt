@@ -4,7 +4,7 @@ name := "scalac-scoverage-plugin"
 
 organization := "org.scoverage"
 
-version := "0.99.7"
+version := "0.99.8"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8")
 
@@ -12,13 +12,14 @@ resolvers := ("releases" at "https://oss.sonatype.org/service/local/staging/depl
 
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
 
-scalaVersion := "2.11.1"
+scalaVersion := "2.11.2"
 
-crossScalaVersions := Seq("2.10.4", "2.11.1", "2.9.3")
+crossScalaVersions := Seq("2.10.4", "2.11.2")
 
 libraryDependencies ++= Seq(
+  "org.scala-lang"                 % "scala-compiler"            % scalaVersion.value    % "provided",
   "commons-io"                     %     "commons-io"            % "2.4",
-  "org.scalatest"                  %%    "scalatest"             % "2.2.0"       % "test",
+  "org.scalatest"                  %%    "scalatest"             % "2.2.1"       % "test",
   "com.typesafe.scala-logging"     %%    "scala-logging-slf4j"   % "2.1.2"       % "test",
   "org.mockito"                    %     "mockito-all"           % "1.9.5"       % "test",
   "joda-time"                      %     "joda-time"             % "2.3"         % "test",
@@ -26,14 +27,10 @@ libraryDependencies ++= Seq(
   "org.slf4j"                      %     "slf4j-api"             % "1.7.7"       % "test"
 )
 
-libraryDependencies += {
-  "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided"
-}
-
 libraryDependencies := {
   CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, scalaMajor)) if scalaMajor == 11 =>
-      EnvSupport.setEnv("CrossBuildScalaVersion", "2.11.0")
+      EnvSupport.setEnv("CrossBuildScalaVersion", "2.11.2")
       libraryDependencies.value :+ "org.scala-lang.modules" %% "scala-xml" % "1.0.1"
     case _ =>
       EnvSupport.setEnv("CrossBuildScalaVersion", "2.10.4")

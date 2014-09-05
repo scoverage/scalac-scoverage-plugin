@@ -1,6 +1,6 @@
 package scoverage.report
 
-import scala.xml.{PrettyPrinter, Node}
+import scala.xml.{Utility, PrettyPrinter, Node}
 import java.io.File
 import org.apache.commons.io.FileUtils
 import scoverage._
@@ -32,7 +32,7 @@ class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
                    tree={stmt.treeName}
                    branch={stmt.branch.toString}
                    invocation-count={stmt.count.toString}>
-          {stmt.desc}
+          {Utility.escape(stmt.desc)}
         </statement>
 
       case false =>

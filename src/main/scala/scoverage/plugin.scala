@@ -1,12 +1,12 @@
 package scoverage
 
-import scala.tools.nsc.plugins.{PluginComponent, Plugin}
-import scala.tools.nsc._
-import scala.tools.nsc.transform.{Transform, TypingTransformers}
-import java.util.concurrent.atomic.AtomicInteger
-import scala.reflect.internal.ModifierFlags
 import java.io.File
-import scala.reflect.internal.util.SourceFile
+import java.util.concurrent.atomic.AtomicInteger
+
+import scala.tools.nsc._
+import scala.tools.nsc.plugins.{Plugin, PluginComponent}
+import scala.tools.nsc.transform.{Transform, TypingTransformers}
+import scala.tools.nsc.util.SourceFile
 
 /** @author Stephen Samuel */
 class ScoveragePlugin(val global: Global) extends Plugin {
