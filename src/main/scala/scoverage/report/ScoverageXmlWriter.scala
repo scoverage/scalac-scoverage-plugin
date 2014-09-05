@@ -19,29 +19,52 @@ class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
     FileUtils.write(file, new PrettyPrinter(120, 4).format(xml(coverage)))
   }
 
+  /**
+   * This method ensures that the output String has only
+   * valid XML unicode characters as specified by the
+   * XML 1.0 standard. For reference, please see
+   * <a href="http://www.w3.org/TR/2000/REC-xml-20001006#NT-Char">the
+   * standard</a>. This method will return an empty
+   * String if the input is null or empty.
+   *
+   * @param in The String whose non-valid characters we want to remove.
+   * @return The in String, stripped of non-valid characters.
+   * @see http://blog.mark-mclaren.info/2007/02/invalid-xml-characters-when-valid-utf8_5873.html
+   *
+   */
+  private def escape(in: String): String = {
+    val out = new StringBuilder()
+    for ( current <- Option(in).getOrElse("").toCharArray ) {
+      if ((current == 0x9) || (current == 0xA) || (current == 0xD) ||
+        ((current >= 0x20) && (current <= 0xD7FF)) ||
+        ((current >= 0xE000) && (current <= 0xFFFD)) ||
+        ((current >= 0x10000) && (current <= 0x10FFFF)))
+        out.append(current)
+    }
+    out.mkString
+  }
+
   def statement(stmt: MeasuredStatement): Node = {
     debug match {
-
       case true =>
         <statement package={stmt.location._package}
                    class={stmt.location._class}
                    method={stmt.location.method}
                    start={stmt.start.toString}
                    line={stmt.line.toString}
-                   symbol={Utility.escape(stmt.symbolName)}
+                   symbol={escape(stmt.symbolName)}
                    tree={stmt.treeName}
                    branch={stmt.branch.toString}
                    invocation-count={stmt.count.toString}>
-          {Utility.escape(stmt.desc)}
+          {escape(stmt.desc)}
         </statement>
-
       case false =>
           <statement package={stmt.location._package}
                      class={stmt.location._class}
                      method={stmt.location.method}
                      start={stmt.start.toString}
                      line={stmt.line.toString}
-                     symbol={Utility.escape(stmt.symbolName)}
+                     symbol={escape(stmt.symbolName)}
                      tree={stmt.treeName}
                      branch={stmt.branch.toString}
                      invocation-count={stmt.count.toString}/>
