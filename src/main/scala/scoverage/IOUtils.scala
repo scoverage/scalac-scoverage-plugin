@@ -30,12 +30,37 @@ object IOUtils {
     override def accept(pathname: File): Boolean = pathname.getName.startsWith(MeasurementsPrefix)
   })
 
+  /**
+   * This method ensures that the output String has only
+   * valid XML unicode characters as specified by the
+   * XML 1.0 standard. For reference, please see
+   * <a href="http://www.w3.org/TR/2000/REC-xml-20001006#NT-Char">the
+   * standard</a>. This method will return an empty
+   * String if the input is null or empty.
+   *
+   * @param in The String whose non-valid characters we want to remove.
+   * @return The in String, stripped of non-valid characters.
+   * @see http://blog.mark-mclaren.info/2007/02/invalid-xml-characters-when-valid-utf8_5873.html
+   *
+   */
+  def escape(in: String): String = {
+    val out = new StringBuilder()
+    for ( current <- Option(in).getOrElse("").toCharArray ) {
+      if ((current == 0x9) || (current == 0xA) || (current == 0xD) ||
+        ((current >= 0x20) && (current <= 0xD7FF)) ||
+        ((current >= 0xE000) && (current <= 0xFFFD)) ||
+        ((current >= 0x10000) && (current <= 0x10FFFF)))
+        out.append(current)
+    }
+    out.mkString
+  }
+
   // loads all the invoked statement ids from the given files
   def invoked(files: Seq[File]): Set[Int] = {
     val acc = mutable.Set[Int]()
     files.foreach { file =>
       val reader = Source.fromFile(file)
-      for (line <- reader.getLines()) {
+      for ( line <- reader.getLines() ) {
         if (!line.isEmpty) {
           acc += line.toInt
         }
@@ -86,13 +111,13 @@ object IOUtils {
           {stmt.line.toString}
         </line>
         <description>
-          {stmt.desc}
+          {escape(stmt.desc)}
         </description>
         <symbolName>
-          {stmt.symbolName}
+          {escape(stmt.symbolName)}
         </symbolName>
         <treeName>
-          {stmt.treeName}
+          {escape(stmt.treeName)}
         </treeName>
         <branch>
           {stmt.branch.toString}
