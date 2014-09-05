@@ -1,7 +1,7 @@
 package scoverage
 
-import org.scalatest.{BeforeAndAfterEachTestData, OneInstancePerTest, FunSuite}
 import org.scalatest.mock.MockitoSugar
+import org.scalatest.{BeforeAndAfterEachTestData, FunSuite, OneInstancePerTest}
 
 /** @author Stephen Samuel */
 class PluginCoverageTest
@@ -21,6 +21,22 @@ class PluginCoverageTest
     assert(!reporter.hasErrors)
     // we should have 2 statements - initialising the val and executing string sub in the def
     assertNMeasuredStatements(2)
+  }
+
+  test("scoverage should skip macros") {
+    val code = """
+              import scala.language.experimental.macros
+              import scala.reflect.macros.Context
+              class Impl(val c: Context) {
+                import c.universe._
+                def poly[T: c.WeakTypeTag] = c.literal(c.weakTypeOf[T].toString)
+              }
+              object Macros {
+                def poly[T] = macro Impl.poly[T]
+              }"""
+    compileCodeSnippet(code)
+    assert(!reporter.hasErrors)
+    assertNMeasuredStatements(0)
   }
 
   test("scoverage should instrument final vals") {

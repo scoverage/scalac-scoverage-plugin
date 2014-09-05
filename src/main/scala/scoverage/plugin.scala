@@ -337,6 +337,9 @@ class ScoverageInstrumentationComponent(val global: Global)
             c
           }
 
+        // ignore macro definitions in 2.11
+        case DefDef(mods, _, _, _, _, _) if mods.isMacro => tree
+
         // this will catch methods defined as macros, eg def test = macro testImpl
         // it will not catch macro implemenations
         case d: DefDef if d.symbol != null
