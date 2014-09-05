@@ -128,7 +128,21 @@ trait CoverageMetrics {
   def branchCoveragePercent = branchCoverage * 100
   def invokedBranches: Iterable[MeasuredStatement] = branches.filter(_.count > 0)
   def invokedBranchesCount = invokedBranches.size
-  def branchCoverage: Double = if (branchCount == 0) 1 else invokedBranchesCount / branchCount.toDouble
+
+  /**
+   * @see http://stackoverflow.com/questions/25184716/scoverage-ambiguous-measurement-from-branch-coverage
+   */
+  def branchCoverage: Double = {
+    // if there are zero branches, then we have a single line of execution.
+    // in that case, if there is at least some coverage, we have covered the branch.
+    // if there is no coverage then we have not covered the branch
+    if (branchCount == 0) {
+      if (statementCoverage > 0) 1
+      else 0
+    } else {
+      invokedBranchesCount / branchCount.toDouble
+    }
+  }
   def branchCoverageFormatted: String = "%.2f".format(branchCoveragePercent)
 }
 
