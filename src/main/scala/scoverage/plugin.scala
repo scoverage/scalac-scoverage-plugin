@@ -3,6 +3,7 @@ package scoverage
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
+import scala.reflect.internal.ModifierFlags
 import scala.tools.nsc._
 import scala.tools.nsc.plugins.{Plugin, PluginComponent}
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
@@ -343,7 +344,7 @@ class ScoverageInstrumentationComponent(val global: Global)
           && d.symbol.annotations.toString() == "macroImpl" =>
           tree
 
-        // will catch macro implemenations, as they must end with Expr, however will catch
+        // will catch macro implementations, as they must end with Expr, however will catch
         // any method that ends in Expr. // todo add way of allowing methods that return Expr
         case d: DefDef if d.symbol != null && d.tpt.symbol.fullNameString == "scala.reflect.api.Exprs.Expr" =>
           tree
