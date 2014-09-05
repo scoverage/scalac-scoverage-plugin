@@ -28,7 +28,7 @@ class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
                    method={stmt.location.method}
                    start={stmt.start.toString}
                    line={stmt.line.toString}
-                   symbol={stmt.symbolName}
+                   symbol={Utility.escape(stmt.symbolName)}
                    tree={stmt.treeName}
                    branch={stmt.branch.toString}
                    invocation-count={stmt.count.toString}>
@@ -41,7 +41,7 @@ class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
                      method={stmt.location.method}
                      start={stmt.start.toString}
                      line={stmt.line.toString}
-                     symbol={stmt.symbolName}
+                     symbol={Utility.escape(stmt.symbolName)}
                      tree={stmt.treeName}
                      branch={stmt.branch.toString}
                      invocation-count={stmt.count.toString}/>
