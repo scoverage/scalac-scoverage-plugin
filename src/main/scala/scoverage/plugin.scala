@@ -4,10 +4,10 @@ import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
 import scala.reflect.internal.ModifierFlags
+import scala.reflect.internal.util.SourceFile
 import scala.tools.nsc._
 import scala.tools.nsc.plugins.{Plugin, PluginComponent}
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
-import scala.tools.nsc.util.SourceFile
 
 /** @author Stephen Samuel */
 class ScoveragePlugin(val global: Global) extends Plugin {
@@ -75,7 +75,7 @@ class ScoverageInstrumentationComponent(val global: Global)
 
   def setOptions(options: ScoverageOptions): Unit = {
     this.options = options
-    coverageFilter = new RegexCoverageFilter(options.excludedPackages)
+    coverageFilter = new RegexCoverageFilter(options.excludedPackages, options.excludedFiles)
     new File(options.dataDir).mkdirs() // ensure data directory is created
   }
 
@@ -182,13 +182,9 @@ class ScoverageInstrumentationComponent(val global: Global)
       }
     }
 
-    def isClassIncluded(symbol: Symbol): Boolean = {
-      coverageFilter.isClassIncluded(symbol.fullNameString)
-    }
-
-    def isStatementIncluded(pos: Position): Boolean = {
-      coverageFilter.isLineIncluded(pos)
-    }
+    def isClassIncluded(symbol: Symbol): Boolean = coverageFilter.isClassIncluded(symbol.fullNameString)
+    def isFileIncluded(source: SourceFile): Boolean = coverageFilter.isFileIncluded(source)
+    def isStatementIncluded(pos: Position): Boolean = coverageFilter.isLineIncluded(pos)
 
     def className(s: Symbol): String = {
       if (s.enclClass.isAnonymousFunction || s.enclClass.isAnonymousFunction)
@@ -214,7 +210,8 @@ class ScoverageInstrumentationComponent(val global: Global)
         s.enclosingPackage.fullName,
         className(s),
         classType,
-        enclosingMethod(s)
+        enclosingMethod(s),
+        s.sourceFile.canonicalPath
       )
     }
 
@@ -327,14 +324,14 @@ class ScoverageInstrumentationComponent(val global: Global)
         // scalac generated classes, we just instrument the enclosed methods/statments
         // the location would stay as the source class
         case c: ClassDef if c.symbol.isAnonymousClass || c.symbol.isAnonymousFunction =>
-          if (isClassIncluded(c.symbol))
+          if (isFileIncluded(c.pos.source) && isClassIncluded(c.symbol))
             super.transform(tree)
           else {
             c
           }
 
         case c: ClassDef =>
-          if (isClassIncluded(c.symbol)) {
+          if (isFileIncluded(c.pos.source) && isClassIncluded(c.symbol)) {
             updateLocation(c.symbol)
             super.transform(tree)
           } else {
@@ -453,7 +450,7 @@ class ScoverageInstrumentationComponent(val global: Global)
 
         // user defined objects
         case m: ModuleDef =>
-          if (isClassIncluded(m.symbol)) {
+          if (isFileIncluded(m.pos.source) && isClassIncluded(m.symbol)) {
             updateLocation(m.symbol)
             super.transform(tree)
           }

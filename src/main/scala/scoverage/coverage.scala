@@ -101,7 +101,8 @@ case class MeasuredStatement(source: String,
 case class Location(_package: String,
                     _class: String,
                     classType: ClassType,
-                    method: String)
+                    method: String,
+                    path: String)
   extends java.io.Serializable {
   val fqn = (_package + ".").replace("<empty>.", "") + _class
 }
