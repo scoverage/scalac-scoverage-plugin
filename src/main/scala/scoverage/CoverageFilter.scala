@@ -11,6 +11,7 @@ import scala.reflect.internal.util.Position
  */
 trait CoverageFilter {
   def isClassIncluded(className: String): Boolean
+  def isFileIncluded(file: SourceFile): Boolean
   def isLineIncluded(position: Position): Boolean
   def getExcludedLineNumbers(sourceFile: SourceFile): List[Range]
 }
@@ -19,18 +20,21 @@ object AllCoverageFilter extends CoverageFilter {
   override def getExcludedLineNumbers(sourceFile: SourceFile): List[Range] = Nil
   override def isLineIncluded(position: Position): Boolean = true
   override def isClassIncluded(className: String): Boolean = true
+  override def isFileIncluded(file: SourceFile): Boolean = true
 }
 
-class RegexCoverageFilter(excludedPackages: Seq[String]) extends CoverageFilter {
+class RegexCoverageFilter(excludedPackages: Seq[String],
+                          excludedFiles: Seq[String]) extends CoverageFilter {
 
   val excludedClassNamePatterns = excludedPackages.map(_.r.pattern)
+  val excludedFilePatterns = excludedFiles.map(_.r.pattern)
+
   /**
    * We cache the excluded ranges to avoid scanning the source code files
    * repeatedly. For a large project there might be a lot of source code
    * data, so we only hold a weak reference.
    */
-  val linesExcludedByScoverageCommentsCache: mutable.Map[SourceFile, List[Range]] =
-    mutable.WeakHashMap.empty
+  val linesExcludedByScoverageCommentsCache: mutable.Map[SourceFile, List[Range]] = mutable.WeakHashMap.empty
 
   final val scoverageExclusionCommentsRegex =
     """(?ms)^\s*//\s*(\$COVERAGE-OFF\$).*?(^\s*//\s*\$COVERAGE-ON\$|\Z)""".r
@@ -39,9 +43,13 @@ class RegexCoverageFilter(excludedPackages: Seq[String]) extends CoverageFilter 
    * True if the given className has not been excluded by the
    * `excludedPackages` option.
    */
-  def isClassIncluded(className: String): Boolean = {
-    excludedClassNamePatterns.isEmpty ||
-      !excludedClassNamePatterns.exists(_.matcher(className).matches)
+  override def isClassIncluded(className: String): Boolean = {
+    excludedClassNamePatterns.isEmpty || !excludedClassNamePatterns.exists(_.matcher(className).matches)
+  }
+
+  override def isFileIncluded(file: SourceFile): Boolean = {
+    def isFileMatch(file:SourceFile) = excludedFilePatterns.exists(_.matcher(file.path).matches)
+    excludedFilePatterns.isEmpty || !isFileMatch(file)
   }
 
   /**

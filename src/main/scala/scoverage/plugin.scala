@@ -22,6 +22,8 @@ class ScoveragePlugin(val global: Global) extends Plugin {
     for ( opt <- opts ) {
       if (opt.startsWith("excludedPackages:")) {
         options.excludedPackages = opt.substring("excludedPackages:".length).split(";").map(_.trim).filterNot(_.isEmpty)
+      } else if (opt.startsWith("excludedFiles:")) {
+        options.excludedFiles = opt.substring("excludedFiles:".length).split(";").map(_.trim).filterNot(_.isEmpty)
       } else if (opt.startsWith("dataDir:")) {
         options.dataDir = opt.substring("dataDir:".length)
       } else {
@@ -36,6 +38,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
   override val optionsHelp: Option[String] = Some(Seq(
     "-P:scoverage:dataDir:<pathtodatadir>                  where the coverage files should be written\n",
     "-P:scoverage:excludedPackages:<regex>;<regex>         semicolon separated list of regexs for packages to exclude",
+    "-P:scoverage:excludedFiles:<regex>;<regex>            semicolon separated list of regexs for paths to exclude",
     "                                                      Any classes whose fully qualified name matches the regex will",
     "                                                      be excluded from coverage."
   ).mkString("\n"))
@@ -43,6 +46,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
 
 class ScoverageOptions {
   var excludedPackages: Seq[String] = Nil
+  var excludedFiles: Seq[String] = Nil
   var dataDir: String = File.createTempFile("scoverage_datadir_not_defined", ".tmp").getParent
 }
 
