@@ -12,9 +12,9 @@ resolvers := ("releases" at "https://oss.sonatype.org/service/local/staging/depl
 
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
 
-scalaVersion := "2.11.1"
+scalaVersion := "2.11.2"
 
-crossScalaVersions := Seq("2.10.4", "2.11.1")
+crossScalaVersions := Seq("2.10.4", "2.11.2")
 
 libraryDependencies ++= Seq(
   "org.scala-lang"                 %     "scala-compiler"        % scalaVersion.value    % "provided",
