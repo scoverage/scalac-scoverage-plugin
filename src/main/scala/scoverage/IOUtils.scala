@@ -98,6 +98,9 @@ object IOUtils {
         <method>
           {stmt.location.method}
         </method>
+        <path>
+          {stmt.location.path}
+        </path>
         <id>
           {stmt.id.toString}
         </id>
@@ -141,6 +144,7 @@ object IOUtils {
       val _package = (node \ "package").text
       val _class = (node \ "class").text
       val method = (node \ "method").text
+      val path = (node \ "path").text
       val treeName = (node \ "treeName").text
       val symbolName = (node \ "symbolName").text
       val id = (node \ "id").text.toInt
@@ -153,7 +157,14 @@ object IOUtils {
         case "Object" => ClassType.Object
         case _ => ClassType.Class
       }
-      MeasuredStatement(source, Location(_package, _class, classType, method), id, start, end, line, desc, symbolName,
+      MeasuredStatement(source,
+        Location(_package, _class, classType, method, path),
+        id,
+        start,
+        end,
+        line,
+        desc,
+        symbolName,
         treeName, branch, count)
     })
 
