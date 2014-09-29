@@ -1,10 +1,15 @@
 package scoverage
 
-import org.scalatest.FreeSpec
+import java.io.{InputStream, File, OutputStream}
 
-import scala.reflect.internal.util.{BatchSourceFile, NoFile, SourceFile}
+import org.mockito.Mockito
+import org.scalatest.mock.MockitoSugar
+import org.scalatest.{Matchers, FreeSpec}
 
-class RegexCoverageFilterTest extends FreeSpec {
+import scala.reflect.internal.util._
+import scala.reflect.io.{Path, AbstractFile}
+
+class RegexCoverageFilterTest extends FreeSpec with Matchers with MockitoSugar {
 
   "isClassIncluded" - {
 
@@ -34,6 +39,26 @@ class RegexCoverageFilterTest extends FreeSpec {
 
     "should exclude .*eee -> scoverageeee" in {
       assert(!new RegexCoverageFilter(Seq(".*eee"), Nil).isClassIncluded("scoverageeee"))
+    }
+  }
+  "isFileIncluded" - {
+    val abstractFile = mock[AbstractFile]
+    Mockito.when(abstractFile.path).thenReturn("sammy.scala")
+    "should return true for empty excludes" in {
+      val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
+      new RegexCoverageFilter(Nil, Nil).isFileIncluded(file) shouldBe true
+    }
+    "should exclude by filename" in {
+      val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
+      new RegexCoverageFilter(Nil, Seq("sammy")).isFileIncluded(file) shouldBe false
+    }
+    "should exclude by regex wildcard" in {
+      val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
+      new RegexCoverageFilter(Nil, Seq("sam.*")).isFileIncluded(file) shouldBe false
+    }
+    "should not exclude non matching regex" in {
+      val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
+      new RegexCoverageFilter(Nil, Seq("qweqeqwe")).isFileIncluded(file) shouldBe true
     }
   }
   "getExcludedLineNumbers" - {

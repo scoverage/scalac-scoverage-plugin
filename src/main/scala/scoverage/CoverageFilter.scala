@@ -48,7 +48,7 @@ class RegexCoverageFilter(excludedPackages: Seq[String],
   }
 
   override def isFileIncluded(file: SourceFile): Boolean = {
-    def isFileMatch(file:SourceFile) = excludedFilePatterns.exists(_.matcher(file.path).matches)
+    def isFileMatch(file: SourceFile) = excludedFilePatterns.exists(_.matcher(file.path.replace(".scala", "")).matches)
     excludedFilePatterns.isEmpty || !isFileMatch(file)
   }
 
