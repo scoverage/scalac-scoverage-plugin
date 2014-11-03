@@ -11,7 +11,7 @@ import scala.tools.nsc.transform.{Transform, TypingTransformers}
 /** @author Stephen Samuel */
 trait PluginSupport {
 
-  val scalaVersion = "2.11.2"
+  val scalaVersion = "2.11.4"
   val shortScalaVersion = scalaVersion.dropRight(2)
 
   val classPath = getScalaJars.map(_.getAbsolutePath) :+ sbtCompileDir.getAbsolutePath
@@ -87,8 +87,6 @@ trait PluginSupport {
 
 class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools.nsc.reporters.Reporter)
   extends scala.tools.nsc.Global(settings, reporter) {
-
-
 
   val instrumentationComponent = new ScoverageInstrumentationComponent(this)
   instrumentationComponent.setOptions(new ScoverageOptions())

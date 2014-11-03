@@ -17,6 +17,14 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 
 ### Release History
 
+##### 3rd November 2014 0.99.10
+
+* Fixed command line options due to changes in Scala 2.11.3+
+
+##### 10th Sept 2014 0.99.9
+
+* Added exclude by filename
+
 ##### 20th July 2014 0.99.7
 * Fixes for final val constants
 * Fixed cobertura output for ratio values
