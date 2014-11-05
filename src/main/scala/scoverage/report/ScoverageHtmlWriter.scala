@@ -15,7 +15,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
     val packageFile = new File(outputDir.getAbsolutePath + "/packages.html")
     val overviewFile = new File(outputDir.getAbsolutePath + "/overview.html")
 
-    FileUtils.copyInputStreamToFile(getClass.getResourceAsStream("/index.html"), indexFile)
+    FileUtils.copyInputStreamToFile(getClass.getResourceAsStream("/org/scoverage/index.html"), indexFile)
     FileUtils.write(packageFile, packages(coverage).toString())
     FileUtils.write(overviewFile, overview(coverage).toString())
 
