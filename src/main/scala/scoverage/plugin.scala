@@ -153,8 +153,7 @@ class ScoverageInstrumentationComponent(val global: Global)
     def instrument(tree: Tree, branch: Boolean = false): Tree = {
       safeSource(tree) match {
         case None =>
-          println(s"[warn] [scoverage] Could not instrument [${tree.getClass.getSimpleName}/${tree.symbol}]. No " +
-            s"position.")
+          println(s"[warn] [scoverage] Could not instrument [${tree.getClass.getSimpleName}/${tree.symbol}]. No pos.")
           tree
         case Some(source) =>
           if (tree.pos.isDefined && !isStatementIncluded(tree.pos)) {
