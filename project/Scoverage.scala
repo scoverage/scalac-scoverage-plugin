@@ -45,6 +45,7 @@ object Scoverage extends Build {
 
   lazy val root = Project("scalac-scoverage", file("."))
     .settings(appSettings: _*)
+    .settings(publishArtifact := false)
     .aggregate(plugin, runtime)
 
   lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
