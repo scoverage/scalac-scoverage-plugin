@@ -3,8 +3,6 @@ package scoverage
 import java.io.{File, FileNotFoundException}
 import java.net.URL
 
-import scoverage.{ScoverageInstrumentationComponent, ScoverageOptions}
-
 import scala.collection.mutable.ListBuffer
 import scala.tools.nsc.Global
 import scala.tools.nsc.plugins.PluginComponent
@@ -70,7 +68,8 @@ trait PluginSupport {
   }
 
   def sbtCompileDir: File = {
-    val dir = new File("./target/scala-" + shortScalaVersion + "/classes")
+
+    val dir = new File("./scalac-scoverage-plugin/target/scala-" + shortScalaVersion + "/classes")
     if (dir.exists) dir
     else throw new FileNotFoundException(s"Could not locate SBT compile directory for plugin files [$dir]")
   }
