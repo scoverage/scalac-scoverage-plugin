@@ -12,7 +12,6 @@ object Scoverage extends Build {
   lazy val LocalTest = config("local") extend Test
 
   val appSettings = Seq(
-    name := "scalac-scoverage",
     version := Version,
     organization := Org,
     scalaVersion := Scala,
@@ -44,17 +43,25 @@ object Scoverage extends Build {
   )
 
   lazy val root = Project("scalac-scoverage", file("."))
+    .settings(name := "scalac-scoverage")
     .settings(appSettings: _*)
     .settings(publishArtifact := false)
     .aggregate(plugin, runtime)
 
+  lazy val runtime = Project("scalac-scoverage-runtime", file("scalac-scoverage-runtime"))
+    .settings(name := "scalac-scoverage-runtime")
+    .settings(appSettings: _*)
+
   lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
+    .settings(name := "scalac-scoverage-plugin")
+    .dependsOn(runtime)
     .settings(appSettings: _*)
     .settings(libraryDependencies ++= Seq(
     "org.slf4j" % "slf4j-api" % Slf4jVersion,
     "commons-io" % "commons-io" % "2.4",
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-    "org.scala-lang" % "scala-compiler" % scalaVersion.value
+    "org.scala-lang" % "scala-compiler" % scalaVersion.value,
+    "org.scoverage" %% "scalac-scoverage-runtime" % Version
   )).settings(libraryDependencies ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, scalaMajor)) if scalaMajor == 11 =>
@@ -66,6 +73,4 @@ object Scoverage extends Build {
     }
   })
 
-  lazy val runtime = Project("scalac-scoverage-runtime", file("scalac-scoverage-runtime"))
-    .settings(appSettings: _*)
 }
