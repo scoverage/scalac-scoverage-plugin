@@ -6,8 +6,8 @@ import scoverage.report.ScoverageXmlMerger
 /** @author Stephen Samuel */
 class ScoverageXmlMergerTest extends FreeSpec with Matchers {
 
-  val node1 = scala.xml.XML.load(getClass.getResourceAsStream("/report1.xml"))
-  val node2 = scala.xml.XML.load(getClass.getResourceAsStream("/report2.xml"))
+  val node1 = scala.xml.XML.load(getClass.getResourceAsStream("/scoverage/report1.xml"))
+  val node2 = scala.xml.XML.load(getClass.getResourceAsStream("/scoverage/report2.xml"))
 
   "scoverage xml merger" - {
     "should add top level statement-count" in {
