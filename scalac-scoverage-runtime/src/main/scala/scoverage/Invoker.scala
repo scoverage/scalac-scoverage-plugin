@@ -1,6 +1,7 @@
 package scoverage
 
-import java.io.FileWriter
+import java.io.{File, FileWriter}
+
 import scala.collection.concurrent.TrieMap
 
 /** @author Stephen Samuel */
@@ -35,7 +36,7 @@ object Invoker {
       // and because file appends via FileWriter are not atomic on Windows.
       var writer = threadFile.get()
       if (writer == null) {
-        val file = IOUtils.measurementFile(dataDir)
+        val file = measurementFile(dataDir)
         writer = new FileWriter(file, true)
         threadFile.set(writer)
       }
@@ -43,4 +44,8 @@ object Invoker {
       ids.put(id, ())
     }
   }
+
+  private val MeasurementsPrefix = "scoverage.measurements."
+  def measurementFile(dataDir: File): File = measurementFile(dataDir.getAbsolutePath)
+  def measurementFile(dataDir: String): File = new File(dataDir, MeasurementsPrefix + Thread.currentThread.getId)
 }

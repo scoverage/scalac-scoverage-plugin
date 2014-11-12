@@ -1,8 +1,7 @@
 package scoverage
 
 import scala.collection.mutable
-import scala.reflect.internal.util.SourceFile
-import scala.reflect.internal.util.Position
+import scala.reflect.internal.util.{Position, SourceFile}
 
 /**
  * Methods related to filtering the instrumentation and coverage.

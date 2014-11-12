@@ -1,6 +1,7 @@
 package scoverage
 
 import java.io.File
+
 import scala.collection.mutable
 
 /**

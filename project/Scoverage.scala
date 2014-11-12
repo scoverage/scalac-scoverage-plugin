@@ -28,10 +28,6 @@ object Scoverage extends Build {
     scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8"),
     javacOptions := Seq("-source", "1.6", "-target", "1.6"),
     libraryDependencies ++= Seq(
-      "org.slf4j" % "slf4j-api" % Slf4jVersion,
-      "commons-io" % "commons-io" % "2.4",
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.scala-lang" % "scala-compiler" % scalaVersion.value,
       "org.joda" % "joda-convert" % "1.6" % "test",
       "joda-time" % "joda-time" % "2.3" % "test",
       "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2" % "test",
@@ -64,6 +60,12 @@ object Scoverage extends Build {
 
   lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
     .settings(appSettings: _*)
+    .settings(libraryDependencies ++= Seq(
+    "org.slf4j" % "slf4j-api" % Slf4jVersion,
+    "commons-io" % "commons-io" % "2.4",
+    "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+    "org.scala-lang" % "scala-compiler" % scalaVersion.value
+  ))
 
   lazy val runtime = Project("scalac-scoverage-runtime", file("scalac-scoverage-runtime"))
     .settings(appSettings: _*)

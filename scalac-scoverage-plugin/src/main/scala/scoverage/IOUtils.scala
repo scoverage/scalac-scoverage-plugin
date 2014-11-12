@@ -1,10 +1,10 @@
 package scoverage
 
 import java.io._
-import scala.xml.{XML, Utility, Node}
-import scala.collection.Set
-import scala.collection.mutable
+
+import scala.collection.{Set, mutable}
 import scala.io.Source
+import scala.xml.{Node, Utility, XML}
 
 /** @author Stephen Samuel */
 object IOUtils {
