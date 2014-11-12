@@ -34,16 +34,6 @@ object Scoverage extends Build {
       "org.mockito" % "mockito-all" % "1.9.5" % "test",
       "org.scalatest" %% "scalatest" % ScalatestVersion % "test"
     ),
-    libraryDependencies := {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, scalaMajor)) if scalaMajor == 11 =>
-          EnvSupport.setEnv("CrossBuildScalaVersion", "2.11.4")
-          libraryDependencies.value :+ "org.scala-lang.modules" %% "scala-xml" % "1.0.1"
-        case _ =>
-          EnvSupport.setEnv("CrossBuildScalaVersion", "2.10.4")
-          libraryDependencies.value
-      }
-    },
     publishTo <<= version {
       (v: String) =>
         val nexus = "https://oss.sonatype.org/"
@@ -64,7 +54,15 @@ object Scoverage extends Build {
     "org.slf4j" % "slf4j-api" % Slf4jVersion,
     "commons-io" % "commons-io" % "2.4",
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-    "org.scala-lang" % "scala-compiler" % scalaVersion.value
+    "org.scala-lang" % "scala-compiler" % scalaVersion.value,
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, scalaMajor)) if scalaMajor == 11 =>
+        EnvSupport.setEnv("CrossBuildScalaVersion", "2.11.4")
+        libraryDependencies.value :+ "org.scala-lang.modules" %% "scala-xml" % "1.0.1"
+      case _ =>
+        EnvSupport.setEnv("CrossBuildScalaVersion", "2.10.4")
+        libraryDependencies.value
+    }
   ))
 
   lazy val runtime = Project("scalac-scoverage-runtime", file("scalac-scoverage-runtime"))
