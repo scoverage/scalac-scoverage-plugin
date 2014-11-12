@@ -2,11 +2,10 @@ package scoverage.report
 
 import java.io.File
 
-import scala.xml.{Node, PrettyPrinter}
-
+import _root_.scoverage._
 import org.apache.commons.io.FileUtils
 
-import scoverage._
+import scala.xml.{Node, PrettyPrinter}
 
 /** @author Stephen Samuel */
 class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {

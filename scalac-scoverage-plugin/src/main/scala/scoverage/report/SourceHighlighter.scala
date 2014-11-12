@@ -1,9 +1,11 @@
 package scoverage.report
 
-import java.io.{FileInputStream, File}
-import scala.xml.{Unparsed, Node}
-import scoverage.MeasuredFile
+import java.io.{File, FileInputStream}
+
+import _root_.scoverage.MeasuredFile
 import org.apache.commons.io.IOUtils
+
+import scala.xml.{Node, Unparsed}
 
 /** @author Stephen Samuel */
 class SourceHighlighter {

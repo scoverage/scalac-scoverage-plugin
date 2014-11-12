@@ -1,6 +1,7 @@
 package scoverage.report
 
-import scoverage.MeasuredFile
+import _root_.scoverage.MeasuredFile
+
 import scala.xml.Node
 
 /** @author Stephen Samuel */

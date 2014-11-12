@@ -1,4 +1,4 @@
-package scoverage.skinny
+package scoverage.report.scoverage.skinny
 
 import skinny.orm._
 import scalikejdbc._, SQLInterpolation._

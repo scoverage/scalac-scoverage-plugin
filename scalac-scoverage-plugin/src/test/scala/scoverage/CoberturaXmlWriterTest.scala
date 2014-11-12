@@ -1,4 +1,4 @@
-package scoverage.report
+package scoverage
 
 import java.io.File
 import java.util.UUID
@@ -7,7 +7,7 @@ import javax.xml.parsers.DocumentBuilderFactory
 import org.apache.commons.io.FileUtils
 import org.scalatest.{BeforeAndAfter, FunSuite, OneInstancePerTest}
 import org.xml.sax.{ErrorHandler, SAXParseException}
-import scoverage.{ClassType, Coverage, Location, MeasuredStatement}
+import scoverage.report.CoberturaXmlWriter
 
 import scala.xml.XML
 
@@ -20,14 +20,14 @@ class CoberturaXmlWriterTest extends FunSuite with BeforeAndAfter with OneInstan
     dir.deleteOnExit()
     dir
   }
-  
+
   def fileIn(dir: File) = new File(dir, "cobertura.xml")
-  
+
   test("cobertura output validates") {
 
     val dir = tempDir()
 
-    val coverage = Coverage()
+    val coverage = scoverage.Coverage()
     coverage.add(MeasuredStatement("a.scala", Location("com.sksamuel.scoverage", "A", ClassType.Object, "create", ""),
       1, 2, 3, 12, "", "", "", false, 3))
     coverage.add(MeasuredStatement("a.scala", Location("com.sksamuel.scoverage", "A", ClassType.Object, "create2", ""),

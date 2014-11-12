@@ -4,10 +4,9 @@ import sbt._
 object Scoverage extends Build {
 
   val Org = "org.scoverage"
-  val Version = "1.0.0.SNAPSHOT"
+  val Version = "1.0.0.BETA1"
   val Scala = "2.11.4"
   val Slf4jVersion = "1.7.7"
-  val ScrimageVersion = "1.4.2"
   val ScalatestVersion = "2.2.2"
 
   lazy val LocalTest = config("local") extend Test
@@ -54,16 +53,17 @@ object Scoverage extends Build {
     "org.slf4j" % "slf4j-api" % Slf4jVersion,
     "commons-io" % "commons-io" % "2.4",
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-    "org.scala-lang" % "scala-compiler" % scalaVersion.value,
+    "org.scala-lang" % "scala-compiler" % scalaVersion.value
+  )).settings(libraryDependencies ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, scalaMajor)) if scalaMajor == 11 =>
         EnvSupport.setEnv("CrossBuildScalaVersion", "2.11.4")
-        libraryDependencies.value :+ "org.scala-lang.modules" %% "scala-xml" % "1.0.1"
+        Seq("org.scala-lang.modules" %% "scala-xml" % "1.0.1")
       case _ =>
         EnvSupport.setEnv("CrossBuildScalaVersion", "2.10.4")
-        libraryDependencies.value
+        Nil
     }
-  ))
+  })
 
   lazy val runtime = Project("scalac-scoverage-runtime", file("scalac-scoverage-runtime"))
     .settings(appSettings: _*)

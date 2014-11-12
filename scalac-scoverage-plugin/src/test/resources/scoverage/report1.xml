@@ -5,7 +5,7 @@
            version="1.0"
            timestamp="1400456035212">
     <packages>
-        <package name="com.sksamuel.scoverage.samples"
+        <package name="com.sksamuel.scoverage.report.scoverage.samples"
                  statement-count="2"
                  statements-invoked="2"
                  statement-rate="100">
@@ -17,22 +17,22 @@
                        statement-rate="100.00"
                        branch-rate="100.00">
                     <methods>
-                        <method name="com.sksamuel.scoverage.samples/EitherMappableFuture/&lt;none&gt;"
+                        <method name="com.sksamuel.scoverage.report.scoverage.samples/EitherMappableFuture/&lt;none&gt;"
                                 statement-count="2"
                                 statements-invoked="2"
                                 statement-rate="100.00"
                                 branch-rate="100.00">
                             <statements>
                                 <statement
-                                        package="com.sksamuel.scoverage.samples" class="EitherMappableFuture"
+                                        package="com.sksamuel.scoverage.report.scoverage.samples" class="EitherMappableFuture"
                                         method="&lt;none&gt;" start="965" line="34"
                                         symbol="scala.concurrent.Future.flatMap" tree="ApplyToImplicitArgs"
                                         branch="false" invocation-count="1">
                                 </statement>
                                 <statement
-                                        package="com.sksamuel.scoverage.samples" class="EitherMappableFuture"
+                                        package="com.sksamuel.scoverage.report.scoverage.samples" class="EitherMappableFuture"
                                         method="&lt;none&gt;" start="1225" line="42"
-                                        symbol="com.sksamuel.scoverage.samples.EitherMappableFuture.apply" tree="Apply"
+                                        symbol="com.sksamuel.scoverage.report.scoverage.samples.EitherMappableFuture.apply" tree="Apply"
                                         branch="false" invocation-count="1">
                                 </statement>
                             </statements>

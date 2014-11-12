@@ -1,6 +1,7 @@
 package scoverage
 
 import org.scalatest.{FreeSpec, Matchers}
+import scoverage.{CoverageMetrics, MeasuredStatement}
 
 class CoverageMetricsTest extends FreeSpec with Matchers {
 

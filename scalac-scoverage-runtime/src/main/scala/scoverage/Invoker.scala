@@ -1,12 +1,15 @@
 package scoverage
 
-import java.io.{File, FileWriter}
+import java.io.{FileFilter, File, FileWriter}
 
+import scala.collection.{mutable, Set}
 import scala.collection.concurrent.TrieMap
+import scala.io.Source
 
 /** @author Stephen Samuel */
 object Invoker {
 
+  private val MeasurementsPrefix = "scoverage.measurements."
   private val threadFile = new ThreadLocal[FileWriter]
   private val ids = TrieMap.empty[Int, Any]
 
@@ -45,7 +48,26 @@ object Invoker {
     }
   }
 
-  private val MeasurementsPrefix = "scoverage.measurements."
   def measurementFile(dataDir: File): File = measurementFile(dataDir.getAbsolutePath)
   def measurementFile(dataDir: String): File = new File(dataDir, MeasurementsPrefix + Thread.currentThread.getId)
+
+  def findMeasurementFiles(dataDir: String): Array[File] = findMeasurementFiles(new File(dataDir))
+  def findMeasurementFiles(dataDir: File): Array[File] = dataDir.listFiles(new FileFilter {
+    override def accept(pathname: File): Boolean = pathname.getName.startsWith(MeasurementsPrefix)
+  })
+
+  // loads all the invoked statement ids from the given files
+  def invoked(files: Seq[File]): Set[Int] = {
+    val acc = mutable.Set[Int]()
+    files.foreach { file =>
+      val reader = Source.fromFile(file)
+      for ( line <- reader.getLines() ) {
+        if (!line.isEmpty) {
+          acc += line.toInt
+        }
+      }
+      reader.close()
+    }
+    acc
+  }
 }

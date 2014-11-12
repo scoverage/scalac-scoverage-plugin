@@ -1,9 +1,11 @@
 package scoverage.report
 
-import scoverage.{MeasuredMethod, MeasuredClass, MeasuredPackage, Coverage}
-import scala.xml.Node
 import java.io.File
+
+import _root_.scoverage.{Coverage, MeasuredClass, MeasuredMethod, MeasuredPackage}
 import org.apache.commons.io.FileUtils
+
+import scala.xml.Node
 
 /** @author Stephen Samuel */
 class CoberturaXmlWriter(baseDir: File, outputDir: File) {

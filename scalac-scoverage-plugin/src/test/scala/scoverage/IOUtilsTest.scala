@@ -3,6 +3,8 @@ package scoverage
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSuite, OneInstancePerTest}
 import java.io.{FileWriter, File}
+import scoverage.{IOUtils, Location, MeasuredStatement, Coverage}
+
 import scala.xml.Utility
 import org.apache.commons.io.FileUtils
 

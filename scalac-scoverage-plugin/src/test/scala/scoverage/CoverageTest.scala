@@ -3,6 +3,7 @@ package scoverage
 import org.scalatest.FunSuite
 import org.scalatest.BeforeAndAfter
 import org.scalatest.OneInstancePerTest
+import scoverage.{ClassType, Location, MeasuredStatement, Coverage}
 
 /** @author Stephen Samuel */
 class CoverageTest extends FunSuite with BeforeAndAfter with OneInstancePerTest {

@@ -1,6 +1,7 @@
-package scoverage.report
+package scoverage
 
 import org.scalatest.{FreeSpec, Matchers}
+import scoverage.report.ScoverageXmlMerger
 
 /** @author Stephen Samuel */
 class ScoverageXmlMergerTest extends FreeSpec with Matchers {

@@ -3,6 +3,8 @@ package scoverage
 import java.io.{File, FileNotFoundException}
 import java.net.URL
 
+import scoverage.{ScoverageInstrumentationComponent, ScoverageOptions}
+
 import scala.collection.mutable.ListBuffer
 import scala.tools.nsc.Global
 import scala.tools.nsc.plugins.PluginComponent

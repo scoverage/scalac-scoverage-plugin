@@ -12,7 +12,7 @@ import scala.tools.nsc.transform.{Transform, TypingTransformers}
 /** @author Stephen Samuel */
 class ScoveragePlugin(val global: Global) extends Plugin {
 
-  override val name: String = "scoverage"
+  override val name: String = "scoverage/report/scoverage"
   override val description: String = "scoverage code coverage compiler plugin"
   val instrumentationComponent = new ScoverageInstrumentationComponent(global)
   override val components: List[PluginComponent] = List(instrumentationComponent)
@@ -118,7 +118,7 @@ class ScoverageInstrumentationComponent(val global: Global)
       Apply(
         Select(
           Select(
-            Ident("scoverage"),
+            Ident("scoverage/report/scoverage"),
             newTermName("Invoker")
           ),
           newTermName("invoked")

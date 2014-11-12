@@ -1,9 +1,11 @@
 package scoverage.report
 
-import scoverage.{MeasuredFile, MeasuredStatement}
-import org.apache.commons.io.IOUtils
 import java.io.{File, FileInputStream}
-import scala.xml.{Unparsed, Node}
+
+import _root_.scoverage.{MeasuredFile, MeasuredStatement}
+import org.apache.commons.io.IOUtils
+
+import scala.xml.{Node, Unparsed}
 
 /** @author Stephen Samuel */
 class CodeGrid(mfile: MeasuredFile) {

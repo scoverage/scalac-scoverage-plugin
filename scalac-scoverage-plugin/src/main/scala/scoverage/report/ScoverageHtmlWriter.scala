@@ -1,11 +1,12 @@
 package scoverage.report
 
-import scoverage._
-import scala.xml.Node
-import scoverage.MeasuredFile
-import java.util.Date
 import java.io.File
-import org.apache.commons.io.{FilenameUtils, FileUtils}
+import java.util.Date
+
+import _root_.scoverage.{Coverage, MeasuredClass, MeasuredFile, MeasuredPackage}
+import org.apache.commons.io.{FileUtils, FilenameUtils}
+
+import scala.xml.Node
 
 /** @author Stephen Samuel */
 class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {

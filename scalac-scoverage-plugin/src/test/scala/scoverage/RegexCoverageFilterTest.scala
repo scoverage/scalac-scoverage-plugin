@@ -5,6 +5,7 @@ import java.io.{InputStream, File, OutputStream}
 import org.mockito.Mockito
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{Matchers, FreeSpec}
+import scoverage.RegexCoverageFilter
 
 import scala.reflect.internal.util._
 import scala.reflect.io.{Path, AbstractFile}
