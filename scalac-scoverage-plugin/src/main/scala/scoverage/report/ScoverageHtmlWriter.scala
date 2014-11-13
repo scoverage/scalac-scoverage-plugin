@@ -56,7 +56,6 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
         <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-        <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
         <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.18.3/addons/pager/jquery.tablesorter.pager.min.js"></script>
         <style>
           {css}
@@ -287,6 +286,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
         <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.18.3/addons/pager/jquery.tablesorter.pager.min.js"></script>
       </head>
       <body style="font-family: monospace;">
         <table class="table table-striped" style="font-size: 13px">
