@@ -333,11 +333,11 @@ class ScoverageInstrumentationComponent(val global: Global)
 
         case d: DefDef if d.symbol.isPrimaryConstructor =>
           updateLocation(d)
-          super.transform(d)
+          tree
 
         case d: DefDef if tree.symbol.isConstructor =>
           updateLocation(d)
-          super.transform(d)
+          tree
 
         /**
          * Case class accessors for vals
