@@ -13,9 +13,16 @@ class LocationTest extends FreeSpec with Matchers {
   val compiler = ScoverageCompiler.locationCompiler
 
   "location function" - {
-    "should ignore lambas" in {
-      val loc = compiler.location("class Sammy")
-      loc.get.className shouldBe ""
+    "should correctly process class locations" in {
+      compiler.compile("package com.test\nclass Sammy")
+      println()
+      println(compiler.locations.result.mkString("\n"))
+      val loc = compiler.locations.result.find(_._1 == "ClassDef").get._2
+      loc.packageName shouldBe "com.test"
+      loc.className shouldBe "Sammy"
+      loc.method shouldBe "<none>"
+      loc.classType shouldBe ClassType.Class
+      loc.sourcePath should endWith(".scala")
     }
   }
 }
@@ -23,14 +30,13 @@ class LocationTest extends FreeSpec with Matchers {
 class LocationCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools.nsc.reporters.Reporter)
   extends scala.tools.nsc.Global(settings, reporter) {
 
-  private var location: Option[Location] = None
+  val locations = List.newBuilder[(String, Location)]
   private val locationSetter = new LocationSetter(this)
 
-  def location(code: String): Option[Location] = {
+  def compile(code: String): Unit = {
     val files = writeCodeSnippetToTempFile(code)
     val command = new scala.tools.nsc.CompilerCommand(List(files.getAbsolutePath), settings)
     new Run().compile(command.files)
-    location
   }
 
   def writeCodeSnippetToTempFile(code: String): File = {
@@ -50,8 +56,10 @@ class LocationCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools
     class Transformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
 
       override def transform(tree: global.Tree) = {
-        location = Location(global)(tree)
-        tree
+        for ( location <- Location(global)(tree) ) {
+          locations += (tree.getClass.getSimpleName -> location)
+        }
+        super.transform(tree)
       }
     }
   }
