@@ -60,8 +60,7 @@ object Scoverage extends Build {
     "org.slf4j" % "slf4j-api" % Slf4jVersion,
     "commons-io" % "commons-io" % "2.4",
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-    "org.scala-lang" % "scala-compiler" % scalaVersion.value,
-    "org.scoverage" %% "scalac-scoverage-runtime" % Version
+    "org.scala-lang" % "scala-compiler" % scalaVersion.value
   )).settings(libraryDependencies ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, scalaMajor)) if scalaMajor == 11 =>
