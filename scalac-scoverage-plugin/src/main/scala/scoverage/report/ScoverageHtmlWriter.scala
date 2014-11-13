@@ -16,7 +16,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
     val packageFile = new File(outputDir.getAbsolutePath + "/packages.html")
     val overviewFile = new File(outputDir.getAbsolutePath + "/overview.html")
 
-    FileUtils.copyInputStreamToFile(getClass.getResourceAsStream("/org/scoverage/index.html"), indexFile)
+    FileUtils.copyInputStreamToFile(getClass.getResourceAsStream("/scoverage/index.html"), indexFile)
     FileUtils.write(packageFile, packages(coverage).toString())
     FileUtils.write(overviewFile, overview(coverage).toString())
 
@@ -88,6 +88,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
                 |        position: relative;
                 |        background: #BB2020;
                 |}
+                |
                 |.meter span {
                 |	display: block;
                 |	height: 100%;
@@ -425,7 +426,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
           Lines of code:
         </td>
         <td>
-          {coverage.loc.toInt.toString}
+          {coverage.loc.toString}
         </td>
         <td>
           Files:

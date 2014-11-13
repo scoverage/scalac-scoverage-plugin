@@ -3,7 +3,7 @@ import sbt._
 
 object Scoverage extends Build {
 
-  val Org = "org.coverage"
+  val Org = "org.scoverage"
   val Version = "1.0.0.BETA1"
   val Scala = "2.11.4"
   val Slf4jVersion = "1.7.7"
@@ -43,7 +43,7 @@ object Scoverage extends Build {
   )
 
   lazy val root = Project("scalac-coverage", file("."))
-    .settings(name := "scalac-coverage")
+    .settings(name := "scalac-scoverage")
     .settings(appSettings: _*)
     .settings(publishArtifact := false)
     .aggregate(plugin, runtime)
@@ -53,7 +53,7 @@ object Scoverage extends Build {
     .settings(appSettings: _*)
 
   lazy val plugin = Project("scalac-coverage-plugin", file("scalac-scoverage-plugin"))
-    .settings(name := "scalac-coverage-plugin")
+    .settings(name := "scalac-scoverage-plugin")
     .dependsOn(runtime)
     .settings(appSettings: _*)
     .settings(libraryDependencies ++= Seq(
