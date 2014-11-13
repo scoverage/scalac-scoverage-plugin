@@ -161,7 +161,7 @@ object IOUtils {
         case "Object" => ClassType.Object
         case _ => ClassType.Class
       }
-      MeasuredStatement(source,
+      Statement(source,
         Location(_package, _class, topLevelClass, classType, method, path),
         id,
         start,

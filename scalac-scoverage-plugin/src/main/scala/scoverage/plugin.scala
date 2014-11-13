@@ -161,7 +161,7 @@ class ScoverageInstrumentationComponent(val global: Global)
             tree
           } else {
             val id = statementIds.incrementAndGet
-            val statement = MeasuredStatement(
+            val statement = Statement(
               source.path,
               location,
               id,

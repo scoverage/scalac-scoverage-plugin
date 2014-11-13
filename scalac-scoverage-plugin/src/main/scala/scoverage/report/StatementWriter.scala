@@ -21,6 +21,7 @@ class StatementWriter(mfile: MeasuredFile) {
       <tr>
         <th>Line Number</th>
         <th>Statement Id</th>
+        <th>Tree Type</th>
         <th>Symbol</th>
         <th>Code</th>
       </tr>
@@ -31,6 +32,9 @@ class StatementWriter(mfile: MeasuredFile) {
         </td>
         <td>
           {stmt.id}
+        </td>
+        <td>
+          {stmt.treeName}
         </td>
         <td>
           {stmt.symbolName}

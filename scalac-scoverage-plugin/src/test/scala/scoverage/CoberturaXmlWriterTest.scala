@@ -29,29 +29,29 @@ class CoberturaXmlWriterTest extends FunSuite with BeforeAndAfter with OneInstan
 
     val coverage = scoverage.Coverage()
     coverage
-      .add(MeasuredStatement("a.scala", Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create", ""),
+      .add(Statement("a.scala", Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create", ""),
       1, 2, 3, 12, "", "", "", false, 3))
     coverage
-      .add(MeasuredStatement("a.scala", Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create2", ""),
+      .add(Statement("a.scala", Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create2", ""),
       2, 2, 3, 16, "", "", "", false, 3))
     coverage
-      .add(MeasuredStatement("b.scala", Location("com.sksamuel.scoverage2", "B", "B", ClassType.Object, "retrieve", ""),
+      .add(Statement("b.scala", Location("com.sksamuel.scoverage2", "B", "B", ClassType.Object, "retrieve", ""),
       3, 2, 3, 21, "", "", "", false, 0))
     coverage
-      .add(MeasuredStatement("b.scala",
+      .add(Statement("b.scala",
       Location("com.sksamuel.scoverage2", "B", "B", ClassType.Object, "retrieve2", ""),
       4, 2, 3, 9, "", "", "", false, 3))
     coverage
-      .add(MeasuredStatement("c.scala", Location("com.sksamuel.scoverage3", "C", "C", ClassType.Object, "update", ""),
+      .add(Statement("c.scala", Location("com.sksamuel.scoverage3", "C", "C", ClassType.Object, "update", ""),
       5, 2, 3, 66, "", "", "", true, 3))
     coverage
-      .add(MeasuredStatement("c.scala", Location("com.sksamuel.scoverage3", "C", "C", ClassType.Object, "update2", ""),
+      .add(Statement("c.scala", Location("com.sksamuel.scoverage3", "C", "C", ClassType.Object, "update2", ""),
       6, 2, 3, 6, "", "", "", true, 3))
     coverage
-      .add(MeasuredStatement("d.scala", Location("com.sksamuel.scoverage4", "D", "D", ClassType.Object, "delete", ""),
+      .add(Statement("d.scala", Location("com.sksamuel.scoverage4", "D", "D", ClassType.Object, "delete", ""),
       7, 2, 3, 4, "", "", "", false, 0))
     coverage
-      .add(MeasuredStatement("d.scala", Location("com.sksamuel.scoverage4", "D", "D", ClassType.Object, "delete2", ""),
+      .add(Statement("d.scala", Location("com.sksamuel.scoverage4", "D", "D", ClassType.Object, "delete2", ""),
       8, 2, 3, 14, "", "", "", false, 0))
 
     val writer = new CoberturaXmlWriter(new File(""), dir)
@@ -87,13 +87,13 @@ class CoberturaXmlWriterTest extends FunSuite with BeforeAndAfter with OneInstan
 
     val coverage = Coverage()
     coverage
-      .add(MeasuredStatement("a.scala", Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create", ""),
+      .add(Statement("a.scala", Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create", ""),
       1, 2, 3, 12, "", "", "", false))
     coverage
-      .add(MeasuredStatement("a.scala", Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create2", ""),
+      .add(Statement("a.scala", Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create2", ""),
       2, 2, 3, 16, "", "", "", true))
     coverage
-      .add(MeasuredStatement("a.scala", Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create3", ""),
+      .add(Statement("a.scala", Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create3", ""),
       3, 3, 3, 20, "", "", "", true, 1))
 
     val writer = new CoberturaXmlWriter(new File(""), dir)

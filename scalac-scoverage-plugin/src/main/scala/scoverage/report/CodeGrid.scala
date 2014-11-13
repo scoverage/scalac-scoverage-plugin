@@ -2,7 +2,7 @@ package scoverage.report
 
 import java.io.{File, FileInputStream}
 
-import _root_.scoverage.{MeasuredFile, MeasuredStatement}
+import _root_.scoverage.{MeasuredFile, Statement}
 import org.apache.commons.io.IOUtils
 
 import scala.xml.{Node, Unparsed}
@@ -26,7 +26,7 @@ class CodeGrid(mfile: MeasuredFile) {
 
   def source(mfile: MeasuredFile): String = IOUtils.toString(new FileInputStream(new File(mfile.source)), "UTF-8")
 
-  def highlight(stmt: MeasuredStatement) {
+  def highlight(stmt: Statement) {
     // notinvoked is a stronger property than invoked
     for ( k <- stmt.start until stmt.end ) {
       if (k < cells.size)

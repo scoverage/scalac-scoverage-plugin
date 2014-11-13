@@ -14,7 +14,7 @@ class IOUtilsTest extends FunSuite with MockitoSugar with OneInstancePerTest {
   test("coverage should be serializable into xml") {
     val coverage = Coverage()
     coverage.add(
-      MeasuredStatement(
+      Statement(
         "mysource",
         Location("org.scoverage", "test", "test", ClassType.Trait, "mymethod", "mypath"),
         14, 100, 200, 4, "def test : String", "test", "DefDef", true, 32
@@ -35,7 +35,7 @@ class IOUtilsTest extends FunSuite with MockitoSugar with OneInstancePerTest {
         <source>mysource</source> <package>org.scoverage</package> <class>test</class> <classType>Trait</classType> <topLevelClass>test</topLevelClass> <method>mymethod</method> <path>mypath</path> <id>14</id> <start>100</start> <end>200</end> <line>4</line> <description>def test : String</description> <symbolName>test</symbolName> <treeName>DefDef</treeName> <branch>true</branch> <count>32</count>
       </statement>
     </statements>
-    val statements = List(MeasuredStatement(
+    val statements = List(Statement(
       "mysource",
       Location("org.scoverage", "test", "test", ClassType.Trait, "mymethod", "mypath"),
       14, 100, 200, 4, "def test : String", "test", "DefDef", true, 32

@@ -14,9 +14,9 @@ case class Coverage()
   with PackageBuilders
   with FileBuilders {
 
-  private val statementsById = mutable.Map[Int, MeasuredStatement]()
+  private val statementsById = mutable.Map[Int, Statement]()
   override def statements = statementsById.values
-  def add(stmt: MeasuredStatement): Unit = statementsById.put(stmt.id, stmt)
+  def add(stmt: Statement): Unit = statementsById.put(stmt.id, stmt)
 
   def avgClassesPerPackage = classCount / packageCount.toDouble
   def avgClassesPerPackageFormatted: String = "%.2f".format(avgClassesPerPackage)
@@ -36,7 +36,7 @@ case class Coverage()
 }
 
 trait MethodBuilders {
-  def statements: Iterable[MeasuredStatement]
+  def statements: Iterable[Statement]
   def methods: Seq[MeasuredMethod] = {
     statements.groupBy(stmt => stmt.location.packageName + "/" + stmt.location.className + "/" + stmt.location.method)
       .map(arg => MeasuredMethod(arg._1, arg._2))
@@ -46,7 +46,7 @@ trait MethodBuilders {
 }
 
 trait PackageBuilders {
-  def statements: Iterable[MeasuredStatement]
+  def statements: Iterable[Statement]
   def packageCount = packages.size
   def packages: Seq[MeasuredPackage] = {
     statements.groupBy(_.location.packageName).map(arg => MeasuredPackage(arg._1, arg._2)).toSeq.sortBy(_.name)
@@ -54,47 +54,47 @@ trait PackageBuilders {
 }
 
 trait ClassBuilders {
-  def statements: Iterable[MeasuredStatement]
+  def statements: Iterable[Statement]
   def classes = statements.groupBy(_.location.className).map(arg => MeasuredClass(arg._1, arg._2))
   def classCount: Int = classes.size
 }
 
 trait FileBuilders {
-  def statements: Iterable[MeasuredStatement]
+  def statements: Iterable[Statement]
   def files: Iterable[MeasuredFile] = statements.groupBy(_.source).map(arg => MeasuredFile(arg._1, arg._2))
   def fileCount: Int = files.size
 }
 
-case class MeasuredMethod(name: String, statements: Iterable[MeasuredStatement]) extends CoverageMetrics
+case class MeasuredMethod(name: String, statements: Iterable[Statement]) extends CoverageMetrics
 
-case class MeasuredClass(name: String, statements: Iterable[MeasuredStatement])
+case class MeasuredClass(name: String, statements: Iterable[Statement])
   extends CoverageMetrics with MethodBuilders {
   def source: String = statements.head.source
   def simpleName = name.split('.').last
   def loc = statements.map(_.line).max
 }
 
-case class MeasuredPackage(name: String, statements: Iterable[MeasuredStatement])
+case class MeasuredPackage(name: String, statements: Iterable[Statement])
   extends CoverageMetrics with ClassCoverage with ClassBuilders with FileBuilders {
 }
 
-case class MeasuredFile(source: String, statements: Iterable[MeasuredStatement])
+case class MeasuredFile(source: String, statements: Iterable[Statement])
   extends CoverageMetrics with ClassCoverage with ClassBuilders {
   def filename = new File(source).getName
   def loc = statements.map(_.line).max
 }
 
-case class MeasuredStatement(source: String,
-                             location: Location,
-                             id: Int,
-                             start: Int,
-                             end: Int,
-                             line: Int,
-                             desc: String,
-                             symbolName: String,
-                             treeName: String,
-                             branch: Boolean,
-                             var count: Int = 0) extends java.io.Serializable {
+case class Statement(source: String,
+                     location: Location,
+                     id: Int,
+                     start: Int,
+                     end: Int,
+                     line: Int,
+                     desc: String,
+                     symbolName: String,
+                     treeName: String,
+                     branch: Boolean,
+                     var count: Int = 0) extends java.io.Serializable {
   def invoked(): Unit = count = count + 1
   def isInvoked = count > 0
 }
@@ -119,17 +119,17 @@ object ClassRef {
 }
 
 trait CoverageMetrics {
-  def statements: Iterable[MeasuredStatement]
+  def statements: Iterable[Statement]
   def statementCount: Int = statements.size
-  def invokedStatements: Iterable[MeasuredStatement] = statements.filter(_.count > 0)
+  def invokedStatements: Iterable[Statement] = statements.filter(_.count > 0)
   def invokedStatementCount = invokedStatements.size
   def statementCoverage: Double = if (statementCount == 0) 1 else invokedStatementCount / statementCount.toDouble
   def statementCoveragePercent = statementCoverage * 100
   def statementCoverageFormatted: String = "%.2f".format(statementCoveragePercent)
-  def branches: Iterable[MeasuredStatement] = statements.filter(_.branch)
+  def branches: Iterable[Statement] = statements.filter(_.branch)
   def branchCount: Int = branches.size
   def branchCoveragePercent = branchCoverage * 100
-  def invokedBranches: Iterable[MeasuredStatement] = branches.filter(_.count > 0)
+  def invokedBranches: Iterable[Statement] = branches.filter(_.count > 0)
   def invokedBranchesCount = invokedBranches.size
 
   /**
@@ -151,7 +151,7 @@ trait CoverageMetrics {
 
 trait ClassCoverage {
   this: ClassBuilders =>
-  val statements: Iterable[MeasuredStatement]
+  val statements: Iterable[Statement]
   def invokedClasses: Int = classes.count(_.statements.count(_.count > 0) > 0)
   def classCoverage: Double = invokedClasses / classes.size.toDouble
 }

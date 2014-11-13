@@ -18,7 +18,7 @@ class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
     FileUtils.write(file, new PrettyPrinter(120, 4).format(xml(coverage)))
   }
 
-  def statement(stmt: MeasuredStatement): Node = {
+  def statement(stmt: Statement): Node = {
     debug match {
       case true =>
         <statement package={stmt.location.packageName}
