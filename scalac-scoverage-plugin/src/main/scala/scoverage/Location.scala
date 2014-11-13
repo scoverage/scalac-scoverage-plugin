@@ -32,6 +32,10 @@ object Location {
       else Option(s.owner.enclMethod.nameString).getOrElse("<none>")
     }
 
+    def sourcePath(symbol: global.Symbol): String = {
+      Option(symbol.sourceFile).map(_.canonicalPath).getOrElse("<none>")
+    }
+
     Option(tree.symbol) map {
       symbol =>
         Location(
@@ -39,7 +43,7 @@ object Location {
           className(symbol),
           classType(symbol),
           enclosingMethod(symbol),
-          symbol.sourceFile.canonicalPath)
+          sourcePath(symbol))
     }
   }
 }

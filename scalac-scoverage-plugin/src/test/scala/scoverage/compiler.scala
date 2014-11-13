@@ -4,29 +4,84 @@ import java.io.{File, FileNotFoundException}
 import java.net.URL
 
 import scala.collection.mutable.ListBuffer
-import scala.tools.nsc.Global
+import scala.tools.nsc.{Settings, Global}
 import scala.tools.nsc.plugins.PluginComponent
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
 
 /** @author Stephen Samuel */
-trait PluginSupport {
+object ScoverageCompiler {
 
-  val scalaVersion = "2.11.4"
-  val shortScalaVersion = scalaVersion.dropRight(2)
+  val ScalaVersion = "2.11.4"
+  val ShortScalaVersion = ScalaVersion.dropRight(2)
 
-  val classPath = getScalaJars.map(_.getAbsolutePath) :+ sbtCompileDir.getAbsolutePath :+ runtimeClasses.getAbsolutePath
+  def classPath = getScalaJars.map(_.getAbsolutePath) :+ sbtCompileDir.getAbsolutePath :+ runtimeClasses.getAbsolutePath
 
-  val settings = {
+  def settings: Settings = {
     val s = new scala.tools.nsc.Settings
-    s.Xprint.value = List("all")
+    //s.Xprint.value = List("all")
     s.Yrangepos.value = true
     s.Yposdebug.value = true
     s.classpath.value = classPath.mkString(":")
     s
   }
 
-  val reporter = new scala.tools.nsc.reporters.ConsoleReporter(settings)
-  val compiler = new ScoverageAwareCompiler(settings, reporter)
+  def default: ScoverageCompiler = {
+    val reporter = new scala.tools.nsc.reporters.ConsoleReporter(settings)
+    new ScoverageCompiler(settings, reporter)
+  }
+
+  def locationCompiler: LocationCompiler = {
+    val reporter = new scala.tools.nsc.reporters.ConsoleReporter(settings)
+    new LocationCompiler(settings, reporter)
+  }
+
+  private def getScalaJars: List[File] = {
+    val scalaJars = List("scala-compiler", "scala-library", "scala-reflect")
+    scalaJars.map(findScalaJar)
+  }
+
+  private def sbtCompileDir: File = {
+    val dir = new File("./scalac-scoverage-plugin/target/scala-" + ShortScalaVersion + "/classes")
+    if (!dir.exists)
+      throw new FileNotFoundException(s"Could not locate SBT compile directory for plugin files [$dir]")
+    dir
+  }
+
+  private def runtimeClasses: File = new File("./scalac-scoverage-runtime/target/scala-2.11/classes")
+
+  private def findScalaJar(artifactId: String): File = findIvyJar("org.scala-lang", artifactId, ScalaVersion)
+
+  private def findIvyJar(groupId: String, artifactId: String, version: String): File = {
+    val userHome = System.getProperty("user.home")
+    val sbtHome = userHome + "/.ivy2"
+    val jarPath = sbtHome + "/cache/" + groupId + "/" + artifactId + "/jars/" + artifactId + "-" + version + ".jar"
+    val file = new File(jarPath)
+    if (!file.exists)
+      throw new FileNotFoundException(s"Could not locate [$jarPath].")
+    println(s"Located ivy jar [$file]")
+    file
+  }
+}
+
+class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools.nsc.reporters.Reporter)
+  extends scala.tools.nsc.Global(settings, reporter) {
+
+  def addToClassPath(groupId: String, artifactId: String, version: String): Unit = {
+    settings.classpath.value = settings.classpath.value + ":" + ScoverageCompiler
+      .findIvyJar(groupId, artifactId, version)
+      .getAbsolutePath
+  }
+
+  val instrumentationComponent = new ScoverageInstrumentationComponent(this)
+  instrumentationComponent.setOptions(new ScoverageOptions())
+  val testStore = new ScoverageTestStoreComponent(this)
+  val validator = new PositionValidator(this)
+
+  def compileSourceFiles(files: File*): ScoverageCompiler = {
+    val command = new scala.tools.nsc.CompilerCommand(files.map(_.getAbsolutePath).toList, settings)
+    new Run().compile(command.files)
+    this
+  }
 
   def writeCodeSnippetToTempFile(code: String): File = {
     val file = File.createTempFile("scoverage_snippet", ".scala")
@@ -35,66 +90,21 @@ trait PluginSupport {
     file
   }
 
-  def addToClassPath(groupId: String, artifactId: String, version: String): Unit = {
-    settings.classpath.value = settings.classpath.value + ":" + findIvyJar(groupId, artifactId, version).getAbsolutePath
-  }
-
-  def compileCodeSnippet(code: String): ScoverageAwareCompiler = compileSourceFiles(writeCodeSnippetToTempFile(code))
-  def compileSourceResources(urls: URL*): ScoverageAwareCompiler = {
+  def compileCodeSnippet(code: String): ScoverageCompiler = compileSourceFiles(writeCodeSnippetToTempFile(code))
+  def compileSourceResources(urls: URL*): ScoverageCompiler = {
     compileSourceFiles(urls.map(_.getFile).map(new File(_)): _*)
   }
-  def compileSourceFiles(files: File*): ScoverageAwareCompiler = {
-    val command = new scala.tools.nsc.CompilerCommand(files.map(_.getAbsolutePath).toList, settings)
-    new compiler.Run().compile(command.files)
-    compiler
-  }
 
-  def getScalaJars: List[File] = {
-    val scalaJars = List("scala-compiler", "scala-library", "scala-reflect")
-    scalaJars.map(findScalaJar)
-  }
-
-  def runtimeClasses: File = new File("./scalac-scoverage-runtime/target/scala-2.11/classes")
-
-  def findScalaJar(artifactId: String): File = findIvyJar("org.scala-lang", artifactId, scalaVersion)
-
-  def findIvyJar(groupId: String, artifactId: String, version: String): File = {
-    val userHome = System.getProperty("user.home")
-    val sbtHome = userHome + "/.ivy2"
-    val jarPath = sbtHome + "/cache/" + groupId + "/" + artifactId + "/jars/" + artifactId + "-" + version + ".jar"
-    val file = new File(jarPath)
-    if (file.exists) {
-      println(s"Located ivy jar [$file]")
-      file
-    } else throw new FileNotFoundException(s"Could not locate [$jarPath].")
-  }
-
-  def sbtCompileDir: File = {
-
-    val dir = new File("./scalac-scoverage-plugin/target/scala-" + shortScalaVersion + "/classes")
-    if (dir.exists) dir
-    else throw new FileNotFoundException(s"Could not locate SBT compile directory for plugin files [$dir]")
-  }
-
-  def assertNoCoverage() = assert(!compiler.testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked"))
+  def assertNoCoverage() = assert(!testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked"))
 
   def assertNMeasuredStatements(n: Int): Unit = {
     for ( k <- 1 to n ) {
-      assert(compiler.testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked($k,"),
+      assert(testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked($k,"),
         s"Should be $n invoked statements but missing $k")
     }
-    assert(!compiler.testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked(${n + 1},"),
+    assert(!testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked(${n + 1},"),
       s"Found statement ${n + 1} but only expected $n")
   }
-}
-
-class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools.nsc.reporters.Reporter)
-  extends scala.tools.nsc.Global(settings, reporter) {
-
-  val instrumentationComponent = new ScoverageInstrumentationComponent(this)
-  instrumentationComponent.setOptions(new ScoverageOptions())
-  val testStore = new ScoverageTestStoreComponent(this)
-  val validator = new PositionValidator(this)
 
   class PositionValidator(val global: Global) extends PluginComponent with TypingTransformers with Transform {
 
@@ -117,7 +127,8 @@ class ScoverageAwareCompiler(settings: scala.tools.nsc.Settings, reporter: scala
     val sources = new ListBuffer[String]
 
     override val phaseName: String = "scoverage-teststore"
-    override val runsAfter: List[String] = List("dce") // deadcode
+    override val runsAfter: List[String] = List("dce")
+    // deadcode
     override val runsBefore = List[String]("terminal")
 
     override protected def newTransformer(unit: global.CompilationUnit): global.Transformer = new Transformer(unit)

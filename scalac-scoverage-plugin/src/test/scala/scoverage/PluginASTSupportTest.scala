@@ -8,15 +8,16 @@ class PluginASTSupportTest
   extends FunSuite
   with MockitoSugar
   with OneInstancePerTest
-  with PluginSupport
   with BeforeAndAfterEachTestData {
 
   override protected def afterEach(testData: TestData): Unit = {
-    assert(!reporter.hasErrors)
+    val compiler = ScoverageCompiler.default
+    assert(!compiler.reporter.hasErrors)
   }
 
   test("scoverage component should ignore basic macros") {
-    compileCodeSnippet( """
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet( """
                           | object MyMacro {
                           | import scala.language.experimental.macros
                           | import scala.reflect.macros.Context
@@ -28,11 +29,12 @@ class PluginASTSupportTest
                           |    }
                           |  }
                           |} """.stripMargin)
-    assert(!reporter.hasErrors)
+    assert(!compiler.reporter.hasErrors)
   }
 
   test("scoverage component should ignore complex macros #11") {
-    compileCodeSnippet( """ object ComplexMacro {
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet( """ object ComplexMacro {
                           |
                           |  import scala.language.experimental.macros
                           |  import scala.reflect.macros.Context
@@ -57,48 +59,51 @@ class PluginASTSupportTest
                           |    c.Expr[Unit](Block(treesWithSeparators.toList, Literal(Constant(()))))
                           |  }
                           |} """.stripMargin)
-    assert(!reporter.hasErrors)
+    assert(!compiler.reporter.hasErrors)
   }
 
 
   // https://github.com/scoverage/scalac-scoverage-plugin/issues/32
   test("exhaustive warnings should not be generated for @unchecked") {
-    compileCodeSnippet( """object PartialMatchObject {
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet( """object PartialMatchObject {
                           |  def partialMatchExample(s: Option[String]): Unit = {
                           |    (s: @unchecked) match {
                           |      case Some(str) => println(str)
                           |    }
                           |  }
                           |} """.stripMargin)
-    assert(!reporter.hasErrors)
-    assert(!reporter.hasWarnings)
+    assert(!compiler.reporter.hasErrors)
+    assert(!compiler.reporter.hasWarnings)
   }
 
   // https://github.com/skinny-framework/skinny-framework/issues/97
   test("macro range positions should not break plugin") {
-    addToClassPath("org.slf4j", "slf4j-api", "1.7.7")
-    addToClassPath("com.typesafe.scala-logging", "scala-logging-api_" + shortScalaVersion, "2.1.2")
-    addToClassPath("com.typesafe.scala-logging", "scala-logging-slf4j_" + shortScalaVersion, "2.1.2")
-    compileCodeSnippet( """import com.typesafe.scalalogging.slf4j.StrictLogging
+    val compiler = ScoverageCompiler.default
+    compiler.addToClassPath("org.slf4j", "slf4j-api", "1.7.7")
+    compiler.addToClassPath("com.typesafe.scala-logging", "scala-logging-api_" + ScoverageCompiler.ShortScalaVersion, "2.1.2")
+    compiler.addToClassPath("com.typesafe.scala-logging", "scala-logging-slf4j_" + ScoverageCompiler.ShortScalaVersion, "2.1.2")
+    compiler.compileCodeSnippet( """import com.typesafe.scalalogging.slf4j.StrictLogging
                           |
                           |object MacroTest extends StrictLogging {
                           |  println("Hello")
                           |  logger.info("will break")
                           |} """.stripMargin)
-    assert(!reporter.hasErrors)
-    assert(!reporter.hasWarnings)
+    assert(!compiler.reporter.hasErrors)
+    assert(!compiler.reporter.hasWarnings)
   }
 
   // https://github.com/scoverage/scalac-scoverage-plugin/issues/45
   test("compile final vals in annotations") {
-    compileCodeSnippet( """object Foo  {
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet( """object Foo  {
                           |  final val foo = 1L
                           |}
                           |@SerialVersionUID(value = Foo.foo)
                           |class Bar
                           |""".stripMargin)
-    assert(!reporter.hasErrors)
-    assert(!reporter.hasWarnings)
+    assert(!compiler.reporter.hasErrors)
+    assert(!compiler.reporter.hasWarnings)
   }
 
   //test("type param with default arg supported") {

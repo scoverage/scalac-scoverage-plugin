@@ -82,16 +82,16 @@ class ScoverageInstrumentationComponent(val global: Global)
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
 
     override def run(): Unit = {
-      println(s"[info] [scoverage]: Cleaning datadir [${options.dataDir}]")
+      println(s"[info] Cleaning datadir [${options.dataDir}]")
       IOUtils.clean(options.dataDir)
 
-      println("[info] [scoverage]: Begin instrumentation phase")
+      println("[info] Beginning coverage instrumentation")
       super.run()
-      println(s"[info] [scoverage]: Instrumentation completed [${coverage.statements.size} statements]")
+      println(s"[info] Instrumentation completed [${coverage.statements.size} statements]")
 
       IOUtils.serialize(coverage, IOUtils.coverageFile(options.dataDir))
-      println(s"[info] [scoverage]: Wrote instrumentation file [${IOUtils.coverageFile(options.dataDir)}]")
-      println(s"[info] [scoverage]: Writing measurements data to [${options.dataDir}]")
+      println(s"[info] Wrote instrumentation file [${IOUtils.coverageFile(options.dataDir)}]")
+      println(s"[info] Will write measurement data to [${options.dataDir}]")
     }
   }
 
