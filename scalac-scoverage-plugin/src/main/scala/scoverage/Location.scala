@@ -21,8 +21,8 @@ object Location {
     }
 
     def classType(s: global.Symbol): ClassType = {
-      if (s.owner.enclClass.isTrait) ClassType.Trait
-      else if (s.owner.enclClass.isModule) ClassType.Object
+      if (s.enclClass.isTrait) ClassType.Trait
+      else if (s.enclClass.isModuleOrModuleClass) ClassType.Object
       else ClassType.Class
     }
 
