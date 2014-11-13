@@ -58,7 +58,6 @@ object ScoverageCompiler {
     val file = new File(jarPath)
     if (!file.exists)
       throw new FileNotFoundException(s"Could not locate [$jarPath].")
-    println(s"Located ivy jar [$file]")
     file
   }
 }
