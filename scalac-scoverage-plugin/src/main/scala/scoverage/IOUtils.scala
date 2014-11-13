@@ -87,10 +87,10 @@ object IOUtils {
           {stmt.source}
         </source>
         <package>
-          {stmt.location._package}
+          {stmt.location.packageName}
         </package>
         <class>
-          {stmt.location._class}
+          {stmt.location.className}
         </class>
         <classType>
           {stmt.location.classType.toString}
@@ -99,7 +99,7 @@ object IOUtils {
           {stmt.location.method}
         </method>
         <path>
-          {stmt.location.path}
+          {stmt.location.sourcePath}
         </path>
         <id>
           {stmt.id.toString}

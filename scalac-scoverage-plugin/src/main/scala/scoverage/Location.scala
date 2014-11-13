@@ -1,0 +1,45 @@
+package scoverage
+
+import scala.tools.nsc.Global
+
+case class Location(packageName: String,
+                    className: String,
+                    classType: ClassType,
+                    method: String,
+                    sourcePath: String) extends java.io.Serializable {
+  val fqn = (packageName + ".").replace("<empty>.", "") + className
+}
+
+object Location {
+
+  def apply(global: Global): global.Tree => Option[Location] = { tree =>
+
+    def className(s: global.Symbol): String = {
+      // anon functions are enclosed in proper classes.
+      if (s.enclClass.isAnonymousFunction) className(s.owner)
+      else s.enclClass.nameString
+    }
+
+    def classType(s: global.Symbol): ClassType = {
+      if (s.owner.enclClass.isTrait) ClassType.Trait
+      else if (s.owner.enclClass.isModule) ClassType.Object
+      else ClassType.Class
+    }
+
+    def enclosingMethod(s: global.Symbol): String = {
+      // check if we are in a proper method and return that, otherwise traverse up
+      if (s.enclClass.isAnonymousFunction) enclosingMethod(s.owner)
+      else Option(s.owner.enclMethod.nameString).getOrElse("<none>")
+    }
+
+    Option(tree.symbol) map {
+      symbol =>
+        Location(
+          symbol.enclosingPackage.fullName,
+          className(symbol),
+          classType(symbol),
+          enclosingMethod(symbol),
+          symbol.sourceFile.canonicalPath)
+    }
+  }
+}

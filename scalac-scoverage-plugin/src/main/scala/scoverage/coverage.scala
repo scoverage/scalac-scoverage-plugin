@@ -38,7 +38,7 @@ case class Coverage()
 trait MethodBuilders {
   def statements: Iterable[MeasuredStatement]
   def methods: Seq[MeasuredMethod] = {
-    statements.groupBy(stmt => stmt.location._package + "/" + stmt.location._class + "/" + stmt.location.method)
+    statements.groupBy(stmt => stmt.location.packageName + "/" + stmt.location.className + "/" + stmt.location.method)
       .map(arg => MeasuredMethod(arg._1, arg._2))
       .toSeq
   }
@@ -49,13 +49,13 @@ trait PackageBuilders {
   def statements: Iterable[MeasuredStatement]
   def packageCount = packages.size
   def packages: Seq[MeasuredPackage] = {
-    statements.groupBy(_.location._package).map(arg => MeasuredPackage(arg._1, arg._2)).toSeq.sortBy(_.name)
+    statements.groupBy(_.location.packageName).map(arg => MeasuredPackage(arg._1, arg._2)).toSeq.sortBy(_.name)
   }
 }
 
 trait ClassBuilders {
   def statements: Iterable[MeasuredStatement]
-  def classes = statements.groupBy(_.location._class).map(arg => MeasuredClass(arg._1, arg._2))
+  def classes = statements.groupBy(_.location.className).map(arg => MeasuredClass(arg._1, arg._2))
   def classCount: Int = classes.size
 }
 
@@ -99,14 +99,15 @@ case class MeasuredStatement(source: String,
   def isInvoked = count > 0
 }
 
-case class Location(_package: String,
-                    _class: String,
-                    classType: ClassType,
-                    method: String,
-                    path: String)
-  extends java.io.Serializable {
-  val fqn = (_package + ".").replace("<empty>.", "") + _class
+object ClassType {
+  case object Object extends ClassType
+  case object Class extends ClassType
+  case object Trait extends ClassType
 }
+
+sealed trait ClassType
+
+
 
 case class ClassRef(name: String) {
   lazy val simpleName = name.split(".").last

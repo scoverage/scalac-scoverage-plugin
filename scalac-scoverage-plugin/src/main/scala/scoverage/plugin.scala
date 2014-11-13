@@ -101,6 +101,7 @@ class ScoverageInstrumentationComponent(val global: Global)
 
     import global._
 
+    // contains the location of the last node
     var location: Location = null
 
     /**
@@ -185,33 +186,11 @@ class ScoverageInstrumentationComponent(val global: Global)
     def isFileIncluded(source: SourceFile): Boolean = coverageFilter.isFileIncluded(source)
     def isStatementIncluded(pos: Position): Boolean = coverageFilter.isLineIncluded(pos)
 
-    def className(s: Symbol): String = {
-      if (s.enclClass.isAnonymousFunction || s.enclClass.isAnonymousFunction)
-        className(s.owner)
-      else
-        s.enclClass.nameString
-    }
-
-    def enclosingMethod(s: Symbol): String = {
-      if (s.enclClass.isAnonymousFunction || s.enclClass.isAnonymousFunction)
-        enclosingMethod(s.owner)
-      else
-        Option(s.owner.enclMethod.nameString).getOrElse("<none>")
-    }
-
-    def updateLocation(s: Symbol) {
-      val classType = {
-        if (s.owner.enclClass.isTrait) ClassType.Trait
-        else if (s.owner.enclClass.isModule) ClassType.Object
-        else ClassType.Class
+    def updateLocation(t: Tree) {
+      Location(global)(t) match {
+        case Some(loc) => this.location = loc
+        case _ => println(s"[warn] Cannot update location for $t")
       }
-      location = Location(
-        s.enclosingPackage.fullName,
-        className(s),
-        classType,
-        enclosingMethod(s),
-        s.sourceFile.canonicalPath
-      )
     }
 
     def transformPartial(c: ClassDef): ClassDef = {
@@ -331,7 +310,7 @@ class ScoverageInstrumentationComponent(val global: Global)
 
         case c: ClassDef =>
           if (isFileIncluded(c.pos.source) && isClassIncluded(c.symbol)) {
-            updateLocation(c.symbol)
+            updateLocation(c)
             super.transform(tree)
           } else {
             c
@@ -352,10 +331,13 @@ class ScoverageInstrumentationComponent(val global: Global)
         case d: DefDef if d.symbol != null && d.tpt.symbol.fullNameString == "scala.reflect.api.Exprs.Expr" =>
           tree
 
-        // todo do we really want to ignore?
-        case d: DefDef if d.symbol.isPrimaryConstructor => tree
-        // todo definitely want to instrument user level constructors
-        case d: DefDef if tree.symbol.isConstructor => tree
+        case d: DefDef if d.symbol.isPrimaryConstructor =>
+          updateLocation(d)
+          super.transform(d)
+
+        case d: DefDef if tree.symbol.isConstructor =>
+          updateLocation(d)
+          super.transform(d)
 
         /**
          * Case class accessors for vals
@@ -372,7 +354,7 @@ class ScoverageInstrumentationComponent(val global: Global)
          * Lazy stable DefDefs are generated as the impl for lazy vals.
          */
         case d: DefDef if d.symbol.isStable && d.symbol.isGetter && d.symbol.isLazy =>
-          updateLocation(d.symbol)
+          updateLocation(d)
           treeCopy.DefDef(d, d.mods, d.name, d.tparams, d.vparamss, d.tpt, process(d.rhs))
 
         /**
@@ -409,7 +391,7 @@ class ScoverageInstrumentationComponent(val global: Global)
           * this is expressed by having `tpt` set to `TypeTree()` (but not to an `EmptyTree`!).
           */
         case d: DefDef =>
-          updateLocation(d.symbol)
+          updateLocation(d)
           treeCopy.DefDef(d, d.mods, d.name, d.tparams, d.vparamss, d.tpt, process(d.rhs))
 
         case EmptyTree => tree
@@ -445,16 +427,18 @@ class ScoverageInstrumentationComponent(val global: Global)
           }
 
         // a synthetic object is a generated object, such as case class companion
-        case m: ModuleDef if m.symbol.isSynthetic => super.transform(tree)
+        case m: ModuleDef if m.symbol.isSynthetic =>
+          updateLocation(m)
+          super.transform(tree)
 
         // user defined objects
         case m: ModuleDef =>
           if (isFileIncluded(m.pos.source) && isClassIncluded(m.symbol)) {
-            updateLocation(m.symbol)
+            updateLocation(m)
             super.transform(tree)
-          }
-          else
+          } else {
             m
+          }
 
         /**
          * match with syntax `New(tpt)`.
@@ -532,6 +516,7 @@ class ScoverageInstrumentationComponent(val global: Global)
         case t: TypeDef => super.transform(tree)
 
         case t: Template =>
+          updateLocation(t)
           treeCopy.Template(tree, t.parents, t.self, transformStatements(t.body))
 
         case _: TypeTree => super.transform(tree)
@@ -554,7 +539,7 @@ class ScoverageInstrumentationComponent(val global: Global)
 
         // we need to remove the final mod so that we keep the code in order to check its invoked
         case v: ValDef if v.mods.isFinal =>
-          updateLocation(v.symbol)
+          updateLocation(v)
           treeCopy.ValDef(v, v.mods.&~(ModifierFlags.FINAL), v.name, v.tpt, process(v.rhs))
 
         /**
@@ -570,7 +555,7 @@ class ScoverageInstrumentationComponent(val global: Global)
          * This includes top level non-lazy vals. Lazy vals are generated as stable defs.
          */
         case v: ValDef =>
-          updateLocation(v.symbol)
+          updateLocation(v)
           treeCopy.ValDef(tree, v.mods, v.name, v.tpt, process(v.rhs))
 
         case _ =>

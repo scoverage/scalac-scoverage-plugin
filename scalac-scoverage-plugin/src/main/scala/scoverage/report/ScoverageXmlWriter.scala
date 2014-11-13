@@ -21,8 +21,8 @@ class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
   def statement(stmt: MeasuredStatement): Node = {
     debug match {
       case true =>
-        <statement package={stmt.location._package}
-                   class={stmt.location._class}
+        <statement package={stmt.location.packageName}
+                   class={stmt.location.className}
                    method={stmt.location.method}
                    start={stmt.start.toString}
                    line={stmt.line.toString}
@@ -33,8 +33,8 @@ class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
           {IOUtils.escape(stmt.desc)}
         </statement>
       case false =>
-          <statement package={stmt.location._package}
-                     class={stmt.location._class}
+          <statement package={stmt.location.packageName}
+                     class={stmt.location.className}
                      method={stmt.location.method}
                      start={stmt.start.toString}
                      line={stmt.line.toString}
