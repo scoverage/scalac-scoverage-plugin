@@ -94,11 +94,47 @@ class LocationTest extends FreeSpec with Matchers {
       "should use outer package" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.methodtest \n class Jammy { trait Mammy } ")
-        println()
-        println(compiler.locations.result.mkString("\n"))
         val loc = compiler.locations.result.find(_._2.className == "Mammy").get._2
         loc.packageName shouldBe "com.methodtest"
         loc.className shouldBe "Mammy"
+        loc.method shouldBe "<none>"
+        loc.classType shouldBe ClassType.Trait
+        loc.sourcePath should endWith(".scala")
+      }
+    }
+    "for class constructor body" - {
+      "should use <init> method name" in {
+        val compiler = ScoverageCompiler.locationCompiler
+        compiler.compile("package com.b \n class Tammy { val name = 'sam } ")
+        val loc = compiler.locations.result.find(_._1 == "ValDef").get._2
+        loc.packageName shouldBe "com.b"
+        loc.className shouldBe "Tammy"
+        loc.method shouldBe "<none>"
+        loc.classType shouldBe ClassType.Class
+        loc.sourcePath should endWith(".scala")
+      }
+    }
+    "for object constructor body" - {
+      "should use <init> method name" in {
+        val compiler = ScoverageCompiler.locationCompiler
+        compiler.compile("package com.b \n object Yammy { val name = 'sam } ")
+        val loc = compiler.locations.result.find(_._1 == "ValDef").get._2
+        loc.packageName shouldBe "com.b"
+        loc.className shouldBe "Yammy"
+        loc.method shouldBe "<none>"
+        loc.classType shouldBe ClassType.Object
+        loc.sourcePath should endWith(".scala")
+      }
+    }
+    "for trait constructor body" - {
+      "should use <init> method name" in {
+        val compiler = ScoverageCompiler.locationCompiler
+        compiler.compile("package com.b \n trait Wammy { val name = 'sam } ")
+        println()
+        println(compiler.locations.result.mkString("\n"))
+        val loc = compiler.locations.result.find(_._1 == "ValDef").get._2
+        loc.packageName shouldBe "com.b"
+        loc.className shouldBe "Wammy"
         loc.method shouldBe "<none>"
         loc.classType shouldBe ClassType.Trait
         loc.sourcePath should endWith(".scala")
