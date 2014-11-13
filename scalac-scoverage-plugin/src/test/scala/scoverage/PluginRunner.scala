@@ -14,7 +14,7 @@ trait PluginSupport {
   val scalaVersion = "2.11.4"
   val shortScalaVersion = scalaVersion.dropRight(2)
 
-  val classPath = getScalaJars.map(_.getAbsolutePath) :+ sbtCompileDir.getAbsolutePath
+  val classPath = getScalaJars.map(_.getAbsolutePath) :+ sbtCompileDir.getAbsolutePath :+ runtimeClasses.getAbsolutePath
 
   val settings = {
     val s = new scala.tools.nsc.Settings
@@ -53,6 +53,8 @@ trait PluginSupport {
     val scalaJars = List("scala-compiler", "scala-library", "scala-reflect")
     scalaJars.map(findScalaJar)
   }
+
+  def runtimeClasses: File = new File("./scalac-scoverage-runtime/target/scala-2.11/classes")
 
   def findScalaJar(artifactId: String): File = findIvyJar("org.scala-lang", artifactId, scalaVersion)
 
