@@ -138,10 +138,6 @@ class ScoverageInstrumentationComponent(val global: Global)
 
     override def transform(tree: Tree) = process(tree)
 
-    def transformIf(tree: Tree) = {
-      instrument(process(tree), true)
-    }
-
     def transformStatements(trees: List[Tree]): List[Tree] = trees.map(process)
 
     def transformCases(cases: List[CaseDef]): List[CaseDef] = {
@@ -260,7 +256,8 @@ class ScoverageInstrumentationComponent(val global: Global)
 
         /**
          * When an apply has no parameters, or is an application of purely literals or idents
-         * then we can simply instrument the outer call.
+         * then we can simply instrument the outer call. Ie, we can treat it all as one single statement
+         * for the purposes of code coverage.
          * This will include calls to case apply.
          */
         case a: GenericApply if allConstArgs(a.args) => instrument(a)
@@ -402,8 +399,12 @@ class ScoverageInstrumentationComponent(val global: Global)
 
         case _: Ident => tree
 
+        // the If statement itself doesn't need to be instrumented, because instrumenting the condition is
+        // enough to determine if the If statement was executed.
+        // The two procedures (then and else) are instrumented seperately to determine if we entered
+        // both branches.
         case i: If =>
-          treeCopy.If(i, process(i.cond), transformIf(i.thenp), transformIf(i.elsep))
+          treeCopy.If(i, process(i.cond), instrument(process(i.thenp), true), instrument(process(i.elsep), true))
 
         case _: Import => tree
 
@@ -477,6 +478,7 @@ class ScoverageInstrumentationComponent(val global: Global)
         // This AST node corresponds to the following Scala code:  `return` expr
         case r: Return =>
           treeCopy.Return(r, transform(r.expr))
+
         /** pattern match with syntax `Select(qual, name)`.
           * This AST node corresponds to the following Scala code:
           *
