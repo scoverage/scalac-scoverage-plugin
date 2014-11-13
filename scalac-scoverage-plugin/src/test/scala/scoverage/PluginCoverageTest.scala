@@ -106,8 +106,9 @@ class PluginCoverageTest
 
   test("scoverage should correctly handle new that invokes nested statements") {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """ object A {
-                                   |  new String(if (System.currentTimeMillis > 1) "yes" else "no")
+    compiler.compileCodeSnippet( """
+                                   | object A {
+                                   |  val value = new java.util.concurrent.CountDownLatch(if (System.currentTimeMillis > 1) 5 else 10)
                                    | } """.stripMargin)
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
