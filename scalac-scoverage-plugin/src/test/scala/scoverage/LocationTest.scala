@@ -12,6 +12,7 @@ class LocationTest extends FreeSpec with Matchers {
         val loc = compiler.locations.result.find(_._1 == "Template").get._2
         loc.packageName shouldBe "com.test"
         loc.className shouldBe "Sammy"
+        loc.topLevelClass shouldBe "Sammy"
         loc.method shouldBe "<none>"
         loc.classType shouldBe ClassType.Class
         loc.sourcePath should endWith(".scala")
@@ -22,6 +23,7 @@ class LocationTest extends FreeSpec with Matchers {
         val loc = compiler.locations.result.find(_._1 == "Template").get._2
         loc.packageName shouldBe "com.test"
         loc.className shouldBe "Bammy"
+        loc.topLevelClass shouldBe "Bammy"
         loc.method shouldBe "<none>"
         loc.classType shouldBe ClassType.Object
         loc.sourcePath should endWith(".scala")
@@ -32,6 +34,7 @@ class LocationTest extends FreeSpec with Matchers {
         val loc = compiler.locations.result.find(_._1 == "Template").get._2
         loc.packageName shouldBe "com.test"
         loc.className shouldBe "Gammy"
+        loc.topLevelClass shouldBe "Gammy"
         loc.method shouldBe "<none>"
         loc.classType shouldBe ClassType.Trait
         loc.sourcePath should endWith(".scala")
@@ -52,6 +55,7 @@ class LocationTest extends FreeSpec with Matchers {
       val loc = compiler.locations.result.find(_._2.method == "goo").get._2
       loc.packageName shouldBe "com.methodtest"
       loc.className shouldBe "Hammy"
+      loc.topLevelClass shouldBe "Hammy"
       loc.classType shouldBe ClassType.Class
       loc.sourcePath should endWith(".scala")
 
@@ -73,6 +77,7 @@ class LocationTest extends FreeSpec with Matchers {
         val loc = compiler.locations.result.find(_._2.className == "Pammy").get._2
         loc.packageName shouldBe "com.methodtest"
         loc.className shouldBe "Pammy"
+        loc.topLevelClass shouldBe "Jammy"
         loc.method shouldBe "<none>"
         loc.classType shouldBe ClassType.Class
         loc.sourcePath should endWith(".scala")
@@ -83,6 +88,7 @@ class LocationTest extends FreeSpec with Matchers {
         val loc = compiler.locations.result.find(_._2.className == "Zammy").get._2
         loc.packageName shouldBe "com.methodtest"
         loc.className shouldBe "Zammy"
+        loc.topLevelClass shouldBe "Jammy"
         loc.method shouldBe "<none>"
         loc.classType shouldBe ClassType.Object
         loc.sourcePath should endWith(".scala")
@@ -93,6 +99,7 @@ class LocationTest extends FreeSpec with Matchers {
         val loc = compiler.locations.result.find(_._2.className == "Mammy").get._2
         loc.packageName shouldBe "com.methodtest"
         loc.className shouldBe "Mammy"
+        loc.topLevelClass shouldBe "Jammy"
         loc.method shouldBe "<none>"
         loc.classType shouldBe ClassType.Trait
         loc.sourcePath should endWith(".scala")
@@ -107,6 +114,7 @@ class LocationTest extends FreeSpec with Matchers {
         val loc = compiler.locations.result.find(_._1 == "Template").get._2
         loc.packageName shouldBe "com.a.b"
         loc.className shouldBe "Kammy"
+        loc.topLevelClass shouldBe "Kammy"
         loc.method shouldBe "<none>"
         loc.classType shouldBe ClassType.Class
         loc.sourcePath should endWith(".scala")
@@ -131,6 +139,7 @@ class LocationTest extends FreeSpec with Matchers {
         val loc = compiler.locations.result.find(_._1 == "Template").get._2
         loc.packageName shouldBe "com.a.b"
         loc.className shouldBe "Kammy"
+        loc.topLevelClass shouldBe "Kammy"
         loc.method shouldBe "<none>"
         loc.classType shouldBe ClassType.Trait
         loc.sourcePath should endWith(".scala")
@@ -153,6 +162,7 @@ class LocationTest extends FreeSpec with Matchers {
         val loc = compiler.locations.result.find(_._1 == "ValDef").get._2
         loc.packageName shouldBe "com.b"
         loc.className shouldBe "Yammy"
+        loc.topLevelClass shouldBe "Yammy"
         loc.method shouldBe "<none>"
         loc.classType shouldBe ClassType.Object
         loc.sourcePath should endWith(".scala")
@@ -165,6 +175,7 @@ class LocationTest extends FreeSpec with Matchers {
         val loc = compiler.locations.result.find(_._1 == "ValDef").get._2
         loc.packageName shouldBe "com.b"
         loc.className shouldBe "Wammy"
+        loc.topLevelClass shouldBe "Wammy"
         loc.method shouldBe "<none>"
         loc.classType shouldBe ClassType.Trait
         loc.sourcePath should endWith(".scala")

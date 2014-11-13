@@ -1,12 +1,12 @@
 package scoverage
 
+import java.io.{File, FileWriter}
+
+import org.apache.commons.io.FileUtils
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{FunSuite, OneInstancePerTest}
-import java.io.{FileWriter, File}
-import scoverage.{IOUtils, Location, MeasuredStatement, Coverage}
 
 import scala.xml.Utility
-import org.apache.commons.io.FileUtils
 
 /** @author Stephen Samuel */
 class IOUtilsTest extends FunSuite with MockitoSugar with OneInstancePerTest {
@@ -16,13 +16,13 @@ class IOUtilsTest extends FunSuite with MockitoSugar with OneInstancePerTest {
     coverage.add(
       MeasuredStatement(
         "mysource",
-        Location("org.scoverage", "test", ClassType.Trait, "mymethod", "mypath"),
+        Location("org.scoverage", "test", "test", ClassType.Trait, "mymethod", "mypath"),
         14, 100, 200, 4, "def test : String", "test", "DefDef", true, 32
       )
     )
     val expected = <statements>
       <statement>
-        <source>mysource</source> <package>org.scoverage</package> <class>test</class> <classType>Trait</classType> <method>mymethod</method> <path>mypath</path> <id>14</id> <start>100</start> <end>200</end> <line>4</line> <description>def test : String</description> <symbolName>test</symbolName> <treeName>DefDef</treeName> <branch>true</branch> <count>32</count>
+        <source>mysource</source> <package>org.scoverage</package> <class>test</class>  <classType>Trait</classType> <topLevelClass>test</topLevelClass> <method>mymethod</method> <path>mypath</path> <id>14</id> <start>100</start> <end>200</end> <line>4</line> <description>def test : String</description> <symbolName>test</symbolName> <treeName>DefDef</treeName> <branch>true</branch> <count>32</count>
       </statement>
     </statements>
     val actual = IOUtils.serialize(coverage)
@@ -32,12 +32,12 @@ class IOUtilsTest extends FunSuite with MockitoSugar with OneInstancePerTest {
   test("coverage should be deserializable from xml") {
     val input = <statements>
       <statement>
-        <source>mysource</source> <package>org.scoverage</package> <class>test</class> <classType>Trait</classType> <method>mymethod</method> <path>mypath</path> <id>14</id> <start>100</start> <end>200</end> <line>4</line> <description>def test : String</description> <symbolName>test</symbolName> <treeName>DefDef</treeName> <branch>true</branch> <count>32</count>
+        <source>mysource</source> <package>org.scoverage</package> <class>test</class> <classType>Trait</classType> <topLevelClass>test</topLevelClass> <method>mymethod</method> <path>mypath</path> <id>14</id> <start>100</start> <end>200</end> <line>4</line> <description>def test : String</description> <symbolName>test</symbolName> <treeName>DefDef</treeName> <branch>true</branch> <count>32</count>
       </statement>
     </statements>
     val statements = List(MeasuredStatement(
       "mysource",
-      Location("org.scoverage", "test", ClassType.Trait, "mymethod", "mypath"),
+      Location("org.scoverage", "test", "test", ClassType.Trait, "mymethod", "mypath"),
       14, 100, 200, 4, "def test : String", "test", "DefDef", true, 32
     ))
     val coverage = IOUtils.deserialize(input.toString())

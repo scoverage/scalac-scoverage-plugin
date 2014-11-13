@@ -4,6 +4,7 @@ import scala.tools.nsc.Global
 
 case class Location(packageName: String,
                     className: String,
+                    topLevelClass: String,
                     classType: ClassType,
                     method: String,
                     sourcePath: String) extends java.io.Serializable {
@@ -30,6 +31,10 @@ object Location {
       else ClassType.Class
     }
 
+    def topLevelClass(s: global.Symbol): String = {
+      s.enclosingTopLevelClass.nameString
+    }
+
     def enclosingMethod(s: global.Symbol): String = {
       // check if we are in a proper method and return that, otherwise traverse up
       if (s.enclClass.isAnonymousFunction) enclosingMethod(s.owner)
@@ -46,6 +51,7 @@ object Location {
         Location(
           packageName(symbol),
           className(symbol),
+          topLevelClass(symbol),
           classType(symbol),
           enclosingMethod(symbol),
           sourcePath(symbol))

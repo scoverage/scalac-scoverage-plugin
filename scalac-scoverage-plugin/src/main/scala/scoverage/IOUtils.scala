@@ -95,6 +95,9 @@ object IOUtils {
         <classType>
           {stmt.location.classType.toString}
         </classType>
+        <topLevelClass>
+          {stmt.location.topLevelClass}
+        </topLevelClass>
         <method>
           {stmt.location.method}
         </method>
@@ -143,6 +146,7 @@ object IOUtils {
       val branch = (node \ "branch").text.toBoolean
       val _package = (node \ "package").text
       val _class = (node \ "class").text
+      val topLevelClass = (node \ "topLevelClass").text
       val method = (node \ "method").text
       val path = (node \ "path").text
       val treeName = (node \ "treeName").text
@@ -158,7 +162,7 @@ object IOUtils {
         case _ => ClassType.Class
       }
       MeasuredStatement(source,
-        Location(_package, _class, classType, method, path),
+        Location(_package, _class, topLevelClass, classType, method, path),
         id,
         start,
         end,
