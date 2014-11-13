@@ -40,8 +40,6 @@ class LocationTest extends FreeSpec with Matchers {
     "should correctly process methods" in {
       val compiler = ScoverageCompiler.locationCompiler
       compiler.compile("package com.methodtest \n class Hammy { def foo = 'boo } ")
-      println()
-      println(compiler.locations.result.mkString("\n"))
       val loc = compiler.locations.result.find(_._2.method == "foo").get._2
       loc.packageName shouldBe "com.methodtest"
       loc.className shouldBe "Hammy"
@@ -51,8 +49,6 @@ class LocationTest extends FreeSpec with Matchers {
     "should correctly process nested methods" in {
       val compiler = ScoverageCompiler.locationCompiler
       compiler.compile("package com.methodtest \n class Hammy { def foo = { def goo = { getClass; 3 }; goo } } ")
-      println()
-      println(compiler.locations.result.mkString("\n"))
       val loc = compiler.locations.result.find(_._2.method == "goo").get._2
       loc.packageName shouldBe "com.methodtest"
       loc.className shouldBe "Hammy"
@@ -63,14 +59,50 @@ class LocationTest extends FreeSpec with Matchers {
     "should process anon functions as inside the enclosing method" in {
       val compiler = ScoverageCompiler.locationCompiler
       compiler.compile("package com.methodtest \n class Jammy { def moo = { Option(\"bat\").map(_.length) } } ")
-      println()
-      println(compiler.locations.result.mkString("\n"))
       val loc = compiler.locations.result.find(_._1 == "Function").get._2
       loc.packageName shouldBe "com.methodtest"
       loc.className shouldBe "Jammy"
       loc.method shouldBe "moo"
       loc.classType shouldBe ClassType.Class
       loc.sourcePath should endWith(".scala")
+    }
+    "for nested classes" - {
+      "should use outer package" in {
+        val compiler = ScoverageCompiler.locationCompiler
+        compiler.compile("package com.methodtest \n class Jammy { class Pammy } ")
+        val loc = compiler.locations.result.find(_._2.className == "Pammy").get._2
+        loc.packageName shouldBe "com.methodtest"
+        loc.className shouldBe "Pammy"
+        loc.method shouldBe "<none>"
+        loc.classType shouldBe ClassType.Class
+        loc.sourcePath should endWith(".scala")
+      }
+    }
+    "for nested objects" - {
+      "should use outer package" in {
+        val compiler = ScoverageCompiler.locationCompiler
+        compiler.compile("package com.methodtest \n class Jammy { object Zammy } ")
+        val loc = compiler.locations.result.find(_._2.className == "Zammy").get._2
+        loc.packageName shouldBe "com.methodtest"
+        loc.className shouldBe "Zammy"
+        loc.method shouldBe "<none>"
+        loc.classType shouldBe ClassType.Object
+        loc.sourcePath should endWith(".scala")
+      }
+    }
+    "for nested traits" - {
+      "should use outer package" in {
+        val compiler = ScoverageCompiler.locationCompiler
+        compiler.compile("package com.methodtest \n class Jammy { trait Mammy } ")
+        println()
+        println(compiler.locations.result.mkString("\n"))
+        val loc = compiler.locations.result.find(_._2.className == "Mammy").get._2
+        loc.packageName shouldBe "com.methodtest"
+        loc.className shouldBe "Mammy"
+        loc.method shouldBe "<none>"
+        loc.classType shouldBe ClassType.Trait
+        loc.sourcePath should endWith(".scala")
+      }
     }
   }
 }
