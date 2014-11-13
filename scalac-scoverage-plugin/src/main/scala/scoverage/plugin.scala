@@ -50,6 +50,7 @@ class ScoverageOptions {
   var dataDir: String = File.createTempFile("scoverage_datadir_not_defined", ".tmp").getParent
 }
 
+
 class ScoverageInstrumentationComponent(val global: Global)
   extends PluginComponent
   with TypingTransformers
@@ -250,12 +251,12 @@ class ScoverageInstrumentationComponent(val global: Global)
         // ignore macro expanded code, do not send to super as we don't want any children to be instrumented
         case t if t.attachments.all.toString().contains("MacroExpansionAttachment") => t
 
-        /**
-         * Object creation from new.
-         * Ignoring creation calls to anon functions
-         */
-        case a: GenericApply if a.symbol.isConstructor && a.symbol.enclClass.isAnonymousFunction => tree
-        case a: GenericApply if a.symbol.isConstructor => instrument(a)
+        //        /**
+        //         * Object creation from new.
+        //         * Ignoring creation calls to anon functions
+        //         */
+        //        case a: GenericApply if a.symbol.isConstructor && a.symbol.enclClass.isAnonymousFunction => tree
+        //        case a: GenericApply if a.symbol.isConstructor => instrument(a)
 
         /**
          * When an apply has no parameters, or is an application of purely literals or idents
@@ -271,6 +272,10 @@ class ScoverageInstrumentationComponent(val global: Global)
         //todo remove once scala merges into Apply proper
         case a: ApplyToImplicitArgs =>
           instrument(treeCopy.Apply(a, traverseApplication(a.fun), transformStatements(a.args)))
+
+        // handle 'new' keywords, instrumenting parameter lists
+        case a@Apply(s@Select(New(tpt), name), args) =>
+          instrument(treeCopy.Apply(a, s, transformStatements(args)))
         case a: Apply =>
           instrument(treeCopy.Apply(a, traverseApplication(a.fun), transformStatements(a.args)))
         case a: TypeApply =>
@@ -331,13 +336,8 @@ class ScoverageInstrumentationComponent(val global: Global)
         case d: DefDef if d.symbol != null && d.tpt.symbol.fullNameString == "scala.reflect.api.Exprs.Expr" =>
           tree
 
-        case d: DefDef if d.symbol.isPrimaryConstructor =>
-          updateLocation(d)
-          tree
-
-        case d: DefDef if tree.symbol.isConstructor =>
-          updateLocation(d)
-          tree
+        // we can ignore primary constructors because they are just empty at this stage, the body is added later.
+        case d: DefDef if d.symbol.isPrimaryConstructor => tree
 
         /**
          * Case class accessors for vals
@@ -464,9 +464,9 @@ class ScoverageInstrumentationComponent(val global: Global)
          * List(Literal(Constant(2)))),
          * List(Literal(Constant(3))))
          *
-         * We can ignore New as they should be profiled by the outer select.
          */
-        case n: New => super.transform(n)
+        case s@Select(n@New(tpt), name) =>
+          instrument(treeCopy.Select(s, n, name))
 
         case p: PackageDef =>
           if (isClassIncluded(p.symbol)) treeCopy.PackageDef(p, p.pid, transformStatements(p.stats))
@@ -475,7 +475,6 @@ class ScoverageInstrumentationComponent(val global: Global)
         // This AST node corresponds to the following Scala code:  `return` expr
         case r: Return =>
           treeCopy.Return(r, transform(r.expr))
-
         /** pattern match with syntax `Select(qual, name)`.
           * This AST node corresponds to the following Scala code:
           *

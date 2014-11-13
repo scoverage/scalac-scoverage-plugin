@@ -18,9 +18,9 @@ object ScoverageCompiler {
 
   def settings: Settings = {
     val s = new scala.tools.nsc.Settings
-    //s.Xprint.value = List("all")
+    s.Xprint.value = List("all")
     s.Yrangepos.value = true
-    //s.Yposdebug.value = true
+    s.Yposdebug.value = true
     s.classpath.value = classPath.mkString(":")
     s
   }
@@ -99,7 +99,7 @@ class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tool
   def assertNMeasuredStatements(n: Int): Unit = {
     for ( k <- 1 to n ) {
       assert(testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked($k,"),
-        s"Should be $n invoked statements but missing $k")
+        s"Should be $n invoked statements but missing #$k")
     }
     assert(!testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked(${n + 1},"),
       s"Found statement ${n + 1} but only expected $n")
