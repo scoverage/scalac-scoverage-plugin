@@ -14,6 +14,10 @@ object Location {
 
   def apply(global: Global): global.Tree => Option[Location] = { tree =>
 
+    def packageName(s: global.Symbol): String = {
+      s.enclosingPackage.fullName
+    }
+
     def className(s: global.Symbol): String = {
       // anon functions are enclosed in proper classes.
       if (s.enclClass.isAnonymousFunction) className(s.owner)
@@ -40,7 +44,7 @@ object Location {
     Option(tree.symbol) map {
       symbol =>
         Location(
-          symbol.enclosingPackage.fullName,
+          packageName(symbol),
           className(symbol),
           classType(symbol),
           enclosingMethod(symbol),

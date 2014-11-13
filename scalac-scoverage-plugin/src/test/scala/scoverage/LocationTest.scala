@@ -66,8 +66,8 @@ class LocationTest extends FreeSpec with Matchers {
       loc.classType shouldBe ClassType.Class
       loc.sourcePath should endWith(".scala")
     }
-    "for nested classes" - {
-      "should use outer package" in {
+    "should use outer package" - {
+      "for nested classes" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.methodtest \n class Jammy { class Pammy } ")
         val loc = compiler.locations.result.find(_._2.className == "Pammy").get._2
@@ -77,9 +77,7 @@ class LocationTest extends FreeSpec with Matchers {
         loc.classType shouldBe ClassType.Class
         loc.sourcePath should endWith(".scala")
       }
-    }
-    "for nested objects" - {
-      "should use outer package" in {
+      "for nested objects" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.methodtest \n class Jammy { object Zammy } ")
         val loc = compiler.locations.result.find(_._2.className == "Zammy").get._2
@@ -89,9 +87,7 @@ class LocationTest extends FreeSpec with Matchers {
         loc.classType shouldBe ClassType.Object
         loc.sourcePath should endWith(".scala")
       }
-    }
-    "for nested traits" - {
-      "should use outer package" in {
+      "for nested traits" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.methodtest \n class Jammy { trait Mammy } ")
         val loc = compiler.locations.result.find(_._2.className == "Mammy").get._2
@@ -102,8 +98,46 @@ class LocationTest extends FreeSpec with Matchers {
         loc.sourcePath should endWith(".scala")
       }
     }
-    "for class constructor body" - {
-      "should use <init> method name" in {
+    "should support nested packages" - {
+      "for classes" in {
+        val compiler = ScoverageCompiler.locationCompiler
+        compiler.compile("package com.a \n " +
+          "package b \n" +
+          "class Kammy ")
+        val loc = compiler.locations.result.find(_._1 == "Template").get._2
+        loc.packageName shouldBe "com.a.b"
+        loc.className shouldBe "Kammy"
+        loc.method shouldBe "<none>"
+        loc.classType shouldBe ClassType.Class
+        loc.sourcePath should endWith(".scala")
+      }
+      "for objects" in {
+        val compiler = ScoverageCompiler.locationCompiler
+        compiler.compile("package com.a \n " +
+          "package b \n" +
+          "object Kammy ")
+        val loc = compiler.locations.result.find(_._1 == "Template").get._2
+        loc.packageName shouldBe "com.a.b"
+        loc.className shouldBe "Kammy"
+        loc.method shouldBe "<none>"
+        loc.classType shouldBe ClassType.Object
+        loc.sourcePath should endWith(".scala")
+      }
+      "for traits" in {
+        val compiler = ScoverageCompiler.locationCompiler
+        compiler.compile("package com.a \n " +
+          "package b \n" +
+          "trait Kammy ")
+        val loc = compiler.locations.result.find(_._1 == "Template").get._2
+        loc.packageName shouldBe "com.a.b"
+        loc.className shouldBe "Kammy"
+        loc.method shouldBe "<none>"
+        loc.classType shouldBe ClassType.Trait
+        loc.sourcePath should endWith(".scala")
+      }
+    }
+    "should use <none> method name" - {
+      "for class constructor body" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.b \n class Tammy { val name = 'sam } ")
         val loc = compiler.locations.result.find(_._1 == "ValDef").get._2
@@ -113,9 +147,7 @@ class LocationTest extends FreeSpec with Matchers {
         loc.classType shouldBe ClassType.Class
         loc.sourcePath should endWith(".scala")
       }
-    }
-    "for object constructor body" - {
-      "should use <init> method name" in {
+      "for object constructor body" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.b \n object Yammy { val name = 'sam } ")
         val loc = compiler.locations.result.find(_._1 == "ValDef").get._2
@@ -125,9 +157,7 @@ class LocationTest extends FreeSpec with Matchers {
         loc.classType shouldBe ClassType.Object
         loc.sourcePath should endWith(".scala")
       }
-    }
-    "for trait constructor body" - {
-      "should use <init> method name" in {
+      "for trait constructor body" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.b \n trait Wammy { val name = 'sam } ")
         println()
