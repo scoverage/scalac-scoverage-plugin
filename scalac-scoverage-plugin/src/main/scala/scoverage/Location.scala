@@ -21,7 +21,7 @@ object Location {
 
     def className(s: global.Symbol): String = {
       // anon functions are enclosed in proper classes.
-      if (s.enclClass.isAnonymousFunction) className(s.owner)
+      if (s.enclClass.isAnonymousFunction || s.enclClass.isAnonymousClass) className(s.owner)
       else s.enclClass.nameString
     }
 
@@ -37,7 +37,7 @@ object Location {
 
     def enclosingMethod(s: global.Symbol): String = {
       // check if we are in a proper method and return that, otherwise traverse up
-      if (s.enclClass.isAnonymousFunction) enclosingMethod(s.owner)
+      if (s.enclClass.isAnonymousFunction ) enclosingMethod(s.owner)
       else if (s.enclMethod.isPrimaryConstructor) "<init>"
       else Option(s.enclMethod.nameString).getOrElse("<none>")
     }

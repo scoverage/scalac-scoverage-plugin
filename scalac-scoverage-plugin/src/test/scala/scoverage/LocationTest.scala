@@ -170,8 +170,6 @@ class LocationTest extends FreeSpec with Matchers {
       "for trait constructor body" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.b \n trait Wammy { val name = 'sam } ")
-        println()
-        println(compiler.locations.result.mkString("\n"))
         val loc = compiler.locations.result.find(_._1 == "ValDef").get._2
         loc.packageName shouldBe "com.b"
         loc.className shouldBe "Wammy"
@@ -180,6 +178,35 @@ class LocationTest extends FreeSpec with Matchers {
         loc.classType shouldBe ClassType.Trait
         loc.sourcePath should endWith(".scala")
       }
+    }
+    "anon class should report enclosing class" in {
+      val compiler = ScoverageCompiler.locationCompiler
+      compiler
+        .compile(
+          "package com.a; object A { def foo(b : B) : Unit = b.invoke }; trait B { def invoke : Unit }; class C { A.foo(new B { def invoke = () }) }")
+      println()
+      println(compiler.locations.result.mkString("\n"))
+      val loc = compiler.locations.result.filter(_._1 == "Template").last._2
+      loc.packageName shouldBe "com.a"
+      loc.className shouldBe "C"
+      loc.topLevelClass shouldBe "C"
+      loc.method shouldBe "<none>"
+      loc.classType shouldBe ClassType.Class
+      loc.sourcePath should endWith(".scala")
+    }
+    "anon class implemented method should report enclosing method" in {
+      val compiler = ScoverageCompiler.locationCompiler
+      compiler.compile(
+        "package com.a; object A { def foo(b : B) : Unit = b.invoke }; trait B { def invoke : Unit }; class C { A.foo(new B { def invoke = () }) }")
+      println()
+      println(compiler.locations.result.mkString("\n"))
+      val loc = compiler.locations.result.filter(_._1 == "DefDef").last._2
+      loc.packageName shouldBe "com.a"
+      loc.className shouldBe "C"
+      loc.topLevelClass shouldBe "C"
+      loc.method shouldBe "invoke"
+      loc.classType shouldBe ClassType.Class
+      loc.sourcePath should endWith(".scala")
     }
   }
 }
