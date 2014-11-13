@@ -1,0 +1,92 @@
+<scoverage statement-count="10"
+           statements-invoked="9"
+           statement-rate="90"
+           branch-rate="100.00"
+           version="1.0"
+           timestamp="1400456035212">
+    <packages>
+        <package name="com.sksamuel.scoverage.report.scoverage.samples"
+                 statement-count="10"
+                 statements-invoked="9"
+                 statement-rate="90">
+            <classes>
+                <class name="Futures"
+                       filename="/com/sksamuel/scoverage/samples/Futures.scala"
+                       statement-count="10"
+                       statements-invoked="9"
+                       statement-rate="90.00"
+                       branch-rate="100.00">
+                    <methods>
+                        <method name="com.sksamuel.scoverage.report.scoverage.samples/Futures/&lt;none&gt;"
+                                statement-count="7"
+                                statements-invoked="6"
+                                statement-rate="85.71"
+                                branch-rate="100.00">
+                            <statements>
+                                <statement
+                                        package="com.sksamuel.scoverage.report.scoverage.samples" class="Futures" method="&lt;none&gt;"
+                                        start="664" line="25" symbol="scala.util.Right.apply" tree="Apply"
+                                        branch="false" invocation-count="1">
+                                </statement>
+                                <statement
+                                        package="com.sksamuel.scoverage.report.scoverage.samples" class="Futures" method="&lt;none&gt;"
+                                        start="589" line="23" symbol="com.sksamuel.scoverage.report.scoverage.samples.Futures.check"
+                                        tree="Apply" branch="false" invocation-count="1">
+                                </statement>
+                                <statement
+                                        package="com.sksamuel.scoverage.report.scoverage.samples" class="Futures" method="&lt;none&gt;"
+                                        start="533" line="20" symbol="scala.util.Right.apply" tree="Apply"
+                                        branch="false" invocation-count="1">
+                                </statement>
+                                <statement
+                                        package="com.sksamuel.scoverage.report.scoverage.samples" class="Futures" method="&lt;none&gt;"
+                                        start="632" line="24" symbol="&lt;nosymbol&gt;" tree="Block" branch="false"
+                                        invocation-count="0">
+                                </statement>
+                                <statement
+                                        package="com.sksamuel.scoverage.report.scoverage.samples" class="Futures" method="&lt;none&gt;"
+                                        start="598" line="23" symbol="&lt;nosymbol&gt;" tree="Match" branch="false"
+                                        invocation-count="1">
+                                </statement>
+                                <statement
+                                        package="com.sksamuel.scoverage.report.scoverage.samples" class="Futures" method="&lt;none&gt;"
+                                        start="664" line="25" symbol="&lt;nosymbol&gt;" tree="Block" branch="false"
+                                        invocation-count="1">
+                                </statement>
+                                <statement
+                                        package="com.sksamuel.scoverage.report.scoverage.samples" class="Futures" method="&lt;none&gt;"
+                                        start="632" line="24" symbol="scala.util.Left.apply" tree="Apply" branch="false"
+                                        invocation-count="1">
+                                </statement>
+                            </statements>
+                        </method>
+                        <method name="com.sksamuel.scoverage.report.scoverage.samples/Futures/insert"
+                                statement-count="3"
+                                statements-invoked="3"
+                                statement-rate="100.00"
+                                branch-rate="100.00">
+                            <statements>
+                                <statement
+                                        package="com.sksamuel.scoverage.report.scoverage.samples" class="Futures" method="insert"
+                                        start="366" line="14" symbol="scala.concurrent.Future.onComplete"
+                                        tree="ApplyToImplicitArgs" branch="false" invocation-count="1">
+                                </statement>
+                                <statement
+                                        package="com.sksamuel.scoverage.report.scoverage.samples" class="Futures" method="insert"
+                                        start="309" line="11" symbol="scala.concurrent.Promise.apply" tree="Apply"
+                                        branch="false" invocation-count="1">
+                                </statement>
+                                <statement
+                                        package="com.sksamuel.scoverage.report.scoverage.samples" class="Futures" method="insert"
+                                        start="453" line="17"
+                                        symbol="com.sksamuel.scoverage.report.scoverage.samples.EitherMappableFuture.mapEither"
+                                        tree="ApplyToImplicitArgs" branch="false" invocation-count="1">
+                                </statement>
+                            </statements>
+                        </method>
+                    </methods>
+                </class>
+            </classes>
+        </package>
+    </packages>
+</scoverage>
