@@ -29,7 +29,7 @@ object Location {
     def enclosingMethod(s: global.Symbol): String = {
       // check if we are in a proper method and return that, otherwise traverse up
       if (s.enclClass.isAnonymousFunction) enclosingMethod(s.owner)
-      else Option(s.owner.enclMethod.nameString).getOrElse("<none>")
+      else Option(s.enclMethod.nameString).getOrElse("<none>")
     }
 
     def sourcePath(symbol: global.Symbol): String = {
