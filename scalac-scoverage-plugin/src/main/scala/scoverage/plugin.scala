@@ -146,12 +146,12 @@ class ScoverageInstrumentationComponent(val global: Global)
     def transformCases(cases: List[CaseDef]): List[CaseDef] = {
       cases.map(c => {
         treeCopy.CaseDef(
-          c, c.pat, process(c.guard), instrument(process(c.body))
+          c, c.pat, process(c.guard), instrument(process(c.body), c)
         )
       })
     }
 
-    def instrument(tree: Tree, branch: Boolean = false): Tree = {
+    def instrument(tree: Tree, original: Tree, branch: Boolean = false): Tree = {
       safeSource(tree) match {
         case None =>
           println(s"[warn] Could not instrument [${tree.getClass.getSimpleName}/${tree.symbol}]. No pos.")
@@ -168,8 +168,8 @@ class ScoverageInstrumentationComponent(val global: Global)
               safeStart(tree),
               safeEnd(tree),
               safeLine(tree),
-              tree.toString(),
-              Option(tree.symbol).fold("<nosymbol>")(_.fullNameString),
+              original.toString(),
+              Option(original.symbol).fold("<nosymbol>")(_.fullNameString),
               tree.getClass.getSimpleName,
               branch
             )
@@ -263,7 +263,7 @@ class ScoverageInstrumentationComponent(val global: Global)
          * for the purposes of code coverage.
          * This will include calls to case apply.
          */
-        case a: GenericApply if allConstArgs(a.args) => instrument(a)
+        case a: GenericApply if allConstArgs(a.args) => instrument(a, a)
 
         /**
          * Applications of methods with non trivial args means the args themselves
@@ -271,15 +271,15 @@ class ScoverageInstrumentationComponent(val global: Global)
          */
         //todo remove once scala merges into Apply proper
         case a: ApplyToImplicitArgs =>
-          instrument(treeCopy.Apply(a, traverseApplication(a.fun), transformStatements(a.args)))
+          instrument(treeCopy.Apply(a, traverseApplication(a.fun), transformStatements(a.args)), a)
 
         // handle 'new' keywords, instrumenting parameter lists
         case a@Apply(s@Select(New(tpt), name), args) =>
-          instrument(treeCopy.Apply(a, s, transformStatements(args)))
+          instrument(treeCopy.Apply(a, s, transformStatements(args)), a)
         case a: Apply =>
-          instrument(treeCopy.Apply(a, traverseApplication(a.fun), transformStatements(a.args)))
+          instrument(treeCopy.Apply(a, traverseApplication(a.fun), transformStatements(a.args)), a)
         case a: TypeApply =>
-          instrument(treeCopy.TypeApply(a, traverseApplication(a.fun), transformStatements(a.args)))
+          instrument(treeCopy.TypeApply(a, traverseApplication(a.fun), transformStatements(a.args)), a)
 
         /** pattern match with syntax `Assign(lhs, rhs)`.
           * This AST node corresponds to the following Scala code:
@@ -407,7 +407,10 @@ class ScoverageInstrumentationComponent(val global: Global)
         // The two procedures (then and else) are instrumented seperately to determine if we entered
         // both branches.
         case i: If =>
-          treeCopy.If(i, process(i.cond), instrument(process(i.thenp), true), instrument(process(i.elsep), true))
+          treeCopy.If(i,
+            process(i.cond),
+            instrument(process(i.thenp), i.thenp, true),
+            instrument(process(i.elsep), i.elsep, true))
 
         case _: Import => tree
 
@@ -416,7 +419,7 @@ class ScoverageInstrumentationComponent(val global: Global)
           treeCopy.LabelDef(tree, l.name, l.params, transform(l.rhs))
 
         // profile access to a literal for function args todo do we need to do this?
-        case l: Literal => instrument(l)
+        case l: Literal => instrument(l, l)
 
         // pattern match clauses will be instrumented per case
         case m@Match(selector: Tree, cases: List[CaseDef]) =>
@@ -425,9 +428,10 @@ class ScoverageInstrumentationComponent(val global: Global)
             && selector.tpe.annotations.mkString == "unchecked"
             && m.cases.last.toString == "case _ => false") {
             // todo check these assumptions for 2.11
-            treeCopy.Match(tree, instrument(selector), transformCases(cases.dropRight(1)) ++ cases.takeRight(1))
+            treeCopy
+              .Match(tree, instrument(selector, selector), transformCases(cases.dropRight(1)) ++ cases.takeRight(1))
           } else {
-            instrument(treeCopy.Match(tree, process(selector), transformCases(cases)))
+            instrument(treeCopy.Match(tree, process(selector), transformCases(cases)), m)
           }
 
         // a synthetic object is a generated object, such as case class companion
@@ -472,7 +476,7 @@ class ScoverageInstrumentationComponent(val global: Global)
         case n: New => n
 
         case s@Select(n@New(tpt), name) =>
-          instrument(treeCopy.Select(s, n, name))
+          instrument(treeCopy.Select(s, n, name), s)
 
         case p: PackageDef =>
           if (isClassIncluded(p.symbol)) treeCopy.PackageDef(p, p.pid, transformStatements(p.stats))
@@ -501,7 +505,7 @@ class ScoverageInstrumentationComponent(val global: Global)
          */
         case s: Select if s.symbol.isLazy => tree
 
-        case s: Select => instrument(treeCopy.Select(s, traverseApplication(s.qualifier), s.name))
+        case s: Select => instrument(treeCopy.Select(s, traverseApplication(s.qualifier), s.name), s)
 
         case s: Super => tree
 
@@ -509,14 +513,14 @@ class ScoverageInstrumentationComponent(val global: Global)
         case t: This => super.transform(tree)
 
         // This AST node corresponds to the following Scala code:    `throw` expr
-        case t: Throw => instrument(tree)
+        case t: Throw => instrument(tree, tree)
 
         // This AST node corresponds to the following Scala code: expr: tpt
         case t: Typed => super.transform(tree)
 
         // instrument trys, catches and finally as seperate blocks
         case Try(t: Tree, cases: List[CaseDef], f: Tree) =>
-          treeCopy.Try(tree, instrument(process(t), true), transformCases(cases), instrument(process(f), true))
+          treeCopy.Try(tree, instrument(process(t), t, true), transformCases(cases), instrument(process(f), f, true))
 
         // type aliases, type parameters, abstract types
         case t: TypeDef => super.transform(tree)
