@@ -84,6 +84,9 @@ class ScoverageInstrumentationComponent(val global: Global)
 
     override def run(): Unit = {
       println(s"[info] Cleaning datadir [${options.dataDir}]")
+      // we clean the data directory, because if the code has changed, then the number / order of
+      // statements has changed by definition. So the old data would reference statements incorrectly
+      // and thus skew the results.
       IOUtils.clean(options.dataDir)
 
       println("[info] Beginning coverage instrumentation")
