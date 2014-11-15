@@ -24,7 +24,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
   }
 
   def write(pack: MeasuredPackage) {
-    val file = new File(outputDir.getAbsolutePath + "/" + pack.name.replace('.', '/') + "/package.html")
+    val file = new File(outputDir.getAbsolutePath + "/" + pack.name.replace("<empty>", "(empty)").replace('.', '/') + "/package.html")
     file.getParentFile.mkdirs()
     FileUtils.write(file, packageClasses(pack).toString())
     pack.files.foreach(write(_, file.getParentFile))
@@ -215,7 +215,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
       val value = fileRelativeToSource.getName
 
       if (addPath && path.eq(null)) {
-        "<empty>/" + value
+        "(empty)/" + value
       } else if (addPath && path.ne("")) {
         // (Normalise the pathSeparator to "/" in case we are running on Windows)
         fileRelativeToSource.toString.replace(File.separator, "/")
@@ -301,7 +301,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
             </tr>{coverage.packages.map(arg =>
             <tr>
               <td>
-                <a href={arg.name.replace('.', '/') + "/package.html"} target="mainFrame">
+                <a href={arg.name.replace("<empty>", "(empty)").replace('.', '/') + "/package.html"} target="mainFrame">
                   {arg.name}
                 </a>{arg.statementCoverageFormatted}
                 %
