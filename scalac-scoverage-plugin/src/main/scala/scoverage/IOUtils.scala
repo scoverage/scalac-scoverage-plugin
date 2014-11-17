@@ -2,9 +2,10 @@ package scoverage
 
 import java.io._
 
+import scoverage.report.ScoverageXmlMerger
+
 import scala.collection.{Set, mutable}
 import scala.io.Source
-import scala.xml.{Node, Utility, XML}
 
 /** @author Stephen Samuel */
 object IOUtils {
@@ -35,6 +36,19 @@ object IOUtils {
       case _ => Nil
     }
     search(baseDir)
+  }
+
+  /**
+   * Aggregates all subproject reports, returning the location of the aggregated file.
+   */
+  val aggregator: File => File = baseDir => {
+    val files = IOUtils.reportFileSearch(baseDir)
+    println(s"[info] Found ${files.size} subproject report files")
+    val nodes = files.map(xml.XML.loadFile)
+    val aggregated = ScoverageXmlMerger.merge(nodes)
+    val outFile = new File(baseDir, Constants.XMLReportFilename)
+    writeToFile(outFile, aggregated.toString)
+    outFile
   }
 
   val isMeasurementFile = (file: File) => file.getName.startsWith(MeasurementsPrefix)

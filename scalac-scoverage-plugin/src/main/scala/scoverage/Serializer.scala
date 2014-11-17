@@ -7,8 +7,6 @@ import scala.xml.{XML, Utility, Node}
 
 object Serializer {
 
-  private val CoverageFileName = "scoverage.coverage.xml"
-
   /**
    * Write out coverage data to the given data directory
    */
@@ -16,7 +14,7 @@ object Serializer {
   def serialize(coverage: Coverage, file: File): Unit = IOUtils.writeToFile(file, coverage.toString)
 
   def coverageFile(dataDir: File): File = coverageFile(dataDir.getAbsolutePath)
-  def coverageFile(dataDir: String): File = new File(dataDir, CoverageFileName)
+  def coverageFile(dataDir: String): File = new File(dataDir, Constants.CoverageFileName)
 
   def serialize(coverage: Coverage): Node = {
     val lines = coverage.statements.map(stmt => {
