@@ -72,7 +72,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            {new CodeGrid(mfile).highlighted}
+            {xml.Unparsed(new CodeGrid(mfile).highlighted)}
           </div>
           <div class="tab-pane" id="statementlist">
             {new StatementWriter(mfile).output}

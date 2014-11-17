@@ -26,7 +26,7 @@ class CodeGrid(mfile: MeasuredFile) {
   mfile.statements.foreach(highlight)
 
   val highlighted = {
-    lines map (line => {
+    val code = lines map (line => {
       var style = cellStyle(NoData)
       val sb = new StringBuilder
       sb append spanStart(NoData)
@@ -42,6 +42,7 @@ class CodeGrid(mfile: MeasuredFile) {
       sb append "</span>"
       sb.toString
     }) mkString "\n"
+    s"<pre>$code</pre>"
   }
 
   private def source(mfile: MeasuredFile): String = Source.fromFile(mfile.source).mkString
