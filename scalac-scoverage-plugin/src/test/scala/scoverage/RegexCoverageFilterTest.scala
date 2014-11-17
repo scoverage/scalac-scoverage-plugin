@@ -1,14 +1,11 @@
 package scoverage
 
-import java.io.{InputStream, File, OutputStream}
-
 import org.mockito.Mockito
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{Matchers, FreeSpec}
-import scoverage.RegexCoverageFilter
+import org.scalatest.{FreeSpec, Matchers}
 
 import scala.reflect.internal.util._
-import scala.reflect.io.{Path, AbstractFile}
+import scala.reflect.io.AbstractFile
 
 class RegexCoverageFilterTest extends FreeSpec with Matchers with MockitoSugar {
 
