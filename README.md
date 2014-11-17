@@ -13,7 +13,7 @@ discussion on scoverage.
 
 To see scoverage in action check out the [samples](https://github.com/scoverage/scoverage-samples) project which shows you covered and non-covered statements, along with upload to coveralls.
 
-![Screenshot of scoverage report html](src/main/misc/screenshot2.png)
+![Screenshot of scoverage report html](misc/screenshot2.png)
 
 ### Release History
 
