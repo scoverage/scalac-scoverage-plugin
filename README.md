@@ -126,7 +126,7 @@ as a percentage of the total branches. Symbols that are deemed as branch stateme
 
 In this screenshot you can see the coverage HTML report that shows one branch of the if statement was not
 executed during the test run. In addition two of the cases in the partial function were not executed.
-![Screenshot of scoverage report html](src/main/misc/screenshot1.png)
+![Screenshot of scoverage report html](misc/screenshot1.png)
 
 ### How to use
 
