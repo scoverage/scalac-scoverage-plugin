@@ -74,7 +74,6 @@ object Scoverage extends Build {
 
   lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
     .settings(name := "scalac-scoverage-plugin")
-    .dependsOn(runtime)
     .settings(appSettings: _*)
     .settings(libraryDependencies ++= Seq(
     "org.slf4j" % "slf4j-api" % Slf4jVersion,

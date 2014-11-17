@@ -19,11 +19,11 @@ class CodeGrid(mfile: MeasuredFile) {
   // note: we must reinclude the line sep to keep source positions correct.
   private val lines = source(mfile).split(lineBreak).map(line => (line.toCharArray :+ lineBreak).map(Cell(_, NoData)))
 
-  // for all statements in the source file we build highlighted data
-  mfile.statements.foreach(highlight)
-
   // useful to have a single array to write into the cells
   private val cells = lines.flatten
+
+  // for all statements in the source file we build highlighted data
+  mfile.statements.foreach(highlight)
 
   val highlighted = {
     lines map (line => {
