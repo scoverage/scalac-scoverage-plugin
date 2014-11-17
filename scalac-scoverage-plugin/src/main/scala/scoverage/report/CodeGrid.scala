@@ -21,9 +21,12 @@ class CodeGrid(mfile: MeasuredFile) {
   mfile.statements.foreach(highlight)
 
   val highlighted: String = {
+    var lineNumber = 1
     val code = lines map (line => {
       var style = cellStyle(NoData)
       val sb = new StringBuilder
+      sb append lineNumber + " "
+      lineNumber = lineNumber + 1
       sb append spanStart(NoData)
       line.map(cell => {
         val style2 = cellStyle(cell.status)
