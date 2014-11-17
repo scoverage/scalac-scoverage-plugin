@@ -23,12 +23,8 @@ object Scoverage extends Build {
     scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8"),
     resolvers := ("releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2") +: resolvers.value,
     concurrentRestrictions in Global += Tags.limit(Tags.Test, 1),
-    scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8"),
     javacOptions := Seq("-source", "1.6", "-target", "1.6"),
     libraryDependencies ++= Seq(
-      "org.joda" % "joda-convert" % "1.6" % "test",
-      "joda-time" % "joda-time" % "2.3" % "test",
-      "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2" % "test",
       "org.mockito" % "mockito-all" % "1.9.5" % "test",
       "org.scalatest" %% "scalatest" % ScalatestVersion % "test"
     ),
@@ -84,7 +80,10 @@ object Scoverage extends Build {
     "org.slf4j" % "slf4j-api" % Slf4jVersion,
     "commons-io" % "commons-io" % "2.4",
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-    "org.scala-lang" % "scala-compiler" % scalaVersion.value
+    "org.scala-lang" % "scala-compiler" % scalaVersion.value,
+    "org.joda" % "joda-convert" % "1.6" % "test",
+    "joda-time" % "joda-time" % "2.3" % "test",
+    "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2" % "test"
   )).settings(libraryDependencies ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, scalaMajor)) if scalaMajor == 11 =>

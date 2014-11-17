@@ -2,6 +2,7 @@ package scoverage
 
 import java.io._
 
+import scala.io.Source
 import scala.xml.{XML, Utility, Node}
 
 object Serializer {
@@ -12,11 +13,7 @@ object Serializer {
    * Write out coverage data to the given data directory
    */
   def serialize(coverage: Coverage, dataDir: String): Unit = serialize(coverage, coverageFile(dataDir))
-  def serialize(coverage: Coverage, file: File): Unit = {
-    val out = new BufferedWriter(new FileWriter(file))
-    out.write(serialize(coverage).toString())
-    out.close()
-  }
+  def serialize(coverage: Coverage, file: File): Unit = IOUtils.writeToFile(file, coverage.toString)
 
   def coverageFile(dataDir: File): File = coverageFile(dataDir.getAbsolutePath)
   def coverageFile(dataDir: String): File = new File(dataDir, CoverageFileName)
@@ -119,18 +116,9 @@ object Serializer {
     coverage
   }
 
-  def deserialize(file: File): Coverage = deserialize(new FileReader(file))
-  def deserialize(reader: Reader): Coverage = {
-    val buffered = new BufferedReader(reader)
-    val sb = new StringBuilder
-    var line = buffered.readLine()
-    while (line != null) {
-      sb.append(line)
-      line = buffered.readLine()
-    }
-    val coverage = deserialize(sb.toString())
-    reader.close()
-    coverage
+  def deserialize(file: File): Coverage = {
+    val str = Source.fromFile(file).mkString
+    deserialize(str)
   }
 
   /**
