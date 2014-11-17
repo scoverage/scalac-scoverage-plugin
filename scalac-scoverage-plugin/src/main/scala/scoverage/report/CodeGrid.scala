@@ -36,7 +36,7 @@ class CodeGrid(mfile: MeasuredFile) {
       })
       sb append "</span>"
       sb.toString
-    }) mkString "\n"
+    }) mkString
     s"<pre>$code</pre>"
   }
 
