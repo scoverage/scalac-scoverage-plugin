@@ -26,11 +26,11 @@ class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
                    method={stmt.location.method}
                    start={stmt.start.toString}
                    line={stmt.line.toString}
-                   symbol={IOUtils.escape(stmt.symbolName)}
-                   tree={IOUtils.escape(stmt.treeName)}
+                   symbol={Serializer.escape(stmt.symbolName)}
+                   tree={Serializer.escape(stmt.treeName)}
                    branch={stmt.branch.toString}
                    invocation-count={stmt.count.toString}>
-          {IOUtils.escape(stmt.desc)}
+          {Serializer.escape(stmt.desc)}
         </statement>
       case false =>
           <statement package={stmt.location.packageName}

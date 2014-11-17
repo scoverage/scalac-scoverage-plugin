@@ -27,20 +27,16 @@ object IOUtils {
     override def accept(pathname: File): Boolean = pathname.getName.startsWith(MeasurementsPrefix)
   })
 
-  def measurementFileSearch(baseDir: File): Array[File] = {
-    def search(file: File): Array[File] = {
-
-    }
-    baseDir.listFiles().map {
-      case file if file.isDirectory => search(file)
-      case file if isMeasurementFile(file) => List(file)
+  def measurementFileSearch(baseDir: File): Seq[File] = {
+    def search(file: File): Seq[File] = file match {
+      case dir if dir.isDirectory => dir.listFiles().toSeq.map(search).flatten
+      case f if isMeasurementFile(f) => Seq(f)
+      case _ => Nil
     }
     search(baseDir)
   }
 
   val isMeasurementFile = (file: File) => file.getName.startsWith(MeasurementsPrefix)
-
-
 
   // loads all the invoked statement ids from the given files
   def invoked(files: Seq[File]): Set[Int] = {

@@ -93,8 +93,8 @@ class ScoverageInstrumentationComponent(val global: Global)
       super.run()
       println(s"[info] Instrumentation completed [${coverage.statements.size} statements]")
 
-      IOUtils.serialize(coverage, IOUtils.coverageFile(options.dataDir))
-      println(s"[info] Wrote instrumentation file [${IOUtils.coverageFile(options.dataDir)}]")
+      Serializer.serialize(coverage, Serializer.coverageFile(options.dataDir))
+      println(s"[info] Wrote instrumentation file [${Serializer.coverageFile(options.dataDir)}]")
       println(s"[info] Will write measurement data to [${options.dataDir}]")
     }
   }
