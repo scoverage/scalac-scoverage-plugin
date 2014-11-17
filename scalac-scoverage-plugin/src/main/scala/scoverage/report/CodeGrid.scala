@@ -9,15 +9,10 @@ class CodeGrid(mfile: MeasuredFile) {
 
   case class Cell(char: Char, var status: StatementStatus)
 
-  /**
-   * Regardless of whether the source is Unix (\n) or DOS (\r\n), the lines will end
-   * with \n. We split on \n and allow an optional trailing \r on the line.
-   * This lets us split on lines while keep the source positions matching up.
-   */
-  private val lineBreak = '\n'
+  private val lineBreak = System.getProperty("line.separator").toCharArray
 
   // note: we must reinclude the line sep to keep source positions correct.
-  private val lines = source(mfile).split(lineBreak).map(line => (line.toCharArray :+ lineBreak).map(Cell(_, NoData)))
+  private val lines = source(mfile).split(lineBreak).map(line => (line.toCharArray ++ lineBreak).map(Cell(_, NoData)))
 
   // useful to have a single array to write into the cells
   private val cells = lines.flatten
@@ -68,7 +63,7 @@ class CodeGrid(mfile: MeasuredFile) {
     status match {
       case Invoked => s"background: $GREEN"
       case NotInvoked => s"background: $RED"
-      case NoData => "background: white"
+      case NoData => ""
     }
   }
 }
