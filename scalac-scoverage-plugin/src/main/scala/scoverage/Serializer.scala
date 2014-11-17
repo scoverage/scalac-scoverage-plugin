@@ -11,7 +11,7 @@ object Serializer {
    * Write out coverage data to the given data directory
    */
   def serialize(coverage: Coverage, dataDir: String): Unit = serialize(coverage, coverageFile(dataDir))
-  def serialize(coverage: Coverage, file: File): Unit = IOUtils.writeToFile(file, coverage.toString)
+  def serialize(coverage: Coverage, file: File): Unit = IOUtils.writeToFile(file, serialize(coverage).toString)
 
   def coverageFile(dataDir: File): File = coverageFile(dataDir.getAbsolutePath)
   def coverageFile(dataDir: String): File = new File(dataDir, Constants.CoverageFileName)
