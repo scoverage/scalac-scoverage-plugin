@@ -1,14 +1,12 @@
 package scoverage.report
 
-import java.io.{File, FileInputStream}
+import scala.io.Source
 
 import _root_.scoverage.{MeasuredFile, Statement}
-import org.apache.commons.io.IOUtils
-
-import scala.xml.{Node, Unparsed}
 
 /** @author Stephen Samuel */
 class CodeGrid(mfile: MeasuredFile) {
+
   case class Cell(char: Char, var status: StatementStatus)
 
   /**
@@ -16,57 +14,61 @@ class CodeGrid(mfile: MeasuredFile) {
    * with \n. We split on \n and allow an optional trailing \r on the line.
    * This lets us split on lines while keep the source positions matching up.
    */
-  val lineBreak = '\n'
+  private val lineBreak = '\n'
 
   // note: we must reinclude the line sep to keep source positions correct.
-  val lines = source(mfile).split(lineBreak).map(line => (line.toCharArray :+ lineBreak).map(Cell(_, NoData)))
-  val cells = lines.flatten
+  private val lines = source(mfile).split(lineBreak).map(line => (line.toCharArray :+ lineBreak).map(Cell(_, NoData)))
 
+  // for all statements in the source file we build highlighted data
   mfile.statements.foreach(highlight)
 
-  def source(mfile: MeasuredFile): String = IOUtils.toString(new FileInputStream(new File(mfile.source)), "UTF-8")
+  // useful to have a single array to write into the cells
+  private val cells = lines.flatten
 
-  def highlight(stmt: Statement) {
-    // notinvoked is a stronger property than invoked
+  val highlighted = {
+    lines map (line => {
+      var style = cellStyle(NoData)
+      val sb = new StringBuilder
+      sb append spanStart(NoData)
+      line.map(cell => {
+        val style2 = cellStyle(cell.status)
+        if (style != style2) {
+          sb append "</span>"
+          sb append spanStart(cell.status)
+          style = style2
+        }
+        sb.append(cell.char)
+      })
+      sb append "</span>"
+      sb.toString
+    }) mkString "\n"
+  }
+
+  private def source(mfile: MeasuredFile): String = Source.fromFile(mfile.source).mkString
+
+  private def highlight(stmt: Statement) {
+
     for ( k <- stmt.start until stmt.end ) {
-      if (k < cells.size)
-        if (!stmt.isInvoked) {
-          cells(k).status = NotInvoked
+      if (k < cells.size) {
+        if (stmt.isInvoked) {
+          cells(k).status = Invoked
         } else if (cells(k).status == NoData) {
           cells(k).status = Invoked
         }
+      }
     }
   }
 
-  def output: Node = {
-    var lineNumber = 0
-    <table cellspacing="0" cellpadding="0" class="table codegrid">
-      {lines.map(line => {
-      lineNumber = lineNumber + 1
-      <tr>
-        <td class="linenumber">
-          {lineNumber.toString}
-        </td>{line.map(cell => {
-        // don't need to output the final \n but don't ever exclude from cells
-        if (cell.char != '\n') {
-          <td style={cellStyle(cell.status)}>
-            {Unparsed(cell.char.toString.replace(" ", "&nbsp;"))}
-          </td>
-        }
-      })}
-      </tr>
-    })}
-    </table>
+  private def spanStart(status: StatementStatus): String = s"<span style='${cellStyle(status)}'>"
 
-  }
-
-  val GREEN = "#AEF1AE"
-  val RED = "#F0ADAD"
-
-  private def cellStyle(status: StatementStatus): String = status match {
-    case Invoked => s"background: $GREEN"
-    case NotInvoked => s"background: $RED"
-    case NoData => "background: white"
+  private def cellStyle(status: StatementStatus): String = {
+    val GREEN = "#AEF1AE"
+    val RED = "#F0ADAD"
+    status match {
+      case Invoked => s"background: $GREEN"
+      case NotInvoked => s"background: $RED"
+      case NoData => "background: white"
+    }
   }
 }
 

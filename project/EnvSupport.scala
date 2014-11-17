@@ -43,6 +43,7 @@ object EnvSupport {
             map.put(k, v)
           }
         })
+		case e : ClassNotFoundException =>
     }
   }
 }
