@@ -9,7 +9,7 @@ import scala.xml.{Node, Utility, XML}
 /** @author Stephen Samuel */
 object IOUtils {
 
-  private val MeasurementsPrefix = "scoverage.measurements."
+  val MeasurementsPrefix = "scoverage.measurements."
   val DataDir = "scoverage-data"
 
   def clean(dataDir: File): Unit = findMeasurementFiles(dataDir).foreach(_.delete)
@@ -27,16 +27,17 @@ object IOUtils {
     override def accept(pathname: File): Boolean = pathname.getName.startsWith(MeasurementsPrefix)
   })
 
-  def measurementFileSearch(baseDir: File): Seq[File] = {
+  def reportFileSearch(baseDir: File): Seq[File] = {
     def search(file: File): Seq[File] = file match {
       case dir if dir.isDirectory => dir.listFiles().toSeq.map(search).flatten
-      case f if isMeasurementFile(f) => Seq(f)
+      case f if isReportFile(f) => Seq(f)
       case _ => Nil
     }
     search(baseDir)
   }
 
   val isMeasurementFile = (file: File) => file.getName.startsWith(MeasurementsPrefix)
+  val isReportFile = (file: File) => file.getName == Constants.XMLReportFilename
 
   // loads all the invoked statement ids from the given files
   def invoked(files: Seq[File]): Set[Int] = {
