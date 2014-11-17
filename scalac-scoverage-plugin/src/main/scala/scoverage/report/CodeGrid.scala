@@ -49,7 +49,7 @@ class CodeGrid(mfile: MeasuredFile) {
         if (stmt.isInvoked) {
           cells(k).status = Invoked
         } else if (cells(k).status == NoData) {
-          cells(k).status = Invoked
+          cells(k).status = NotInvoked
         }
       }
     }
