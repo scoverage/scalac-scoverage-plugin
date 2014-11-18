@@ -66,17 +66,20 @@ object Scoverage extends Build {
     .settings(name := "scalac-scoverage")
     .settings(appSettings: _*)
     .settings(publishArtifact := false)
-    .aggregate(plugin, runtime)
+    .aggregate(plugin, runtime, report)
 
   lazy val runtime = Project("scalac-scoverage-runtime", file("scalac-scoverage-runtime"))
     .settings(name := "scalac-scoverage-runtime")
+    .settings(appSettings: _*)
+
+  lazy val report = Project("scalac-scoverage-runtime", file("scalac-scoverage-runtime"))
+    .settings(name := "scalac-scoverage-report")
     .settings(appSettings: _*)
 
   lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
     .settings(name := "scalac-scoverage-plugin")
     .settings(appSettings: _*)
     .settings(libraryDependencies ++= Seq(
-    "org.slf4j" % "slf4j-api" % Slf4jVersion,
     "commons-io" % "commons-io" % "2.4",
     "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     "org.scala-lang" % "scala-compiler" % scalaVersion.value,
