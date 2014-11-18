@@ -66,14 +66,10 @@ object Scoverage extends Build {
     .settings(name := "scalac-scoverage")
     .settings(appSettings: _*)
     .settings(publishArtifact := false)
-    .aggregate(plugin, runtime, report)
+    .aggregate(plugin, runtime)
 
   lazy val runtime = Project("scalac-scoverage-runtime", file("scalac-scoverage-runtime"))
     .settings(name := "scalac-scoverage-runtime")
-    .settings(appSettings: _*)
-
-  lazy val report = Project("scalac-scoverage-runtime", file("scalac-scoverage-runtime"))
-    .settings(name := "scalac-scoverage-report")
     .settings(appSettings: _*)
 
   lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
