@@ -3,8 +3,7 @@ package scoverage.report
 import java.io.File
 import java.util.Date
 
-import _root_.scoverage.{Coverage, MeasuredClass, MeasuredFile, MeasuredPackage}
-import org.apache.commons.io.{FileUtils, FilenameUtils}
+import scoverage._
 
 import scala.xml.Node
 
@@ -16,24 +15,26 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
     val packageFile = new File(outputDir.getAbsolutePath + "/packages.html")
     val overviewFile = new File(outputDir.getAbsolutePath + "/overview.html")
 
-    FileUtils.copyInputStreamToFile(getClass.getResourceAsStream("/scoverage/index.html"), indexFile)
-    FileUtils.write(packageFile, packages(coverage).toString())
-    FileUtils.write(overviewFile, overview(coverage).toString())
+    val index = IOUtils.readStreamAsString(getClass.getResourceAsStream("/scoverage/index.html"))
+    IOUtils.writeToFile(indexFile, index)
+    IOUtils.writeToFile(packageFile, packages(coverage).toString)
+    IOUtils.writeToFile(overviewFile, overview(coverage).toString)
 
     coverage.packages.foreach(write)
   }
 
   def write(pack: MeasuredPackage) {
-    val file = new File(outputDir.getAbsolutePath + "/" + pack.name.replace("<empty>", "(empty)").replace('.', '/') + "/package.html")
+    val file = new
+        File(outputDir.getAbsolutePath, pack.name.replace("<empty>", "(empty)").replace('.', '/') + "/package.html")
     file.getParentFile.mkdirs()
-    FileUtils.write(file, packageClasses(pack).toString())
+    IOUtils.writeToFile(file, packageOverview(pack).toString)
     pack.files.foreach(write(_, file.getParentFile))
   }
 
   def write(mfile: MeasuredFile, dir: File) {
-    val file = new File(dir.getAbsolutePath + "/" + FilenameUtils.getName(mfile.source) + ".html")
+    val file = new File(dir.getAbsolutePath, IOUtils.getName(mfile.source) + ".html")
     file.getParentFile.mkdirs()
-    FileUtils.write(file, _file(mfile).toString())
+    IOUtils.writeToFile(file, _file(mfile).toString)
   }
 
   def _file(mfile: MeasuredFile): Node = {
@@ -149,7 +150,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
     </head>
   }
 
-  def packageClasses(pack: MeasuredPackage): Node = {
+  def packageOverview(pack: MeasuredPackage): Node = {
     <html>
       {head}<body style="font-family: monospace;">
       {classes(pack.classes, false)}
@@ -207,10 +208,8 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
 
     val filename: String = {
 
-      val fileRelativeToSource = new File(
-        klass.source.replace(
-          sourceDirectory.getAbsolutePath + File.separator,
-          "") + ".html")
+      val fileRelativeToSource =
+        new File(klass.source.replace(sourceDirectory.getAbsolutePath + File.separator, "") + ".html")
       val path = fileRelativeToSource.getParent
       val value = fileRelativeToSource.getName
 

@@ -10,6 +10,19 @@ import scala.io.Source
 /** @author Stephen Samuel */
 object IOUtils {
 
+  def readStreamAsString(in: InputStream): String = Source.fromInputStream(in).mkString
+
+  private val UnixSeperator: Char = '/'
+  private val WindowsSeperator: Char = '\\'
+
+  def getName(path: String): Any = {
+    val index = {
+      val lastUnixPos = path.lastIndexOf(UnixSeperator)
+      val lastWindowsPos = path.lastIndexOf(WindowsSeperator)
+      Math.max(lastUnixPos, lastWindowsPos)
+    }
+    path.drop(index + 1)
+  }
 
   def clean(dataDir: File): Unit = findMeasurementFiles(dataDir).foreach(_.delete)
   def clean(dataDir: String): Unit = clean(new File(dataDir))
