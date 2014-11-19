@@ -5,4 +5,8 @@ object Constants {
   val CoverageFileName = "scoverage.coverage.xml"
   // the final scoverage report
   val XMLReportFilename = "scoverage.xml"
+  // directory that contains all the measurement data but not reports
+  val DataDir = "scoverage-data"
+  // the prefix the measurement files have
+  val MeasurementsPrefix = "scoverage.measurements."
 }

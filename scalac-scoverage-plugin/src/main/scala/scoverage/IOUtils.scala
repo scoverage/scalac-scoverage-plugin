@@ -10,8 +10,6 @@ import scala.io.Source
 /** @author Stephen Samuel */
 object IOUtils {
 
-  val MeasurementsPrefix = "scoverage.measurements."
-  val DataDir = "scoverage-data"
 
   def clean(dataDir: File): Unit = findMeasurementFiles(dataDir).foreach(_.delete)
   def clean(dataDir: String): Unit = clean(new File(dataDir))
@@ -22,11 +20,11 @@ object IOUtils {
    * @return the measurement file for the current thread.
    */
   def measurementFile(dataDir: File): File = measurementFile(dataDir.getAbsolutePath)
-  def measurementFile(dataDir: String): File = new File(dataDir, MeasurementsPrefix + Thread.currentThread.getId)
+  def measurementFile(dataDir: String): File = new File(dataDir, Constants.MeasurementsPrefix + Thread.currentThread.getId)
 
   def findMeasurementFiles(dataDir: String): Array[File] = findMeasurementFiles(new File(dataDir))
   def findMeasurementFiles(dataDir: File): Array[File] = dataDir.listFiles(new FileFilter {
-    override def accept(pathname: File): Boolean = pathname.getName.startsWith(MeasurementsPrefix)
+    override def accept(pathname: File): Boolean = pathname.getName.startsWith(Constants.MeasurementsPrefix)
   })
 
   def reportFileSearch(baseDir: File): Seq[File] = {
@@ -41,17 +39,17 @@ object IOUtils {
   /**
    * Aggregates all subproject reports, returning the location of the aggregated file.
    */
-  val aggregator: File => File = baseDir => {
+  val aggregator: (File, File) => File = (baseDir, targetDir) => {
     val files = IOUtils.reportFileSearch(baseDir)
-    println(s"[info] Found ${files.size} subproject report files")
+    println(s"[info] Found ${files.size} subproject report files [${files.mkString(",")}]")
     val nodes = files.map(xml.XML.loadFile)
     val aggregated = ScoverageXmlMerger.merge(nodes)
-    val outFile = new File(baseDir, Constants.XMLReportFilename)
+    val outFile = new File(targetDir, Constants.XMLReportFilename)
     writeToFile(outFile, aggregated.toString)
     outFile
   }
 
-  val isMeasurementFile = (file: File) => file.getName.startsWith(MeasurementsPrefix)
+  val isMeasurementFile = (file: File) => file.getName.startsWith(Constants.MeasurementsPrefix)
   val isReportFile = (file: File) => file.getName == Constants.XMLReportFilename
 
   // loads all the invoked statement ids from the given files
