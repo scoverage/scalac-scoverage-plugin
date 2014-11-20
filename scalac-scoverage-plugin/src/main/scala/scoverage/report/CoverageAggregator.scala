@@ -6,7 +6,7 @@ import scoverage.{Coverage, IOUtils}
 
 object CoverageAggregator {
 
-  def aggregate(baseDir: File, targetDir: File): Option[Coverage] = {
+  def aggregate(baseDir: File): Option[Coverage] = {
     val files = IOUtils.reportFileSearch(baseDir, IOUtils.isReportFile)
     println(s"[info] Found ${files.size} subproject report files [${files.mkString(",")}]")
     if (files.size > 0) {
