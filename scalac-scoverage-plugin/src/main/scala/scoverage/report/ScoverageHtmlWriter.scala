@@ -17,33 +17,32 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
 
     val index = IOUtils.readStreamAsString(getClass.getResourceAsStream("/scoverage/index.html"))
     IOUtils.writeToFile(indexFile, index)
-    IOUtils.writeToFile(packageFile, packages(coverage).toString)
+    IOUtils.writeToFile(packageFile, packageList(coverage).toString)
     IOUtils.writeToFile(overviewFile, overview(coverage).toString)
 
-    coverage.packages.foreach(write)
+    coverage.packages.foreach(writePackage)
   }
 
   private def relativeSource(src: String): String = src.replace(sourceDirectory.getAbsolutePath + File.separator, "")
 
-  private def write(pkg: MeasuredPackage): Unit = {
-    // package overview files are written out using a directory structure that respects the directory name
+  private def writePackage(pkg: MeasuredPackage): Unit = {
+    // package overview files are written out using a filename that respects the package name
     // that means package com.example declared in a class at src/main/scala/mystuff/MyClass.scala will be written
-    // to com/example/package.html
-    // this is because a single class may have multiple packages so we cannot use original/path/package.html as
-    // they might clash
-    val packageFile = new File(pkg.name.replace("<empty>", "(empty)").replace(".", File.separator), "package.html")
-    val file = new File(outputDir, packageFile.getPath)
+    // to com.example.html
+    val file = new File(outputDir, packageOverviewRelativePath(pkg))
     file.getParentFile.mkdirs()
     IOUtils.writeToFile(file, packageOverview(pkg).toString)
-    pkg.files.foreach(write(_, file.getParentFile))
+    pkg.files.foreach(writeFile)
   }
 
-  private def write(mfile: MeasuredFile, dir: File): Unit = {
+  private def writeFile(mfile: MeasuredFile): Unit = {
     // each highlighted file is written out using the same structure as the original file.
-    val file = new File(outputDir, relativeSource(mfile.source))
+    val file = new File(outputDir, relativeSource(mfile.source) + ".html")
     file.getParentFile.mkdirs()
     IOUtils.writeToFile(file, filePage(mfile).toString)
   }
+
+  private def packageOverviewRelativePath(pkg: MeasuredPackage) = pkg.name.replace("<empty>", "(empty)") + ".html"
 
   private def filePage(mfile: MeasuredFile): Node = {
     val filename = relativeSource(mfile.source) + ".html"
@@ -88,7 +87,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
 
   }
 
-  def head = {
+  def header = {
     val css = """.meter {
                 |        height: 14px;
                 |        position: relative;
@@ -156,7 +155,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
 
   def packageOverview(pack: MeasuredPackage): Node = {
     <html>
-      {head}<body style="font-family: monospace;">
+      {header}<body style="font-family: monospace;">
       {classesTable(pack.classes, false)}
     </body>
     </html>
@@ -278,7 +277,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
     </tr>
   }
 
-  def packages(coverage: Coverage): Node = {
+  def packageList(coverage: Coverage): Node = {
     <html>
       <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -303,7 +302,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
             </tr>{coverage.packages.map(arg =>
             <tr>
               <td>
-                <a href={arg.name.replace("<empty>", "(empty)").replace('.', '/') + "/package.html"} target="mainFrame">
+                <a href={packageOverviewRelativePath(arg)} target="mainFrame">
                   {arg.name}
                 </a>{arg.statementCoverageFormatted}
                 %
@@ -405,7 +404,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
 
   def overview(coverage: Coverage): Node = {
     <html>
-      {head}<body style="font-family: monospace;">
+      {header}<body style="font-family: monospace;">
       <div class="alert alert-info">
         <b>
           SCoverage
