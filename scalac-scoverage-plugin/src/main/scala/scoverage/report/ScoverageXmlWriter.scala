@@ -10,14 +10,11 @@ import scala.xml.{Node, PrettyPrinter}
 class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
 
   def write(coverage: Coverage): Unit = {
-    val file = debug match {
-      case true => new File(outputDir.getAbsolutePath + "/scoverage-debug.xml")
-      case false => new File(outputDir.getAbsolutePath + "/" + Constants.XMLReportFilename)
-    }
+    val file = IOUtils.reportFile(outputDir, debug)
     IOUtils.writeToFile(file, new PrettyPrinter(120, 4).format(xml(coverage)))
   }
 
-  def xml(coverage: Coverage): Node = {
+  private def xml(coverage: Coverage): Node = {
     <scoverage statement-count={coverage.statementCount.toString}
                statements-invoked={coverage.invokedStatementCount.toString}
                statement-rate={coverage.statementCoverageFormatted}

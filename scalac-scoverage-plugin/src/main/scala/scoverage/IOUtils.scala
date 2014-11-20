@@ -27,6 +27,11 @@ object IOUtils {
     path.drop(index + 1)
   }
 
+  def reportFile(outputDir: File, debug: Boolean = false): File = debug match {
+    case true => new File(outputDir, Constants.XMLReportFilenameWithDebug)
+    case false => new File(outputDir, Constants.XMLReportFilename)
+  }
+
   def clean(dataDir: File): Unit = findMeasurementFiles(dataDir).foreach(_.delete)
   def clean(dataDir: String): Unit = clean(new File(dataDir))
 

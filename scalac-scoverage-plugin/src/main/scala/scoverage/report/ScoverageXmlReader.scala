@@ -16,7 +16,7 @@ object ScoverageXmlReader {
 
     var id = 0
     val coverage = Coverage()
-    (xml \ "statement") foreach { node => {
+    (xml \\ "statement") foreach { node => {
 
       val source = node \ "@source"
       val pkg = node \ "@package"
