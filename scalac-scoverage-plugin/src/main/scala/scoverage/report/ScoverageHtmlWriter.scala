@@ -29,7 +29,10 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
     // package overview files are written out using a directory structure that respects the directory name
     // that means package com.example declared in a class at src/main/scala/mystuff/MyClass.scala will be written
     // to com/example/package.html
-    val file = new File(outputDir.getAbsolutePath, pkg.name.replace("<empty>", "(empty)").replace('.', '/') + "/package.html")
+    // this is because a single class may have multiple packages so we cannot use original/path/package.html as
+    // they might clash
+    val packageFile = new File(pkg.name.replace("<empty>", "(empty)").replace(".", File.separator), "package.html")
+    val file = new File(outputDir, packageFile.getPath)
     file.getParentFile.mkdirs()
     IOUtils.writeToFile(file, packageOverview(pkg).toString)
     pkg.files.foreach(write(_, file.getParentFile))
@@ -37,12 +40,12 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
 
   private def write(mfile: MeasuredFile, dir: File): Unit = {
     // each highlighted file is written out using the same structure as the original file.
-    val file = new File(relativeSource(mfile.source))
+    val file = new File(outputDir, relativeSource(mfile.source))
     file.getParentFile.mkdirs()
-    IOUtils.writeToFile(file, _file(mfile).toString)
+    IOUtils.writeToFile(file, filePage(mfile).toString)
   }
 
-  private def _file(mfile: MeasuredFile): Node = {
+  private def filePage(mfile: MeasuredFile): Node = {
     val filename = relativeSource(mfile.source) + ".html"
     val css =
       "table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }" +
