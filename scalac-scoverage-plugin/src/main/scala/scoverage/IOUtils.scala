@@ -62,14 +62,15 @@ object IOUtils {
   /**
    * Aggregates all subproject reports, returning the location of the aggregated file.
    */
-  val aggregator: (File, File) => File = (baseDir, targetDir) => {
+  val aggregator: (File, File) => Unit = (baseDir, targetDir) => {
     val files = IOUtils.reportFileSearch(baseDir)
     println(s"[info] Found ${files.size} subproject report files [${files.mkString(",")}]")
-    val nodes = files.map(xml.XML.loadFile)
-    val aggregated = ScoverageXmlMerger.merge(nodes)
-    val outFile = new File(targetDir, Constants.XMLReportFilename)
-    writeToFile(outFile, aggregated.toString)
-    outFile
+    if (files.size > 0) {
+      val nodes = files.map(xml.XML.loadFile)
+      val aggregated = ScoverageXmlMerger.merge(nodes)
+      val outFile = new File(targetDir, Constants.XMLReportFilename)
+      writeToFile(outFile, aggregated.toString)
+    }
   }
 
   val isMeasurementFile = (file: File) => file.getName.startsWith(Constants.MeasurementsPrefix)
