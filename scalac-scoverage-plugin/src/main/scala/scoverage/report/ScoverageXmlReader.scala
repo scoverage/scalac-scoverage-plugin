@@ -14,7 +14,6 @@ object ScoverageXmlReader {
   def read(file: File): Coverage = {
     val xml = XML.loadFile(file)
 
-    var id = 0
     val coverage = Coverage()
     (xml \\ "statement") foreach { node => {
 
@@ -39,12 +38,10 @@ object ScoverageXmlReader {
         method.text,
         source.text)
 
-      id = id + 1
-
       coverage add Statement(
         source.text,
         location,
-        id,
+        0, // ids are irrelevant in the XML form
         start.text.toInt,
         end.text.toInt,
         line.text.toInt,
