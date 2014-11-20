@@ -99,13 +99,20 @@ case class Statement(source: String,
   def isInvoked = count > 0
 }
 
+sealed trait ClassType
 object ClassType {
   case object Object extends ClassType
   case object Class extends ClassType
   case object Trait extends ClassType
+  def fromString(str: String): ClassType = {
+    str.toLowerCase match {
+      case "object" => Object
+      case "trait" => Trait
+      case _ => Class
+    }
+  }
 }
 
-sealed trait ClassType
 
 
 

@@ -35,9 +35,12 @@ class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
       case true =>
         <statement package={stmt.location.packageName}
                    class={stmt.location.className}
-                   topLevelClass={stmt.location.topLevelClass}
+                   class-type={stmt.location.classType.toString}
+                   top-level-class={stmt.location.topLevelClass}
+                   source={stmt.source}
                    method={stmt.location.method}
                    start={stmt.start.toString}
+                   end={stmt.end.toString}
                    line={stmt.line.toString}
                    symbol={Serializer.escape(stmt.symbolName)}
                    tree={Serializer.escape(stmt.treeName)}
@@ -48,9 +51,12 @@ class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
       case false =>
           <statement package={stmt.location.packageName}
                      class={stmt.location.className}
-                     topLevelClass={stmt.location.topLevelClass}
+                     class-type={stmt.location.classType.toString}
+                     top-level-class={stmt.location.topLevelClass}
+                     source={stmt.source}
                      method={stmt.location.method}
                      start={stmt.start.toString}
+                     end={stmt.end.toString}
                      line={stmt.line.toString}
                      branch={stmt.branch.toString}
                      invocation-count={stmt.count.toString}/>
