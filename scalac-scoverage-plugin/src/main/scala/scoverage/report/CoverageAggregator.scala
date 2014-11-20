@@ -17,7 +17,7 @@ object CoverageAggregator {
     }
   }
 
-  private def aggregatedCoverage(files: Seq[File]): Coverage = {
+   def aggregatedCoverage(files: Seq[File]): Coverage = {
     var id = 0
     val coverage = Coverage()
     files foreach {

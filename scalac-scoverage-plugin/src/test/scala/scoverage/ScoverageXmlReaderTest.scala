@@ -6,7 +6,7 @@ import java.util.UUID
 import org.scalatest.{FreeSpec, Matchers}
 import scoverage.report.{ScoverageXmlReader, ScoverageXmlWriter}
 
-class ScoverageXmlReader extends FreeSpec with Matchers {
+class ScoverageXmlReaderTest extends FreeSpec with Matchers {
 
   "scoverage xml reader" - {
     "should read output from ScoverageXmlWriter" in {
@@ -50,7 +50,6 @@ class ScoverageXmlReader extends FreeSpec with Matchers {
       val temp = new File(IOUtils.getTempPath, UUID.randomUUID.toString)
       temp.mkdir()
       new ScoverageXmlWriter(new File("/home/sam"), temp, true).write(coverage)
-      println(temp.getAbsolutePath)
 
       val actual = ScoverageXmlReader.read(IOUtils.reportFile(temp, true))
       // we don't care about the statement ids as the will change on reading back in

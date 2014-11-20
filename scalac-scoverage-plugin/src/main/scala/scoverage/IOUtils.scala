@@ -64,8 +64,6 @@ object IOUtils {
     search(baseDir)
   }
 
-
-
   val isMeasurementFile = (file: File) => file.getName.startsWith(Constants.MeasurementsPrefix)
   val isReportFile = (file: File) => file.getName == Constants.XMLReportFilename
 
