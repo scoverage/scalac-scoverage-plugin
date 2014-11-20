@@ -23,26 +23,27 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
     coverage.packages.foreach(write)
   }
 
-  def write(pack: MeasuredPackage) {
-    val file = new
-        File(outputDir.getAbsolutePath, pack.name.replace("<empty>", "(empty)").replace('.', '/') + "/package.html")
+  private def relativeSource(src: String): String = src.replace(sourceDirectory.getAbsolutePath + File.separator, "")
+
+  private def write(pkg: MeasuredPackage): Unit = {
+    // package overview files are written out using a directory structure that respects the directory name
+    // that means package com.example declared in a class at src/main/scala/mystuff/MyClass.scala will be written
+    // to com/example/package.html
+    val file = new File(outputDir.getAbsolutePath, pkg.name.replace("<empty>", "(empty)").replace('.', '/') + "/package.html")
     file.getParentFile.mkdirs()
-    IOUtils.writeToFile(file, packageOverview(pack).toString)
-    pack.files.foreach(write(_, file.getParentFile))
+    IOUtils.writeToFile(file, packageOverview(pkg).toString)
+    pkg.files.foreach(write(_, file.getParentFile))
   }
 
-  def write(mfile: MeasuredFile, dir: File) {
-    val file = new File(dir.getAbsolutePath, IOUtils.getName(mfile.source) + ".html")
+  private def write(mfile: MeasuredFile, dir: File): Unit = {
+    // each highlighted file is written out using the same structure as the original file.
+    val file = new File(relativeSource(mfile.source))
     file.getParentFile.mkdirs()
     IOUtils.writeToFile(file, _file(mfile).toString)
   }
 
-  def _file(mfile: MeasuredFile): Node = {
-
-    val filename = {
-      mfile.source.replace(sourceDirectory.getAbsolutePath + "/", "") + ".html"
-    }
-
+  private def _file(mfile: MeasuredFile): Node = {
+    val filename = relativeSource(mfile.source) + ".html"
     val css =
       "table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }" +
         "table.statementlist { width: auto!important; font-size: 13px; } " +
@@ -153,12 +154,12 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
   def packageOverview(pack: MeasuredPackage): Node = {
     <html>
       {head}<body style="font-family: monospace;">
-      {classes(pack.classes, false)}
+      {classesTable(pack.classes, false)}
     </body>
     </html>
   }
 
-  def classes(classes: Iterable[MeasuredClass], addPath: Boolean): Node = {
+  def classesTable(classes: Iterable[MeasuredClass], addPath: Boolean): Node = {
     <table class="tablesorter table table-striped" style="font-size:13px">
       <thead>
         <tr>
@@ -199,23 +200,22 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
         </tr>
       </thead>
       <tbody>
-        {classes.toSeq.sortBy(_.simpleName) map (_class(_, addPath))}
+        {classes.toSeq.sortBy(_.simpleName) map classRow}
       </tbody>
     </table>
   }
 
-  def _class(klass: MeasuredClass, addPath: Boolean): Node = {
+  def classRow(klass: MeasuredClass): Node = {
 
     val filename: String = {
 
-      val fileRelativeToSource =
-        new File(klass.source.replace(sourceDirectory.getAbsolutePath + File.separator, "") + ".html")
+      val fileRelativeToSource = new File(relativeSource(klass.source) + ".html")
       val path = fileRelativeToSource.getParent
       val value = fileRelativeToSource.getName
 
-      if (addPath && path.eq(null)) {
+      if (path.eq(null)) {
         "(empty)/" + value
-      } else if (addPath && path.ne("")) {
+      } else if (path.ne("")) {
         // (Normalise the pathSeparator to "/" in case we are running on Windows)
         fileRelativeToSource.toString.replace(File.separator, "/")
       } else {
@@ -415,7 +415,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
           {stats(coverage)}
         </div>
         <div>
-          {classes(coverage.classes, true)}
+          {classesTable(coverage.classes, true)}
         </div>
       </div>
     </body>

@@ -27,7 +27,14 @@ object IOUtils {
   def clean(dataDir: File): Unit = findMeasurementFiles(dataDir).foreach(_.delete)
   def clean(dataDir: String): Unit = clean(new File(dataDir))
 
-  def writeToFile(file: File, str: String) = scala.tools.nsc.io.File(file.getAbsolutePath).writeAll(str)
+  def writeToFile(file: File, str: String) = {
+    val writer = new BufferedWriter(new FileWriter(file))
+    try {
+      writer.write(str)
+    } finally {
+      writer.close()
+    }
+  }
 
   /**
    * @return the measurement file for the current thread.
