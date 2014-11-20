@@ -40,7 +40,7 @@ object IOUtils {
   }
 
   /**
-   * @return the measurement file for the current thread.
+   * Returns the measurement file for the current thread.
    */
   def measurementFile(dataDir: File): File = measurementFile(dataDir.getAbsolutePath)
   def measurementFile(dataDir: String): File = new File(dataDir, Constants.MeasurementsPrefix + Thread.currentThread.getId)
@@ -68,6 +68,7 @@ object IOUtils {
     if (files.size > 0) {
       val nodes = files.map(xml.XML.loadFile)
       val aggregated = ScoverageXmlMerger.merge(nodes)
+      targetDir.mkdirs()
       val outFile = new File(targetDir, Constants.XMLReportFilename)
       writeToFile(outFile, aggregated.toString)
     }
