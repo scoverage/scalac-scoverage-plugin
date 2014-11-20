@@ -6,11 +6,12 @@ import scoverage.{Coverage, IOUtils}
 
 object CoverageAggregator {
 
-  def aggregate(baseDir: File): Option[Coverage] = {
+  def aggregate(baseDir: File, clean: Boolean): Option[Coverage] = {
     val files = IOUtils.reportFileSearch(baseDir, IOUtils.isReportFile)
     println(s"[info] Found ${files.size} subproject report files [${files.mkString(",")}]")
     if (files.size > 1) {
       val coverage = aggregatedCoverage(files)
+      if (clean) files foreach (_.delete)
       Some(coverage)
     } else {
       None
