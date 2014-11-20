@@ -10,6 +10,9 @@ import scala.io.Source
 /** @author Stephen Samuel */
 object IOUtils {
 
+  def getTempDirectory: File = new File(getTempPath)
+  def getTempPath: String = System.getProperty("java.io.tmpdir")
+
   def readStreamAsString(in: InputStream): String = Source.fromInputStream(in).mkString
 
   private val UnixSeperator: Char = '/'

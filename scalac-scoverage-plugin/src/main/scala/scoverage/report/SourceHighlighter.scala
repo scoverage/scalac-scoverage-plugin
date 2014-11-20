@@ -1,10 +1,8 @@
 package scoverage.report
 
-import java.io.{File, FileInputStream}
-
 import _root_.scoverage.MeasuredFile
-import org.apache.commons.io.IOUtils
 
+import scala.io.Source
 import scala.xml.{Node, Unparsed}
 
 /** @author Stephen Samuel */
@@ -12,7 +10,7 @@ class SourceHighlighter {
 
   val sep = System.getProperty("line.separator")
 
-  def source(mfile: MeasuredFile) = IOUtils.toString(new FileInputStream(new File(mfile.source)), "UTF-8")
+  def source(mfile: MeasuredFile) = Source.fromFile(mfile.source).mkString
 
   def print(mfile: MeasuredFile): Node = {
     val s = source(mfile)

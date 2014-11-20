@@ -84,7 +84,7 @@ class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tool
 
   def writeCodeSnippetToTempFile(code: String): File = {
     val file = File.createTempFile("scoverage_snippet", ".scala")
-    org.apache.commons.io.FileUtils.write(file, code)
+    IOUtils.writeToFile(file, code)
     file.deleteOnExit()
     file
   }

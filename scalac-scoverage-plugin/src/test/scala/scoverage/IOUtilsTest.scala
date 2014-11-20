@@ -3,9 +3,8 @@ package scoverage
 import java.io.{File, FileWriter}
 import java.util.UUID
 
-import org.apache.commons.io.FileUtils
 import org.scalatest.mock.MockitoSugar
-import org.scalatest.{Matchers, FreeSpec, OneInstancePerTest}
+import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
 
 /** @author Stephen Samuel */
 class IOUtilsTest extends FreeSpec with MockitoSugar with OneInstancePerTest with Matchers {
@@ -23,7 +22,7 @@ class IOUtilsTest extends FreeSpec with MockitoSugar with OneInstancePerTest wit
     }
     "should parse multiple measurement files" in {
       // clean up any existing measurement files
-      for ( file <- IOUtils.findMeasurementFiles(FileUtils.getTempDirectoryPath) )
+      for ( file <- IOUtils.findMeasurementFiles(IOUtils.getTempDirectory) )
         file.delete()
 
       val file1 = File.createTempFile("scoverage.measurements.1", "txt")
@@ -45,7 +44,7 @@ class IOUtilsTest extends FreeSpec with MockitoSugar with OneInstancePerTest wit
     }
     "should deep search for report files" in {
       // create new folder to hold all our data
-      val base = new File(FileUtils.getTempDirectoryPath + "/" + UUID.randomUUID)
+      val base = new File(IOUtils.getTempDirectory, UUID.randomUUID.toString)
       base.mkdir() shouldBe true
 
       val file1 = new File(base + "/" + Constants.XMLReportFilename)

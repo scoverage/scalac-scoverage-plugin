@@ -3,7 +3,6 @@ package scoverage.report
 import java.io.File
 
 import _root_.scoverage._
-import org.apache.commons.io.FileUtils
 
 import scala.xml.{Node, PrettyPrinter}
 
@@ -15,7 +14,7 @@ class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
       case true => new File(outputDir.getAbsolutePath + "/scoverage-debug.xml")
       case false => new File(outputDir.getAbsolutePath + "/" + Constants.XMLReportFilename)
     }
-    FileUtils.write(file, new PrettyPrinter(120, 4).format(xml(coverage)))
+    IOUtils.writeToFile(file, new PrettyPrinter(120, 4).format(xml(coverage)))
   }
 
   def statement(stmt: Statement): Node = {

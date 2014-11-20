@@ -4,7 +4,6 @@ import java.io.File
 import java.util.UUID
 import javax.xml.parsers.DocumentBuilderFactory
 
-import org.apache.commons.io.FileUtils
 import org.scalatest.{BeforeAndAfter, FunSuite, OneInstancePerTest}
 import org.xml.sax.{ErrorHandler, SAXParseException}
 import scoverage.report.CoberturaXmlWriter
@@ -15,7 +14,7 @@ import scala.xml.XML
 class CoberturaXmlWriterTest extends FunSuite with BeforeAndAfter with OneInstancePerTest {
 
   def tempDir(): File = {
-    val dir = new File(FileUtils.getTempDirectory, UUID.randomUUID().toString)
+    val dir = new File(IOUtils.getTempDirectory, UUID.randomUUID().toString)
     dir.mkdirs()
     dir.deleteOnExit()
     dir

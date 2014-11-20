@@ -2,8 +2,7 @@ package scoverage.report
 
 import java.io.File
 
-import _root_.scoverage.{Coverage, MeasuredClass, MeasuredMethod, MeasuredPackage}
-import org.apache.commons.io.FileUtils
+import scoverage._
 
 import scala.xml.Node
 
@@ -13,7 +12,7 @@ class CoberturaXmlWriter(baseDir: File, outputDir: File) {
   def format(double: Double): String = "%.2f".format(double)
 
   def write(coverage: Coverage): Unit = {
-    FileUtils.write(new File(outputDir.getAbsolutePath + "/cobertura.xml"),
+    IOUtils.writeToFile(new File(outputDir.getAbsolutePath + "/cobertura.xml"),
       "<?xml version=\"1.0\"?>\n<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-04.dtd\">\n" +
         xml(coverage))
   }

@@ -20,7 +20,7 @@ class LocationCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools
 
   def writeCodeSnippetToTempFile(code: String): File = {
     val file = File.createTempFile("code_snippet", ".scala")
-    org.apache.commons.io.FileUtils.write(file, code)
+    IOUtils.writeToFile(file, code)
     file.deleteOnExit()
     file
   }
