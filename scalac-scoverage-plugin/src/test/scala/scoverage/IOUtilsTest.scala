@@ -64,7 +64,7 @@ class IOUtilsTest extends FreeSpec with MockitoSugar with OneInstancePerTest wit
       writer3.write("11\n20\n30\n\n44\n")
       writer3.close()
 
-      val files = IOUtils.reportFileSearch(base)
+      val files = IOUtils.reportFileSearch(base, IOUtils.isReportFile)
       val invoked = IOUtils.invoked(files)
       assert(invoked.toSet === Set(1, 2, 3, 4, 5, 6, 7, 8, 11, 20, 30, 44))
 
