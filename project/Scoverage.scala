@@ -6,7 +6,7 @@ object Scoverage extends Build {
   val Org = "org.scoverage"
   val Version = "1.0.0"
   val Scala = "2.11.4"
-  val Slf4jVersion = "1.7.7"
+  val MockitoVersion = "1.9.5"
   val ScalatestVersion = "2.2.2"
 
   lazy val LocalTest = config("local") extend Test
@@ -25,7 +25,7 @@ object Scoverage extends Build {
     concurrentRestrictions in Global += Tags.limit(Tags.Test, 1),
     javacOptions := Seq("-source", "1.6", "-target", "1.6"),
     libraryDependencies ++= Seq(
-      "org.mockito" % "mockito-all" % "1.9.5" % "test",
+      "org.mockito" % "mockito-all" % MockitoVersion % "test",
       "org.scalatest" %% "scalatest" % ScalatestVersion % "test"
     ),
     publishTo <<= version {
