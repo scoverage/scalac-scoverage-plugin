@@ -55,7 +55,7 @@ object IOUtils {
     override def accept(pathname: File): Boolean = pathname.getName.startsWith(Constants.MeasurementsPrefix)
   })
 
-  def reportFileSearch(baseDir: File): Seq[File] = {
+  def reportFileSearch(baseDir: File, condition: File => Boolean): Seq[File] = {
     def search(file: File): Seq[File] = file match {
       case dir if dir.isDirectory => dir.listFiles().toSeq.map(search).flatten
       case f if isReportFile(f) => Seq(f)
@@ -66,6 +66,7 @@ object IOUtils {
 
   val isMeasurementFile = (file: File) => file.getName.startsWith(Constants.MeasurementsPrefix)
   val isReportFile = (file: File) => file.getName == Constants.XMLReportFilename
+  val isDebugReportFile = (file: File) => file.getName == Constants.XMLReportFilenameWithDebug
 
   // loads all the invoked statement ids from the given files
   def invoked(files: Seq[File]): Set[Int] = {

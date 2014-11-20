@@ -25,8 +25,8 @@ class ScoverageXmlReaderTest extends FreeSpec with Matchers {
         176,
         4,
         "",
-        "sym",
-        "tree",
+        "",
+        "",
         true,
         2))
 
@@ -42,18 +42,20 @@ class ScoverageXmlReaderTest extends FreeSpec with Matchers {
         105,
         19,
         "",
-        "sym2",
-        "tree2",
+        "",
+        "",
         false,
         0))
 
       val temp = new File(IOUtils.getTempPath, UUID.randomUUID.toString)
       temp.mkdir()
-      new ScoverageXmlWriter(new File("/home/sam"), temp, true).write(coverage)
+      temp.deleteOnExit()
+      new ScoverageXmlWriter(new File("/home/sam"), temp, false).write(coverage)
 
-      val actual = ScoverageXmlReader.read(IOUtils.reportFile(temp, true))
+      val actual = ScoverageXmlReader.read(IOUtils.reportFile(temp, false))
       // we don't care about the statement ids as the will change on reading back in
       actual.statements.map(_.copy(id = 0)).toSet shouldEqual coverage.statements.map(_.copy(id = 0)).toSet
+
     }
   }
 }
