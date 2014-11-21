@@ -17,6 +17,19 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 
 ### Release History
 
+##### 20th November 2014 1.0.0
+
+* Long awaited multi project support (aggregation)
+* Bug fixes for classes with a directory structure different to package name
+* Fixed coverage on `new` keyword
+* Removed deps on commons-io
+* Fixes for empty package names (<empty>)
+* Fixed location issue in anon classes
+* Enhanced support for constructors
+* Changed code grid to use <pre> instead of <table>
+* Fixed errors with Javascript in Play projects.
+* Re-wrote the SBT plugin completely, no longer uses custom config
+
 ##### 3rd November 2014 0.99.10
 
 * Fixed command line options due to changes in Scala 2.11.3+
