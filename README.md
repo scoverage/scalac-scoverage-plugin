@@ -3,7 +3,6 @@ scalac-scoverage-plugin
 
 scoverage is a free Apache licensed code coverage tool for scala that offers statement and branch coverage.
 scoverage is available for both maven and sbt.
-scoverage was originally based on SCCT.
 
 [![Build Status](https://travis-ci.org/scoverage/scalac-scoverage-plugin.svg?branch=master)](https://travis-ci.org/scoverage/scalac-scoverage-plugin)
 
@@ -26,7 +25,7 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 * Fixes for empty package names (<empty>)
 * Fixed location issue in anon classes
 * Enhanced support for constructors
-* Changed code grid to use <pre> instead of <table>
+* Changed code grid to use pre instead of table
 * Fixed errors with Javascript in Play projects.
 * Re-wrote the SBT plugin completely, no longer uses custom config
 
@@ -148,6 +147,7 @@ project you will need to use one of the build plugins:
 
 * [maven-scoverage-plugin](https://github.com/scoverage/maven-scoverage-plugin)
 * [sbt-scoverage](https://github.com/scoverage/sbt-scoverage)
+* [gradle-scoverage](https://github.com/scoverage/gradle-scoverage)
 * [sbt-coveralls](https://github.com/scoverage/sbt-coveralls)
 
 If you want to write a tool that uses this code coverage library then it is available on maven central.
@@ -173,18 +173,13 @@ You can also mark sections of code with comments like:
 
 Any code between two such comments will not be instrumented or included in the coverage report.
 
-### Alternatives
-
-There are still only a few code coverage tools for Scala. Here are two that we know of:
-
-* [SCCT](http://mtkopone.github.io/scct/) - Offers line coverage
-* [Jacoco4sbt](https://github.com/sbt/jacoco4sbt) - Instruments bytecode
+Further details are given in the plugin readme's.
 
 ## License
 ```
 This software is licensed under the Apache 2 license, quoted below.
 
-Copyright 2013 Stephen Samuel
+Copyright 2013-2014 Stephen Samuel
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this file except in compliance with the License. You may obtain a copy of
