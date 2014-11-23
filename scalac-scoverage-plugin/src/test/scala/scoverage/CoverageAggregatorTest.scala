@@ -42,7 +42,8 @@ class CoverageAggregatorTest extends FreeSpec with Matchers {
           IOUtils.reportFile(dir2, debug = false),
           IOUtils.reportFile(dir3, debug = false))
       )
-      aggregated.statements.map(_.copy(id = 0)).toSet shouldEqual
+      aggregated.statements.toSet.size shouldBe 3
+      aggregated.statements.map(_.copy(id = 0)).toSet shouldBe
         (coverage1.statements ++ coverage2.statements ++ coverage3.statements).map(_.copy(id = 0)).toSet
     }
   }
