@@ -18,15 +18,16 @@ object CoverageAggregator {
     }
   }
 
-   def aggregatedCoverage(files: Seq[File]): Coverage = {
+  def aggregatedCoverage(files: Seq[File]): Coverage = {
     var id = 0
     val coverage = Coverage()
-    files foreach {
-      case file =>
-        val subcoverage = ScoverageXmlReader.read(file)
+    files foreach { file =>
+      val subcoverage = ScoverageXmlReader.read(file)
+      subcoverage.statements foreach { stmt =>
         // need to ensure all the ids are unique otherwise the coverage object will have stmt collisions
         id = id + 1
-        subcoverage.statements foreach { stmt => coverage add stmt.copy(id = id)}
+        coverage add stmt.copy(id = id)
+      }
     }
     coverage
   }
