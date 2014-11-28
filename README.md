@@ -155,6 +155,11 @@ project you will need to use one of the build plugins:
 * [gradle-scoverage](https://github.com/scoverage/gradle-scoverage)
 * [sbt-coveralls](https://github.com/scoverage/sbt-coveralls)
 
+Scoverage support is available for the following tools:
+
+* [Sonar](https://github.com/RadoBuransky/sonar-scoverage-plugin)
+* [Jenkins](https://github.com/jenkinsci/scoverage-plugin)
+
 If you want to write a tool that uses this code coverage library then it is available on maven central.
 Search for scalac-scoverage-plugin.
 
