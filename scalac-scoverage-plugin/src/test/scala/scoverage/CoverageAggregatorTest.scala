@@ -4,7 +4,7 @@ import java.io.File
 import java.util.UUID
 
 import org.scalatest.{FreeSpec, Matchers}
-import scoverage.report.{ScoverageXmlWriter, CoverageAggregator}
+import scoverage.report.{CoverageAggregator, ScoverageXmlWriter}
 
 class CoverageAggregatorTest extends FreeSpec with Matchers {
 
@@ -20,7 +20,8 @@ class CoverageAggregatorTest extends FreeSpec with Matchers {
         source)
 
       val coverage1 = Coverage()
-      coverage1.add(Statement(source, location, 1, 155, 176, 4, "", "", "", true, 2))
+      coverage1.add(Statement(source, location, 1, 155, 176, 4, "", "", "", true, 1))
+      coverage1.add(Statement(source, location, 2, 200, 300, 5, "", "", "", false, 2))
       val dir1 = new File(IOUtils.getTempPath, UUID.randomUUID.toString)
       dir1.mkdir()
       new ScoverageXmlWriter(new File("/home/sam"), dir1, false).write(coverage1)
@@ -42,7 +43,7 @@ class CoverageAggregatorTest extends FreeSpec with Matchers {
           IOUtils.reportFile(dir2, debug = false),
           IOUtils.reportFile(dir3, debug = false))
       )
-      aggregated.statements.toSet.size shouldBe 3
+      aggregated.statements.toSet.size shouldBe 4
       aggregated.statements.map(_.copy(id = 0)).toSet shouldBe
         (coverage1.statements ++ coverage2.statements ++ coverage3.statements).map(_.copy(id = 0)).toSet
     }
