@@ -150,7 +150,7 @@ executed during the test run. In addition two of the cases in the partial functi
 This project is the base library for instrumenting code via a scalac compiler plugin. To use scoverage in your
 project you will need to use one of the build plugins:
 
-* [maven-scoverage-plugin](https://github.com/scoverage/maven-scoverage-plugin)
+* [scoverage-maven-plugin](https://github.com/scoverage/scoverage-maven-plugin)
 * [sbt-scoverage](https://github.com/scoverage/sbt-scoverage)
 * [gradle-scoverage](https://github.com/scoverage/gradle-scoverage)
 * [sbt-coveralls](https://github.com/scoverage/sbt-coveralls)
