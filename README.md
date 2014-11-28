@@ -16,6 +16,11 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 
 ### Release History
 
+##### 28th November 2014 1.0.1
+
+* Fixed issue with coverageAggregate
+* Fixed issue with multi project builds referencing parent code
+
 ##### 20th November 2014 1.0.0
 
 * Long awaited multi project support (aggregation)
