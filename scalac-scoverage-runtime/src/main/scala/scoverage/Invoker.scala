@@ -10,8 +10,8 @@ import scala.io.Source
 object Invoker {
 
   private val MeasurementsPrefix = "scoverage.measurements."
-  private val threadFile = new ThreadLocal[FileWriter]
-  private val ids = TrieMap.empty[Int, Any]
+  private val threadFiles = new ThreadLocal[TrieMap[String, FileWriter]]
+  private val ids = TrieMap.empty[(String, Int), Any]
 
   /**
    * We record that the given id has been invoked by appending its id to the coverage
@@ -34,17 +34,18 @@ object Invoker {
     // times since for coverage we only care about 1 or more, (it just slows things down to
     // do it more than once), anything we can do to help is good. This helps especially with code
     // that is executed many times quickly, eg tight loops.
-    if (!ids.contains(id)) {
+    if (!ids.contains(dataDir, id)) {
       // Each thread writes to a separate measurement file, to reduce contention
       // and because file appends via FileWriter are not atomic on Windows.
-      var writer = threadFile.get()
-      if (writer == null) {
-        val file = measurementFile(dataDir)
-        writer = new FileWriter(file, true)
-        threadFile.set(writer)
-      }
+      var files = threadFiles.get()
+      if (files == null)
+        files = TrieMap.empty[String, FileWriter]
+        threadFiles.set(files)
+
+      val writer = files.getOrElseUpdate(dataDir, new FileWriter(measurementFile(dataDir), true))
       writer.append(id.toString + '\n').flush()
-      ids.put(id, ())
+
+      ids.put((dataDir, id), ())
     }
   }
 
