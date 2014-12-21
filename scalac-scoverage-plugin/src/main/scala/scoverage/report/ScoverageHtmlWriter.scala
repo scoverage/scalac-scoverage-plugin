@@ -23,7 +23,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
     coverage.packages.foreach(writePackage)
   }
 
-  private def relativeSource(src: String): String = src.replace(sourceDirectory.getAbsolutePath + File.separator, "")
+  private def relativeSource(src: String): String = src.replace(sourceDirectory.getCanonicalPath + File.separator, "")
 
   private def writePackage(pkg: MeasuredPackage): Unit = {
     // package overview files are written out using a filename that respects the package name
