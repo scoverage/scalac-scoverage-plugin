@@ -9,7 +9,7 @@ class CodeGrid(mfile: MeasuredFile) {
 
   case class Cell(char: Char, var status: StatementStatus)
 
-  private val lineBreak = System.getProperty("line.separator").toCharArray
+  private val lineBreak = System.getProperty("line.separator")
 
   // note: we must reinclude the line sep to keep source positions correct.
   private val lines = source(mfile).split(lineBreak).map(line => (line.toCharArray ++ lineBreak).map(Cell(_, NoData)))
