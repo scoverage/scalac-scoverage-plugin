@@ -10,6 +10,12 @@ import language.implicitConversions
 
 object ReportWriter {
 
+  private def dir(base: File, name: String) = {
+    val directory = new File(base, name)
+    directory.mkdirs()
+    directory
+  }
+
   def writeReports(outputDirectory: File,
                    baseDirectory: File,
                    coverage: Coverage,
@@ -18,24 +24,20 @@ object ReportWriter {
                    coverageOutputHTML: Boolean,
                    coverageDebug: Boolean): Unit = {
 
-    val reportDir = new File(outputDirectory, "scoverage-report")
-    reportDir.mkdirs()
-
     if (coverageOutputCobertura) {
-      val coberturaDir = new File(outputDirectory, "coverage-report")
-      coberturaDir.mkdirs()
-      new CoberturaXmlWriter(baseDirectory, coberturaDir).write(coverage)
+      new CoberturaXmlWriter(baseDirectory, dir(outputDirectory, "cobertura")).write(coverage)
     }
 
     if (coverageOutputXML) {
-      new ScoverageXmlWriter(baseDirectory, reportDir, false).write(coverage)
+      val xmlDir = dir(outputDirectory, "xml")
+      new ScoverageXmlWriter(baseDirectory, xmlDir, false).write(coverage)
       if (coverageDebug) {
-        new ScoverageXmlWriter(baseDirectory, reportDir, true).write(coverage)
+        new ScoverageXmlWriter(baseDirectory, xmlDir, true).write(coverage)
       }
     }
 
     if (coverageOutputHTML) {
-      new ScoverageHtmlWriter(baseDirectory, reportDir).write(coverage)
+      new ScoverageHtmlWriter(baseDirectory, dir(outputDirectory, "html")).write(coverage)
     }
 
   }
