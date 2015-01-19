@@ -78,6 +78,7 @@ object Scoverage extends Build {
     .settings(libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
     "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
+    "org.rogach" %% "scallop" % "0.9.5",
     "org.joda" % "joda-convert" % "1.6" % "test",
     "joda-time" % "joda-time" % "2.3" % "test",
     "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2" % "test"
