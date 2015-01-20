@@ -16,7 +16,7 @@ class InvokerMultiModuleTest extends FunSuite with BeforeAndAfter {
     measurementDir.foreach(_.mkdirs)
   }
 
-  test("calling Invoker.invoked on with different directories puts mesurments in different directories") {
+  test("calling Invoker.invoked on with different directories puts measurements in different directories") {
 
     val testIds: Set[Int] = (1 to 10).toSet
 

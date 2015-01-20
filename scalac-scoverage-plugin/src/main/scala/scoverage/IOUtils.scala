@@ -2,8 +2,6 @@ package scoverage
 
 import java.io._
 
-import scoverage.report.ScoverageXmlMerger
-
 import scala.collection.{Set, mutable}
 import scala.io.Source
 

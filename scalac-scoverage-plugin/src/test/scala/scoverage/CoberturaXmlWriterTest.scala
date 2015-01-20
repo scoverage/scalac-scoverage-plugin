@@ -62,19 +62,16 @@ class CoberturaXmlWriterTest extends FunSuite with BeforeAndAfter with OneInstan
     builder.setErrorHandler(new ErrorHandler() {
       @Override
       def error(e: SAXParseException) {
-        e.printStackTrace()
-        assert(false)
+        fail(e)
       }
       @Override
       def fatalError(e: SAXParseException) {
-        e.printStackTrace()
-        assert(false)
+        fail(e)
       }
 
       @Override
       def warning(e: SAXParseException) {
-        e.printStackTrace()
-        assert(false)
+        fail(e)
       }
     })
     builder.parse(fileIn(dir))

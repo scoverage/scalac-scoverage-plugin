@@ -5,7 +5,7 @@ import _root_.scoverage.MeasuredFile
 import scala.xml.Node
 
 /** @author Stephen Samuel */
-class StatementWriter(mfile: MeasuredFile) {
+class StatementWriter(mFile: MeasuredFile) {
 
   val GREEN = "#AEF1AE"
   val RED = "#F0ADAD"
@@ -25,7 +25,7 @@ class StatementWriter(mfile: MeasuredFile) {
         <th>Tree</th>
         <th>Symbol</th>
         <th>Code</th>
-      </tr>{mfile.statements.toSeq.sortBy(_.line).map(stmt => {
+      </tr>{mFile.statements.toSeq.sortBy(_.line).map(stmt => {
       <tr>
         <td>
           {stmt.line}

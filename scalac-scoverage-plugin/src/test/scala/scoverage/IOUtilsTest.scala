@@ -10,7 +10,7 @@ import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
 class IOUtilsTest extends FreeSpec with MockitoSugar with OneInstancePerTest with Matchers {
 
   "io utils" - {
-    "should parse measurment files" in {
+    "should parse measurement files" in {
       val file = File.createTempFile("scoveragemeasurementtest", "txt")
       val writer = new FileWriter(file)
       writer.write("1\n5\n9\n\n10\n")

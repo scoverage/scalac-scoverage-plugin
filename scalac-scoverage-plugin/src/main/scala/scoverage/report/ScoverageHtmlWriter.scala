@@ -156,7 +156,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
   def packageOverview(pack: MeasuredPackage): Node = {
     <html>
       {header}<body style="font-family: monospace;">
-      {classesTable(pack.classes, false)}
+      {classesTable(pack.classes, addPath = false)}
     </body>
     </html>
   }
@@ -417,7 +417,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
           {stats(coverage)}
         </div>
         <div>
-          {classesTable(coverage.classes, true)}
+          {classesTable(coverage.classes, addPath = true)}
         </div>
       </div>
     </body>

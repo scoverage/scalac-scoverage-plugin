@@ -31,7 +31,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
       }
     }
     if (!opts.exists(_.startsWith("dataDir:")))
-      throw new RuntimeException("Cannot invoke plugin without specifiying <dataDir>")
+      throw new RuntimeException("Cannot invoke plugin without specifying <dataDir>")
     instrumentationComponent.setOptions(options)
   }
 
@@ -315,7 +315,7 @@ class ScoverageInstrumentationComponent(val global: Global)
             c
           }
 
-        // scalac generated classes, we just instrument the enclosed methods/statments
+        // scalac generated classes, we just instrument the enclosed methods/statements
         // the location would stay as the source class
         case c: ClassDef if c.symbol.isAnonymousClass || c.symbol.isAnonymousFunction =>
           if (isFileIncluded(c.pos.source) && isClassIncluded(c.symbol))
@@ -336,7 +336,7 @@ class ScoverageInstrumentationComponent(val global: Global)
         case DefDef(mods, _, _, _, _, _) if mods.isMacro => tree
 
         // this will catch methods defined as macros, eg def test = macro testImpl
-        // it will not catch macro implemenations
+        // it will not catch macro implementations
         case d: DefDef if d.symbol != null
           && d.symbol.annotations.size > 0
           && d.symbol.annotations.toString() == "macroImpl" =>
@@ -415,13 +415,13 @@ class ScoverageInstrumentationComponent(val global: Global)
 
         // the If statement itself doesn't need to be instrumented, because instrumenting the condition is
         // enough to determine if the If statement was executed.
-        // The two procedures (then and else) are instrumented seperately to determine if we entered
+        // The two procedures (then and else) are instrumented separately to determine if we entered
         // both branches.
         case i: If =>
           treeCopy.If(i,
             process(i.cond),
-            instrument(process(i.thenp), i.thenp, true),
-            instrument(process(i.elsep), i.elsep, true))
+            instrument(process(i.thenp), i.thenp, branch = true),
+            instrument(process(i.elsep), i.elsep, branch = true))
 
         case _: Import => tree
 
@@ -533,9 +533,12 @@ class ScoverageInstrumentationComponent(val global: Global)
         // This AST node corresponds to the following Scala code: expr: tpt
         case t: Typed => super.transform(tree)
 
-        // instrument trys, catches and finally as seperate blocks
+        // instrument trys, catches and finally as separate blocks
         case Try(t: Tree, cases: List[CaseDef], f: Tree) =>
-          treeCopy.Try(tree, instrument(process(t), t, true), transformCases(cases), instrument(process(f), f, true))
+          treeCopy.Try(tree,
+            instrument(process(t), t, branch = true),
+            transformCases(cases),
+            instrument(process(f), f, branch = true))
 
         // type aliases, type parameters, abstract types
         case t: TypeDef => super.transform(tree)
