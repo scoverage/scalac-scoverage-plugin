@@ -4,7 +4,7 @@ import sbt._
 object Scoverage extends Build {
 
   val Org = "org.scoverage"
-  val Version = "1.0.1"
+  val Version = "1.0.3-SNAPSHOT"
   val Scala = "2.11.4"
   val MockitoVersion = "1.9.5"
   val ScalatestVersion = "2.2.2"
@@ -73,6 +73,7 @@ object Scoverage extends Build {
     .settings(appSettings: _*)
 
   lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
+    .dependsOn(runtime % "test")
     .settings(name := "scalac-scoverage-plugin")
     .settings(appSettings: _*)
     .settings(libraryDependencies ++= Seq(

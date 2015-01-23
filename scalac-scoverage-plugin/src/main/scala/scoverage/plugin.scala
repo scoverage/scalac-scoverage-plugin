@@ -146,7 +146,7 @@ class ScoverageInstrumentationComponent(val global: Global)
     def transformCases(cases: List[CaseDef]): List[CaseDef] = {
       cases.map(c => {
         treeCopy.CaseDef(
-          c, c.pat, process(c.guard), instrument(process(c.body), c)
+          c, c.pat, process(c.guard), process(c.body)
         )
       })
     }
@@ -431,7 +431,7 @@ class ScoverageInstrumentationComponent(val global: Global)
             treeCopy
               .Match(tree, instrument(selector, selector), transformCases(cases.dropRight(1)) ++ cases.takeRight(1))
           } else {
-            instrument(treeCopy.Match(tree, process(selector), transformCases(cases)), m)
+            treeCopy.Match(tree, process(selector), transformCases(cases))
           }
 
         // a synthetic object is a generated object, such as case class companion

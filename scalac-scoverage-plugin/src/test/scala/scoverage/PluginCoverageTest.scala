@@ -56,6 +56,39 @@ class PluginCoverageTest
     compiler.assertNMeasuredStatements(8)
   }
 
+  test("scoverage should not instrument the match as a statement") {
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet( """ object A {
+                                   |    System.currentTimeMillis() match {
+                                   |      case x => println(x)
+                                   |    }
+                                   |} """.stripMargin)
+    assert(!compiler.reporter.hasErrors)
+    assert(!compiler.reporter.hasWarnings)
+
+    /** should have the following statements instrumented:
+      * the selector, clause 1
+      */
+    compiler.assertNMeasuredStatements(2)
+  }
+  test("scoverage should instrument match guards") {
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet( """ object A {
+                                   |    System.currentTimeMillis() match {
+                                   |      case l if l < 1000 => println("a")
+                                   |      case l if l > 1000 => println("b")
+                                   |      case _ => println("c")
+                                   |    }
+                                   |} """.stripMargin)
+    assert(!compiler.reporter.hasErrors)
+    assert(!compiler.reporter.hasWarnings)
+
+    /** should have the following statements instrumented:
+      * the selector, guard 1, clause 1, guard 2, clause 2, clause 3
+      */
+    compiler.assertNMeasuredStatements(6)
+  }
+
   test("scoverage should instrument selectors in match") {
     val compiler = ScoverageCompiler.default
     compiler.compileCodeSnippet( """ trait A {
