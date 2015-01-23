@@ -3,76 +3,82 @@ package scoverage
 import java.io._
 
 import scala.io.Source
-import scala.xml.{XML, Utility, Node}
+import scala.xml.XML
 
 object Serializer {
 
-  /**
-   * Write out coverage data to the given data directory
-   */
+  // Write out coverage data to the given data directory, using the default coverage filename
   def serialize(coverage: Coverage, dataDir: String): Unit = serialize(coverage, coverageFile(dataDir))
-  def serialize(coverage: Coverage, file: File): Unit = IOUtils.writeToFile(file, serialize(coverage).toString)
+
+  // Write out coverage data to given file.
+  def serialize(coverage: Coverage, file: File): Unit = {
+    val writer = new BufferedWriter(new FileWriter(file))
+    serialize(coverage, writer)
+    writer.close()
+  }
+
+  def serialize(coverage: Coverage, writer: Writer): Unit = {
+    def writeStatement(stmt: Statement, writer: Writer): Unit = {
+      writer.write {
+        <statement>
+          <source>
+            {stmt.source}
+          </source>
+          <package>
+            {stmt.location.packageName}
+          </package>
+          <class>
+            {stmt.location.className}
+          </class>
+          <classType>
+            {stmt.location.classType.toString}
+          </classType>
+          <topLevelClass>
+            {stmt.location.topLevelClass}
+          </topLevelClass>
+          <method>
+            {stmt.location.method}
+          </method>
+          <path>
+            {stmt.location.sourcePath}
+          </path>
+          <id>
+            {stmt.id.toString}
+          </id>
+          <start>
+            {stmt.start.toString}
+          </start>
+          <end>
+            {stmt.end.toString}
+          </end>
+          <line>
+            {stmt.line.toString}
+          </line>
+          <description>
+            {escape(stmt.desc)}
+          </description>
+          <symbolName>
+            {escape(stmt.symbolName)}
+          </symbolName>
+          <treeName>
+            {escape(stmt.treeName)}
+          </treeName>
+          <branch>
+            {stmt.branch.toString}
+          </branch>
+          <count>
+            {stmt.count.toString}
+          </count>
+        </statement>.toString + "\n"
+      }
+    }
+    writer.write("<statements>\n")
+    coverage.statements.foreach(stmt => writeStatement(stmt, writer))
+    writer.write("</statements>")
+  }
 
   def coverageFile(dataDir: File): File = coverageFile(dataDir.getAbsolutePath)
   def coverageFile(dataDir: String): File = new File(dataDir, Constants.CoverageFileName)
-
-  def serialize(coverage: Coverage): Node = {
-    val lines = coverage.statements.map(stmt => {
-      <statement>
-        <source>
-          {stmt.source}
-        </source>
-        <package>
-          {stmt.location.packageName}
-        </package>
-        <class>
-          {stmt.location.className}
-        </class>
-        <classType>
-          {stmt.location.classType.toString}
-        </classType>
-        <topLevelClass>
-          {stmt.location.topLevelClass}
-        </topLevelClass>
-        <method>
-          {stmt.location.method}
-        </method>
-        <path>
-          {stmt.location.sourcePath}
-        </path>
-        <id>
-          {stmt.id.toString}
-        </id>
-        <start>
-          {stmt.start.toString}
-        </start>
-        <end>
-          {stmt.end.toString}
-        </end>
-        <line>
-          {stmt.line.toString}
-        </line>
-        <description>
-          {escape(stmt.desc)}
-        </description>
-        <symbolName>
-          {escape(stmt.symbolName)}
-        </symbolName>
-        <treeName>
-          {escape(stmt.treeName)}
-        </treeName>
-        <branch>
-          {stmt.branch.toString}
-        </branch>
-        <count>
-          {stmt.count.toString}
-        </count>
-      </statement>
-    })
-    Utility.trim(<statements>
-      {lines}
-    </statements>)
-  }
 
   def deserialize(str: String): Coverage = {
     val xml = XML.loadString(str)

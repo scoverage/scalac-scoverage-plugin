@@ -1,5 +1,7 @@
 package scoverage
 
+import java.io.StringWriter
+
 import org.scalatest.{OneInstancePerTest, FunSuite}
 import org.scalatest.mock.MockitoSugar
 
@@ -21,8 +23,9 @@ class SerializerTest extends FunSuite with MockitoSugar with OneInstancePerTest 
         <source>mysource</source> <package>org.scoverage</package> <class>test</class> <classType>Trait</classType> <topLevelClass>test</topLevelClass> <method>mymethod</method> <path>mypath</path> <id>14</id> <start>100</start> <end>200</end> <line>4</line> <description>def test : String</description> <symbolName>test</symbolName> <treeName>DefDef</treeName> <branch>true</branch> <count>32</count>
       </statement>
     </statements>
-    val actual = Serializer.serialize(coverage)
-    assert(Utility.trim(expected) === Utility.trim(actual))
+    val writer = new StringWriter()
+    val actual = Serializer.serialize(coverage, writer)
+    assert(Utility.trim(expected) === Utility.trim(xml.XML.loadString(writer.toString)))
   }
 
   test("coverage should be deserializable from xml") {
