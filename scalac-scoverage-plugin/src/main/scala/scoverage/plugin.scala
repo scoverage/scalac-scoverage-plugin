@@ -5,8 +5,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import scala.reflect.internal.ModifierFlags
 import scala.reflect.internal.util.SourceFile
-import scala.tools.nsc._
-import scala.tools.nsc.plugins.{Plugin, PluginComponent}
+import scala.tools.nsc.Global
+import scala.tools.nsc.plugins.{PluginComponent, Plugin}
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
 
 /** @author Stephen Samuel */
@@ -142,6 +142,16 @@ class ScoverageInstrumentationComponent(val global: Global)
 
     def transformStatements(trees: List[Tree]): List[Tree] = trees.map(process)
 
+    def transformForCases(cases: List[CaseDef]): List[CaseDef] = {
+      // we don't instrument the synthetic case _ => false clause
+      cases.dropRight(1).map(c => {
+        treeCopy.CaseDef(
+          // in a for-loop we don't care about instrumenting the guards, as they are synthetically generated
+          c, c.pat, process(c.guard), process(c.body)
+        )
+      }) ++ cases.takeRight(1)
+    }
+
     def transformCases(cases: List[CaseDef]): List[CaseDef] = {
       cases.map(c => {
         treeCopy.CaseDef(
@@ -167,7 +177,7 @@ class ScoverageInstrumentationComponent(val global: Global)
               safeStart(tree),
               safeEnd(tree),
               safeLine(tree),
-              original.toString(),
+              original.toString,
               Option(original.symbol).fold("<nosymbol>")(_.fullNameString),
               tree.getClass.getSimpleName,
               branch
@@ -225,6 +235,8 @@ class ScoverageInstrumentationComponent(val global: Global)
     def traverseApplication(t: Tree): Tree = {
       t match {
         case a: ApplyToImplicitArgs => treeCopy.Apply(a, traverseApplication(a.fun), transformStatements(a.args))
+        case Apply(Select(_, TermName("withFilter")), List(fun@Function(params, body)))
+          if fun.symbol.isSynthetic && fun.toString.contains("check$ifrefutable$1") => t
         case a: Apply => treeCopy.Apply(a, traverseApplication(a.fun), transformStatements(a.args))
         case a: TypeApply => treeCopy.TypeApply(a, traverseApplication(a.fun), transformStatements(a.args))
         case s: Select => treeCopy.Select(s, traverseApplication(s.qualifier), s.name)
@@ -322,11 +334,6 @@ class ScoverageInstrumentationComponent(val global: Global)
 
         // ignore macro definitions in 2.11
         case DefDef(mods, _, _, _, _, _) if mods.isMacro => tree
-
-        case d: DefDef =>
-          println(d)
-          val e = d
-          d
 
         // this will catch methods defined as macros, eg def test = macro testImpl
         // it will not catch macro implemenations
@@ -428,16 +435,17 @@ class ScoverageInstrumentationComponent(val global: Global)
         // pattern match clauses will be instrumented per case
         case m@Match(selector: Tree, cases: List[CaseDef]) =>
           // we can be fairly sure this was generated as part of a for loop
-          if (selector.toString().contains("check$")
+          if (selector.toString.contains("check$")
             && selector.tpe.annotations.mkString == "unchecked"
             && m.cases.last.toString == "case _ => false") {
-            // todo check these assumptions for 2.11
-            treeCopy
-              .Match(tree, instrument(selector, selector), transformCases(cases.dropRight(1)) ++ cases.takeRight(1))
+            treeCopy.Match(tree, process(selector), transformForCases(cases))
           } else {
-            if (selector.symbol.isSynthetic)
+            // if the selector was added by compiler, we don't want to instrument it....
+            // that usually means some construct is being transformed into a match
+            if (Option(selector.symbol).exists(_.isSynthetic))
               treeCopy.Match(tree, selector, transformCases(cases))
             else
+            // .. but we will if it was a user match
               treeCopy.Match(tree, process(selector), transformCases(cases))
           }
 

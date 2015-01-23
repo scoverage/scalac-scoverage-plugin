@@ -19,7 +19,9 @@ class PluginCoverageTest
                                    |  }
                                    |} """.stripMargin)
     assert(!compiler.reporter.hasErrors)
-    // we should have 2 statements - initialising the val and executing string sub in the def
+    // we expect:
+    // instrumenting the default-param which becomes a method call invocation
+    // the method makeGreeting is entered.
     compiler.assertNMeasuredStatements(2)
   }
 
@@ -89,7 +91,23 @@ class PluginCoverageTest
     compiler.assertNMeasuredStatements(6)
   }
 
-  test("scoverage should instrument selectors in match") {
+  test("scoverage should instrument non basic selector") {
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet( """ trait A {
+                                   |  def someValue = "sammy"
+                                   |  def foo(a:String) = someValue match {
+                                   |    case any => "yes"
+                                   |  }
+                                   |} """.stripMargin)
+    assert(!compiler.reporter.hasErrors)
+    // should instrument:
+    // the someValue method entry
+    // the selector call
+    // case block "yes" literal
+    compiler.assertNMeasuredStatements(3)
+  }
+
+  test("scoverage should instrument conditional selectors in a match") {
     val compiler = ScoverageCompiler.default
     compiler.compileCodeSnippet( """ trait A {
                                    |  def foo(a:String) = (if (a == "hello") 1 else 2) match {
@@ -97,22 +115,45 @@ class PluginCoverageTest
                                    |  }
                                    |} """.stripMargin)
     assert(!compiler.reporter.hasErrors)
-    // should instrument the method call, the if clause, thenp, thenp literal, elsep, elsep literal, case block,
-    // case block literal
-    compiler.assertNMeasuredStatements(8)
+    // should instrument:
+    // the if clause,
+    // thenp block,
+    // thenp literal "1",
+    // elsep block,
+    // elsep literal "2",
+    // case block "yes" literal
+    compiler.assertNMeasuredStatements(6)
   }
 
   // https://github.com/scoverage/sbt-scoverage/issues/16
-  test("scoverage should instrument for-loops but not the generated default case") {
+  test("scoverage should instrument for-loops but not the generated scaffolding") {
     val compiler = ScoverageCompiler.default
     compiler.compileCodeSnippet( """ trait A {
                                    |  def print1(list: List[String]) = for (string: String <- list) println(string)
                                    |} """.stripMargin)
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
-    // should have one statement for the withFilter invoke, one of the match selector,
-    // one of the case block, one for the case string RHS value, one for the foreach block.
-    compiler.assertNMeasuredStatements(5)
+    // should instrument:
+    // the def method entry
+    // foreach body
+    // specifically we want to avoid the withFilter partial function added by the compiler
+    compiler.assertNMeasuredStatements(2)
+  }
+
+  test("scoverage should instrument for-loop guards") {
+    val compiler = ScoverageCompiler.default
+
+    compiler.compileCodeSnippet( """object A {
+                                   |  def foo(list: List[String]) = for (string: String <- list if string.length > 5)
+                                   |    println(string)
+                                   |} """.stripMargin)
+    assert(!compiler.reporter.hasErrors)
+    assert(!compiler.reporter.hasWarnings)
+    // should instrument:
+    // foreach body
+    // the guard
+    // but we want to avoid the withFilter partial function added by the compiler
+    compiler.assertNMeasuredStatements(3)
   }
 
   test("scoverage should correctly handle new with args (apply with list of args)") {
@@ -188,14 +229,15 @@ class PluginCoverageTest
     compiler.compileCodeSnippet( """ trait A {
                                    |  def foo(name: Any) = name match {
                                    |    case i : Int => 1
-                                   |    case b : Boolean => 2
+                                   |    case b : Boolean => println("boo")
                                    |    case _ => 3
                                    |  }
                                    |} """.stripMargin)
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
-    // should have one statement for each literal, one for each case block, and one for the selector.
-    compiler.assertNMeasuredStatements(7)
+    // should have one statement for each case body
+    // selector is a constant so would be ignored.
+    compiler.assertNMeasuredStatements(3)
   }
 
   test("scoverage should support yields") {

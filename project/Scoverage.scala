@@ -7,7 +7,7 @@ object Scoverage extends Build {
   val Version = "1.0.3-SNAPSHOT"
   val Scala = "2.11.4"
   val MockitoVersion = "1.9.5"
-  val ScalatestVersion = "2.2.2"
+  val ScalatestVersion = "2.2.3"
 
   lazy val LocalTest = config("local") extend Test
 
@@ -77,8 +77,8 @@ object Scoverage extends Build {
     .settings(name := "scalac-scoverage-plugin")
     .settings(appSettings: _*)
     .settings(libraryDependencies ++= Seq(
-    "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
-    "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
+    "org.scala-lang" % "scala-reflect" % Scala % "provided",
+    "org.scala-lang" % "scala-compiler" % Scala % "provided",
     "org.joda" % "joda-convert" % "1.6" % "test",
     "joda-time" % "joda-time" % "2.3" % "test",
     "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2" % "test"
