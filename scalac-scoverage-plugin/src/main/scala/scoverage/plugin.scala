@@ -50,7 +50,6 @@ class ScoverageOptions {
   var dataDir: String = File.createTempFile("scoverage_datadir_not_defined", ".tmp").getParent
 }
 
-
 class ScoverageInstrumentationComponent(val global: Global)
   extends PluginComponent
   with TypingTransformers
@@ -324,6 +323,11 @@ class ScoverageInstrumentationComponent(val global: Global)
         // ignore macro definitions in 2.11
         case DefDef(mods, _, _, _, _, _) if mods.isMacro => tree
 
+        case d: DefDef =>
+          println(d)
+          val e = d
+          d
+
         // this will catch methods defined as macros, eg def test = macro testImpl
         // it will not catch macro implemenations
         case d: DefDef if d.symbol != null
@@ -431,7 +435,10 @@ class ScoverageInstrumentationComponent(val global: Global)
             treeCopy
               .Match(tree, instrument(selector, selector), transformCases(cases.dropRight(1)) ++ cases.takeRight(1))
           } else {
-            treeCopy.Match(tree, process(selector), transformCases(cases))
+            if (selector.symbol.isSynthetic)
+              treeCopy.Match(tree, selector, transformCases(cases))
+            else
+              treeCopy.Match(tree, process(selector), transformCases(cases))
           }
 
         // a synthetic object is a generated object, such as case class companion
@@ -534,18 +541,24 @@ class ScoverageInstrumentationComponent(val global: Global)
         /**
          * We can ignore lazy val defs as they are implemented by a generated defdef
          */
-        case v: ValDef if v.symbol.isLazy => tree
+        case v: ValDef if v.symbol.isLazy =>
+          val w = v
+          tree
 
         /**
          * <synthetic> val default: A1 => B1 =
          * <synthetic> val x1: Any = _
          */
-        case v: ValDef if v.symbol.isSynthetic => tree
+        case v: ValDef if v.symbol.isSynthetic =>
+          val w = v
+          tree
 
         /**
          * Vals declared in case constructors
          */
-        case v: ValDef if v.symbol.isParamAccessor && v.symbol.isCaseAccessor => tree
+        case v: ValDef if v.symbol.isParamAccessor && v.symbol.isCaseAccessor =>
+          val w = v
+          tree
 
         // we need to remove the final mod so that we keep the code in order to check its invoked
         case v: ValDef if v.mods.isFinal =>

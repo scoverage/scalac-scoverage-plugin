@@ -62,8 +62,7 @@ class PluginASTSupportTest
     assert(!compiler.reporter.hasErrors)
   }
 
-
-  // https://github.com/scoverage/scalac-scoverage-plugin/issues/32
+ // https://github.com/scoverage/scalac-scoverage-plugin/issues/32
   test("exhaustive warnings should not be generated for @unchecked") {
     val compiler = ScoverageCompiler.default
     compiler.compileCodeSnippet( """object PartialMatchObject {

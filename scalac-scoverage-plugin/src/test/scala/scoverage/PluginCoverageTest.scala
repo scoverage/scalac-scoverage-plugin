@@ -159,6 +159,30 @@ class PluginCoverageTest
     compiler.assertNMeasuredStatements(1)
   }
 
+  test("scoverage should not instrument function tuple wrapping") {
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet(
+      """
+        |    sealed trait Foo
+        |    case class Bar(s: String) extends Foo
+        |    case object Baz extends Foo
+        |
+        |    object Foo {
+        |      implicit val fooOrdering: Ordering[Foo] = Ordering.fromLessThan {
+        |        case (Bar(_), Baz) => true
+        |        case (Bar(a), Bar(b)) => a < b
+        |        case (_, _) => false
+        |      }
+        |    }
+      """.stripMargin)
+
+    assert(!compiler.reporter.hasErrors)
+    assert(!compiler.reporter.hasWarnings)
+    // should have 4 profiled statements: the outer apply, the true, the a < b, the false
+    // we are testing that we don't instrument the tuple2 call used here
+    compiler.assertNMeasuredStatements(4)
+  }
+
   test("scoverage should instrument all case statements in an explicit match") {
     val compiler = ScoverageCompiler.default
     compiler.compileCodeSnippet( """ trait A {

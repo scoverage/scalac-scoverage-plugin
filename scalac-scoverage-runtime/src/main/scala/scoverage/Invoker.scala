@@ -40,7 +40,7 @@ object Invoker {
       var files = threadFiles.get()
       if (files == null)
         files = TrieMap.empty[String, FileWriter]
-        threadFiles.set(files)
+      threadFiles.set(files)
 
       val writer = files.getOrElseUpdate(dataDir, new FileWriter(measurementFile(dataDir), true))
       writer.append(id.toString + '\n').flush()
