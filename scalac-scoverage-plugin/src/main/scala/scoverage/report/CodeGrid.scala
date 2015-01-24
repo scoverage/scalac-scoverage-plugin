@@ -23,11 +23,15 @@ class CodeGrid(mfile: MeasuredFile) {
   mfile.statements.foreach(stmt => {
     for ( k <- stmt.start until stmt.end ) {
       if (k < cells.size) {
-        // if the cell is set to NotInvoked, then it cannot be changed further, even if an outer statement
-        // is green. This is because, for example, a block may be entered, but not all contained statements
+        // if the cell is set to Invoked, then it be changed to NotInvoked, as an inner statement will override
+        // outer containing statments. If a cell is NotInvoked then it can not be changed further.
         // in that block were executed
-        if (cells(k).status != NotInvoked) {
-          if (stmt.isInvoked) cells(k).status = Invoked
+        cells(k).status match {
+          case Invoked => if (!stmt.isInvoked) cells(k).status = NotInvoked
+          case NoData =>
+            if (!stmt.isInvoked) cells(k).status = NotInvoked
+            else if (stmt.isInvoked) cells(k).status = Invoked
+          case NotInvoked =>
         }
       }
     }

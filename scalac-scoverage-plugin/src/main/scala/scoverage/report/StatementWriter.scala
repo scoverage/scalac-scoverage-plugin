@@ -19,10 +19,10 @@ class StatementWriter(mfile: MeasuredFile) {
 
     <table cellspacing="0" cellpadding="0" class="table statementlist">
       <tr>
-        <th>Line Number</th>
-        <th>Statement Id</th>
+        <th>Line</th>
+        <th>Stmt Id</th>
         <th>Pos</th>
-        <th>Tree Type</th>
+        <th>Tree</th>
         <th>Symbol</th>
         <th>Code</th>
       </tr>{mfile.statements.toSeq.sortBy(_.line).map(stmt => {
