@@ -16,6 +16,18 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 
 ### Release History
 
+##### 23rd January 2015 1.0.4
+
+* Improved results in match/cases
+* Improved results in partial functions
+* Fixed bug in code grid which would render whole sections green
+* Improved serializer to handle large projects (no more GC errors)
+* Improved handling of guards in for loops
+
+##### 1.0.2
+
+* Fix issue with line spacing in Code Grid report on Windows,
+
 ##### 28th November 2014 1.0.1
 
 * Fixed issue with coverageAggregate
