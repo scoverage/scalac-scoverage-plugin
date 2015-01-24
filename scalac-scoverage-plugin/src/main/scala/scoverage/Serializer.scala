@@ -3,7 +3,7 @@ package scoverage
 import java.io._
 
 import scala.io.Source
-import scala.xml.XML
+import scala.xml.{Utility, XML}
 
 object Serializer {
 
@@ -20,7 +20,7 @@ object Serializer {
   def serialize(coverage: Coverage, writer: Writer): Unit = {
     def writeStatement(stmt: Statement, writer: Writer): Unit = {
       writer.write {
-        <statement>
+        val xml = <statement>
           <source>
             {stmt.source}
           </source>
@@ -69,7 +69,8 @@ object Serializer {
           <count>
             {stmt.count.toString}
           </count>
-        </statement>.toString + "\n"
+        </statement>
+        Utility.trim(xml) + "\n"
       }
     }
     writer.write("<statements>\n")
