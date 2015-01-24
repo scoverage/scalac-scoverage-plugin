@@ -5,7 +5,7 @@ object Scoverage extends Build {
 
   val Org = "org.scoverage"
   val Version = "1.0.4"
-  val Scala = "2.11.5"
+  val Scala = "2.11.4"
   val MockitoVersion = "1.9.5"
   val ScalatestVersion = "2.2.2"
 
@@ -15,7 +15,7 @@ object Scoverage extends Build {
     version := Version,
     organization := Org,
     scalaVersion := Scala,
-    crossScalaVersions := Seq("2.10.4", "2.11.5"),
+    crossScalaVersions := Seq("2.10.4", "2.11.4"),
     fork in Test := false,
     publishMavenStyle := true,
     publishArtifact in Test := false,
