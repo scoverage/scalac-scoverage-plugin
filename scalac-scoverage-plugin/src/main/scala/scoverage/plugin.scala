@@ -235,8 +235,8 @@ class ScoverageInstrumentationComponent(val global: Global)
     def traverseApplication(t: Tree): Tree = {
       t match {
         case a: ApplyToImplicitArgs => treeCopy.Apply(a, traverseApplication(a.fun), transformStatements(a.args))
-        case Apply(Select(_, newTermName("withFilter")), List(fun@Function(params, body)))
-          if fun.symbol.isSynthetic && fun.toString.contains("check$ifrefutable$1") => t
+        case Apply(Select(_, name), List(fun@Function(params, body)))
+          if name.toString == "withFilter" && fun.symbol.isSynthetic && fun.toString.contains("check$ifrefutable$1") => t
         case a: Apply => treeCopy.Apply(a, traverseApplication(a.fun), transformStatements(a.args))
         case a: TypeApply => treeCopy.TypeApply(a, traverseApplication(a.fun), transformStatements(a.args))
         case s: Select => treeCopy.Select(s, traverseApplication(s.qualifier), s.name)

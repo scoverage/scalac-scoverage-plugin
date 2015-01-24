@@ -4,7 +4,7 @@ import sbt._
 object Scoverage extends Build {
 
   val Org = "org.scoverage"
-  val Version = "1.0.3"
+  val Version = "1.0.4"
   val Scala = "2.11.5"
   val MockitoVersion = "1.9.5"
   val ScalatestVersion = "2.2.2"
