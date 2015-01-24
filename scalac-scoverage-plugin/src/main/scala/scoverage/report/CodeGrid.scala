@@ -11,14 +11,27 @@ class CodeGrid(mfile: MeasuredFile) {
 
   private val lineBreak = System.getProperty("line.separator")
 
+  // Array of lines, each line is an array of cells, where a cell is a character + coverage info for that position
+  // All cells defaul to NoData until the highlighted information is applied
   // note: we must reinclude the line sep to keep source positions correct.
   private val lines = source(mfile).split(lineBreak).map(line => (line.toCharArray ++ lineBreak).map(Cell(_, NoData)))
 
   // useful to have a single array to write into the cells
   private val cells = lines.flatten
 
-  // for all statements in the source file we build highlighted data
-  mfile.statements.foreach(highlight)
+  // apply the instrumentation data to the cells updating their coverage info
+  mfile.statements.foreach(stmt => {
+    for ( k <- stmt.start until stmt.end ) {
+      if (k < cells.size) {
+        // if the cell is set to NotInvoked, then it cannot be changed further, even if an outer statement
+        // is green. This is because, for example, a block may be entered, but not all contained statements
+        // in that block were executed
+        if (cells(k).status != NotInvoked) {
+          if (stmt.isInvoked) cells(k).status = Invoked
+        }
+      }
+    }
+  })
 
   val highlighted: String = {
     var lineNumber = 1
@@ -44,19 +57,6 @@ class CodeGrid(mfile: MeasuredFile) {
   }
 
   private def source(mfile: MeasuredFile): String = Source.fromFile(mfile.source).mkString
-
-  private def highlight(stmt: Statement) {
-
-    for ( k <- stmt.start until stmt.end ) {
-      if (k < cells.size) {
-        if (stmt.isInvoked) {
-          cells(k).status = Invoked
-        } else if (cells(k).status == NoData) {
-          cells(k).status = NotInvoked
-        }
-      }
-    }
-  }
 
   private def spanStart(status: StatementStatus): String = s"<span style='${cellStyle(status)}'>"
 

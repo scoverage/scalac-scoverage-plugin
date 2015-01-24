@@ -21,17 +21,22 @@ class StatementWriter(mfile: MeasuredFile) {
       <tr>
         <th>Line Number</th>
         <th>Statement Id</th>
+        <th>Pos</th>
         <th>Tree Type</th>
         <th>Symbol</th>
         <th>Code</th>
-      </tr>
-      {mfile.statements.toSeq.sortBy(_.line).map(stmt => {
+      </tr>{mfile.statements.toSeq.sortBy(_.line).map(stmt => {
       <tr>
         <td>
           {stmt.line}
         </td>
         <td>
           {stmt.id}
+        </td>
+        <td>
+          {stmt.start.toString}
+          -
+          {stmt.end.toString}
         </td>
         <td>
           {stmt.treeName}
