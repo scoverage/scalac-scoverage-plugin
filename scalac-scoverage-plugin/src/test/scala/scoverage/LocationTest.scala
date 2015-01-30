@@ -9,7 +9,7 @@ class LocationTest extends FreeSpec with Matchers {
       "for classes" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.test\nclass Sammy")
-        val loc = compiler.locations.result.find(_._1 == "Template").get._2
+        val loc = compiler.locations.result().find(_._1 == "Template").get._2
         loc.packageName shouldBe "com.test"
         loc.className shouldBe "Sammy"
         loc.topLevelClass shouldBe "Sammy"
@@ -20,7 +20,7 @@ class LocationTest extends FreeSpec with Matchers {
       "for objects" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.test\nobject Bammy { def foo = 'boo } ")
-        val loc = compiler.locations.result.find(_._1 == "Template").get._2
+        val loc = compiler.locations.result().find(_._1 == "Template").get._2
         loc.packageName shouldBe "com.test"
         loc.className shouldBe "Bammy"
         loc.topLevelClass shouldBe "Bammy"
@@ -31,7 +31,7 @@ class LocationTest extends FreeSpec with Matchers {
       "for traits" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.test\ntrait Gammy { def goo = 'hoo } ")
-        val loc = compiler.locations.result.find(_._1 == "Template").get._2
+        val loc = compiler.locations.result().find(_._1 == "Template").get._2
         loc.packageName shouldBe "com.test"
         loc.className shouldBe "Gammy"
         loc.topLevelClass shouldBe "Gammy"
@@ -43,7 +43,7 @@ class LocationTest extends FreeSpec with Matchers {
     "should correctly process methods" in {
       val compiler = ScoverageCompiler.locationCompiler
       compiler.compile("package com.methodtest \n class Hammy { def foo = 'boo } ")
-      val loc = compiler.locations.result.find(_._2.method == "foo").get._2
+      val loc = compiler.locations.result().find(_._2.method == "foo").get._2
       loc.packageName shouldBe "com.methodtest"
       loc.className shouldBe "Hammy"
       loc.classType shouldBe ClassType.Class
@@ -52,7 +52,7 @@ class LocationTest extends FreeSpec with Matchers {
     "should correctly process nested methods" in {
       val compiler = ScoverageCompiler.locationCompiler
       compiler.compile("package com.methodtest \n class Hammy { def foo = { def goo = { getClass; 3 }; goo } } ")
-      val loc = compiler.locations.result.find(_._2.method == "goo").get._2
+      val loc = compiler.locations.result().find(_._2.method == "goo").get._2
       loc.packageName shouldBe "com.methodtest"
       loc.className shouldBe "Hammy"
       loc.topLevelClass shouldBe "Hammy"
@@ -63,7 +63,7 @@ class LocationTest extends FreeSpec with Matchers {
     "should process anon functions as inside the enclosing method" in {
       val compiler = ScoverageCompiler.locationCompiler
       compiler.compile("package com.methodtest \n class Jammy { def moo = { Option(\"bat\").map(_.length) } } ")
-      val loc = compiler.locations.result.find(_._1 == "Function").get._2
+      val loc = compiler.locations.result().find(_._1 == "Function").get._2
       loc.packageName shouldBe "com.methodtest"
       loc.className shouldBe "Jammy"
       loc.method shouldBe "moo"
@@ -74,7 +74,7 @@ class LocationTest extends FreeSpec with Matchers {
       "for nested classes" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.methodtest \n class Jammy { class Pammy } ")
-        val loc = compiler.locations.result.find(_._2.className == "Pammy").get._2
+        val loc = compiler.locations.result().find(_._2.className == "Pammy").get._2
         loc.packageName shouldBe "com.methodtest"
         loc.className shouldBe "Pammy"
         loc.topLevelClass shouldBe "Jammy"
@@ -85,7 +85,7 @@ class LocationTest extends FreeSpec with Matchers {
       "for nested objects" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.methodtest \n class Jammy { object Zammy } ")
-        val loc = compiler.locations.result.find(_._2.className == "Zammy").get._2
+        val loc = compiler.locations.result().find(_._2.className == "Zammy").get._2
         loc.packageName shouldBe "com.methodtest"
         loc.className shouldBe "Zammy"
         loc.topLevelClass shouldBe "Jammy"
@@ -96,7 +96,7 @@ class LocationTest extends FreeSpec with Matchers {
       "for nested traits" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.methodtest \n class Jammy { trait Mammy } ")
-        val loc = compiler.locations.result.find(_._2.className == "Mammy").get._2
+        val loc = compiler.locations.result().find(_._2.className == "Mammy").get._2
         loc.packageName shouldBe "com.methodtest"
         loc.className shouldBe "Mammy"
         loc.topLevelClass shouldBe "Jammy"
@@ -111,7 +111,7 @@ class LocationTest extends FreeSpec with Matchers {
         compiler.compile("package com.a \n " +
           "package b \n" +
           "class Kammy ")
-        val loc = compiler.locations.result.find(_._1 == "Template").get._2
+        val loc = compiler.locations.result().find(_._1 == "Template").get._2
         loc.packageName shouldBe "com.a.b"
         loc.className shouldBe "Kammy"
         loc.topLevelClass shouldBe "Kammy"
@@ -124,7 +124,7 @@ class LocationTest extends FreeSpec with Matchers {
         compiler.compile("package com.a \n " +
           "package b \n" +
           "object Kammy ")
-        val loc = compiler.locations.result.find(_._1 == "Template").get._2
+        val loc = compiler.locations.result().find(_._1 == "Template").get._2
         loc.packageName shouldBe "com.a.b"
         loc.className shouldBe "Kammy"
         loc.method shouldBe "<none>"
@@ -136,7 +136,7 @@ class LocationTest extends FreeSpec with Matchers {
         compiler.compile("package com.a \n " +
           "package b \n" +
           "trait Kammy ")
-        val loc = compiler.locations.result.find(_._1 == "Template").get._2
+        val loc = compiler.locations.result().find(_._1 == "Template").get._2
         loc.packageName shouldBe "com.a.b"
         loc.className shouldBe "Kammy"
         loc.topLevelClass shouldBe "Kammy"
@@ -149,7 +149,7 @@ class LocationTest extends FreeSpec with Matchers {
       "for class constructor body" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.b \n class Tammy { val name = 'sam } ")
-        val loc = compiler.locations.result.find(_._1 == "ValDef").get._2
+        val loc = compiler.locations.result().find(_._1 == "ValDef").get._2
         loc.packageName shouldBe "com.b"
         loc.className shouldBe "Tammy"
         loc.method shouldBe "<none>"
@@ -159,7 +159,7 @@ class LocationTest extends FreeSpec with Matchers {
       "for object constructor body" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.b \n object Yammy { val name = 'sam } ")
-        val loc = compiler.locations.result.find(_._1 == "ValDef").get._2
+        val loc = compiler.locations.result().find(_._1 == "ValDef").get._2
         loc.packageName shouldBe "com.b"
         loc.className shouldBe "Yammy"
         loc.topLevelClass shouldBe "Yammy"
@@ -170,7 +170,7 @@ class LocationTest extends FreeSpec with Matchers {
       "for trait constructor body" in {
         val compiler = ScoverageCompiler.locationCompiler
         compiler.compile("package com.b \n trait Wammy { val name = 'sam } ")
-        val loc = compiler.locations.result.find(_._1 == "ValDef").get._2
+        val loc = compiler.locations.result().find(_._1 == "ValDef").get._2
         loc.packageName shouldBe "com.b"
         loc.className shouldBe "Wammy"
         loc.topLevelClass shouldBe "Wammy"
@@ -185,8 +185,8 @@ class LocationTest extends FreeSpec with Matchers {
         .compile(
           "package com.a; object A { def foo(b : B) : Unit = b.invoke }; trait B { def invoke : Unit }; class C { A.foo(new B { def invoke = () }) }")
       println()
-      println(compiler.locations.result.mkString("\n"))
-      val loc = compiler.locations.result.filter(_._1 == "Template").last._2
+      println(compiler.locations.result().mkString("\n"))
+      val loc = compiler.locations.result().filter(_._1 == "Template").last._2
       loc.packageName shouldBe "com.a"
       loc.className shouldBe "C"
       loc.topLevelClass shouldBe "C"
@@ -199,8 +199,8 @@ class LocationTest extends FreeSpec with Matchers {
       compiler.compile(
         "package com.a; object A { def foo(b : B) : Unit = b.invoke }; trait B { def invoke : Unit }; class C { A.foo(new B { def invoke = () }) }")
       println()
-      println(compiler.locations.result.mkString("\n"))
-      val loc = compiler.locations.result.filter(_._1 == "DefDef").last._2
+      println(compiler.locations.result().mkString("\n"))
+      val loc = compiler.locations.result().filter(_._1 == "DefDef").last._2
       loc.packageName shouldBe "com.a"
       loc.className shouldBe "C"
       loc.topLevelClass shouldBe "C"

@@ -113,13 +113,11 @@ object ClassType {
   }
 }
 
-
-
-
 case class ClassRef(name: String) {
   lazy val simpleName = name.split(".").last
   lazy val getPackage = name.split(".").dropRight(1).mkString(".")
 }
+
 object ClassRef {
   def fromFilepath(path: String) = ClassRef(path.replace('/', '.'))
   def apply(_package: String, className: String): ClassRef = ClassRef(_package.replace('/', '.') + "." + className)

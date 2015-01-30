@@ -52,7 +52,7 @@ class ScoverageXmlReaderTest extends FreeSpec with Matchers {
       temp.deleteOnExit()
       new ScoverageXmlWriter(new File("/home/sam"), temp, false).write(coverage)
 
-      val actual = ScoverageXmlReader.read(IOUtils.reportFile(temp, false))
+      val actual = ScoverageXmlReader.read(IOUtils.reportFile(temp, debug = false))
       // we don't care about the statement ids as the will change on reading back in
       actual.statements.map(_.copy(id = 0)).toSet shouldEqual coverage.statements.map(_.copy(id = 0)).toSet
 
