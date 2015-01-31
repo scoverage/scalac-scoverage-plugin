@@ -240,7 +240,7 @@ class PluginCoverageTest
     compiler.assertNMeasuredStatements(3)
   }
 
-  test("scoverage should support yields") {
+  test("plugin should support yields") {
     val compiler = ScoverageCompiler.default
     compiler.compileCodeSnippet( """
                                    |  object Yielder {
@@ -255,7 +255,7 @@ class PluginCoverageTest
     compiler.assertNMeasuredStatements(11)
   }
 
-  test("scoverage should not instrument local macro implementation") {
+  test("plugin should not instrument local macro implementation") {
     val compiler = ScoverageCompiler.default
     compiler.compileCodeSnippet( """
                                    | object MyMacro {
@@ -273,8 +273,7 @@ class PluginCoverageTest
     compiler.assertNoCoverage()
   }
 
-  // https://github.com/skinny-framework/skinny-framework/issues/97
-  test("scoverage should not instrument expanded macro code") {
+  test("plugin should not instrument expanded macro code github.com/skinny-framework/skinny-framework/issues/97") {
     val compiler = ScoverageCompiler.default
     compiler.addToClassPath("org.slf4j", "slf4j-api", "1.7.7")
     compiler
@@ -292,5 +291,29 @@ class PluginCoverageTest
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
     compiler.assertNoCoverage()
+  }
+
+  test("plugin should handle return inside catch github.com/scoverage/scalac-scoverage-plugin/issues/93") {
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet(
+      """
+        |    object bob {
+        |      def fail(): Boolean = {
+        |        try {
+        |          true
+        |        } catch {
+        |          case _: Throwable =>
+        |            Option(true) match {
+        |              case Some(bool) => return bool // comment this return and instrumentation succeeds
+        |              case _ =>
+        |            }
+        |            false
+        |        }
+        |      }
+        |    }
+      """.stripMargin)
+    assert(!compiler.reporter.hasErrors)
+    assert(!compiler.reporter.hasWarnings)
+    compiler.assertNMeasuredStatements(11)
   }
 }
