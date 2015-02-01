@@ -304,12 +304,13 @@ class PluginCoverageTest
         |        } catch {
         |          case _: Throwable =>
         |            Option(true) match {
-        |              case Some(bool) => return bool // comment this return and instrumentation succeeds
+        |              case Some(bool) => return recover(bool) // comment this return and instrumentation succeeds
         |              case _ =>
         |            }
         |            false
         |        }
         |      }
+        |      def recover(it: Boolean): Boolean = it
         |    }
       """.stripMargin)
     assert(!compiler.reporter.hasErrors)
