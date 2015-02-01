@@ -82,19 +82,19 @@ class ScoverageInstrumentationComponent(val global: Global)
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
 
     override def run(): Unit = {
-      println(s"[info] Cleaning datadir [${options.dataDir}]")
+      reporter.echo(s"[info] Cleaning datadir [${options.dataDir}]")
       // we clean the data directory, because if the code has changed, then the number / order of
       // statements has changed by definition. So the old data would reference statements incorrectly
       // and thus skew the results.
       IOUtils.clean(options.dataDir)
 
-      println("[info] Beginning coverage instrumentation")
+      reporter.echo("[info] Beginning coverage instrumentation")
       super.run()
-      println(s"[info] Instrumentation completed [${coverage.statements.size} statements]")
+      reporter.echo(s"[info] Instrumentation completed [${coverage.statements.size} statements]")
 
       Serializer.serialize(coverage, Serializer.coverageFile(options.dataDir))
-      println(s"[info] Wrote instrumentation file [${Serializer.coverageFile(options.dataDir)}]")
-      println(s"[info] Will write measurement data to [${options.dataDir}]")
+      reporter.echo(s"[info] Wrote instrumentation file [${Serializer.coverageFile(options.dataDir)}]")
+      reporter.echo(s"[info] Will write measurement data to [${options.dataDir}]")
     }
   }
 
@@ -163,7 +163,7 @@ class ScoverageInstrumentationComponent(val global: Global)
     def instrument(tree: Tree, original: Tree, branch: Boolean = false): Tree = {
       safeSource(tree) match {
         case None =>
-          println(s"[warn] Could not instrument [${tree.getClass.getSimpleName}/${tree.symbol}]. No pos.")
+          reporter.echo(s"[warn] Could not instrument [${tree.getClass.getSimpleName}/${tree.symbol}]. No pos.")
           tree
         case Some(source) =>
           if (tree.pos.isDefined && !isStatementIncluded(tree.pos)) {
@@ -198,7 +198,7 @@ class ScoverageInstrumentationComponent(val global: Global)
     def updateLocation(t: Tree) {
       Location(global)(t) match {
         case Some(loc) => this.location = loc
-        case _ => println(s"[warn] Cannot update location for $t")
+        case _ => reporter.warning(t.pos, s"[warn] Cannot update location for $t")
       }
     }
 
@@ -218,7 +218,7 @@ class ScoverageInstrumentationComponent(val global: Global)
                     )
                   )
                 case _ =>
-                  println("Cannot instrument partial function apply. Please file bug report")
+                  reporter.error(c.pos ,"Cannot instrument partial function apply. Please file bug report")
                   d
               }
             case other => other
@@ -229,7 +229,7 @@ class ScoverageInstrumentationComponent(val global: Global)
 
     def debug(t: Tree) {
       import scala.reflect.runtime.{universe => u}
-      println(t.getClass.getSimpleName + ": LINE " + safeLine(t) + ": " + u.showRaw(t))
+      reporter.echo(t.getClass.getSimpleName + ": LINE " + safeLine(t) + ": " + u.showRaw(t))
     }
 
     def traverseApplication(t: Tree): Tree = {
@@ -593,7 +593,7 @@ class ScoverageInstrumentationComponent(val global: Global)
           treeCopy.ValDef(tree, v.mods, v.name, v.tpt, process(v.rhs))
 
         case _ =>
-          println("BUG: Unexpected construct: " + tree.getClass + " " + tree.symbol)
+          reporter.warning(tree.pos, "BUG: Unexpected construct: " + tree.getClass + " " + tree.symbol)
           super.transform(tree)
       }
     }
