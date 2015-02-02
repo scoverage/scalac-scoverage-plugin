@@ -105,15 +105,16 @@ class PluginASTSupportTest
     assert(!compiler.reporter.hasWarnings)
   }
 
-  //test("type param with default arg supported") {
-  // compileCodeSnippet( """   class TypeTreeObjects {
-  //                       |      class Container {
-  //                       |        def typeParamAndDefaultArg[C](name: String = "sammy"): String = name
-  //                       |      }
-  //                       |      new Container().typeParamAndDefaultArg[Any]()
-  //                       |    } """.stripMargin)
-  // assert(!reporter.hasErrors)
-  // assert(!reporter.hasWarnings)
-  //  }
+  test("type param with default arg supported") {
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet( """class TypeTreeObjects {
+                                   |  class Container {
+                                   |    def typeParamAndDefaultArg[C](name: String = "sammy"): String = name
+                                   |  }
+                                   |  new Container().typeParamAndDefaultArg[Any]()
+                                   |} """.stripMargin)
+    assert(!compiler.reporter.hasErrors)
+    assert(!compiler.reporter.hasWarnings)
+  }
 }
 
