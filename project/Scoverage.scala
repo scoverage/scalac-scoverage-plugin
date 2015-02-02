@@ -15,7 +15,6 @@ object Scoverage extends Build {
     version := Version,
     organization := Org,
     scalaVersion := Scala,
-    crossScalaVersions := Seq("2.10.4", "2.11.4"),
     fork in Test := false,
     publishMavenStyle := true,
     publishArtifact in Test := false,
@@ -79,17 +78,9 @@ object Scoverage extends Build {
     .settings(libraryDependencies ++= Seq(
     "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
     "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
+    "org.scala-lang.modules" %% "scala-xml" % "1.0.3",
     "org.joda" % "joda-convert" % "1.6" % "test",
     "joda-time" % "joda-time" % "2.3" % "test",
     "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2" % "test"
-  )).settings(libraryDependencies ++= {
-    CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, scalaMajor)) if scalaMajor == 11 =>
-        EnvSupport.setEnv("CrossBuildScalaVersion", "2.11.4")
-        Seq("org.scala-lang.modules" %% "scala-xml" % "1.0.1")
-      case _ =>
-        EnvSupport.setEnv("CrossBuildScalaVersion", "2.10.4")
-        Nil
-    }
-  })
+  ))
 }
