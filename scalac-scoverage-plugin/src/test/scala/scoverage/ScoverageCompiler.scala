@@ -22,6 +22,10 @@ object ScoverageCompiler {
     s.Yrangepos.value = true
     s.Yposdebug.value = true
     s.classpath.value = classPath.mkString(File.pathSeparator)
+
+    val path = s"./scalac-scoverage-plugin/target/scala-$ShortScalaVersion/test-generated-classes"
+    new File(path).mkdirs()
+    s.d.value = path
     s
   }
 
