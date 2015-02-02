@@ -293,7 +293,7 @@ class PluginCoverageTest
     compiler.assertNoCoverage()
   }
 
-  test("plugin should handle return inside catch github.com/scoverage/scalac-scoverage-plugin/issues/93") {
+  ignore("plugin should handle return inside catch github.com/scoverage/scalac-scoverage-plugin/issues/93") {
     val compiler = ScoverageCompiler.default
     compiler.compileCodeSnippet(
       """
