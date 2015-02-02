@@ -21,7 +21,7 @@ object ScoverageCompiler {
     s.Xprint.value = List("all")
     s.Yrangepos.value = true
     s.Yposdebug.value = true
-    s.classpath.value = classPath.mkString(":")
+    s.classpath.value = classPath.mkString(File.pathSeparator)
     s
   }
 
@@ -66,7 +66,7 @@ class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tool
   extends scala.tools.nsc.Global(settings, reporter) {
 
   def addToClassPath(groupId: String, artifactId: String, version: String): Unit = {
-    settings.classpath.value = settings.classpath.value + ":" + ScoverageCompiler
+    settings.classpath.value = settings.classpath.value + File.pathSeparator + ScoverageCompiler
       .findIvyJar(groupId, artifactId, version)
       .getAbsolutePath
   }
