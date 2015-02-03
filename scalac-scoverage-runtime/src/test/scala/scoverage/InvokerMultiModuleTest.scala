@@ -9,11 +9,13 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
  */
 class InvokerMultiModuleTest extends FunSuite with BeforeAndAfter {
 
-  val measurementDir = Array(new File("invoker-test.measurement0"), new File("invoker-test.measurement1"))
+  val measurementDir = Array(
+    new File("target/invoker-test.measurement0"),
+    new File("target/invoker-test.measurement1"))
 
   before {
     deleteMeasurementFiles()
-    measurementDir.foreach(_.mkdirs)
+    measurementDir.foreach(_.mkdirs())
   }
 
   test("calling Invoker.invoked on with different directories puts measurements in different directories") {

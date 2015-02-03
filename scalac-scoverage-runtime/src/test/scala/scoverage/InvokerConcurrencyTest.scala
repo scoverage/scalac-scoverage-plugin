@@ -16,7 +16,7 @@ class InvokerConcurrencyTest extends FunSuite with BeforeAndAfter {
 
   implicit val executor = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(8))
 
-  val measurementDir = new File("invoker-test.measurement")
+  val measurementDir = new File("target/invoker-test.measurement")
 
   before {
     deleteMeasurementFiles()
