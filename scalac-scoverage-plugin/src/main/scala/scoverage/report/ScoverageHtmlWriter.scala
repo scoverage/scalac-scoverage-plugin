@@ -215,9 +215,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
       val path = fileRelativeToSource.getParent
       val value = fileRelativeToSource.getName
 
-      if (path.eq(null)) {
-        "(empty)/" + value
-      } else if (path.ne("")) {
+      if (path.ne("")) {
         // (Normalise the pathSeparator to "/" in case we are running on Windows)
         fileRelativeToSource.toString.replace(File.separator, "/")
       } else {
