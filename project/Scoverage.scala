@@ -4,7 +4,7 @@ import sbt._
 object Scoverage extends Build {
 
   val Org = "org.scoverage"
-  val Version = "1.0.4"
+  val Version = "1.0.5-SNAPSHOT"
   val Scala = "2.11.4"
   val MockitoVersion = "1.9.5"
   val ScalatestVersion = "2.2.2"
@@ -32,7 +32,7 @@ object Scoverage extends Build {
       (v: String) =>
         val nexus = "https://oss.sonatype.org/"
         if (v.trim.endsWith("SNAPSHOT"))
-          Some(Resolver.file("file", new File(Path.userHome.absolutePath + "/.m2/repository")))
+          Some(Resolver.sonatypeRepo("snapshots"))
         else
           Some("releases" at nexus + "service/local/staging/deploy/maven2")
     },
