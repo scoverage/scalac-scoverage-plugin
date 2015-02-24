@@ -1,10 +1,12 @@
 import sbt.Keys._
 import sbt._
+import sbtrelease.ReleasePlugin
+import sbtrelease.ReleasePlugin.ReleaseKeys
+import com.typesafe.sbt.pgp.PgpKeys
 
 object Scoverage extends Build {
 
   val Org = "org.scoverage"
-  val Version = "1.0.5-SNAPSHOT"
   val Scala = "2.11.4"
   val MockitoVersion = "1.9.5"
   val ScalatestVersion = "2.2.2"
@@ -12,7 +14,6 @@ object Scoverage extends Build {
   lazy val LocalTest = config("local") extend Test
 
   val appSettings = Seq(
-    version := Version,
     organization := Org,
     scalaVersion := Scala,
     crossScalaVersions := Seq("2.10.4", "2.11.4"),
@@ -60,6 +61,9 @@ object Scoverage extends Build {
     pomIncludeRepository := {
       _ => false
     }
+  ) ++ ReleasePlugin.releaseSettings ++ Seq(
+    ReleaseKeys.crossBuild := true,
+    ReleaseKeys.publishArtifactsAction := PgpKeys.publishSigned.value
   )
 
   lazy val root = Project("scalac-scoverage", file("."))
