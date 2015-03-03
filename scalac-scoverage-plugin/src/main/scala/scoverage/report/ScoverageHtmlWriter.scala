@@ -57,10 +57,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
         <title id='title'>
           {filename}
         </title>
-        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.18.3/addons/pager/jquery.tablesorter.pager.min.js"></script>
+        {plugins}
         <style>
           {css}
         </style>
@@ -135,21 +132,13 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
                 |	overflow: hidden;
                 |}""".stripMargin
 
-    val tableScript = """$(document).ready(function() {$("#packages").tablesorter();});"""
-
     <head>
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
       <title id='title'>Scoverage Code Coverage</title>
-      <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
-      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-      <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-      <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.18.3/addons/pager/jquery.tablesorter.pager.min.js"></script>
+      {plugins}
       <style>
         {css}
       </style>
-      <script>
-        {tableScript}
-      </script>
     </head>
   }
 
@@ -282,10 +271,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
         <title id='title'>
           Scoverage Code Coverage
         </title>
-        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css"/>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.18.3/addons/pager/jquery.tablesorter.pager.min.js"></script>
+        {plugins}
       </head>
       <body style="font-family: monospace;">
         <table class="table table-striped" style="font-size: 13px">
@@ -314,7 +300,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
   }
 
   def risks(coverage: Coverage, limit: Int) = {
-    <table id="packages" class="table table-striped" style="font-size: 12px">
+    <table class="tablesorter table table-striped" style="font-size: 12px">
       <thead>
         <tr>
           <th>
@@ -534,6 +520,17 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
         </td>
       </tr>
     </table>
+  }
+  
+  def plugins = {
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/>
+      <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/js/jquery.tablesorter.min.js"></script>
+      <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/>
+      <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+      <script type="text/javascript">
+        {xml.Unparsed("""$(document).ready(function() {$(".tablesorter").tablesorter();});""")}
+      </script>
   }
 }
 
