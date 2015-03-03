@@ -87,7 +87,7 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) {
               timestamp={System.currentTimeMillis.toString}>
       <sources>
         <source>--source</source>
-        {sourceDirectories.map(source)}
+        {sourceDirectories.filter(_.isDirectory()).map(source)}
       </sources>
       <packages>
         {coverage.packages.map(pack)}
