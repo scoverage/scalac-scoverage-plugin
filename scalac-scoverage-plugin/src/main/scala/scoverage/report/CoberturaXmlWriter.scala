@@ -4,17 +4,24 @@ import java.io.File
 
 import scoverage._
 
-import scala.xml.Node
+import scala.xml.{Node, PrettyPrinter}
 
 /** @author Stephen Samuel */
-class CoberturaXmlWriter(baseDir: File, outputDir: File) {
+class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) {
 
+  def this (baseDir: File, outputDir: File) {
+    this(Seq(baseDir), outputDir);
+  }
+
+  // Source paths in canonical form WITH trailing file separator
+  val formattedSourcePaths: Seq[String] = sourceDirectories filter ( _.isDirectory ) map ( _.getCanonicalPath + File.separator )
+  
   def format(double: Double): String = "%.2f".format(double)
 
   def write(coverage: Coverage): Unit = {
-    IOUtils.writeToFile(new File(outputDir.getAbsolutePath + "/cobertura.xml"),
-      "<?xml version=\"1.0\"?>\n<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-04.dtd\">\n" +
-        xml(coverage))
+    val file = new File(outputDir, "cobertura.xml")
+    IOUtils.writeToFile(file, "<?xml version=\"1.0\"?>\n<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-04.dtd\">\n" + 
+        new PrettyPrinter(120, 4).format(xml(coverage)))
   }
 
   def method(method: MeasuredMethod): Node = {
@@ -35,12 +42,7 @@ class CoberturaXmlWriter(baseDir: File, outputDir: File) {
 
   def klass(klass: MeasuredClass): Node = {
     <class name={klass.name}
-           filename={
-            val absPath = baseDir.getAbsolutePath.last == File.separatorChar match {
-              case true => baseDir.getAbsolutePath
-              case false => baseDir.getAbsolutePath + File.separatorChar
-            }
-            klass.source.replace(absPath, "")}
+           filename={relativeSource(klass.source).replace(File.separator, "/")}
            line-rate={format(klass.statementCoverage)}
            branch-rate={format(klass.branchCoverage)}
            complexity="0">
@@ -69,6 +71,10 @@ class CoberturaXmlWriter(baseDir: File, outputDir: File) {
     </package>
   }
 
+  def source(src: File): Node = {
+    <source>{src.getCanonicalPath.replace(File.separator, "/")}</source>
+  }
+
   def xml(coverage: Coverage): Node = {
     <coverage line-rate={format(coverage.statementCoverage)}
               lines-covered={coverage.statementCount.toString}
@@ -80,11 +86,15 @@ class CoberturaXmlWriter(baseDir: File, outputDir: File) {
               version="1.0"
               timestamp={System.currentTimeMillis.toString}>
       <sources>
-        <source>/src/main/scala</source>
+        <source>--source</source>
+        {sourceDirectories.filter(_.isDirectory()).map(source)}
       </sources>
       <packages>
         {coverage.packages.map(pack)}
       </packages>
     </coverage>
   }
+
+  private def relativeSource(src: String): String = IOUtils.relativeSource(src, formattedSourcePaths)
+
 }
