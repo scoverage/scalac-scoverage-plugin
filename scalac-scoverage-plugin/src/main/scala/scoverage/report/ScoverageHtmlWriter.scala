@@ -17,8 +17,8 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
 
     val index = IOUtils.readStreamAsString(getClass.getResourceAsStream("/scoverage/index.html"))
     IOUtils.writeToFile(indexFile, index)
-    IOUtils.writeToFile(packageFile, packageList(coverage).toString)
-    IOUtils.writeToFile(overviewFile, overview(coverage).toString)
+    IOUtils.writeToFile(packageFile, packageList(coverage).toString())
+    IOUtils.writeToFile(overviewFile, overview(coverage).toString())
 
     coverage.packages.foreach(writePackage)
   }
@@ -31,7 +31,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
     // to com.example.html
     val file = new File(outputDir, packageOverviewRelativePath(pkg))
     file.getParentFile.mkdirs()
-    IOUtils.writeToFile(file, packageOverview(pkg).toString)
+    IOUtils.writeToFile(file, packageOverview(pkg).toString())
     pkg.files.foreach(writeFile)
   }
 
@@ -39,7 +39,7 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
     // each highlighted file is written out using the same structure as the original file.
     val file = new File(outputDir, relativeSource(mfile.source) + ".html")
     file.getParentFile.mkdirs()
-    IOUtils.writeToFile(file, filePage(mfile).toString)
+    IOUtils.writeToFile(file, filePage(mfile).toString())
   }
 
   private def packageOverviewRelativePath(pkg: MeasuredPackage) = pkg.name.replace("<empty>", "(empty)") + ".html"
