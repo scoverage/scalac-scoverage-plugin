@@ -274,23 +274,22 @@ class ScoverageHtmlWriter(sourceDirectory: File, outputDir: File) {
         {plugins}
       </head>
       <body style="font-family: monospace;">
-        <table class="table table-striped" style="font-size: 13px">
+        <table class="tablesorter table table-striped" style="font-size: 13px">
+          <thead>
+            <tr>
+              <td>
+                <a href="overview.html" target="mainFrame">All packages</a>
+              </td>
+              <td>{coverage.statementCoverageFormatted}%</td>
+            </tr>
+          </thead>
           <tbody>
+            {coverage.packages.map(arg =>
             <tr>
               <td>
-                <a href="overview.html" target="mainFrame">
-                  All packages
-                </a>{coverage.statementCoverageFormatted}
-                %
+                <a href={packageOverviewRelativePath(arg)} target="mainFrame">{arg.name}</a>
               </td>
-            </tr>{coverage.packages.map(arg =>
-            <tr>
-              <td>
-                <a href={packageOverviewRelativePath(arg)} target="mainFrame">
-                  {arg.name}
-                </a>{arg.statementCoverageFormatted}
-                %
-              </td>
+              <td>{arg.statementCoverageFormatted}%</td>
             </tr>
           )}
           </tbody>
