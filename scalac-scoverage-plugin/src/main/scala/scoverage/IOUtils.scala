@@ -94,7 +94,7 @@ object IOUtils {
     )
     sourceRoot match {
       case Some(path: String) => src.replace(path, "")
-      case _ => src
+      case _ => throw new RuntimeException(s"No source root found for '$src'"); //TODO Change exception class
     }
   }
 
