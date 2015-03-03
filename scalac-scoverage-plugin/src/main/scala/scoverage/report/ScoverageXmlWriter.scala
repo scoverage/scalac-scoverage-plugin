@@ -7,8 +7,15 @@ import _root_.scoverage._
 import scala.xml.{Node, PrettyPrinter}
 
 /** @author Stephen Samuel */
-class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
+class ScoverageXmlWriter(sourceDirectories: Seq[File], outputDir: File, debug: Boolean) {
 
+  def this (sourceDir: File, outputDir: File, debug: Boolean) {
+    this(Seq(sourceDir), outputDir, debug);
+  }
+
+  // Source paths in canonical form WITH trailing file separator
+  val formattedSourcePaths: Seq[String] = sourceDirectories filter ( _.isDirectory ) map ( _.getCanonicalPath + File.separator )
+  
   def write(coverage: Coverage): Unit = {
     val file = IOUtils.reportFile(outputDir, debug)
     IOUtils.writeToFile(file, new PrettyPrinter(120, 4).format(xml(coverage)))
@@ -74,7 +81,7 @@ class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
 
   private def klass(klass: MeasuredClass): Node = {
     <class name={klass.name}
-           filename={klass.source.replace(sourceDir.getAbsolutePath, "")}
+           filename={relativeSource(klass.source)}
            statement-count={klass.statementCount.toString}
            statements-invoked={klass.invokedStatementCount.toString}
            statement-rate={klass.statementCoverageFormatted}
@@ -95,6 +102,8 @@ class ScoverageXmlWriter(sourceDir: File, outputDir: File, debug: Boolean) {
       </classes>
     </package>
   }
+
+  private def relativeSource(src: String): String = IOUtils.relativeSource(src, formattedSourcePaths)
 
 }
 
