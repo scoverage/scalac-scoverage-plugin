@@ -4,7 +4,7 @@ import java.io.File
 
 import scoverage._
 
-import scala.xml.Node
+import scala.xml.{Node, PrettyPrinter}
 
 /** @author Stephen Samuel */
 class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) {
@@ -19,9 +19,9 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) {
   def format(double: Double): String = "%.2f".format(double)
 
   def write(coverage: Coverage): Unit = {
-    IOUtils.writeToFile(new File(outputDir, "cobertura.xml"),
-      "<?xml version=\"1.0\"?>\n<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-04.dtd\">\n" +
-        xml(coverage))
+    val file = new File(outputDir, "cobertura.xml")
+    IOUtils.writeToFile(file, "<?xml version=\"1.0\"?>\n<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-04.dtd\">\n" + 
+        new PrettyPrinter(120, 4).format(xml(coverage)))
   }
 
   def method(method: MeasuredMethod): Node = {
