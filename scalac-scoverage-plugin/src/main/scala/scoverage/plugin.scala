@@ -47,7 +47,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
 class ScoverageOptions {
   var excludedPackages: Seq[String] = Nil
   var excludedFiles: Seq[String] = Nil
-  var dataDir: String = File.createTempFile("scoverage_datadir_not_defined", ".tmp").getParent
+  var dataDir: String = IOUtils.getTempPath
 }
 
 class ScoverageInstrumentationComponent(val global: Global)
