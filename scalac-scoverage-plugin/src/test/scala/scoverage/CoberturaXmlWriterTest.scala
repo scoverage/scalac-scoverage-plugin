@@ -22,38 +22,42 @@ class CoberturaXmlWriterTest extends FunSuite with BeforeAndAfter with OneInstan
 
   def fileIn(dir: File) = new File(dir, "cobertura.xml")
 
+  // Let current directory be our source root
+  private val sourceRoot = new File(".")
+  private def canonicalPath(fileName: String) = new File(sourceRoot, fileName).getCanonicalPath
+
   test("cobertura output validates") {
 
     val dir = tempDir()
 
     val coverage = scoverage.Coverage()
     coverage
-      .add(Statement("a.scala", Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create", ""),
+      .add(Statement(canonicalPath("a.scala"), Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create", canonicalPath("a.scala")),
       1, 2, 3, 12, "", "", "", false, 3))
     coverage
-      .add(Statement("a.scala", Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create2", ""),
+      .add(Statement(canonicalPath("a.scala"), Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create2", canonicalPath("a.scala")),
       2, 2, 3, 16, "", "", "", false, 3))
     coverage
-      .add(Statement("b.scala", Location("com.sksamuel.scoverage2", "B", "B", ClassType.Object, "retrieve", ""),
+      .add(Statement(canonicalPath("b.scala"), Location("com.sksamuel.scoverage2", "B", "B", ClassType.Object, "retrieve", canonicalPath("b.scala")),
       3, 2, 3, 21, "", "", "", false, 0))
     coverage
-      .add(Statement("b.scala",
-      Location("com.sksamuel.scoverage2", "B", "B", ClassType.Object, "retrieve2", ""),
+      .add(Statement(canonicalPath("b.scala"),
+      Location("com.sksamuel.scoverage2", "B", "B", ClassType.Object, "retrieve2", canonicalPath("b.scala")),
       4, 2, 3, 9, "", "", "", false, 3))
     coverage
-      .add(Statement("c.scala", Location("com.sksamuel.scoverage3", "C", "C", ClassType.Object, "update", ""),
+      .add(Statement(canonicalPath("c.scala"), Location("com.sksamuel.scoverage3", "C", "C", ClassType.Object, "update", canonicalPath("c.scala")),
       5, 2, 3, 66, "", "", "", true, 3))
     coverage
-      .add(Statement("c.scala", Location("com.sksamuel.scoverage3", "C", "C", ClassType.Object, "update2", ""),
+      .add(Statement(canonicalPath("c.scala"), Location("com.sksamuel.scoverage3", "C", "C", ClassType.Object, "update2", canonicalPath("c.scala")),
       6, 2, 3, 6, "", "", "", true, 3))
     coverage
-      .add(Statement("d.scala", Location("com.sksamuel.scoverage4", "D", "D", ClassType.Object, "delete", ""),
+      .add(Statement(canonicalPath("d.scala"), Location("com.sksamuel.scoverage4", "D", "D", ClassType.Object, "delete", canonicalPath("d.scala")),
       7, 2, 3, 4, "", "", "", false, 0))
     coverage
-      .add(Statement("d.scala", Location("com.sksamuel.scoverage4", "D", "D", ClassType.Object, "delete2", ""),
+      .add(Statement(canonicalPath("d.scala"), Location("com.sksamuel.scoverage4", "D", "D", ClassType.Object, "delete2", canonicalPath("d.scala")),
       8, 2, 3, 14, "", "", "", false, 0))
 
-    val writer = new CoberturaXmlWriter(new File(""), dir)
+    val writer = new CoberturaXmlWriter(sourceRoot, dir)
     writer.write(coverage)
 
     val domFactory = DocumentBuilderFactory.newInstance()
@@ -83,16 +87,16 @@ class CoberturaXmlWriterTest extends FunSuite with BeforeAndAfter with OneInstan
 
     val coverage = Coverage()
     coverage
-      .add(Statement("a.scala", Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create", ""),
+      .add(Statement(canonicalPath("a.scala"), Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create", canonicalPath("a.scala")),
       1, 2, 3, 12, "", "", "", false))
     coverage
-      .add(Statement("a.scala", Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create2", ""),
+      .add(Statement(canonicalPath("a.scala"), Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create2", canonicalPath("a.scala")),
       2, 2, 3, 16, "", "", "", true))
     coverage
-      .add(Statement("a.scala", Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create3", ""),
+      .add(Statement(canonicalPath("a.scala"), Location("com.sksamuel.scoverage", "A", "A", ClassType.Object, "create3", canonicalPath("a.scala")),
       3, 3, 3, 20, "", "", "", true, 1))
 
-    val writer = new CoberturaXmlWriter(new File(""), dir)
+    val writer = new CoberturaXmlWriter(sourceRoot, dir)
     writer.write(coverage)
 
     val xml = XML.loadFile(fileIn(dir))

@@ -81,4 +81,22 @@ object IOUtils {
     }
     acc
   }
+
+  /**
+   * Converts absolute path to relative one if any of the source directories is it's parent.
+   * If there is no parent directory, the path is returned unchanged (absolute).
+   * 
+   * @param src absolute file path in canonical form
+   * @param sourcePaths absolute source paths in canonical form WITH trailing file separators
+   */
+  def relativeSource(src: String, sourcePaths: Seq[String]): String = {
+    val sourceRoot: Option[String] = sourcePaths.find(
+      sourcePath => src.startsWith(sourcePath)
+    )
+    sourceRoot match {
+      case Some(path: String) => src.replace(path, "")
+      case _ => throw new RuntimeException(s"No source root found for '$src'"); //TODO Change exception class
+    }
+  }
+
 }

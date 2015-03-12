@@ -8,6 +8,10 @@ object CoverageAggregator {
 
   def aggregate(baseDir: File, clean: Boolean): Option[Coverage] = {
     val files = IOUtils.reportFileSearch(baseDir, IOUtils.isReportFile)
+    aggregate(files, clean)
+  }
+
+  def aggregate(files: Seq[File], clean: Boolean): Option[Coverage] = {
     println(s"[info] Found ${files.size} subproject report files [${files.mkString(",")}]")
     if (files.size > 1) {
       val coverage = aggregatedCoverage(files)
