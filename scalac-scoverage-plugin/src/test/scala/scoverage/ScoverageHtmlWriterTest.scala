@@ -23,20 +23,20 @@ class ScoverageHtmlWriterTest extends FunSuite {
 
     val coverage = Coverage()
 
-    val class2 = getClass.getResource("forHtmlWriter/src/main/scala/subdir/Class2.scala").getFile()
-    val class1 = getClass.getResource("forHtmlWriter/src/main/scala/Class1.scala").getFile()
+    val class2 = new File(getClass.getResource("forHtmlWriter/src/main/scala/subdir/Class2.scala").getFile()).getCanonicalPath()
+    val class1 = new File(getClass.getResource("forHtmlWriter/src/main/scala/Class1.scala").getFile()).getCanonicalPath()
 
     coverage.add(
       Statement(class2,
-        Location("coverage.sample", "Class2","Class", ClassType.Object, "msg_test", class2),
-        2, 57, 77, 4, "scala.this.Predef.println(&quot;test code&quot;)",
+        Location("coverage.sample", "Class2", "Class2", ClassType.Class, "msg_test", class2),
+        2, 60, 80, 4, "scala.this.Predef.println(\"test code\")",
         "scala.Predef.println", "Apply", false, 0)
     )
 
     coverage.add(
       Statement(class1,
-        Location("coverage.sample", "Class1","Class", ClassType.Object, "msg_coverage", class1),
-        1, 61, 96, 4, "scala.this.Predef.println(&quot;measure coverage of code&quot;)",
+        Location("coverage.sample", "Class1", "Class1", ClassType.Class, "msg_coverage", class1),
+        1, 64, 99, 4, "scala.this.Predef.println(\"measure coverage of code\")",
         "scala.Predef.println", "Apply", false, 0)
     )
 
