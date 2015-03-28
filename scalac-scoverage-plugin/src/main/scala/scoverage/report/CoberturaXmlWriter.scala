@@ -7,14 +7,11 @@ import scoverage._
 import scala.xml.{Node, PrettyPrinter}
 
 /** @author Stephen Samuel */
-class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) {
+class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends BaseReportWriter(sourceDirectories, outputDir) {
 
   def this (baseDir: File, outputDir: File) {
     this(Seq(baseDir), outputDir);
   }
-
-  // Source paths in canonical form WITH trailing file separator
-  val formattedSourcePaths: Seq[String] = sourceDirectories filter ( _.isDirectory ) map ( _.getCanonicalPath + File.separator )
   
   def format(double: Double): String = "%.2f".format(double)
 
@@ -94,7 +91,5 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) {
       </packages>
     </coverage>
   }
-
-  private def relativeSource(src: String): String = IOUtils.relativeSource(src, formattedSourcePaths)
 
 }
