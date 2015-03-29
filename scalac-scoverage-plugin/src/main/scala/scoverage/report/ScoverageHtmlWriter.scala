@@ -8,14 +8,11 @@ import scoverage._
 import scala.xml.Node
 
 /** @author Stephen Samuel */
-class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File) {
+class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File) extends BaseReportWriter(sourceDirectories, outputDir) {
 
   def this (sourceDirectory: File, outputDir: File) {
     this(Seq(sourceDirectory), outputDir);
   }
-
-  // Source paths in canonical form WITH trailing file separator
-  val formattedSourcePaths: Seq[String] = sourceDirectories filter ( _.isDirectory ) map ( _.getCanonicalPath + File.separator )
   
   def write(coverage: Coverage): Unit = {
     val indexFile = new File(outputDir.getAbsolutePath + "/index.html")
@@ -537,7 +534,4 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File) {
       </script>
   }
 
-  private def relativeSource(src: String): String = IOUtils.relativeSource(src, formattedSourcePaths)
-
 }
-
