@@ -94,7 +94,8 @@ case class Statement(source: String,
                      symbolName: String,
                      treeName: String,
                      branch: Boolean,
-                     var count: Int = 0) extends java.io.Serializable {
+                     var count: Int = 0,
+                     ignored: Boolean = false) extends java.io.Serializable {
   def invoked(): Unit = count = count + 1
   def isInvoked = count > 0
 }
