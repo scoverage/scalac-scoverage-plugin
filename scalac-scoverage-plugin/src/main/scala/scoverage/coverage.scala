@@ -71,7 +71,7 @@ trait FileBuilders {
 }
 
 case class MeasuredMethod(name: String, statements: Iterable[Statement]) extends CoverageMetrics {
-  override def ignoredStatements: Iterable[Statement] = ???
+  override def ignoredStatements: Iterable[Statement] = Seq()
 }
 
 case class MeasuredClass(name: String, statements: Iterable[Statement])
@@ -80,12 +80,12 @@ case class MeasuredClass(name: String, statements: Iterable[Statement])
   def simpleName = name.split('.').last
   def loc = statements.map(_.line).max
 
-  override def ignoredStatements: Iterable[Statement] = ???
+  override def ignoredStatements: Iterable[Statement] = Seq()
 }
 
 case class MeasuredPackage(name: String, statements: Iterable[Statement])
   extends CoverageMetrics with ClassCoverage with ClassBuilders with FileBuilders {
-  override def ignoredStatements: Iterable[Statement] = ???
+  override def ignoredStatements: Iterable[Statement] = Seq()
 }
 
 case class MeasuredFile(source: String, statements: Iterable[Statement])
@@ -93,7 +93,7 @@ case class MeasuredFile(source: String, statements: Iterable[Statement])
   def filename = new File(source).getName
   def loc = statements.map(_.line).max
 
-  override def ignoredStatements: Iterable[Statement] = ???
+  override def ignoredStatements: Iterable[Statement] = Seq()
 }
 
 case class Statement(source: String,
