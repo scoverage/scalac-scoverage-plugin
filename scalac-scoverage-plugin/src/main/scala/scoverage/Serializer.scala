@@ -121,7 +121,8 @@ object Serializer {
 
     val coverage = Coverage()
     for ( statement <- statements )
-      if (!statement.ignored) coverage.add(statement)
+      if (statement.ignored) coverage.addIgnoredStatement(statement)
+      else coverage.add(statement)
     coverage
   }
 
