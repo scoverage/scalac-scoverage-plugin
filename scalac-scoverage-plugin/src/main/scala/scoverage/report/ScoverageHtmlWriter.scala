@@ -496,6 +496,20 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File) extends
       </tr>
       <tr>
         <td>
+          Ignored statements:
+        </td>
+        <td>
+          {coverage.ignoredStatementCount.toString}
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
           Statement coverage:
         </td>
         <td>

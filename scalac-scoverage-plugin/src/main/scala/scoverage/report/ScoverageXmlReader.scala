@@ -31,6 +31,7 @@ object ScoverageXmlReader {
       val count = node \ "@invocation-count"
       val symbolName = node \ "@symbol"
       val treeName = node \ "@tree"
+      val ignored = node \ "@ignored"
 
       val location = Location(pkg.text,
         classname.text,
@@ -52,7 +53,8 @@ object ScoverageXmlReader {
         symbolName.text,
         treeName.text,
         branch.text.toBoolean,
-        count.text.toInt
+        count.text.toInt,
+        ignored.text.toBoolean
       )
     }
     coverage

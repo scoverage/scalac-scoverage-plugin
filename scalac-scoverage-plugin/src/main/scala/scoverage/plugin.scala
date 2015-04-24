@@ -166,22 +166,23 @@ class ScoverageInstrumentationComponent(val global: Global)
           reporter.echo(s"[warn] Could not instrument [${tree.getClass.getSimpleName}/${tree.symbol}]. No pos.")
           tree
         case Some(source) =>
+          val id = statementIds.incrementAndGet
+          val statement = Statement(
+            source.path,
+            location,
+            id,
+            safeStart(tree),
+            safeEnd(tree),
+            safeLine(tree),
+            original.toString,
+            Option(original.symbol).fold("<nosymbol>")(_.fullNameString),
+            tree.getClass.getSimpleName,
+            branch
+          )
           if (tree.pos.isDefined && !isStatementIncluded(tree.pos)) {
+            coverage.add(statement.copy(ignored = true))
             tree
           } else {
-            val id = statementIds.incrementAndGet
-            val statement = Statement(
-              source.path,
-              location,
-              id,
-              safeStart(tree),
-              safeEnd(tree),
-              safeLine(tree),
-              original.toString,
-              Option(original.symbol).fold("<nosymbol>")(_.fullNameString),
-              tree.getClass.getSimpleName,
-              branch
-            )
             coverage.add(statement)
 
             val apply = invokeCall(id)

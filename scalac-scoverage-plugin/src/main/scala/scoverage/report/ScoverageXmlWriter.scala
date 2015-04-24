@@ -46,7 +46,8 @@ class ScoverageXmlWriter(sourceDirectories: Seq[File], outputDir: File, debug: B
                    symbol={Serializer.escape(stmt.symbolName)}
                    tree={Serializer.escape(stmt.treeName)}
                    branch={stmt.branch.toString}
-                   invocation-count={stmt.count.toString}>
+                   invocation-count={stmt.count.toString}
+                   ignored={stmt.ignored.toString}>
           {Serializer.escape(stmt.desc)}
         </statement>
       case false =>
@@ -60,7 +61,8 @@ class ScoverageXmlWriter(sourceDirectories: Seq[File], outputDir: File, debug: B
                      end={stmt.end.toString}
                      line={stmt.line.toString}
                      branch={stmt.branch.toString}
-                     invocation-count={stmt.count.toString}/>
+                     invocation-count={stmt.count.toString}
+                     ignored={stmt.ignored.toString}/>
     }
   }
 

@@ -20,7 +20,7 @@ class SerializerTest extends FunSuite with MockitoSugar with OneInstancePerTest 
     )
     val expected = <statements>
       <statement>
-        <source>mysource</source> <package>org.scoverage</package> <class>test</class> <classType>Trait</classType> <topLevelClass>test</topLevelClass> <method>mymethod</method> <path>mypath</path> <id>14</id> <start>100</start> <end>200</end> <line>4</line> <description>def test : String</description> <symbolName>test</symbolName> <treeName>DefDef</treeName> <branch>true</branch> <count>32</count>
+        <source>mysource</source> <package>org.scoverage</package> <class>test</class> <classType>Trait</classType> <topLevelClass>test</topLevelClass> <method>mymethod</method> <path>mypath</path> <id>14</id> <start>100</start> <end>200</end> <line>4</line> <description>def test : String</description> <symbolName>test</symbolName> <treeName>DefDef</treeName> <branch>true</branch> <count>32</count> <ignored>false</ignored>
       </statement>
     </statements>
     val writer = new StringWriter()
@@ -31,7 +31,7 @@ class SerializerTest extends FunSuite with MockitoSugar with OneInstancePerTest 
   test("coverage should be deserializable from xml") {
     val input = <statements>
       <statement>
-        <source>mysource</source> <package>org.scoverage</package> <class>test</class> <classType>Trait</classType> <topLevelClass>test</topLevelClass> <method>mymethod</method> <path>mypath</path> <id>14</id> <start>100</start> <end>200</end> <line>4</line> <description>def test : String</description> <symbolName>test</symbolName> <treeName>DefDef</treeName> <branch>true</branch> <count>32</count>
+        <source>mysource</source> <package>org.scoverage</package> <class>test</class> <classType>Trait</classType> <topLevelClass>test</topLevelClass> <method>mymethod</method> <path>mypath</path> <id>14</id> <start>100</start> <end>200</end> <line>4</line> <description>def test : String</description> <symbolName>test</symbolName> <treeName>DefDef</treeName> <branch>true</branch> <count>32</count> <ignored>false</ignored>
       </statement>
     </statements>
     val statements = List(Statement(

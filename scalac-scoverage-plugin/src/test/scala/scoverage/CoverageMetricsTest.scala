@@ -17,6 +17,8 @@ class CoverageMetricsTest extends FreeSpec with Matchers {
         null,
         false,
         1))
+
+      override def ignoredStatements: Iterable[Statement] = Seq()
     }
     metrics.branchCount shouldBe 0
     metrics.branchCoverage - 1 shouldBe < (0.0001)
@@ -35,6 +37,8 @@ class CoverageMetricsTest extends FreeSpec with Matchers {
         null,
         false,
         0))
+
+      override def ignoredStatements: Iterable[Statement] = Seq()
     }
     metrics.branchCount shouldBe 0
     metrics.branchCoverage shouldBe 0

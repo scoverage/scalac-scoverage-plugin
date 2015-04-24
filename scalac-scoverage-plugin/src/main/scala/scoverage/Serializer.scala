@@ -69,6 +69,9 @@ object Serializer {
           <count>
             {stmt.count.toString}
           </count>
+          <ignored>
+            {stmt.ignored.toString}
+          </ignored>
         </statement>
         Utility.trim(xml) + "\n"
       }
@@ -86,6 +89,7 @@ object Serializer {
     val statements = xml \ "statement" map (node => {
       val source = (node \ "source").text
       val count = (node \ "count").text.toInt
+      val ignored = (node \ "ignored").text.toBoolean
       val branch = (node \ "branch").text.toBoolean
       val _package = (node \ "package").text
       val _class = (node \ "class").text
@@ -112,12 +116,13 @@ object Serializer {
         line,
         desc,
         symbolName,
-        treeName, branch, count)
+        treeName, branch, count, ignored)
     })
 
     val coverage = Coverage()
     for ( statement <- statements )
-      coverage.add(statement)
+      if (statement.ignored) coverage.addIgnoredStatement(statement)
+      else coverage.add(statement)
     coverage
   }
 
