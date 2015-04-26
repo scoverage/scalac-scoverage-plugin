@@ -19,6 +19,10 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 
 ### Release History
 
+##### 26th April 2015 1.1.0
+
+* Bug fixes
+
 ##### 23rd January 2015 1.0.4
 
 * Improved results in match/cases
