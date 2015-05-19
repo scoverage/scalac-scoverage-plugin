@@ -18,11 +18,6 @@ case class Coverage()
   override def statements = statementsById.values
   def add(stmt: Statement): Unit = statementsById.put(stmt.id, stmt)
 
-  private val ignoredStatementsById = mutable.Map[Int, Statement]()
-  override def ignoredStatements = ignoredStatementsById.values
-  def addIgnoredStatement(stmt: Statement): Unit = ignoredStatementsById.put(stmt.id, stmt)
-
-
   def avgClassesPerPackage = classCount / packageCount.toDouble
   def avgClassesPerPackageFormatted: String = "%.2f".format(avgClassesPerPackage)
 
@@ -70,30 +65,22 @@ trait FileBuilders {
   def fileCount: Int = files.size
 }
 
-case class MeasuredMethod(name: String, statements: Iterable[Statement]) extends CoverageMetrics {
-  override def ignoredStatements: Iterable[Statement] = Seq()
-}
+case class MeasuredMethod(name: String, statements: Iterable[Statement]) extends CoverageMetrics
 
 case class MeasuredClass(name: String, statements: Iterable[Statement])
   extends CoverageMetrics with MethodBuilders {
   def source: String = statements.head.source
   def simpleName = name.split('.').last
   def loc = statements.map(_.line).max
-
-  override def ignoredStatements: Iterable[Statement] = Seq()
 }
 
 case class MeasuredPackage(name: String, statements: Iterable[Statement])
-  extends CoverageMetrics with ClassCoverage with ClassBuilders with FileBuilders {
-  override def ignoredStatements: Iterable[Statement] = Seq()
-}
+  extends CoverageMetrics with ClassCoverage with ClassBuilders with FileBuilders
 
 case class MeasuredFile(source: String, statements: Iterable[Statement])
   extends CoverageMetrics with ClassCoverage with ClassBuilders {
   def filename = new File(source).getName
   def loc = statements.map(_.line).max
-
-  override def ignoredStatements: Iterable[Statement] = Seq()
 }
 
 case class Statement(source: String,
@@ -138,10 +125,8 @@ object ClassRef {
 
 trait CoverageMetrics {
   def statements: Iterable[Statement]
-  def statementCount: Int = statements.size
-
-  def ignoredStatements: Iterable[Statement]
-  def ignoredStatementCount: Int = ignoredStatements.size
+  def statementCount: Int = statements.count(!_.ignored)
+  def ignoredStatementCount: Int = statements.count(_.ignored)
 
   def invokedStatements: Iterable[Statement] = statements.filter(_.count > 0)
   def invokedStatementCount = invokedStatements.size
