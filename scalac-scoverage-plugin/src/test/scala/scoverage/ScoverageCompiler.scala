@@ -51,7 +51,7 @@ object ScoverageCompiler {
     dir
   }
 
-  private def runtimeClasses: File = new File("./scalac-scoverage-runtime/target/scala-2.11/classes")
+  private def runtimeClasses: File = new File("./scalac-scoverage-runtime/shared/target/scala-2.11/classes")
 
   private def findScalaJar(artifactId: String): File = findIvyJar("org.scala-lang", artifactId, ScalaVersion)
 
