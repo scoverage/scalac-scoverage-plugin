@@ -10,7 +10,7 @@ import scala.xml.{Node, PrettyPrinter}
 class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends BaseReportWriter(sourceDirectories, outputDir) {
 
   def this (baseDir: File, outputDir: File) {
-    this(Seq(baseDir), outputDir);
+    this(Seq(baseDir), outputDir)
   }
   
   def format(double: Double): String = "%.2f".format(double)
@@ -84,7 +84,7 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends 
               timestamp={System.currentTimeMillis.toString}>
       <sources>
         <source>--source</source>
-        {sourceDirectories.filter(_.isDirectory()).map(source)}
+        {sourceDirectories.filter(_.isDirectory).map(source)}
       </sources>
       <packages>
         {coverage.packages.map(pack)}
