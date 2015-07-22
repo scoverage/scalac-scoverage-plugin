@@ -16,7 +16,7 @@ object Scoverage extends Build {
   val appSettings = Seq(
     organization := Org,
     scalaVersion := Scala,
-    crossScalaVersions := Seq("2.10.4", "2.11.4"),
+    crossScalaVersions := Seq("2.10.4", "2.11.7"),
     fork in Test := false,
     publishMavenStyle := true,
     publishArtifact in Test := false,
