@@ -444,7 +444,7 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File) extends
       </tr>
       <tr>
         <td>
-          Lines per file
+          Lines per file:
         </td>
         <td>
           {coverage.linesPerFileFormatted}
@@ -456,7 +456,7 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File) extends
           {coverage.packageCount.toString}
         </td>
         <td>
-          Clases per package:
+          Classes per package:
         </td>
         <td>
           {coverage.avgClassesPerPackageFormatted}
