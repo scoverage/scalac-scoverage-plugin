@@ -33,9 +33,9 @@ object Serializer {
           <classType>
             {stmt.location.classType.toString}
           </classType>
-          <topLevelClass>
-            {stmt.location.topLevelClass}
-          </topLevelClass>
+          <fullClassName>
+            {stmt.location.fullClassName}
+          </fullClassName>
           <method>
             {stmt.location.method}
           </method>
@@ -93,7 +93,7 @@ object Serializer {
       val branch = (node \ "branch").text.toBoolean
       val _package = (node \ "package").text
       val _class = (node \ "class").text
-      val topLevelClass = (node \ "topLevelClass").text
+      val fullClassName = (node \ "fullClassName").text
       val method = (node \ "method").text
       val path = (node \ "path").text
       val treeName = (node \ "treeName").text
@@ -109,7 +109,7 @@ object Serializer {
         case _ => ClassType.Class
       }
       Statement(source,
-        Location(_package, _class, topLevelClass, classType, method, path),
+        Location(_package, _class, fullClassName, classType, method, path),
         id,
         start,
         end,

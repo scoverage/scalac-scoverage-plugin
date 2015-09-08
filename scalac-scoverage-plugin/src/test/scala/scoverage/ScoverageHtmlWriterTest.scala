@@ -28,14 +28,14 @@ class ScoverageHtmlWriterTest extends FunSuite {
 
     coverage.add(
       Statement(class2,
-        Location("coverage.sample", "Class2", "Class2", ClassType.Class, "msg_test", class2),
+        Location("coverage.sample", "Class2", "coverage.sample.Class2", ClassType.Class, "msg_test", class2),
         2, 60, 80, 4, "scala.this.Predef.println(\"test code\")",
         "scala.Predef.println", "Apply", false, 0)
     )
 
     coverage.add(
       Statement(class1,
-        Location("coverage.sample", "Class1", "Class1", ClassType.Class, "msg_coverage", class1),
+        Location("coverage.sample", "Class1", "coverage.sample.Class1", ClassType.Class, "msg_coverage", class1),
         1, 64, 99, 4, "scala.this.Predef.println(\"measure coverage of code\")",
         "scala.Predef.println", "Apply", false, 0)
     )

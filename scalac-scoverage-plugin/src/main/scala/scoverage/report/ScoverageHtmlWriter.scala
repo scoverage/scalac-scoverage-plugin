@@ -11,7 +11,7 @@ import scala.xml.Node
 class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File) extends BaseReportWriter(sourceDirectories, outputDir) {
 
   def this (sourceDirectory: File, outputDir: File) {
-    this(Seq(sourceDirectory), outputDir);
+    this(Seq(sourceDirectory), outputDir)
   }
   
   def write(coverage: Coverage): Unit = {
@@ -193,7 +193,7 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File) extends
         </tr>
       </thead>
       <tbody>
-        {classes.toSeq.sortBy(_.simpleName) map classRow}
+        {classes.toSeq.sortBy(_.fullClassName) map classRow}
       </tbody>
     </table>
   }
@@ -217,11 +217,10 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File) extends
     val statement0f = Math.round(klass.statementCoveragePercent).toInt.toString
     val branch0f = Math.round(klass.branchCoveragePercent).toInt.toString
 
-    val simpleClassName = klass.name.split('.').last
     <tr>
       <td>
         <a href={filename}>
-          {simpleClassName}
+          {klass.displayClassName}
         </a>
       </td>
       <td>
@@ -331,7 +330,7 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File) extends
         {coverage.risks(limit).map(klass =>
         <tr>
           <td>
-            {klass.simpleName}
+            {klass.displayClassName}
           </td>
           <td>
             {klass.loc.toString}

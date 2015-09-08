@@ -22,7 +22,7 @@ object ScoverageXmlReader {
       val pkg = node \ "@package"
       val classname = node \ "@class"
       val classType = node \ "@class-type"
-      val topLevelClass = node \ "@top-level-class"
+      val fullClassName = node \ "@full-class-name"
       val method = node \ "@method"
       val start = node \ "@start"
       val end = node \ "@end"
@@ -35,7 +35,7 @@ object ScoverageXmlReader {
 
       val location = Location(pkg.text,
         classname.text,
-        topLevelClass.text,
+        fullClassName.text,
         ClassType fromString classType.text,
         method.text,
         source.text)
