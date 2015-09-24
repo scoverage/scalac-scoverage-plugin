@@ -60,7 +60,7 @@ class CodeGrid(mFile: MeasuredFile) {
     s"<pre style='font-size: 12pt; font-family: courier;'>$code</pre>"
   }
 
-  private def source(mfile: MeasuredFile): String = Source.fromFile(mfile.source).mkString
+  private def source(mfile: MeasuredFile): String = Source.fromFile(mfile.source, "UTF-8").mkString
 
   private def spanStart(status: StatementStatus): String = s"<span style='${cellStyle(status)}'>"
 
