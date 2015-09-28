@@ -145,7 +145,7 @@ Let's expand this example out to be multifacted, albeit somewhat contrived:
 val status = if (religion == "Pentecostalist") "Beer forbidden" else if (age < 18) "Underage" else "Beer for you"
 ```
 
-Now we would get 100% code coverage for passing in the values ("Buddist", 34).
+Now we would get 100% code coverage for passing in the values ("Buddhist", 34).
 
 That's why in scoverage we focus on statement coverage, and don't even include line coverage as a metric.
 This is a paradigm shift that we hope will take hold.
