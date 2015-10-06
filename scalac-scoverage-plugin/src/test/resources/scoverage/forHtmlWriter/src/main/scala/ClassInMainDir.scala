@@ -1,5 +1,5 @@
 package coverage.sample
 
-class Class1 {
+class ClassInMainDir {
   def msg_coverage = println("measure coverage of code")
 }

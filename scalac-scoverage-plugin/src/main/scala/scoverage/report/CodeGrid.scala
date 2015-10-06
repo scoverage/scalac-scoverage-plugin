@@ -52,7 +52,7 @@ class CodeGrid(mFile: MeasuredFile) {
           sb append spanStart(cell.status)
           style = style2
         }
-        sb.append(cell.char)
+        xml.Utility.escape(cell.char.toString, sb)
       })
       sb append "</span>"
       sb.toString
