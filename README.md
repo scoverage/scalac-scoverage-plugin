@@ -173,6 +173,7 @@ project you will need to use one of the build plugins:
 * [sbt-scoverage](https://github.com/scoverage/sbt-scoverage)
 * [gradle-scoverage](https://github.com/scoverage/gradle-scoverage)
 * [sbt-coveralls](https://github.com/scoverage/sbt-coveralls)
+* Upload report to [Codecov](https://codecov.io): [Example Scala Repository](https://github.com/codecov/example-scala)
 
 Scoverage support is available for the following tools:
 
