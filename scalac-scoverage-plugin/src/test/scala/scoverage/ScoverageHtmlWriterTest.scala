@@ -12,39 +12,49 @@ import org.scalatest.FunSuite
 
 class ScoverageHtmlWriterTest extends FunSuite {
 
-  test("HTML coverage report has been created correctly") {
+  val rootDirForClasses = new File(getClass.getResource("forHtmlWriter/src/main/scala/").getFile)
 
-    def tempDir(): File = {
-      val dir = new File(IOUtils.getTempDirectory, UUID.randomUUID().toString)
-      dir.mkdirs()
-      dir.deleteOnExit()
-      dir
-    }
+  def pathToClassFile(classLocation: String): String =
+    new File(rootDirForClasses, classLocation).getCanonicalPath
+
+  val pathToClassContainingHtml = pathToClassFile("ClassContainingHtml.scala")
+  val pathToClassInSubDir = pathToClassFile("subdir/ClassInSubDir.scala")
+  val pathToClassInMainDir = pathToClassFile("ClassInMainDir.scala")
+
+  val statementForClassContainingHtml = Statement(pathToClassContainingHtml,
+    Location("coverage.sample", "ClassContainingHtml", "ClassContainingHtml", ClassType.Class, "some_html", pathToClassInSubDir),
+    3, 74, 97, 4, "<div>HTML content</div>",
+    "scala.Predef.println", "Apply", false, 0)
+  val statementForClassInSubDir = Statement(pathToClassInSubDir,
+    Location("coverage.sample", "ClassInSubDir", "ClassInSubDir", ClassType.Class, "msg_test", pathToClassInSubDir),
+    2, 64, 84, 4, "scala.this.Predef.println(\"test code\")",
+    "scala.Predef.println", "Apply", false, 0)
+  val statementForClassInMainDir = Statement(pathToClassInMainDir,
+    Location("coverage.sample", "ClassInMainDir", "ClassInMainDir", ClassType.Class, "msg_coverage", pathToClassInMainDir),
+    1, 69, 104, 4, "scala.this.Predef.println(\"measure coverage of code\")",
+    "scala.Predef.println", "Apply", false, 0)
+
+  def createTemporaryDir(): File = {
+    val dir = new File(IOUtils.getTempDirectory, UUID.randomUUID().toString)
+    dir.mkdirs()
+    dir.deleteOnExit()
+    dir
+  }
+
+  def writeCoverageToTemporaryDir(coverage: Coverage): File = {
+    val outputDir = createTemporaryDir()
+    val htmlWriter = new ScoverageHtmlWriter(rootDirForClasses, outputDir)
+    htmlWriter.write(coverage)
+    outputDir
+  }
+
+  test("HTML coverage report contains correct links") {
 
     val coverage = Coverage()
+    coverage.add(statementForClassInSubDir)
+    coverage.add(statementForClassInMainDir)
 
-    val class2 = new File(getClass.getResource("forHtmlWriter/src/main/scala/subdir/Class2.scala").getFile()).getCanonicalPath()
-    val class1 = new File(getClass.getResource("forHtmlWriter/src/main/scala/Class1.scala").getFile()).getCanonicalPath()
-
-    coverage.add(
-      Statement(class2,
-        Location("coverage.sample", "Class2", "Class2", ClassType.Class, "msg_test", class2),
-        2, 60, 80, 4, "scala.this.Predef.println(\"test code\")",
-        "scala.Predef.println", "Apply", false, 0)
-    )
-
-    coverage.add(
-      Statement(class1,
-        Location("coverage.sample", "Class1", "Class1", ClassType.Class, "msg_coverage", class1),
-        1, 64, 99, 4, "scala.this.Predef.println(\"measure coverage of code\")",
-        "scala.Predef.println", "Apply", false, 0)
-    )
-
-    val dir = getClass.getResource("forHtmlWriter/src/main/scala/").getFile()
-    val outputDir = tempDir()
-
-    val htmlWriter = new ScoverageHtmlWriter(new File(dir), outputDir)
-    htmlWriter.write(coverage)
+    val outputDir = writeCoverageToTemporaryDir(coverage)
 
     val htmls = List("overview.html", "coverage.sample.html")
 
@@ -57,7 +67,18 @@ class ScoverageHtmlWriterTest extends FunSuite {
         }
       }
    
-      assert( links.toSet == Set("Class1.scala.html", "subdir/Class2.scala.html") )
+      assert( links.toSet == Set("ClassInMainDir.scala.html", "subdir/ClassInSubDir.scala.html") )
     }
+  }
+
+  test("HTML coverage report escapes HTML") {
+
+    val coverage = Coverage()
+    coverage.add(statementForClassContainingHtml)
+    val outputDir = writeCoverageToTemporaryDir(coverage)
+
+    val contentsOfFileWithEmbeddedHtml = Source.fromFile(new File(outputDir, "ClassContainingHtml.scala.html")).getLines.mkString
+    assert( !contentsOfFileWithEmbeddedHtml.contains("<div>HTML content</div>") )
+    assert( contentsOfFileWithEmbeddedHtml.contains("&lt;div&gt;HTML content&lt;/div&gt;") )
   }
 }
