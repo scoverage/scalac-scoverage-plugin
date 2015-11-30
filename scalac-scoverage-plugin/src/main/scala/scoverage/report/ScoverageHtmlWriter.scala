@@ -8,8 +8,14 @@ import scoverage._
 import scala.xml.Node
 
 /** @author Stephen Samuel */
-class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File) extends BaseReportWriter(sourceDirectories, outputDir) {
+class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File, sourceEncoding: Option[String]) extends BaseReportWriter(sourceDirectories, outputDir) {
 
+  // for backward compatibility only
+  def this (sourceDirectories: Seq[File], outputDir: File) {
+    this(sourceDirectories, outputDir, None);
+  }
+  
+  // for backward compatibility only
   def this (sourceDirectory: File, outputDir: File) {
     this(Seq(sourceDirectory), outputDir);
   }
@@ -75,7 +81,7 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File) extends
         </ul>
         <div class="tab-content">
           <div class="tab-pane active" id="codegrid">
-            {xml.Unparsed(new CodeGrid(mfile).highlighted)}
+            {xml.Unparsed(new CodeGrid(mfile, sourceEncoding).highlighted)}
           </div>
           <div class="tab-pane" id="statementlist">
             {new StatementWriter(mfile).output}
