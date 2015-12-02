@@ -2,14 +2,17 @@ package scoverage
 
 import scala.tools.nsc.Global
 
+/**
+ * @param packageName the name of the enclosing package
+ * @param className the name of the closest enclosing class
+ * @param fullClassName the fully qualified name of the closest enclosing class
+ */
 case class Location(packageName: String,
                     className: String,
-                    topLevelClass: String,
+                    fullClassName: String,
                     classType: ClassType,
                     method: String,
-                    sourcePath: String) extends java.io.Serializable {
-  val fqn = (packageName + ".").replace("<empty>.", "") + className
-}
+                    sourcePath: String) extends java.io.Serializable
 
 object Location {
 
@@ -31,8 +34,10 @@ object Location {
       else ClassType.Class
     }
 
-    def topLevelClass(s: global.Symbol): String = {
-      s.enclosingTopLevelClass.nameString
+    def fullClassName(s: global.Symbol): String = {
+      // anon functions are enclosed in proper classes.
+      if (s.enclClass.isAnonymousFunction || s.enclClass.isAnonymousClass) fullClassName(s.owner)
+      else s.enclClass.fullNameString
     }
 
     def enclosingMethod(s: global.Symbol): String = {
@@ -51,7 +56,7 @@ object Location {
         Location(
           packageName(symbol),
           className(symbol),
-          topLevelClass(symbol),
+          fullClassName(symbol),
           classType(symbol),
           enclosingMethod(symbol),
           sourcePath(symbol))

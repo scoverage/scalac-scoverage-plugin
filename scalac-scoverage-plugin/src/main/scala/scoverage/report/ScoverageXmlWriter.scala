@@ -10,7 +10,7 @@ import scala.xml.{Node, PrettyPrinter}
 class ScoverageXmlWriter(sourceDirectories: Seq[File], outputDir: File, debug: Boolean) extends BaseReportWriter(sourceDirectories, outputDir) {
 
   def this (sourceDir: File, outputDir: File, debug: Boolean) {
-    this(Seq(sourceDir), outputDir, debug);
+    this(Seq(sourceDir), outputDir, debug)
   }
 
   def write(coverage: Coverage): Unit = {
@@ -37,7 +37,7 @@ class ScoverageXmlWriter(sourceDirectories: Seq[File], outputDir: File, debug: B
         <statement package={stmt.location.packageName}
                    class={stmt.location.className}
                    class-type={stmt.location.classType.toString}
-                   top-level-class={stmt.location.topLevelClass}
+                   full-class-name={stmt.location.fullClassName}
                    source={stmt.source}
                    method={stmt.location.method}
                    start={stmt.start.toString}
@@ -54,7 +54,7 @@ class ScoverageXmlWriter(sourceDirectories: Seq[File], outputDir: File, debug: B
           <statement package={stmt.location.packageName}
                      class={stmt.location.className}
                      class-type={stmt.location.classType.toString}
-                     top-level-class={stmt.location.topLevelClass}
+                     full-class-name={stmt.location.fullClassName}
                      source={stmt.source}
                      method={stmt.location.method}
                      start={stmt.start.toString}
@@ -79,7 +79,7 @@ class ScoverageXmlWriter(sourceDirectories: Seq[File], outputDir: File, debug: B
   }
 
   private def klass(klass: MeasuredClass): Node = {
-    <class name={klass.name}
+    <class name={klass.fullClassName}
            filename={relativeSource(klass.source)}
            statement-count={klass.statementCount.toString}
            statements-invoked={klass.invokedStatementCount.toString}

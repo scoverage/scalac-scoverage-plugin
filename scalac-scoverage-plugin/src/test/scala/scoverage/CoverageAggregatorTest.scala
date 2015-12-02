@@ -18,7 +18,7 @@ class CoverageAggregatorTest extends FreeSpec with Matchers {
       val source = canonicalPath("com/scoverage/class.scala")
       val location = Location("com.scoverage.foo",
         "ServiceState",
-        "Service",
+        "com.scoverage.foo.Service.ServiceState",
         ClassType.Trait,
         "methlab",
         source)

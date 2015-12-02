@@ -60,7 +60,7 @@ trait PackageBuilders {
 
 trait ClassBuilders {
   def statements: Iterable[Statement]
-  def classes = statements.groupBy(_.location.className).map(arg => MeasuredClass(arg._1, arg._2))
+  def classes = statements.groupBy(_.location.fullClassName).map(arg => MeasuredClass(arg._1, arg._2))
   def classCount: Int = classes.size
 }
 
@@ -74,11 +74,22 @@ case class MeasuredMethod(name: String, statements: Iterable[Statement]) extends
   override def ignoredStatements: Iterable[Statement] = Seq()
 }
 
-case class MeasuredClass(name: String, statements: Iterable[Statement])
+case class MeasuredClass(fullClassName: String, statements: Iterable[Statement])
   extends CoverageMetrics with MethodBuilders {
+
   def source: String = statements.head.source
-  def simpleName = name.split('.').last
   def loc = statements.map(_.line).max
+
+  /**
+   * The class name for display is the FQN minus the package,
+   * for example "com.a.Foo.Bar.Baz" should display as "Foo.Bar.Baz"
+   * and "com.a.Foo" should display as "Foo".
+   *
+   * This is used in the class lists in the package and overview pages.
+   */
+  def displayClassName = statements.headOption.map(_.location).map { location =>
+    location.fullClassName.stripPrefix(location.packageName + ".")
+  }.getOrElse(fullClassName)
 
   override def ignoredStatements: Iterable[Statement] = Seq()
 }

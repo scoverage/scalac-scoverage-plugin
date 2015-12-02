@@ -39,7 +39,7 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends 
   }
 
   def klass(klass: MeasuredClass): Node = {
-    <class name={klass.name}
+    <class name={klass.fullClassName}
            filename={relativeSource(klass.source).replace(File.separator, "/")}
            line-rate={format(klass.statementCoverage)}
            branch-rate={format(klass.branchCoverage)}
