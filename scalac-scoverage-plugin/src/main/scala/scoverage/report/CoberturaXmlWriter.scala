@@ -12,12 +12,12 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends 
   def this (baseDir: File, outputDir: File) {
     this(Seq(baseDir), outputDir)
   }
-  
+
   def format(double: Double): String = "%.2f".format(double)
 
   def write(coverage: Coverage): Unit = {
     val file = new File(outputDir, "cobertura.xml")
-    IOUtils.writeToFile(file, "<?xml version=\"1.0\"?>\n<!DOCTYPE coverage SYSTEM \"https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd\">\n" + 
+    IOUtils.writeToFile(file, "<?xml version=\"1.0\"?>\n<!DOCTYPE coverage SYSTEM \"https://raw.githubusercontent.com/cobertura/cobertura/master/cobertura/src/site/htdocs/xml/coverage-04.dtd\">\n" +
         new PrettyPrinter(120, 4).format(xml(coverage)))
   }
 
@@ -75,10 +75,10 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends 
 
   def xml(coverage: Coverage): Node = {
     <coverage line-rate={format(coverage.statementCoverage)}
-              lines-covered={coverage.statementCount.toString}
-              lines-valid={coverage.invokedStatementCount.toString}
-              branches-covered={coverage.branchCount.toString}
-              branches-valid={coverage.invokedBranchesCount.toString}
+              lines-valid={coverage.statementCount.toString}
+              lines-covered={coverage.invokedStatementCount.toString}
+              branches-valid={coverage.branchCount.toString}
+              branches-covered={coverage.invokedBranchesCount.toString}
               branch-rate={format(coverage.branchCoverage)}
               complexity="0"
               version="1.0"
