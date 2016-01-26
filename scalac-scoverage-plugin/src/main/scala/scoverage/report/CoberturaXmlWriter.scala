@@ -25,8 +25,7 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends 
     <method name={method.name}
             signature="()V"
             line-rate={format(method.statementCoverage)}
-            branch-rate={format(method.branchCoverage)}
-            complexity="0">
+            branch-rate={format(method.branchCoverage)}>
       <lines>
         {method.statements.map(stmt =>
           <line
