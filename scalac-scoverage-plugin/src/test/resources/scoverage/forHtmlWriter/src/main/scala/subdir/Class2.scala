@@ -1,5 +1,5 @@
 package coverage.sample
 
 class Class2 {
-  def msg_test = println("test code")
+  def msg_test = println("test code ŠTEFÁNIK")
 }
