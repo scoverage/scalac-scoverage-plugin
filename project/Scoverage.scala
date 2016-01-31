@@ -7,7 +7,7 @@ import com.typesafe.sbt.pgp.PgpKeys
 object Scoverage extends Build {
 
   val Org = "org.scoverage"
-  val Scala = "2.11.4"
+  val Scala = "2.11.7"
   val MockitoVersion = "1.9.5"
   val ScalatestVersion = "2.2.2"
 
@@ -16,7 +16,7 @@ object Scoverage extends Build {
   val appSettings = Seq(
     organization := Org,
     scalaVersion := Scala,
-    crossScalaVersions := Seq("2.10.4", "2.11.7"),
+    crossScalaVersions := Seq("2.10.6", "2.11.7"),
     fork in Test := false,
     publishMavenStyle := true,
     publishArtifact in Test := false,
@@ -89,10 +89,10 @@ object Scoverage extends Build {
   )).settings(libraryDependencies ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, scalaMajor)) if scalaMajor == 11 =>
-        EnvSupport.setEnv("CrossBuildScalaVersion", "2.11.4")
-        Seq("org.scala-lang.modules" %% "scala-xml" % "1.0.1")
+        EnvSupport.setEnv("CrossBuildScalaVersion", "2.11.7")
+        Seq("org.scala-lang.modules" %% "scala-xml" % "1.0.4")
       case _ =>
-        EnvSupport.setEnv("CrossBuildScalaVersion", "2.10.4")
+        EnvSupport.setEnv("CrossBuildScalaVersion", "2.10.6")
         Nil
     }
   })
