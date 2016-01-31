@@ -5,7 +5,12 @@ import _root_.scoverage.MeasuredFile
 import scala.io.Source
 
 /** @author Stephen Samuel */
-class CodeGrid(mFile: MeasuredFile) {
+class CodeGrid(mFile: MeasuredFile, sourceEncoding: Option[String]) {
+
+  // for backward compatibility only
+  def this (mFile: MeasuredFile) {
+    this(mFile, None);
+  }
 
   case class Cell(char: Char, var status: StatementStatus)
 
@@ -60,7 +65,13 @@ class CodeGrid(mFile: MeasuredFile) {
     s"<pre style='font-size: 12pt; font-family: courier;'>$code</pre>"
   }
 
-  private def source(mfile: MeasuredFile): String = Source.fromFile(mfile.source).mkString
+  private def source(mfile: MeasuredFile): String = {
+    val src = sourceEncoding match {
+     case Some(enc) => Source.fromFile(mfile.source, enc)
+     case None => Source.fromFile(mfile.source)
+    }
+    src.mkString
+  }
 
   private def spanStart(status: StatementStatus): String = s"<span style='${cellStyle(status)}'>"
 
