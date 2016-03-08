@@ -6,7 +6,6 @@ scoverage is available for sbt, maven, and gradle.
 
 [![Build Status](https://travis-ci.org/scoverage/scalac-scoverage-plugin.svg?branch=master)](https://travis-ci.org/scoverage/scalac-scoverage-plugin)
 [![License](http://img.shields.io/:license-Apache%202-red.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
-
 [<img src="https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.11*.svg?label=latest%20release&20for&202.11"/>](a:"scalac-scoverage-plugin_2.11")
 
 Join the [scoverage](http://groups.google.com/group/scala-code-coverage-tool)
