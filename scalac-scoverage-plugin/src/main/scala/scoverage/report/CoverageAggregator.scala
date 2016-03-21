@@ -13,7 +13,7 @@ object CoverageAggregator {
 
   def aggregate(files: Seq[File], clean: Boolean): Option[Coverage] = {
     println(s"[info] Found ${files.size} subproject report files [${files.mkString(",")}]")
-    if (files.size > 1) {
+    if (files.size > 0) {
       val coverage = aggregatedCoverage(files)
       if (clean) files foreach (_.delete)
       Some(coverage)
