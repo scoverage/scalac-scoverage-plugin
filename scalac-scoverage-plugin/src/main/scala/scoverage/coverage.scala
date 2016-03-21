@@ -2,6 +2,8 @@ package scoverage
 
 import java.io.File
 
+import scoverage.DoubleFormat.twoFractionDigits
+
 import scala.collection.mutable
 
 /**
@@ -24,14 +26,14 @@ case class Coverage()
 
 
   def avgClassesPerPackage = classCount / packageCount.toDouble
-  def avgClassesPerPackageFormatted: String = "%.2f".format(avgClassesPerPackage)
+  def avgClassesPerPackageFormatted: String = twoFractionDigits(avgClassesPerPackage)
 
   def avgMethodsPerClass = methodCount / classCount.toDouble
-  def avgMethodsPerClassFormatted: String = "%.2f".format(avgMethodsPerClass)
+  def avgMethodsPerClassFormatted: String = twoFractionDigits(avgMethodsPerClass)
 
   def loc = files.map(_.loc).sum
   def linesPerFile = loc / fileCount.toDouble
-  def linesPerFileFormatted: String = "%.2f".format(linesPerFile)
+  def linesPerFileFormatted: String = twoFractionDigits(linesPerFile)
 
   // returns the classes by least coverage
   def risks(limit: Int) = classes.toSeq.sortBy(_.statementCount).reverse.sortBy(_.statementCoverage).take(limit)
@@ -158,7 +160,7 @@ trait CoverageMetrics {
   def invokedStatementCount = invokedStatements.size
   def statementCoverage: Double = if (statementCount == 0) 1 else invokedStatementCount / statementCount.toDouble
   def statementCoveragePercent = statementCoverage * 100
-  def statementCoverageFormatted: String = "%.2f".format(statementCoveragePercent)
+  def statementCoverageFormatted: String = twoFractionDigits(statementCoveragePercent)
   def branches: Iterable[Statement] = statements.filter(_.branch)
   def branchCount: Int = branches.size
   def branchCoveragePercent = branchCoverage * 100
@@ -179,7 +181,7 @@ trait CoverageMetrics {
       invokedBranchesCount / branchCount.toDouble
     }
   }
-  def branchCoverageFormatted: String = "%.2f".format(branchCoveragePercent)
+  def branchCoverageFormatted: String = twoFractionDigits(branchCoveragePercent)
 }
 
 trait ClassCoverage {

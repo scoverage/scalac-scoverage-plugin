@@ -2,6 +2,7 @@ package scoverage.report
 
 import java.io.File
 
+import scoverage.DoubleFormat.twoFractionDigits
 import scoverage._
 
 import scala.xml.{Node, PrettyPrinter}
@@ -13,8 +14,6 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends 
     this(Seq(baseDir), outputDir)
   }
 
-  def format(double: Double): String = "%.2f".format(double)
-
   def write(coverage: Coverage): Unit = {
     val file = new File(outputDir, "cobertura.xml")
     IOUtils.writeToFile(file, "<?xml version=\"1.0\"?>\n<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-04.dtd\">\n" +
@@ -24,8 +23,8 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends 
   def method(method: MeasuredMethod): Node = {
     <method name={method.name}
             signature="()V"
-            line-rate={format(method.statementCoverage)}
-            branch-rate={format(method.branchCoverage)}>
+            line-rate={twoFractionDigits(method.statementCoverage)}
+            branch-rate={twoFractionDigits(method.branchCoverage)}>
       <lines>
         {method.statements.map(stmt =>
           <line
@@ -40,8 +39,8 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends 
   def klass(klass: MeasuredClass): Node = {
     <class name={klass.fullClassName}
            filename={relativeSource(klass.source).replace(File.separator, "/")}
-           line-rate={format(klass.statementCoverage)}
-           branch-rate={format(klass.branchCoverage)}
+           line-rate={twoFractionDigits(klass.statementCoverage)}
+           branch-rate={twoFractionDigits(klass.branchCoverage)}
            complexity="0">
       <methods>
         {klass.methods.map(method)}
@@ -59,8 +58,8 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends 
 
   def pack(pack: MeasuredPackage): Node = {
     <package name={pack.name}
-             line-rate={format(pack.statementCoverage)}
-             branch-rate={format(pack.branchCoverage)}
+             line-rate={twoFractionDigits(pack.statementCoverage)}
+             branch-rate={twoFractionDigits(pack.branchCoverage)}
              complexity="0">
       <classes>
         {pack.classes.map(klass)}
@@ -73,12 +72,12 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends 
   }
 
   def xml(coverage: Coverage): Node = {
-    <coverage line-rate={format(coverage.statementCoverage)}
+    <coverage line-rate={twoFractionDigits(coverage.statementCoverage)}
               lines-valid={coverage.statementCount.toString}
               lines-covered={coverage.invokedStatementCount.toString}
               branches-valid={coverage.branchCount.toString}
               branches-covered={coverage.invokedBranchesCount.toString}
-              branch-rate={format(coverage.branchCoverage)}
+              branch-rate={twoFractionDigits(coverage.branchCoverage)}
               complexity="0"
               version="1.0"
               timestamp={System.currentTimeMillis.toString}>
