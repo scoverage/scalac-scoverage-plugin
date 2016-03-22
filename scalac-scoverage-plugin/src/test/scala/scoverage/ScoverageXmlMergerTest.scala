@@ -9,8 +9,6 @@ class ScoverageXmlMergerTest extends FreeSpec with Matchers {
   val node1 = scala.xml.XML.load(getClass.getResourceAsStream("/scoverage/report1.xml"))
   val node2 = scala.xml.XML.load(getClass.getResourceAsStream("/scoverage/report2.xml"))
 
-  private def formattedLocally(decimal: BigDecimal) = "%.2f".format(decimal)
-
   "scoverage xml merger" - {
     "should add top level statement-count" in {
       val node = ScoverageXmlMerger.merge(List(node1, node2))
@@ -22,7 +20,7 @@ class ScoverageXmlMergerTest extends FreeSpec with Matchers {
     }
     "should recalculate statement-rate" in {
       val node = ScoverageXmlMerger.merge(List(node1, node2))
-      (node \ "@statement-rate").text shouldBe formattedLocally(91.67)
+      (node \ "@statement-rate").text.toDouble shouldBe 91.67
     }
     "should reset timestamp" in {
       val node = ScoverageXmlMerger.merge(List(node1, node2))

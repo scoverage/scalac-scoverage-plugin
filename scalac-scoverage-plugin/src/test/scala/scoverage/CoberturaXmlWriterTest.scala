@@ -1,7 +1,7 @@
 package scoverage
 
 import java.io.File
-import java.util.{Locale, UUID}
+import java.util.UUID
 import javax.xml.parsers.DocumentBuilderFactory
 
 import org.scalatest.{BeforeAndAfter, FunSuite, OneInstancePerTest}
@@ -101,10 +101,8 @@ class CoberturaXmlWriterTest extends FunSuite with BeforeAndAfter with OneInstan
 
     val xml = XML.loadFile(fileIn(dir))
 
-    def formattedLocally(decimal: BigDecimal) = "%.2f".format(decimal)
-
-    assert(xml \\ "coverage" \@ "line-rate" === formattedLocally(0.33), "line-rate")
-    assert(xml \\ "coverage" \@ "branch-rate" === formattedLocally(0.50), "branch-rate")
+    assert(xml \\ "coverage" \@ "line-rate" === "0.33", "line-rate")
+    assert(xml \\ "coverage" \@ "branch-rate" === "0.50", "branch-rate")
 
   }
 }
