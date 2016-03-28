@@ -1,5 +1,7 @@
 package scoverage.report
 
+import scoverage.DoubleFormat.twoFractionDigits
+
 import scala.xml.Node
 
 /** @author Stephen Samuel */
@@ -12,7 +14,7 @@ object ScoverageXmlMerger {
     def merge(node1: Node, node2: Node): Node = {
       val statementCount = (node1 \ "@statement-count").text.toInt + (node2 \ "@statement-count").text.toInt
       val statementsInvoked = (node1 \ "@statements-invoked").text.toInt + (node2 \ "@statements-invoked").text.toInt
-      val statementRate = "%.2f".format(statementsInvoked.toDouble / statementCount.toDouble * 100.0d)
+      val statementRate = twoFractionDigits(statementsInvoked.toDouble / statementCount.toDouble * 100.0d)
       val packages = (node1 \\ "packages") ++ (node2 \\ "packages")
       <scoverage statement-count={statementCount.toString}
                  statements-invoked={statementsInvoked.toString}
