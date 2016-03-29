@@ -29,7 +29,6 @@ object Scoverage extends Build {
     resolvers := ("releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2") +: resolvers.value,
     concurrentRestrictions in Global += Tags.limit(Tags.Test, 1),
     javacOptions := Seq("-source", "1.6", "-target", "1.6"),
-    javaOptions += "-XX:MaxMetaspaceSize=2048m",
     publishTo <<= version {
       (v: String) =>
         val nexus = "https://oss.sonatype.org/"
@@ -71,15 +70,19 @@ object Scoverage extends Build {
     .settings(name := "scalac-scoverage")
     .settings(appSettings: _*)
     .settings(publishArtifact := false)
+    .settings(javaOptions += "-XX:MaxMetaspaceSize=2048m")
     .aggregate(plugin, runtime.jvm, runtime.js)
 
   lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scoverage-runtime"), CrossType.Full)
     .settings(name := "scalac-scoverage-runtime")
     .settings(appSettings: _*)
-    .jvmSettings(libraryDependencies ++= Seq(
+    .jvmSettings(
+      libraryDependencies ++= Seq(
       "org.mockito" % "mockito-all" % MockitoVersion % "test",
       "org.scalatest" %% "scalatest" % ScalatestVersion % "test"
-    ))
+      ),
+      javaOptions += "-XX:MaxMetaspaceSize=2048m"
+    )
     .jsSettings(
       libraryDependencies += "org.scalatest" %%% "scalatest" % ScalatestVersion,
       scalaJSStage := FastOptStage
@@ -92,6 +95,7 @@ object Scoverage extends Build {
     .dependsOn(`scalac-scoverage-runtimeJVM` % "test")
     .settings(name := "scalac-scoverage-plugin")
     .settings(appSettings: _*)
+    .settings(javaOptions += "-XX:MaxMetaspaceSize=2048m")
     .settings(libraryDependencies ++= Seq(
     "org.mockito" % "mockito-all" % MockitoVersion % "test",
     "org.scalatest" %% "scalatest" % ScalatestVersion % "test",
