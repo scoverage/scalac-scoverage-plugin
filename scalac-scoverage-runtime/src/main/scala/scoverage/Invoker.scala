@@ -5,6 +5,7 @@ import java.io.{FileFilter, File, FileWriter}
 import scala.collection.{mutable, Set}
 import scala.collection.concurrent.TrieMap
 import scala.io.Source
+import scala.util.Try
 
 /** @author Stephen Samuel */
 object Invoker {
@@ -12,6 +13,12 @@ object Invoker {
   private val MeasurementsPrefix = "scoverage.measurements."
   private val threadFiles = new ThreadLocal[TrieMap[String, FileWriter]]
   private val ids = TrieMap.empty[(String, Int), Any]
+  private val recordingEnabled = {
+    val key = "scoverage.recording.enabled"
+    Try(System.getProperty(key, "true").toLowerCase.toBoolean)
+      .getOrElse(throw new IllegalArgumentException(
+        s"""When specified, $key property must be "true" or "false" (default: true)."""))
+  }
 
   /**
    * We record that the given id has been invoked by appending its id to the coverage
@@ -29,18 +36,19 @@ object Invoker {
    * @param dataDir the directory where the measurement data is held
    */
   def invoked(id: Int, dataDir: String): Unit = {
-    // [sam] we can do this simple check to save writing out to a file.
+    // [sam] we can do this simple containment check to save writing out to a file.
     // This won't work across JVMs but since there's no harm in writing out the same id multiple
     // times since for coverage we only care about 1 or more, (it just slows things down to
     // do it more than once), anything we can do to help is good. This helps especially with code
     // that is executed many times quickly, eg tight loops.
-    if (!ids.contains(dataDir, id)) {
+    if (recordingEnabled && !ids.contains(dataDir, id)) {
       // Each thread writes to a separate measurement file, to reduce contention
       // and because file appends via FileWriter are not atomic on Windows.
       var files = threadFiles.get()
-      if (files == null)
+      if (files == null) {
         files = TrieMap.empty[String, FileWriter]
-      threadFiles.set(files)
+        threadFiles.set(files)
+      }
 
       val writer = files.getOrElseUpdate(dataDir, new FileWriter(measurementFile(dataDir), true))
       writer.append(id.toString + '\n').flush()

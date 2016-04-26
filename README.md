@@ -18,6 +18,9 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 
 ### Release History
 
+* Added the ability to disable coverage data recording by setting the JVM property `scoverage.recording.enabled` to `false`
+* Slight optimization of runtime
+
 ##### 26th April 2015 1.1.0
 
 * Bug fixes
