@@ -14,18 +14,21 @@ class ScoveragePlugin(val global: Global) extends Plugin {
 
   override val name: String = "scoverage"
   override val description: String = "scoverage code coverage compiler plugin"
-  val instrumentationComponent = new ScoverageInstrumentationComponent(global)
+  private val (extraAfterPhase, extraBeforePhase) = processPhaseOptions(pluginOptions)
+  val instrumentationComponent = new ScoverageInstrumentationComponent(global, extraAfterPhase, extraBeforePhase)
   override val components: List[PluginComponent] = List(instrumentationComponent)
 
   override def processOptions(opts: List[String], error: String => Unit) {
     val options = new ScoverageOptions
-    for ( opt <- opts ) {
+    for (opt <- opts) {
       if (opt.startsWith("excludedPackages:")) {
         options.excludedPackages = opt.substring("excludedPackages:".length).split(";").map(_.trim).filterNot(_.isEmpty)
       } else if (opt.startsWith("excludedFiles:")) {
         options.excludedFiles = opt.substring("excludedFiles:".length).split(";").map(_.trim).filterNot(_.isEmpty)
       } else if (opt.startsWith("dataDir:")) {
         options.dataDir = opt.substring("dataDir:".length)
+      } else if (opt.startsWith("extraAfterPhase:") || opt.startsWith("extraBeforePhase:")){
+        // skip here, these flags are processed elsewhere
       } else {
         error("Unknown option: " + opt)
       }
@@ -39,9 +42,32 @@ class ScoveragePlugin(val global: Global) extends Plugin {
     "-P:scoverage:dataDir:<pathtodatadir>                  where the coverage files should be written\n",
     "-P:scoverage:excludedPackages:<regex>;<regex>         semicolon separated list of regexs for packages to exclude",
     "-P:scoverage:excludedFiles:<regex>;<regex>            semicolon separated list of regexs for paths to exclude",
+    "-P:scoverage:extraAfterPhase:<phaseName>              phase after which scoverage phase runs (must be after typer phase)",
+    "-P:scoverage:extraBeforePhase:<phaseName>             phase before which scoverage phase runs (must be before patmat phase)",
     "                                                      Any classes whose fully qualified name matches the regex will",
     "                                                      be excluded from coverage."
   ).mkString("\n"))
+
+  // copied from scala 2.11
+  private def pluginOptions: List[String] = {
+    // Process plugin options of form plugin:option
+    def namec = name + ":"
+    global.settings.pluginOptions.value filter (_ startsWith namec) map (_ stripPrefix namec)
+  }
+
+  private def processPhaseOptions(opts: List[String]): (Option[String], Option[String]) = {
+    var afterPhase: Option[String] = None
+    var beforePhase: Option[String] = None
+    for (opt <- opts) {
+      if (opt.startsWith("extraAfterPhase:")) {
+        afterPhase = Some(opt.substring("extraAfterPhase:".length))
+      }
+      if (opt.startsWith("extraBeforePhase:")) {
+        beforePhase = Some(opt.substring("extraBeforePhase:".length))
+      }
+    }
+    (afterPhase, beforePhase)
+  }
 }
 
 class ScoverageOptions {
@@ -50,7 +76,7 @@ class ScoverageOptions {
   var dataDir: String = IOUtils.getTempPath
 }
 
-class ScoverageInstrumentationComponent(val global: Global)
+class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Option[String], extraBeforePhase: Option[String])
   extends PluginComponent
   with TypingTransformers
   with Transform {
@@ -61,8 +87,8 @@ class ScoverageInstrumentationComponent(val global: Global)
   val coverage = new Coverage
 
   override val phaseName: String = "scoverage-instrumentation"
-  override val runsAfter: List[String] = List("typer")
-  override val runsBefore = List[String]("patmat")
+  override val runsAfter: List[String] = List("typer") ::: extraAfterPhase.toList
+  override val runsBefore: List[String] = List("patmat") ::: extraBeforePhase.toList
 
   /**
    * Our options are not provided at construction time, but shortly after,
