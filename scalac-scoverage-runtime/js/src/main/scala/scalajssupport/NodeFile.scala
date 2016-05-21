@@ -60,10 +60,12 @@ class NodeFile(path: String) extends JsFile {
 
 }
 
+@js.native
 trait FSStats extends js.Object {
   def isDirectory(): Boolean = js.native
 }
 
+@js.native
 trait FS extends js.Object {
   def closeSync(fd: Int): Unit = js.native
   def lstatSync(path: String): FSStats = js.native
@@ -77,6 +79,7 @@ trait FS extends js.Object {
   def writeFileSync(path: String, data: String, options: js.Dynamic = js.Dynamic.literal()): Unit = js.native
 }
 
+@js.native
 trait NodePath extends js.Object {
   def basename(path: String): String = js.native
   def join(paths: String*): String = js.native

@@ -6,6 +6,7 @@ import scala.scalajs.js.annotation.JSName
 import js.Dynamic.{ global => g, newInstance => jsnew }
 
 @JSName("Packages.java.io.File")
+@js.native
 class NativeRhinoFile(path: String, child: String) extends js.Object {
   def this(path: String) = this("", path)
 
