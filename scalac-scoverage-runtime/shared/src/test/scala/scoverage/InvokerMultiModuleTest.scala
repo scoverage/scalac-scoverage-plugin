@@ -1,6 +1,6 @@
 package scoverage
 
-import java.io.File
+import scoverage.Platform.File
 
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
@@ -11,7 +11,8 @@ class InvokerMultiModuleTest extends FunSuite with BeforeAndAfter {
 
   val measurementDir = Array(
     new File("target/invoker-test.measurement0"),
-    new File("target/invoker-test.measurement1"))
+    new File("target/invoker-test.measurement1")
+  )
 
   before {
     deleteMeasurementFiles()
