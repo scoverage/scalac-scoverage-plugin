@@ -18,14 +18,16 @@ class BaseReportWriter(sourceDirectories: Seq[File], outputDir: File, ignoreStat
   def relativeSource(src: String): String = relativeSource(src, formattedSourcePaths)
 
   private def relativeSource(src: String, sourcePaths: Seq[String]): String = {
+    // We need the canonical path for the given src because our formattedSourcePaths are canonical
+    val canonicalSrc = new File(src).getCanonicalPath
     val sourceRoot: Option[String] = sourcePaths.find(
-      sourcePath => src.startsWith(sourcePath)
+      sourcePath => canonicalSrc.startsWith(sourcePath)
     )
     sourceRoot match {
-      case Some(path: String) => src.replace(path, "")
+      case Some(path: String) => canonicalSrc.replace(path, "")
       case _ =>
         val fmtSourcePaths: String = sourcePaths.mkString("'", "', '", "'")
-        throw new RuntimeException(s"No source root found for '$src' (source roots: $fmtSourcePaths)");
+        throw new RuntimeException(s"No source root found for '$canonicalSrc' (source roots: $fmtSourcePaths)");
     }
   }
 
