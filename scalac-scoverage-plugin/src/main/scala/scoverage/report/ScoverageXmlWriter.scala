@@ -10,8 +10,16 @@ import scala.xml.{Node, PrettyPrinter}
 class ScoverageXmlWriter(sourceDirectories: Seq[File], outputDir: File, debug: Boolean, ignoreStatementsNotInSrcDirs: Boolean)
   extends BaseReportWriter(sourceDirectories, outputDir, ignoreStatementsNotInSrcDirs) {
 
-  def this (sourceDir: File, outputDir: File, debug: Boolean, ignoreStatementsNotInSrcDirs: Boolean = false) {
+  def this (sourceDir: File, outputDir: File, debug: Boolean, ignoreStatementsNotInSrcDirs: Boolean) {
     this(Seq(sourceDir), outputDir, debug, ignoreStatementsNotInSrcDirs)
+  }
+
+  def this (sourceDir: File, outputDir: File, debug: Boolean){
+    this(Seq(sourceDir), outputDir, debug, ignoreStatementsNotInSrcDirs = false)
+  }
+
+  def this (sourceDirectories: Seq[File], outputDir: File, debug: Boolean) {
+    this(sourceDirectories, outputDir, debug, ignoreStatementsNotInSrcDirs = false)
   }
 
   def write(coverage: Coverage): Unit = {
