@@ -3,7 +3,7 @@ package scoverage
 import java.io.StringWriter
 
 import org.scalatest.{OneInstancePerTest, FunSuite}
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 
 import scala.xml.Utility
 

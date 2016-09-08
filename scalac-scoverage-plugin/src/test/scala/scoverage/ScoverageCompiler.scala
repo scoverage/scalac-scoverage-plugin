@@ -11,8 +11,11 @@ import scala.tools.nsc.transform.{Transform, TypingTransformers}
 /** @author Stephen Samuel */
 object ScoverageCompiler {
 
-  val ScalaVersion = "2.11.7"
-  val ShortScalaVersion = ScalaVersion.dropRight(2)
+  val ScalaVersion      = scala.util.Properties.versionNumberString
+  val ShortScalaVersion = (ScalaVersion split "[.]").toList match {
+    case init :+ last if last forall (_.isDigit) => init mkString "."
+    case _                                       => ScalaVersion
+  }
 
   def classPath = getScalaJars.map(_.getAbsolutePath) :+ sbtCompileDir.getAbsolutePath :+ runtimeClasses.getAbsolutePath
 
@@ -51,31 +54,41 @@ object ScoverageCompiler {
     dir
   }
 
-  private def runtimeClasses: File = new File("./scalac-scoverage-runtime/jvm/target/scala-2.11/classes")
+  private def runtimeClasses: File = new File(s"./scalac-scoverage-runtime/jvm/target/scala-$ShortScalaVersion/classes")
 
   private def findScalaJar(artifactId: String): File = findIvyJar("org.scala-lang", artifactId, ScalaVersion)
 
+  private def findCrossedIvyJar(groupId: String, artifactId: String, version: String): File =
+    findIvyJar(groupId, artifactId + "_" + ShortScalaVersion, version)
+
+  /* This is the wrong way to go about this.
+   */
   private def findIvyJar(groupId: String, artifactId: String, version: String): File = {
-    val userHome = System.getProperty("user.home")
-    val sbtHome = userHome + "/.ivy2"
-    val jarPath = sbtHome + "/cache/" + groupId + "/" + artifactId + "/jars/" + artifactId + "-" + version + ".jar"
-    val file = new File(jarPath)
-    if (!file.exists)
-      throw new FileNotFoundException(s"Could not locate [$jarPath].")
-    file
+    val userHome  = System.getProperty("user.home")
+    val localPath = new File(s"$userHome/.ivy2/local/$groupId/$artifactId/$version/jars/$artifactId.jar")
+    val cachePath = new File(s"$userHome/.ivy2/cache/$groupId/$artifactId/jars/${artifactId}-${version}.jar")
+
+    Seq(localPath, cachePath) find (_.exists) getOrElse {
+      throw new FileNotFoundException(s"Could not locate $artifactId at standard location.")
+    }
   }
 }
 
 class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools.nsc.reporters.Reporter)
   extends scala.tools.nsc.Global(settings, reporter) {
 
-  def addToClassPath(groupId: String, artifactId: String, version: String): Unit = {
-    settings.classpath.value = settings.classpath.value + File.pathSeparator + ScoverageCompiler
-      .findIvyJar(groupId, artifactId, version)
-      .getAbsolutePath
+  def addLogging(): Unit = {
+    addToClassPath(ScoverageCompiler.findIvyJar("org.slf4j", "slf4j-api", "1.7.7"))
+    addToClassPath(ScoverageCompiler.findCrossedIvyJar("com.typesafe.scala-logging", "scala-logging", "3.5.0-SNAPSHOT"))
+  }
+  def addToClassPath(file: File): Unit = {
+    settings.classpath.value = settings.classpath.value + File.pathSeparator + file.getAbsolutePath
   }
 
-  val instrumentationComponent = new ScoverageInstrumentationComponent(this, None, None)
+  val instrumentationComponent = new ScoverageInstrumentationComponent(this, None, None) {
+    override val runsRightAfter = Some("scoverage-validator")
+  }
+
   instrumentationComponent.setOptions(new ScoverageOptions())
   val testStore = new ScoverageTestStoreComponent(this)
   val validator = new PositionValidator(this)
@@ -112,8 +125,9 @@ class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tool
   class PositionValidator(val global: Global) extends PluginComponent with TypingTransformers with Transform {
 
     override val phaseName: String = "scoverage-validator"
-    override val runsAfter: List[String] = List("typer")
-    override val runsBefore = List[String]("scoverage-instrumentation")
+    override val runsRightAfter    = Some("typer")
+    override val runsAfter         = List("typer")
+    override val runsBefore        = List("scoverage-instrumentation")
 
     override protected def newTransformer(unit: global.CompilationUnit): global.Transformer = new Transformer(unit)
     class Transformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
@@ -130,9 +144,8 @@ class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tool
     val sources = new ListBuffer[String]
 
     override val phaseName: String = "scoverage-teststore"
-    override val runsAfter: List[String] = List("dce")
-    // deadcode
-    override val runsBefore = List[String]("terminal")
+    override val runsAfter         = List("jvm")
+    override val runsBefore        = List("terminal")
 
     override protected def newTransformer(unit: global.CompilationUnit): global.Transformer = new Transformer(unit)
     class Transformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
@@ -145,39 +158,9 @@ class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tool
   }
 
   override def computeInternalPhases() {
-    val phs = List(
-      syntaxAnalyzer -> "parse source into ASTs, perform simple desugaring",
-      analyzer.namerFactory -> "resolve names, attach symbols to named trees",
-      analyzer.packageObjects -> "load package objects",
-      analyzer.typerFactory -> "the meat and potatoes: type the trees",
-      validator -> "scoverage validator",
-      instrumentationComponent -> "scoverage instrumentationComponent",
-      patmat -> "translate match expressions",
-      superAccessors -> "add super accessors in traits and nested classes",
-      extensionMethods -> "add extension methods for inline classes",
-      pickler -> "serialize symbol tables",
-      refChecks -> "reference/override checking, translate nested objects",
-      uncurry -> "uncurry, translate function values to anonymous classes",
-      tailCalls -> "replace tail calls by jumps",
-      specializeTypes -> "@specialized-driven class and method specialization",
-      explicitOuter -> "this refs to outer pointers, translate patterns",
-      erasure -> "erase types, add interfaces for traits",
-      postErasure -> "clean up erased inline classes",
-      lazyVals -> "allocate bitmaps, translate lazy vals into lazified defs",
-      lambdaLift -> "move nested functions to top level",
-      constructors -> "move field definitions into constructors",
-      mixer -> "mixin composition",
-      cleanup -> "platform-specific cleanups, generate reflective calls",
-      genicode -> "generate portable intermediate code",
-      inliner -> "optimization: do inlining",
-      inlineExceptionHandlers -> "optimization: inline exception handlers",
-      closureElimination -> "optimization: eliminate uncalled closures",
-      deadCode -> "optimization: eliminate dead code",
-      testStore -> "scoverage teststore",
-      terminal -> "The last phase in the compiler chain"
-    )
-    phs foreach (addToPhasesSet _).tupled
+    super.computeInternalPhases()
+    addToPhasesSet(validator, "scoverage validator")
+    addToPhasesSet(instrumentationComponent, "scoverage instrumentationComponent")
+    addToPhasesSet(testStore, "scoverage teststore")
   }
 }
-
-

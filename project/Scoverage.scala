@@ -1,7 +1,5 @@
 import sbt.Keys._
 import sbt._
-import sbtrelease.ReleasePlugin
-import sbtrelease.ReleasePlugin.ReleaseKeys
 import com.typesafe.sbt.pgp.PgpKeys
 import org.scalajs.sbtplugin.cross.CrossProject
 import org.scalajs.sbtplugin.cross.CrossType
@@ -11,24 +9,24 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 object Scoverage extends Build {
 
   val Org = "org.scoverage"
-  val Scala = "2.11.7"
-  val MockitoVersion = "1.9.5"
-  val ScalatestVersion = "3.0.0-M15"
+  val MockitoVersion = "1.10.19"
+  val ScalatestVersion = "3.0.0"
 
   lazy val LocalTest = config("local") extend Test
 
   val appSettings = Seq(
     organization := Org,
-    scalaVersion := Scala,
-    crossScalaVersions := Seq("2.10.6", "2.11.7"),
+    scalaVersion := "2.11.8",
+    crossScalaVersions := Seq(scalaVersion.value, "2.12.0-RC1"),
     fork in Test := false,
     publishMavenStyle := true,
     publishArtifact in Test := false,
     parallelExecution in Test := false,
+    sbtrelease.ReleasePlugin.autoImport.releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+    sbtrelease.ReleasePlugin.autoImport.releaseCrossBuild := true,
     scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8"),
     resolvers := ("releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2") +: resolvers.value,
     concurrentRestrictions in Global += Tags.limit(Tags.Test, 1),
-    javacOptions := Seq("-source", "1.6", "-target", "1.6"),
     publishTo <<= version {
       (v: String) =>
         val nexus = "https://oss.sonatype.org/"
@@ -61,16 +59,12 @@ object Scoverage extends Build {
     pomIncludeRepository := {
       _ => false
     }
-  ) ++ ReleasePlugin.releaseSettings ++ Seq(
-    ReleaseKeys.crossBuild := true,
-    ReleaseKeys.publishArtifactsAction := PgpKeys.publishSigned.value
   )
 
   lazy val root = Project("scalac-scoverage", file("."))
     .settings(name := "scalac-scoverage")
     .settings(appSettings: _*)
     .settings(publishArtifact := false)
-    .settings(javaOptions += "-XX:MaxMetaspaceSize=2048m")
     .aggregate(plugin, runtime.jvm, runtime.js)
 
   lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scoverage-runtime"), CrossType.Full)
@@ -78,10 +72,9 @@ object Scoverage extends Build {
     .settings(appSettings: _*)
     .jvmSettings(
       libraryDependencies ++= Seq(
-      "org.mockito" % "mockito-all" % MockitoVersion % "test",
-      "org.scalatest" %% "scalatest" % ScalatestVersion % "test"
-      ),
-      javaOptions += "-XX:MaxMetaspaceSize=2048m"
+      "org.mockito" % "mockito-all" % MockitoVersion % Test,
+      "org.scalatest" %% "scalatest" % ScalatestVersion % Test
+      )
     )
     .jsSettings(
       libraryDependencies += "org.scalatest" %%% "scalatest" % ScalatestVersion,
@@ -92,26 +85,17 @@ object Scoverage extends Build {
   lazy val `scalac-scoverage-runtimeJS` = runtime.js
 
   lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
-    .dependsOn(`scalac-scoverage-runtimeJVM` % "test")
+    .dependsOn(`scalac-scoverage-runtimeJVM` % Test)
     .settings(name := "scalac-scoverage-plugin")
     .settings(appSettings: _*)
-    .settings(javaOptions += "-XX:MaxMetaspaceSize=2048m")
     .settings(libraryDependencies ++= Seq(
-    "org.mockito" % "mockito-all" % MockitoVersion % "test",
-    "org.scalatest" %% "scalatest" % ScalatestVersion % "test",
-    "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
-    "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
-    "org.joda" % "joda-convert" % "1.6" % "test",
-    "joda-time" % "joda-time" % "2.3" % "test",
-    "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2" % "test"
-  )).settings(libraryDependencies ++= {
-    CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, scalaMajor)) if scalaMajor == 11 =>
-        EnvSupport.setEnv("CrossBuildScalaVersion", "2.11.7")
-        Seq("org.scala-lang.modules" %% "scala-xml" % "1.0.4")
-      case _ =>
-        EnvSupport.setEnv("CrossBuildScalaVersion", "2.10.6")
-        Nil
-    }
-  })
+      "org.mockito"                %  "mockito-all"    % MockitoVersion     % Test,
+      "org.scalatest"              %% "scalatest"      % ScalatestVersion   % Test,
+      "org.scala-lang"             %  "scala-reflect"  % scalaVersion.value % "provided",
+      "org.scala-lang"             %  "scala-compiler" % scalaVersion.value % "provided",
+      "org.joda"                   %  "joda-convert"   % "1.8.1"            % Test,
+      "joda-time"                  %  "joda-time"      % "2.9.4"            % Test,
+      "com.typesafe.scala-logging" %% "scala-logging"  % "3.5.0-SNAPSHOT"   % Test,
+      "org.scala-lang.modules"     %% "scala-xml"      % "1.0.5"
+    ))
 }

@@ -1,6 +1,6 @@
 package scoverage
 
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEachTestData, FunSuite, OneInstancePerTest}
 
 /** @author Stephen Samuel */
@@ -275,16 +275,8 @@ class PluginCoverageTest
 
   test("plugin should not instrument expanded macro code github.com/skinny-framework/skinny-framework/issues/97") {
     val compiler = ScoverageCompiler.default
-    compiler.addToClassPath("org.slf4j", "slf4j-api", "1.7.7")
-    compiler
-      .addToClassPath("com.typesafe.scala-logging",
-        "scala-logging-api_" + ScoverageCompiler.ShortScalaVersion,
-        "2.1.2")
-    compiler
-      .addToClassPath("com.typesafe.scala-logging",
-        "scala-logging-slf4j_" + ScoverageCompiler.ShortScalaVersion,
-        "2.1.2")
-    compiler.compileCodeSnippet( """import com.typesafe.scalalogging.slf4j.StrictLogging
+    compiler.addLogging()
+    compiler.compileCodeSnippet( """import com.typesafe.scalalogging.StrictLogging
                                    |class MacroTest extends StrictLogging {
                                    |  logger.info("will break")
                                    |} """.stripMargin)
