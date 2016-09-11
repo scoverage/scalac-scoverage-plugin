@@ -17,7 +17,7 @@ object Scoverage extends Build {
   val appSettings = Seq(
     organization := Org,
     scalaVersion := "2.11.8",
-    crossScalaVersions := Seq(scalaVersion.value, "2.12.0-RC1"),
+    crossScalaVersions := Seq("2.10.6", scalaVersion.value, "2.12.0-RC1"),
     fork in Test := false,
     publishMavenStyle := true,
     publishArtifact in Test := false,
@@ -88,14 +88,33 @@ object Scoverage extends Build {
     .dependsOn(`scalac-scoverage-runtimeJVM` % Test)
     .settings(name := "scalac-scoverage-plugin")
     .settings(appSettings: _*)
+    .settings(crossVersionSharedSources)
     .settings(libraryDependencies ++= Seq(
       "org.mockito"                %  "mockito-all"    % MockitoVersion     % Test,
       "org.scalatest"              %% "scalatest"      % ScalatestVersion   % Test,
       "org.scala-lang"             %  "scala-reflect"  % scalaVersion.value % "provided",
       "org.scala-lang"             %  "scala-compiler" % scalaVersion.value % "provided",
       "org.joda"                   %  "joda-convert"   % "1.8.1"            % Test,
-      "joda-time"                  %  "joda-time"      % "2.9.4"            % Test,
-      "com.typesafe.scala-logging" %% "scala-logging"  % "3.5.0-SNAPSHOT"   % Test,
-      "org.scala-lang.modules"     %% "scala-xml"      % "1.0.5"
-    ))
+      "joda-time"                  %  "joda-time"      % "2.9.4"            % Test
+    )).settings(libraryDependencies ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, scalaMajor)) if scalaMajor > 10 =>
+        Seq("org.scala-lang.modules" %% "scala-xml" % "1.0.5")
+      case _ =>
+        Seq()
+    }
+  })
+
+  lazy val crossVersionSharedSources: Seq[Setting[_]] =
+  Seq(Compile, Test).map { sc =>
+    (unmanagedSourceDirectories in sc) ++= {
+      (unmanagedSourceDirectories in sc ).value.map { dir: File =>
+        CrossVersion.partialVersion(scalaVersion.value) match {
+          case Some((2, y)) if y == 10 => new File(dir.getPath + "_2.10")
+          case Some((2, y)) if y >= 11 => new File(dir.getPath + "_2.11+")
+        }
+      }
+    }
+  }
+
 }

@@ -76,27 +76,13 @@ class PluginASTSupportTest
     assert(!compiler.reporter.hasWarnings)
   }
 
-  // https://github.com/skinny-framework/skinny-framework/issues/97
-  test("macro range positions should not break plugin") {
-    val compiler = ScoverageCompiler.default
-    compiler.addLogging()
-    compiler.compileCodeSnippet( """import com.typesafe.scalalogging.StrictLogging
-                          |
-                          |object MacroTest extends StrictLogging {
-                          |  println("Hello")
-                          |  logger.info("will break")
-                          |} """.stripMargin)
-    assert(!compiler.reporter.hasErrors)
-    assert(!compiler.reporter.hasWarnings)
-  }
-
   // https://github.com/scoverage/scalac-scoverage-plugin/issues/45
   test("compile final vals in annotations") {
     val compiler = ScoverageCompiler.default
     compiler.compileCodeSnippet( """object Foo  {
                           |  final val foo = 1L
                           |}
-                          |@SerialVersionUID(value = Foo.foo)
+                          |@SerialVersionUID(Foo.foo)
                           |class Bar
                           |""".stripMargin)
     assert(!compiler.reporter.hasErrors)
