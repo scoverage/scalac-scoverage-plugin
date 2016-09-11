@@ -1,0 +1,5 @@
+package scoverage
+
+object XmlCompat {
+
+}

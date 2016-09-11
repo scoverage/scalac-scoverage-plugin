@@ -1,6 +1,6 @@
 package scoverage
 
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEachTestData, FunSuite, OneInstancePerTest}
 
 /** @author Stephen Samuel */
@@ -23,23 +23,6 @@ class PluginCoverageTest
     // instrumenting the default-param which becomes a method call invocation
     // the method makeGreeting is entered.
     compiler.assertNMeasuredStatements(2)
-  }
-
-  test("scoverage should skip macros") {
-    val compiler = ScoverageCompiler.default
-    val code = """
-              import scala.language.experimental.macros
-              import scala.reflect.macros.Context
-              class Impl(val c: Context) {
-                import c.universe._
-                def poly[T: c.WeakTypeTag] = c.literal(c.weakTypeOf[T].toString)
-              }
-              object Macros {
-                def poly[T] = macro Impl.poly[T]
-              }"""
-    compiler.compileCodeSnippet(code)
-    assert(!compiler.reporter.hasErrors)
-    compiler.assertNMeasuredStatements(0)
   }
 
   test("scoverage should instrument final vals") {
@@ -253,44 +236,6 @@ class PluginCoverageTest
     // 2 statements for the two applies in Seq, one for each literal which is 6, one for the flat map,
     // one for the map, one for the yield op.
     compiler.assertNMeasuredStatements(11)
-  }
-
-  test("plugin should not instrument local macro implementation") {
-    val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """
-                                   | object MyMacro {
-                                   | import scala.language.experimental.macros
-                                   | import scala.reflect.macros.Context
-                                   |  def test = macro testImpl
-                                   |  def testImpl(c: Context): c.Expr[Unit] = {
-                                   |    import c.universe._
-                                   |    reify {
-                                   |      println("macro test")
-                                   |    }
-                                   |  }
-                                   |} """.stripMargin)
-    assert(!compiler.reporter.hasErrors)
-    compiler.assertNoCoverage()
-  }
-
-  test("plugin should not instrument expanded macro code github.com/skinny-framework/skinny-framework/issues/97") {
-    val compiler = ScoverageCompiler.default
-    compiler.addToClassPath("org.slf4j", "slf4j-api", "1.7.7")
-    compiler
-      .addToClassPath("com.typesafe.scala-logging",
-        "scala-logging-api_" + ScoverageCompiler.ShortScalaVersion,
-        "2.1.2")
-    compiler
-      .addToClassPath("com.typesafe.scala-logging",
-        "scala-logging-slf4j_" + ScoverageCompiler.ShortScalaVersion,
-        "2.1.2")
-    compiler.compileCodeSnippet( """import com.typesafe.scalalogging.slf4j.StrictLogging
-                                   |class MacroTest extends StrictLogging {
-                                   |  logger.info("will break")
-                                   |} """.stripMargin)
-    assert(!compiler.reporter.hasErrors)
-    assert(!compiler.reporter.hasWarnings)
-    compiler.assertNoCoverage()
   }
 
   ignore("plugin should handle return inside catch github.com/scoverage/scalac-scoverage-plugin/issues/93") {
