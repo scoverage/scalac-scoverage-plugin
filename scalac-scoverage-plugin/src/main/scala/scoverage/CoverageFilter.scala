@@ -12,6 +12,7 @@ trait CoverageFilter {
   def isClassIncluded(className: String): Boolean
   def isFileIncluded(file: SourceFile): Boolean
   def isLineIncluded(position: Position): Boolean
+  def isSymbolIncluded(symbolName: String): Boolean
   def getExcludedLineNumbers(sourceFile: SourceFile): List[Range]
 }
 
@@ -20,13 +21,16 @@ object AllCoverageFilter extends CoverageFilter {
   override def isLineIncluded(position: Position): Boolean = true
   override def isClassIncluded(className: String): Boolean = true
   override def isFileIncluded(file: SourceFile): Boolean = true
+  override def isSymbolIncluded(symbolName: String): Boolean = true
 }
 
 class RegexCoverageFilter(excludedPackages: Seq[String],
-                          excludedFiles: Seq[String]) extends CoverageFilter {
+                          excludedFiles: Seq[String],
+                          excludedSymbols: Seq[String]) extends CoverageFilter {
 
   val excludedClassNamePatterns = excludedPackages.map(_.r.pattern)
   val excludedFilePatterns = excludedFiles.map(_.r.pattern)
+  val excludedSymbolPatterns = excludedSymbols.map(_.r.pattern)
 
   /**
    * We cache the excluded ranges to avoid scanning the source code files
@@ -62,6 +66,10 @@ class RegexCoverageFilter(excludedPackages: Seq[String],
     } else {
       true
     }
+  }
+
+  override def isSymbolIncluded(symbolName: String): Boolean = {
+    excludedSymbolPatterns.isEmpty || !excludedSymbolPatterns.exists(_.matcher(symbolName).matches)
   }
 
   /**
