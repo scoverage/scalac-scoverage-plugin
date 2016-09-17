@@ -1,6 +1,6 @@
 package scoverage
 
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfterEachTestData, FunSuite, OneInstancePerTest}
 
 /** @author Stephen Samuel */
@@ -27,7 +27,19 @@ class PluginCoverageTest
 
   test("scoverage should skip macros") {
     val compiler = ScoverageCompiler.default
-    val code = """
+    val code = if (ScoverageCompiler.ShortScalaVersion == "2.10")
+               """
+              import scala.language.experimental.macros
+              import scala.reflect.macros.Context
+              object Impl {
+                def poly[T: c.WeakTypeTag](c: Context) = c.literal(c.weakTypeOf[T].toString)
+              }
+
+              object Macros {
+                def poly[T] = macro Impl.poly[T]
+              }"""
+    else
+               """
               import scala.language.experimental.macros
               import scala.reflect.macros.Context
               class Impl(val c: Context) {

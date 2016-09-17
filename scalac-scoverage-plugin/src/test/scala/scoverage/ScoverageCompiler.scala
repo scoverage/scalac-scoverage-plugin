@@ -11,7 +11,7 @@ import scala.tools.nsc.transform.{Transform, TypingTransformers}
 /** @author Stephen Samuel */
 object ScoverageCompiler {
 
-  val ScalaVersion = "2.11.7"
+  val ScalaVersion = scala.util.Properties.versionNumberString
   val ShortScalaVersion = ScalaVersion.dropRight(2)
 
   def classPath = getScalaJars.map(_.getAbsolutePath) :+ sbtCompileDir.getAbsolutePath :+ runtimeClasses.getAbsolutePath
@@ -45,13 +45,13 @@ object ScoverageCompiler {
   }
 
   private def sbtCompileDir: File = {
-    val dir = new File("./scalac-scoverage-plugin/target/scala-" + ShortScalaVersion + "/classes")
+    val dir = new File(s"./scalac-scoverage-plugin/target/scala-$ShortScalaVersion/classes")
     if (!dir.exists)
       throw new FileNotFoundException(s"Could not locate SBT compile directory for plugin files [$dir]")
     dir
   }
 
-  private def runtimeClasses: File = new File("./scalac-scoverage-runtime/jvm/target/scala-2.11/classes")
+  private def runtimeClasses: File = new File(s"./scalac-scoverage-runtime/jvm/target/scala-$ShortScalaVersion/classes")
 
   private def findScalaJar(artifactId: String): File = findIvyJar("org.scala-lang", artifactId, ScalaVersion)
 
