@@ -57,7 +57,14 @@ class CodeGrid(mFile: MeasuredFile, sourceEncoding: Option[String]) {
           sb append spanStart(cell.status)
           style = style2
         }
-        xml.Utility.escape(cell.char.toString, sb)
+        // escape xml characters
+        cell.char match {
+          case '<'  => sb.append("&lt;")
+          case '>'  => sb.append("&gt;")
+          case '&'  => sb.append("&amp;")
+          case '"'  => sb.append("&quot;")
+          case c    => sb.append(c)
+        }
       })
       sb append "</span>"
       sb.toString
