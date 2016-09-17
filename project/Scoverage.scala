@@ -11,16 +11,15 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 object Scoverage extends Build {
 
   val Org = "org.scoverage"
-  val Scala = "2.11.7"
   val MockitoVersion = "1.9.5"
-  val ScalatestVersion = "3.0.0-M15"
+  val ScalatestVersion = "3.0.0"
 
   lazy val LocalTest = config("local") extend Test
 
   val appSettings = Seq(
     organization := Org,
-    scalaVersion := Scala,
-    crossScalaVersions := Seq("2.10.6", "2.11.7"),
+    scalaVersion := "2.11.8",
+    crossScalaVersions := Seq("2.10.6", "2.11.8"),
     fork in Test := false,
     publishMavenStyle := true,
     publishArtifact in Test := false,
@@ -70,7 +69,6 @@ object Scoverage extends Build {
     .settings(name := "scalac-scoverage")
     .settings(appSettings: _*)
     .settings(publishArtifact := false)
-    .settings(javaOptions += "-XX:MaxMetaspaceSize=2048m")
     .aggregate(plugin, runtime.jvm, runtime.js)
 
   lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scoverage-runtime"), CrossType.Full)
@@ -80,8 +78,7 @@ object Scoverage extends Build {
       libraryDependencies ++= Seq(
       "org.mockito" % "mockito-all" % MockitoVersion % "test",
       "org.scalatest" %% "scalatest" % ScalatestVersion % "test"
-      ),
-      javaOptions += "-XX:MaxMetaspaceSize=2048m"
+      )
     )
     .jsSettings(
       libraryDependencies += "org.scalatest" %%% "scalatest" % ScalatestVersion,
@@ -95,7 +92,6 @@ object Scoverage extends Build {
     .dependsOn(`scalac-scoverage-runtimeJVM` % "test")
     .settings(name := "scalac-scoverage-plugin")
     .settings(appSettings: _*)
-    .settings(javaOptions += "-XX:MaxMetaspaceSize=2048m")
     .settings(libraryDependencies ++= Seq(
     "org.mockito" % "mockito-all" % MockitoVersion % "test",
     "org.scalatest" %% "scalatest" % ScalatestVersion % "test",
@@ -107,10 +103,8 @@ object Scoverage extends Build {
   )).settings(libraryDependencies ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, scalaMajor)) if scalaMajor == 11 =>
-        EnvSupport.setEnv("CrossBuildScalaVersion", "2.11.7")
         Seq("org.scala-lang.modules" %% "scala-xml" % "1.0.4")
       case _ =>
-        EnvSupport.setEnv("CrossBuildScalaVersion", "2.10.6")
         Nil
     }
   })

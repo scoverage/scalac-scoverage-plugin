@@ -1,6 +1,6 @@
 package scoverage
 
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest._
 
 /** @author Stephen Samuel */
@@ -98,7 +98,7 @@ class PluginASTSupportTest
     compiler.compileCodeSnippet( """object Foo  {
                           |  final val foo = 1L
                           |}
-                          |@SerialVersionUID(value = Foo.foo)
+                          |@SerialVersionUID(Foo.foo)
                           |class Bar
                           |""".stripMargin)
     assert(!compiler.reporter.hasErrors)

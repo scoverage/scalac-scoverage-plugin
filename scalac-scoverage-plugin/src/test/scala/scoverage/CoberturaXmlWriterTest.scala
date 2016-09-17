@@ -101,8 +101,8 @@ class CoberturaXmlWriterTest extends FunSuite with BeforeAndAfter with OneInstan
 
     val xml = XML.loadFile(fileIn(dir))
 
-    assert(xml \\ "coverage" \@ "line-rate" === "0.33", "line-rate")
-    assert(xml \\ "coverage" \@ "branch-rate" === "0.50", "branch-rate")
+    assert((xml \\ "coverage" \ "@line-rate").text === "0.33", "line-rate")
+    assert((xml \\ "coverage" \ "@branch-rate").text === "0.50", "branch-rate")
 
   }
 }

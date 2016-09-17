@@ -1,18 +1,9 @@
-*.class
 *.log
 
-.idea
-.idea_modules
-
-# sbt specific
-dist/*
+# SBT specific
 target/
-lib_managed/
-src_managed/
 project/boot/
 project/plugins/project/
-credentials.sbt
-*.icode
 
 # Eclipse specific
 .classpath
@@ -20,5 +11,10 @@ credentials.sbt
 .settings/
 
 # Scala-IDE specific
-.scala_dependencies
+.cache-main
+.cache-tests
+
+# IntelliJ IDEA specific
+.idea
+.idea_modules
 *.iml

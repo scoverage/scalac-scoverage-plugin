@@ -3,7 +3,7 @@ package scoverage
 import java.io.{File, FileWriter}
 import java.util.UUID
 
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
 
 /** @author Stephen Samuel */
