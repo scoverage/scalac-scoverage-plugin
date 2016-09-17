@@ -8,12 +8,11 @@ import scoverage._
 import scala.xml.Node
 
 /** @author Stephen Samuel */
-class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File, sourceEncoding: Option[String], ignoreStatementsNotInSrcDirs: Boolean)
-  extends BaseReportWriter(sourceDirectories, outputDir, ignoreStatementsNotInSrcDirs) {
+class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File, sourceEncoding: Option[String]) extends BaseReportWriter(sourceDirectories, outputDir) {
 
   // for backward compatibility only
-  def this (sourceDirectories: Seq[File], outputDir: File, ignoreStatementsNotInSrcDirs: Boolean = false) {
-    this(sourceDirectories, outputDir, None, ignoreStatementsNotInSrcDirs)
+  def this (sourceDirectories: Seq[File], outputDir: File) {
+    this(sourceDirectories, outputDir, None);
   }
   
   // for backward compatibility only
@@ -22,18 +21,16 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File, sourceE
   }
   
   def write(coverage: Coverage): Unit = {
-    val preprocessedCoverage = preprocessCoverage(coverage)
-
     val indexFile = new File(outputDir.getAbsolutePath + "/index.html")
     val packageFile = new File(outputDir.getAbsolutePath + "/packages.html")
     val overviewFile = new File(outputDir.getAbsolutePath + "/overview.html")
 
     val index = IOUtils.readStreamAsString(getClass.getResourceAsStream("/scoverage/index.html"))
     IOUtils.writeToFile(indexFile, index)
-    IOUtils.writeToFile(packageFile, packageList(preprocessedCoverage).toString())
-    IOUtils.writeToFile(overviewFile, overview(preprocessedCoverage).toString())
+    IOUtils.writeToFile(packageFile, packageList(coverage).toString())
+    IOUtils.writeToFile(overviewFile, overview(coverage).toString())
 
-    preprocessedCoverage.packages.foreach(writePackage)
+    coverage.packages.foreach(writePackage)
   }
 
   private def writePackage(pkg: MeasuredPackage): Unit = {

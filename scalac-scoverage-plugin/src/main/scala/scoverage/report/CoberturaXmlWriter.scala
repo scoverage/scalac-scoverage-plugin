@@ -8,17 +8,16 @@ import scoverage._
 import scala.xml.{Node, PrettyPrinter}
 
 /** @author Stephen Samuel */
-class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File, ignoreStatementsNotInSrcDirs: Boolean)
-  extends BaseReportWriter(sourceDirectories, outputDir, ignoreStatementsNotInSrcDirs) {
+class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends BaseReportWriter(sourceDirectories, outputDir) {
 
-  def this (baseDir: File, outputDir: File, ignoreStatementsNotInSrcDirs: Boolean = false) {
-    this(Seq(baseDir), outputDir, ignoreStatementsNotInSrcDirs)
+  def this (baseDir: File, outputDir: File) {
+    this(Seq(baseDir), outputDir)
   }
 
   def write(coverage: Coverage): Unit = {
     val file = new File(outputDir, "cobertura.xml")
     IOUtils.writeToFile(file, "<?xml version=\"1.0\"?>\n<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-04.dtd\">\n" +
-        new PrettyPrinter(120, 4).format(xml(preprocessCoverage(coverage))))
+        new PrettyPrinter(120, 4).format(xml(coverage)))
   }
 
   def method(method: MeasuredMethod): Node = {
