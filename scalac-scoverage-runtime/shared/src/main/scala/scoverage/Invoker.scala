@@ -35,9 +35,10 @@ object Invoker {
       // Each thread writes to a separate measurement file, to reduce contention
       // and because file appends via FileWriter are not atomic on Windows.
       var files = threadFiles.get()
-      if (files == null)
+      if (files == null) {
         files = ThreadSafeMap.empty[String, FileWriter]
-      threadFiles.set(files)
+        threadFiles.set(files)
+      }
       val writer = files.getOrElseUpdate(dataDir, new FileWriter(measurementFile(dataDir), true))
       writer.append(id.toString + '\n').flush()
 
