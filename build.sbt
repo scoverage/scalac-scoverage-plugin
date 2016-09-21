@@ -6,13 +6,11 @@ import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import org.scalajs.sbtplugin.cross.CrossProject
 import org.scalajs.sbtplugin.cross.CrossType
 
-object Scoverage extends Build {
+val Org = "org.scoverage"
+val MockitoVersion = "1.10.19"
+val ScalatestVersion = "3.0.0"
 
-  val Org = "org.scoverage"
-  val MockitoVersion = "1.10.19"
-  val ScalatestVersion = "3.0.0"
-
-  val appSettings = Seq(
+val appSettings = Seq(
     organization := Org,
     scalaVersion := "2.11.8",
     crossScalaVersions := Seq("2.10.6", "2.11.8"),
@@ -59,13 +57,13 @@ object Scoverage extends Build {
     releasePublishArtifactsAction := PgpKeys.publishSigned.value
   )
 
-  lazy val root = Project("scalac-scoverage", file("."))
+lazy val root = Project("scalac-scoverage", file("."))
     .settings(name := "scalac-scoverage")
     .settings(appSettings: _*)
     .settings(publishArtifact := false)
     .aggregate(plugin, runtime.jvm, runtime.js)
 
-  lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scoverage-runtime"), CrossType.Full)
+lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scoverage-runtime"), CrossType.Full)
     .settings(name := "scalac-scoverage-runtime")
     .settings(appSettings: _*)
     .jvmSettings(
@@ -79,10 +77,10 @@ object Scoverage extends Build {
       scalaJSStage := FastOptStage
     )
 
-  lazy val `scalac-scoverage-runtimeJVM` = runtime.jvm
-  lazy val `scalac-scoverage-runtimeJS` = runtime.js
+lazy val `scalac-scoverage-runtimeJVM` = runtime.jvm
+lazy val `scalac-scoverage-runtimeJS` = runtime.js
 
-  lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
+lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
     .dependsOn(`scalac-scoverage-runtimeJVM` % "test")
     .settings(name := "scalac-scoverage-plugin")
     .settings(appSettings: _*)
@@ -102,4 +100,3 @@ object Scoverage extends Build {
         Nil
     }
   })
-}
