@@ -1,20 +1,16 @@
-import sbt.Keys._
 import sbt._
-import sbtrelease.ReleasePlugin
-import sbtrelease.ReleasePlugin.ReleaseKeys
+import sbt.Keys._
+import sbtrelease.ReleasePlugin.autoImport._
 import com.typesafe.sbt.pgp.PgpKeys
+import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import org.scalajs.sbtplugin.cross.CrossProject
 import org.scalajs.sbtplugin.cross.CrossType
-import org.scalajs.sbtplugin.ScalaJSPlugin
-import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 
 object Scoverage extends Build {
 
   val Org = "org.scoverage"
-  val MockitoVersion = "1.9.5"
+  val MockitoVersion = "1.10.19"
   val ScalatestVersion = "3.0.0"
-
-  lazy val LocalTest = config("local") extend Test
 
   val appSettings = Seq(
     organization := Org,
@@ -25,13 +21,11 @@ object Scoverage extends Build {
     publishArtifact in Test := false,
     parallelExecution in Test := false,
     scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8"),
-    resolvers := ("releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2") +: resolvers.value,
     concurrentRestrictions in Global += Tags.limit(Tags.Test, 1),
-    javacOptions := Seq("-source", "1.6", "-target", "1.6"),
     publishTo <<= version {
       (v: String) =>
         val nexus = "https://oss.sonatype.org/"
-        if (v.trim.endsWith("SNAPSHOT"))
+        if (v.trim.endsWith("-SNAPSHOT"))
           Some(Resolver.sonatypeRepo("snapshots"))
         else
           Some("releases" at nexus + "service/local/staging/deploy/maven2")
@@ -60,9 +54,9 @@ object Scoverage extends Build {
     pomIncludeRepository := {
       _ => false
     }
-  ) ++ ReleasePlugin.releaseSettings ++ Seq(
-    ReleaseKeys.crossBuild := true,
-    ReleaseKeys.publishArtifactsAction := PgpKeys.publishSigned.value
+  ) ++ Seq(
+    releaseCrossBuild := true,
+    releasePublishArtifactsAction := PgpKeys.publishSigned.value
   )
 
   lazy val root = Project("scalac-scoverage", file("."))
