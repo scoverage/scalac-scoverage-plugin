@@ -1,11 +1,20 @@
 language: scala
 
-scala:
-   - 2.10.6
-   - 2.11.8
-
 script:
   - sbt ++$TRAVIS_SCALA_VERSION test
 
 jdk:
   - oraclejdk7
+
+scala:
+  - 2.10.6
+  - 2.11.8
+
+before_cache:
+  - find "$HOME/.sbt/" -name '*.lock' -print0 | xargs -0 rm
+  - find "$HOME/.ivy2/" -name 'ivydata-*.properties' -print0 | xargs -0 rm
+
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt
