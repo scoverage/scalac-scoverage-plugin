@@ -1,22 +1,16 @@
-import sbt.Keys._
 import sbt._
-import sbtrelease.ReleasePlugin
-import sbtrelease.ReleasePlugin.ReleaseKeys
+import sbt.Keys._
+import sbtrelease.ReleasePlugin.autoImport._
 import com.typesafe.sbt.pgp.PgpKeys
+import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import org.scalajs.sbtplugin.cross.CrossProject
 import org.scalajs.sbtplugin.cross.CrossType
-import org.scalajs.sbtplugin.ScalaJSPlugin
-import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 
-object Scoverage extends Build {
+val Org = "org.scoverage"
+val MockitoVersion = "1.10.19"
+val ScalatestVersion = "3.0.0"
 
-  val Org = "org.scoverage"
-  val MockitoVersion = "1.9.5"
-  val ScalatestVersion = "3.0.0"
-
-  lazy val LocalTest = config("local") extend Test
-
-  val appSettings = Seq(
+val appSettings = Seq(
     organization := Org,
     scalaVersion := "2.11.8",
     crossScalaVersions := Seq("2.10.6", "2.11.8"),
@@ -25,13 +19,11 @@ object Scoverage extends Build {
     publishArtifact in Test := false,
     parallelExecution in Test := false,
     scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8"),
-    resolvers := ("releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2") +: resolvers.value,
     concurrentRestrictions in Global += Tags.limit(Tags.Test, 1),
-    javacOptions := Seq("-source", "1.6", "-target", "1.6"),
     publishTo <<= version {
       (v: String) =>
         val nexus = "https://oss.sonatype.org/"
-        if (v.trim.endsWith("SNAPSHOT"))
+        if (v.trim.endsWith("-SNAPSHOT"))
           Some(Resolver.sonatypeRepo("snapshots"))
         else
           Some("releases" at nexus + "service/local/staging/deploy/maven2")
@@ -60,18 +52,18 @@ object Scoverage extends Build {
     pomIncludeRepository := {
       _ => false
     }
-  ) ++ ReleasePlugin.releaseSettings ++ Seq(
-    ReleaseKeys.crossBuild := true,
-    ReleaseKeys.publishArtifactsAction := PgpKeys.publishSigned.value
+  ) ++ Seq(
+    releaseCrossBuild := true,
+    releasePublishArtifactsAction := PgpKeys.publishSigned.value
   )
 
-  lazy val root = Project("scalac-scoverage", file("."))
+lazy val root = Project("scalac-scoverage", file("."))
     .settings(name := "scalac-scoverage")
     .settings(appSettings: _*)
     .settings(publishArtifact := false)
     .aggregate(plugin, runtime.jvm, runtime.js)
 
-  lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scoverage-runtime"), CrossType.Full)
+lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scoverage-runtime"), CrossType.Full)
     .settings(name := "scalac-scoverage-runtime")
     .settings(appSettings: _*)
     .jvmSettings(
@@ -85,10 +77,10 @@ object Scoverage extends Build {
       scalaJSStage := FastOptStage
     )
 
-  lazy val `scalac-scoverage-runtimeJVM` = runtime.jvm
-  lazy val `scalac-scoverage-runtimeJS` = runtime.js
+lazy val `scalac-scoverage-runtimeJVM` = runtime.jvm
+lazy val `scalac-scoverage-runtimeJS` = runtime.js
 
-  lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
+lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
     .dependsOn(`scalac-scoverage-runtimeJVM` % "test")
     .settings(name := "scalac-scoverage-plugin")
     .settings(appSettings: _*)
@@ -108,4 +100,3 @@ object Scoverage extends Build {
         Nil
     }
   })
-}
