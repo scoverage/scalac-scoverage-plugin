@@ -25,6 +25,8 @@ class ScoveragePlugin(val global: Global) extends Plugin {
         options.excludedPackages = opt.substring("excludedPackages:".length).split(";").map(_.trim).filterNot(_.isEmpty)
       } else if (opt.startsWith("excludedFiles:")) {
         options.excludedFiles = opt.substring("excludedFiles:".length).split(";").map(_.trim).filterNot(_.isEmpty)
+      } else if (opt.startsWith("excludedSymbols:")) {
+        options.excludedSymbols = opt.substring("excludedSymbols:".length).split(";").map(_.trim).filterNot(_.isEmpty)
       } else if (opt.startsWith("dataDir:")) {
         options.dataDir = opt.substring("dataDir:".length)
       } else if (opt.startsWith("extraAfterPhase:") || opt.startsWith("extraBeforePhase:")){
@@ -42,6 +44,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
     "-P:scoverage:dataDir:<pathtodatadir>                  where the coverage files should be written\n",
     "-P:scoverage:excludedPackages:<regex>;<regex>         semicolon separated list of regexs for packages to exclude",
     "-P:scoverage:excludedFiles:<regex>;<regex>            semicolon separated list of regexs for paths to exclude",
+    "-P:scoverage:excludedSymbols:<regex>;<regex>          semicolon separated list of regexs for symbols to exclude",
     "-P:scoverage:extraAfterPhase:<phaseName>              phase after which scoverage phase runs (must be after typer phase)",
     "-P:scoverage:extraBeforePhase:<phaseName>             phase before which scoverage phase runs (must be before patmat phase)",
     "                                                      Any classes whose fully qualified name matches the regex will",
@@ -73,6 +76,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
 class ScoverageOptions {
   var excludedPackages: Seq[String] = Nil
   var excludedFiles: Seq[String] = Nil
+  var excludedSymbols: Seq[String] = Seq("scala.reflect.api.Exprs.Expr", "scala.reflect.api.Trees.Tree", "scala.reflect.macros.Universe.Tree")
   var dataDir: String = IOUtils.getTempPath
 }
 
@@ -101,7 +105,7 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
 
   def setOptions(options: ScoverageOptions): Unit = {
     this.options = options
-    coverageFilter = new RegexCoverageFilter(options.excludedPackages, options.excludedFiles)
+    coverageFilter = new RegexCoverageFilter(options.excludedPackages, options.excludedFiles, options.excludedSymbols)
     new File(options.dataDir).mkdirs() // ensure data directory is created
   }
 
@@ -221,6 +225,7 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
     def isClassIncluded(symbol: Symbol): Boolean = coverageFilter.isClassIncluded(symbol.fullNameString)
     def isFileIncluded(source: SourceFile): Boolean = coverageFilter.isFileIncluded(source)
     def isStatementIncluded(pos: Position): Boolean = coverageFilter.isLineIncluded(pos)
+    def isSymbolIncluded(symbol: Symbol): Boolean = coverageFilter.isSymbolIncluded(symbol.fullNameString)
 
     def updateLocation(t: Tree) {
       Location(global)(t) match {
@@ -371,7 +376,7 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
 
         // will catch macro implementations, as they must end with Expr, however will catch
         // any method that ends in Expr. // todo add way of allowing methods that return Expr
-        case d: DefDef if d.symbol != null && d.tpt.symbol.fullNameString == "scala.reflect.api.Exprs.Expr" =>
+        case d: DefDef if d.symbol != null && !isSymbolIncluded(d.tpt.symbol) =>
           tree
 
         // we can ignore primary constructors because they are just empty at this stage, the body is added later.
