@@ -8,7 +8,8 @@ class PluginASTSupportTest
   extends FunSuite
   with MockitoSugar
   with OneInstancePerTest
-  with BeforeAndAfterEachTestData {
+  with BeforeAndAfterEachTestData
+  with ScalaLoggingSupport {
 
   override protected def afterEach(testData: TestData): Unit = {
     val compiler = ScoverageCompiler.default
@@ -62,7 +63,7 @@ class PluginASTSupportTest
     assert(!compiler.reporter.hasErrors)
   }
 
- // https://github.com/scoverage/scalac-scoverage-plugin/issues/32
+  // https://github.com/scoverage/scalac-scoverage-plugin/issues/32
   test("exhaustive warnings should not be generated for @unchecked") {
     val compiler = ScoverageCompiler.default
     compiler.compileCodeSnippet( """object PartialMatchObject {
@@ -79,10 +80,8 @@ class PluginASTSupportTest
   // https://github.com/skinny-framework/skinny-framework/issues/97
   test("macro range positions should not break plugin") {
     val compiler = ScoverageCompiler.default
-    compiler.addToClassPath("org.slf4j", "slf4j-api", "1.7.7")
-    compiler.addToClassPath("com.typesafe.scala-logging", "scala-logging-api_" + ScoverageCompiler.ShortScalaVersion, "2.1.2")
-    compiler.addToClassPath("com.typesafe.scala-logging", "scala-logging-slf4j_" + ScoverageCompiler.ShortScalaVersion, "2.1.2")
-    compiler.compileCodeSnippet( """import com.typesafe.scalalogging.slf4j.StrictLogging
+    scalaLoggingDeps.foreach(compiler.addToClassPath(_))
+    compiler.compileCodeSnippet( s"""import ${scalaLoggingPackageName}.StrictLogging
                           |
                           |object MacroTest extends StrictLogging {
                           |  println("Hello")

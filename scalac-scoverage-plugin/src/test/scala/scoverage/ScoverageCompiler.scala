@@ -12,7 +12,10 @@ import scala.tools.nsc.transform.{Transform, TypingTransformers}
 object ScoverageCompiler {
 
   val ScalaVersion = scala.util.Properties.versionNumberString
-  val ShortScalaVersion = ScalaVersion.dropRight(2)
+  val ShortScalaVersion = (ScalaVersion split "[.]").toList match {
+    case init :+ last if last forall (_.isDigit) => init mkString "."
+    case _                                       => ScalaVersion
+  }
 
   def classPath = getScalaJars.map(_.getAbsolutePath) :+ sbtCompileDir.getAbsolutePath :+ runtimeClasses.getAbsolutePath
 
@@ -55,10 +58,9 @@ object ScoverageCompiler {
 
   private def findScalaJar(artifactId: String): File = findIvyJar("org.scala-lang", artifactId, ScalaVersion)
 
-  private def findIvyJar(groupId: String, artifactId: String, version: String): File = {
+  private def findIvyJar(groupId: String, artifactId: String, version: String, packaging: String = "jar"): File = {
     val userHome = System.getProperty("user.home")
-    val sbtHome = userHome + "/.ivy2"
-    val jarPath = sbtHome + "/cache/" + groupId + "/" + artifactId + "/jars/" + artifactId + "-" + version + ".jar"
+    val jarPath = s"$userHome/.ivy2/cache/$groupId/$artifactId/${packaging}s/${artifactId}-${version}.jar"
     val file = new File(jarPath)
     if (!file.exists)
       throw new FileNotFoundException(s"Could not locate [$jarPath].")
@@ -69,10 +71,8 @@ object ScoverageCompiler {
 class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools.nsc.reporters.Reporter)
   extends scala.tools.nsc.Global(settings, reporter) {
 
-  def addToClassPath(groupId: String, artifactId: String, version: String): Unit = {
-    settings.classpath.value = settings.classpath.value + File.pathSeparator + ScoverageCompiler
-      .findIvyJar(groupId, artifactId, version)
-      .getAbsolutePath
+  def addToClassPath(file: File): Unit = {
+    settings.classpath.value = settings.classpath.value + File.pathSeparator + file.getAbsolutePath
   }
 
   val instrumentationComponent = new ScoverageInstrumentationComponent(this, None, None)
@@ -130,7 +130,7 @@ class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tool
     val sources = new ListBuffer[String]
 
     override val phaseName = "scoverage-teststore"
-    override val runsAfter = List("dce")
+    override val runsAfter = List("jvm")
     override val runsBefore = List("terminal")
 
     override protected def newTransformer(unit: global.CompilationUnit): global.Transformer = new Transformer(unit)
