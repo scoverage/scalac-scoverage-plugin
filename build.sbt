@@ -13,7 +13,7 @@ val ScalatestVersion = "3.0.0"
 val appSettings = Seq(
     organization := Org,
     scalaVersion := "2.11.8",
-    crossScalaVersions := Seq("2.10.6", "2.11.8"),
+    crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0-RC1"),
     fork in Test := false,
     publishMavenStyle := true,
     publishArtifact in Test := false,
@@ -90,13 +90,15 @@ lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plug
     "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
     "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
     "org.joda" % "joda-convert" % "1.6" % "test",
-    "joda-time" % "joda-time" % "2.3" % "test",
-    "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2" % "test"
+    "joda-time" % "joda-time" % "2.3" % "test"
   )).settings(libraryDependencies ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, scalaMajor)) if scalaMajor == 11 =>
-        Seq("org.scala-lang.modules" %% "scala-xml" % "1.0.4")
-      case _ =>
-        Nil
+      case Some((2, scalaMajor)) if scalaMajor > 10 => Seq(
+        "org.scala-lang.modules" %% "scala-xml" % "1.0.5",
+        "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0" % "test"
+      )
+      case _ => Seq(
+        "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2" % "test"
+      )
     }
   })
