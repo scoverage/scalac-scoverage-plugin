@@ -61,7 +61,7 @@ lazy val root = Project("scalac-scoverage", file("."))
     .settings(name := "scalac-scoverage")
     .settings(appSettings: _*)
     .settings(publishArtifact := false)
-    .aggregate(plugin, runtime.jvm, runtime.js)
+    .aggregate(plugin, runtime.jvm, runtime.js, runtimeJava)
 
 lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scoverage-runtime"), CrossType.Full)
     .settings(name := "scalac-scoverage-runtime")
@@ -80,6 +80,10 @@ lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scovera
 lazy val `scalac-scoverage-runtimeJVM` = runtime.jvm
 lazy val `scalac-scoverage-runtimeJS` = runtime.js
 
+lazy val runtimeJava = Project("scalac-scoverage-runtime-java", file("scalac-scoverage-runtime-java"))
+    .settings(name := "scalac-scoverage-runtime-java")
+    .settings(appSettings: _*)
+
 lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
     .dependsOn(`scalac-scoverage-runtimeJVM` % "test")
     .settings(name := "scalac-scoverage-plugin")
@@ -87,7 +91,6 @@ lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plug
     .settings(libraryDependencies ++= Seq(
     "org.mockito" % "mockito-all" % MockitoVersion % "test",
     "org.scalatest" %% "scalatest" % ScalatestVersion % "test",
-    "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
     "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
     "org.joda" % "joda-convert" % "1.6" % "test",
     "joda-time" % "joda-time" % "2.3" % "test"
