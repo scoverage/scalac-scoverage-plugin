@@ -19,6 +19,12 @@ val appSettings = Seq(
     publishArtifact in Test := false,
     parallelExecution in Test := false,
     scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8"),
+    javacOptions := {
+      CrossVersion.partialVersion(scalaVersion.value) match {
+        case Some((2, scalaMajor)) if scalaMajor < 12 => Seq("-source", "1.7", "-target", "1.7")
+        case _ => Seq()
+      }
+    },
     concurrentRestrictions in Global += Tags.limit(Tags.Test, 1),
     publishTo <<= version {
       (v: String) =>
