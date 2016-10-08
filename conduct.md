@@ -1,4 +1,5 @@
 Code of Conduct
+---------------
 
 Scoverage is dedicated to providing a harassment-free community for everyone, regardless of gender or anything to do with it (identity, history, expression, non-binary gender, etc.), sexual orientation, disability, physical appearance, body size, race, religion, and programming background. We do not tolerate harassment of community participants in any form, and sexual language and imagery is not appropriate for any community activity. Community participants violating these rules may be sanctioned or expelled from the community at the discretion of the community organizers.
 
@@ -14,9 +15,9 @@ Community staff will be happy to help participants contact local law enforcement
 
 We expect participants to follow these rules at all Scoverage venues. These venues include but are not necessarily limited to:
 
-All GitHub repositories and comments under the Scoverage organization
-All Gitter channels under the Scoverage organization,
-The Scoverage Google Group
+* All GitHub repositories and comments under the Scoverage organization
+* All Gitter channels under the Scoverage organization,
+* The Scoverage Google Group
 
 If you have any questions or concerns, please contact a member of the community staff, such as:
 
