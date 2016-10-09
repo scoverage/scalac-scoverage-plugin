@@ -1,6 +1,7 @@
-package scoverage.report
+package scoverage
+package report
 
-import _root_.scoverage.MeasuredFile
+import scoverage.MeasuredFile
 
 import scala.xml.Node
 

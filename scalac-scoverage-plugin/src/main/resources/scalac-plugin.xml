@@ -1,4 +1,0 @@
-<plugin>
-    <name>scoverage</name>
-    <classname>scoverage.ScoveragePlugin</classname>
-</plugin>
