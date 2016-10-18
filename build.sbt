@@ -81,16 +81,12 @@ lazy val `scalac-scoverage-runtimeJVM` = runtime.jvm
 lazy val `scalac-scoverage-runtimeJS` = runtime.js
 
 lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
-    .dependsOn(`scalac-scoverage-runtimeJVM` % "test")
     .settings(name := "scalac-scoverage-plugin")
     .settings(appSettings: _*)
     .settings(libraryDependencies ++= Seq(
     "org.mockito" % "mockito-all" % MockitoVersion % "test",
     "org.scalatest" %% "scalatest" % ScalatestVersion % "test",
-    "org.scala-lang" % "scala-reflect" % scalaVersion.value % "provided",
-    "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided",
-    "org.joda" % "joda-convert" % "1.6" % "test",
-    "joda-time" % "joda-time" % "2.3" % "test"
+    "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided"
   )).settings(libraryDependencies ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, scalaMajor)) if scalaMajor > 10 => Seq(
