@@ -82,6 +82,7 @@ lazy val `scalac-scoverage-runtimeJVM` = runtime.jvm
 lazy val `scalac-scoverage-runtimeJS` = runtime.js
 
 lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
+    .dependsOn(`scalac-scoverage-runtimeJVM` % "test")
     .settings(name := "scalac-scoverage-plugin")
     .settings(appSettings: _*)
     .settings(libraryDependencies ++= Seq(
