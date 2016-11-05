@@ -20,13 +20,11 @@ val appSettings = Seq(
     parallelExecution in Test := false,
     scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8"),
     concurrentRestrictions in Global += Tags.limit(Tags.Test, 1),
-    publishTo <<= version {
-      (v: String) =>
-        val nexus = "https://oss.sonatype.org/"
-        if (v.trim.endsWith("-SNAPSHOT"))
-          Some(Resolver.sonatypeRepo("snapshots"))
-        else
-          Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    publishTo := {
+      if (isSnapshot.value)
+        Some("snapshots" at "https://oss.sonatype.org/content/repositories/snapshots")
+      else
+        Some("releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2")
     },
     pomExtra := {
       <url>https://github.com/scoverage/scalac-scoverage-plugin</url>
