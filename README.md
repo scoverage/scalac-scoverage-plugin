@@ -18,26 +18,26 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 
 ### Release History
 
-##### 6th November 2016 1.3.0
+##### 6th November 2016 - 1.3.0
 
-* Scala 2.12 support
+* Added Scala 2.12 support
 * Added `excludedSymbols` option
 
-##### 25th September 2016 1.2.0
+##### 25th September 2016 - 1.2.0
 
 * Added ScalaJS support
 * Added `extraBeforePhase` and `extraAfterPhase` options
 * Bug fixes
 
-##### 22th July 2015 1.1.1
+##### 22nd July 2015 - 1.1.1
 
 * Bug fixes
 
-##### 26th April 2015 1.1.0
+##### 26th April 2015 - 1.1.0
 
 * Bug fixes
 
-##### 23rd January 2015 1.0.4
+##### 23rd January 2015 - 1.0.4
 
 * Improved results in match/cases
 * Improved results in partial functions
@@ -45,16 +45,16 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 * Improved serializer to handle large projects (no more GC errors)
 * Improved handling of guards in for loops
 
-##### 1.0.2
+##### 22nd December 2014 - 1.0.2
 
 * Fix issue with line spacing in Code Grid report on Windows,
 
-##### 28th November 2014 1.0.1
+##### 28th November 2014 - 1.0.1
 
 * Fixed issue with coverageAggregate
 * Fixed issue with multi project builds referencing parent code
 
-##### 20th November 2014 1.0.0
+##### 20th November 2014 - 1.0.0
 
 * Long awaited multi project support (aggregation)
 * Bug fixes for classes with a directory structure different to package name
@@ -67,24 +67,24 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 * Fixed errors with Javascript in Play projects.
 * Re-wrote the SBT plugin completely, no longer uses custom config
 
-##### 3rd November 2014 0.99.10
+##### 3rd November 2014 - 0.99.10
 
 * Fixed command line options due to changes in Scala 2.11.3+
 
-##### 10th Sept 2014 0.99.9
+##### 10th September 2014 - 0.99.9
 
 * Added exclude by filename
 
-##### 20th July 2014 0.99.7
+##### 20th July 2014 - 0.99.7
 * Fixes for final val constants
 * Fixed cobertura output for ratio values
 
-##### 21 May 2014 0.99.5
+##### 21st May 2014 - 0.99.5
 
 * Major performance enhancements
 * Avoids issue with timeouts on tests
 
-##### 19 May 2014 0.99.3
+##### 19th May 2014 - 0.99.3
 
 * Fixed issue with min coverage
 * Added highlighting option to avoid issues with overlapping trees
@@ -113,24 +113,24 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 * Add statement ID to report, to aid debugging (Richard Bradley)
 * Add support for coverage exclusion comments (Richard Bradley)
 
-##### 8 March 2014 - 0.95.9
+##### 8th March 2014 - 0.95.9
 * SBT plugin import issue fixed
 * Fixed windows line ending issues
 * Use relative href for source view
 * Add support for exclude by file name
 
-##### 12th Jan 2014 - 0.95.7
+##### 12th January 2014 - 0.95.7
 * Fixed bug with return value in pattern match
 * Improved support for classname excludes
 * Fixed spurious trailing green line breaks
 
-##### 5th Jan 2014 - 0.95.3
+##### 5th January 2014 - 0.95.3
 * Fixed support for for comprehensions. 
 * Optimzed support for nested method calls.
 * Fixed exclude package bug
 * Now supports nested packages
 
-##### 9th Dec 2013 - 0.95.0
+##### 9th December 2013 - 0.95.0
 * First stable release.
 * Statement level coverage.
 * Branch coverage for if, pattern match, partial function.
