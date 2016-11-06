@@ -18,6 +18,21 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 
 ### Release History
 
+##### 6th November 2016 1.3.0
+
+* Scala 2.12 support
+* Added `excludedSymbols` option
+
+##### 25th September 2016 1.2.0
+
+* Added ScalaJS support
+* Added `extraBeforePhase` and `extraAfterPhase` options
+* Bug fixes
+
+##### 22th July 2015 1.1.1
+
+* Bug fixes
+
 ##### 26th April 2015 1.1.0
 
 * Bug fixes
