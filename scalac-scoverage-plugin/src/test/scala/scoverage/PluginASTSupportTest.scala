@@ -16,6 +16,73 @@ class PluginASTSupportTest
     assert(!compiler.reporter.hasErrors)
   }
 
+  // https://github.com/scoverage/sbt-scoverage/issues/203
+  test("should support final val literals in traits") {
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet(
+      """
+        |trait TraitWithFinalVal {
+        |  final val FOO = "Bar"
+        |} """.stripMargin)
+    compiler.assertNoErrors()
+    compiler.assertNMeasuredStatements(0)
+  }
+
+  test("should support final val literals in objects") {
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet(
+      """
+        |object TraitWithFinalVal {
+        |  final val FOO = "Bar"
+        |} """.stripMargin)
+    compiler.assertNoErrors()
+    compiler.assertNMeasuredStatements(0)
+  }
+
+  test("should support final val literals in classes") {
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet(
+      """
+        |class TraitWithFinalVal {
+        |  final val FOO = "Bar"
+        |} """.stripMargin)
+    compiler.assertNoErrors()
+    compiler.assertNMeasuredStatements(0)
+  }
+
+  test("should support final val blocks in traits") {
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet(
+      """
+        |trait TraitWithFinalVal {
+        |  final val FOO = { println("boo"); "Bar" }
+        |} """.stripMargin)
+    compiler.assertNoErrors()
+    compiler.assertNMeasuredStatements(2)
+  }
+
+  test("should support final val blocks in objects") {
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet(
+      """
+        |object TraitWithFinalVal {
+        |  final val FOO = { println("boo"); "Bar" }
+        |} """.stripMargin)
+    compiler.assertNoErrors()
+    compiler.assertNMeasuredStatements(2)
+  }
+
+  test("should support final val blocks in classes") {
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet(
+      """
+        |class TraitWithFinalVal {
+        |  final val FOO = { println("boo"); "Bar" }
+        |} """.stripMargin)
+    compiler.assertNoErrors()
+    compiler.assertNMeasuredStatements(2)
+  }
+
   test("scoverage component should ignore basic macros") {
     val compiler = ScoverageCompiler.default
     compiler.compileCodeSnippet( """

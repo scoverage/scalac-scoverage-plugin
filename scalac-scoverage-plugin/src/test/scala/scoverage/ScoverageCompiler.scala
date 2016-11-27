@@ -60,7 +60,7 @@ object ScoverageCompiler {
 
   private def findIvyJar(groupId: String, artifactId: String, version: String, packaging: String = "jar"): File = {
     val userHome = System.getProperty("user.home")
-    val jarPath = s"$userHome/.ivy2/cache/$groupId/$artifactId/${packaging}s/${artifactId}-${version}.jar"
+    val jarPath = s"$userHome/.ivy2/cache/$groupId/$artifactId/${packaging}s/$artifactId-$version.jar"
     val file = new File(jarPath)
     if (!file.exists)
       throw new FileNotFoundException(s"Could not locate [$jarPath].")
@@ -97,6 +97,8 @@ class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tool
   def compileSourceResources(urls: URL*): ScoverageCompiler = {
     compileSourceFiles(urls.map(_.getFile).map(new File(_)): _*)
   }
+
+  def assertNoErrors() = assert(!reporter.hasErrors)
 
   def assertNoCoverage() = assert(!testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked"))
 

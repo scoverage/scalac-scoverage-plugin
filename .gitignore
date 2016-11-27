@@ -4,6 +4,7 @@
 target/
 project/boot/
 project/plugins/project/
+credentials.sbt
 
 # Eclipse specific
 .classpath

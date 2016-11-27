@@ -29,7 +29,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
         options.excludedSymbols = opt.substring("excludedSymbols:".length).split(";").map(_.trim).filterNot(_.isEmpty)
       } else if (opt.startsWith("dataDir:")) {
         options.dataDir = opt.substring("dataDir:".length)
-      } else if (opt.startsWith("extraAfterPhase:") || opt.startsWith("extraBeforePhase:")){
+      } else if (opt.startsWith("extraAfterPhase:") || opt.startsWith("extraBeforePhase:")) {
         // skip here, these flags are processed elsewhere
       } else {
         error("Unknown option: " + opt)
@@ -82,8 +82,8 @@ class ScoverageOptions {
 
 class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Option[String], extraBeforePhase: Option[String])
   extends PluginComponent
-  with TypingTransformers
-  with Transform {
+    with TypingTransformers
+    with Transform {
 
   import global._
 
@@ -95,11 +95,11 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
   override val runsBefore: List[String] = List("patmat") ::: extraBeforePhase.toList
 
   /**
-   * Our options are not provided at construction time, but shortly after,
-   * so they start as None.
-   * You must call "setOptions" before running any commands that rely on
-   * the options.
-   */
+    * Our options are not provided at construction time, but shortly after,
+    * so they start as None.
+    * You must call "setOptions" before running any commands that rely on
+    * the options.
+    */
   private var options: ScoverageOptions = new ScoverageOptions()
   private var coverageFilter: CoverageFilter = AllCoverageFilter
 
@@ -135,14 +135,14 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
     import global._
 
     // contains the location of the last node
-    var location: Location = null
+    var location: Location = _
 
     /**
-     * The 'start' of the position, if it is available, else -1
-     * We cannot use 'isDefined' to test whether pos.start will work, as some
-     * classes (e.g. scala.reflect.internal.util.OffsetPosition have
-     * isDefined true, but throw on `start`
-     */
+      * The 'start' of the position, if it is available, else -1
+      * We cannot use 'isDefined' to test whether pos.start will work, as some
+      * classes (e.g. scala.reflect.internal.util.OffsetPosition have
+      * isDefined true, but throw on `start`
+      */
     def safeStart(tree: Tree): Int = scala.util.Try(tree.pos.start).getOrElse(-1)
     def safeEnd(tree: Tree): Int = scala.util.Try(tree.pos.end).getOrElse(-1)
     def safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.line else -1
@@ -250,7 +250,7 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
                     )
                   )
                 case _ =>
-                  reporter.error(c.pos ,"Cannot instrument partial function apply. Please file bug report")
+                  reporter.error(c.pos, "Cannot instrument partial function apply. Please file bug report")
                   d
               }
             case other => other
@@ -301,17 +301,17 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
         //        case a: GenericApply if a.symbol.isConstructor => instrument(a)
 
         /**
-         * When an apply has no parameters, or is an application of purely literals or idents
-         * then we can simply instrument the outer call. Ie, we can treat it all as one single statement
-         * for the purposes of code coverage.
-         * This will include calls to case apply.
-         */
+          * When an apply has no parameters, or is an application of purely literals or idents
+          * then we can simply instrument the outer call. Ie, we can treat it all as one single statement
+          * for the purposes of code coverage.
+          * This will include calls to case apply.
+          */
         case a: GenericApply if allConstArgs(a.args) => instrument(a, a)
 
         /**
-         * Applications of methods with non trivial args means the args themselves
-         * must also be instrumented
-         */
+          * Applications of methods with non trivial args means the args themselves
+          * must also be instrumented
+          */
         //todo remove once scala merges into Apply proper
         case a: ApplyToImplicitArgs =>
           instrument(treeCopy.Apply(a, traverseApplication(a.fun), transformStatements(a.args)), a)
@@ -370,7 +370,7 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
         // this will catch methods defined as macros, eg def test = macro testImpl
         // it will not catch macro implementations
         case d: DefDef if d.symbol != null
-          && d.symbol.annotations.size > 0
+          && d.symbol.annotations.nonEmpty
           && d.symbol.annotations.toString() == "macroImpl" =>
           tree
 
@@ -383,31 +383,31 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
         case d: DefDef if d.symbol.isPrimaryConstructor => tree
 
         /**
-         * Case class accessors for vals
-         * EG for case class CreditReject(req: MarketOrderRequest, client: ActorRef)
-         * <stable> <caseaccessor> <accessor> <paramaccessor> def req: com.sksamuel.scoverage.samples.MarketOrderRequest
-         * <stable> <caseaccessor> <accessor> <paramaccessor> def client: akka.actor.ActorRef
-         */
+          * Case class accessors for vals
+          * EG for case class CreditReject(req: MarketOrderRequest, client: ActorRef)
+          * <stable> <caseaccessor> <accessor> <paramaccessor> def req: com.sksamuel.scoverage.samples.MarketOrderRequest
+          * <stable> <caseaccessor> <accessor> <paramaccessor> def client: akka.actor.ActorRef
+          */
         case d: DefDef if d.symbol.isCaseAccessor => tree
 
         // Compiler generated case apply and unapply. Ignore these
         case d: DefDef if d.symbol.isCaseApplyOrUnapply => tree
 
         /**
-         * Lazy stable DefDefs are generated as the impl for lazy vals.
-         */
+          * Lazy stable DefDefs are generated as the impl for lazy vals.
+          */
         case d: DefDef if d.symbol.isStable && d.symbol.isGetter && d.symbol.isLazy =>
           updateLocation(d)
           treeCopy.DefDef(d, d.mods, d.name, d.tparams, d.vparamss, d.tpt, process(d.rhs))
 
         /**
-         * Stable getters are methods generated for access to a top level val.
-         * Should be ignored as this is compiler generated code.
-         *
-         * Eg
-         * <stable> <accessor> def MaxCredit: scala.math.BigDecimal = CreditEngine.this.MaxCredit
-         * <stable> <accessor> def alwaysTrue: String = InstrumentLoader.this.alwaysTrue
-         */
+          * Stable getters are methods generated for access to a top level val.
+          * Should be ignored as this is compiler generated code.
+          *
+          * Eg
+          * <stable> <accessor> def MaxCredit: scala.math.BigDecimal = CreditEngine.this.MaxCredit
+          * <stable> <accessor> def alwaysTrue: String = InstrumentLoader.this.alwaysTrue
+          */
         case d: DefDef if d.symbol.isStable && d.symbol.isGetter => tree
 
         /** Accessors are auto generated setters and getters.
@@ -496,30 +496,30 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
           }
 
         /**
-         * match with syntax `New(tpt)`.
-         * This AST node corresponds to the following Scala code:
-         *
-         * `new` T
-         *
-         * This node always occurs in the following context:
-         *
-         * (`new` tpt).<init>[targs](args)
-         *
-         * For example, an AST representation of:
-         *
-         * new Example[Int](2)(3)
-         *
-         * is the following code:
-         *
-         * Apply(
-         * Apply(
-         * TypeApply(
-         * Select(New(TypeTree(typeOf[Example])), nme.CONSTRUCTOR)
-         * TypeTree(typeOf[Int])),
-         * List(Literal(Constant(2)))),
-         * List(Literal(Constant(3))))
-         *
-         */
+          * match with syntax `New(tpt)`.
+          * This AST node corresponds to the following Scala code:
+          *
+          * `new` T
+          *
+          * This node always occurs in the following context:
+          *
+          * (`new` tpt).<init>[targs](args)
+          *
+          * For example, an AST representation of:
+          *
+          * new Example[Int](2)(3)
+          *
+          * is the following code:
+          *
+          * Apply(
+          * Apply(
+          * TypeApply(
+          * Select(New(TypeTree(typeOf[Example])), nme.CONSTRUCTOR)
+          * TypeTree(typeOf[Int])),
+          * List(Literal(Constant(2)))),
+          * List(Literal(Constant(3))))
+          *
+          */
         case n: New => n
 
         case s@Select(n@New(tpt), name) =>
@@ -547,9 +547,9 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
         case s: Select if location == null => tree
 
         /**
-         * I think lazy selects are the LHS of a lazy assign.
-         * todo confirm we can ignore
-         */
+          * I think lazy selects are the LHS of a lazy assign.
+          * todo confirm we can ignore
+          */
         case s: Select if s.symbol.isLazy => tree
 
         case s: Select => instrument(treeCopy.Select(s, traverseApplication(s.qualifier), s.name), s)
@@ -581,45 +581,41 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
 
         case _: TypeTree => super.transform(tree)
 
-        /**
-         * We can ignore lazy val defs as they are implemented by a generated defdef
-         */
-        case v: ValDef if v.symbol.isLazy =>
-          val w = v
-          tree
+        // if the rhs of a val is a literal we can just leave it
+        case v: ValDef if v.rhs.isInstanceOf[Literal] => tree
 
         /**
-         * <synthetic> val default: A1 => B1 =
-         * <synthetic> val x1: Any = _
-         */
-        case v: ValDef if v.symbol.isSynthetic =>
-          val w = v
-          tree
+          * We can ignore lazy val defs as they are implemented by a generated defdef
+          */
+        case v: ValDef if v.symbol.isLazy => tree
 
         /**
-         * Vals declared in case constructors
-         */
-        case v: ValDef if v.symbol.isParamAccessor && v.symbol.isCaseAccessor =>
-          val w = v
-          tree
+          * <synthetic> val default: A1 => B1 =
+          * <synthetic> val x1: Any = _
+          */
+        case v: ValDef if v.symbol.isSynthetic => tree
+
+        /**
+          * Vals declared in case constructors
+          */
+        case v: ValDef if v.symbol.isParamAccessor && v.symbol.isCaseAccessor => tree
 
         // we need to remove the final mod so that we keep the code in order to check its invoked
         case v: ValDef if v.mods.isFinal =>
-          updateLocation(v)
           treeCopy.ValDef(v, v.mods.&~(ModifierFlags.FINAL), v.name, v.tpt, process(v.rhs))
 
         /**
-         * This AST node corresponds to any of the following Scala code:
-         *
-         * mods `val` name: tpt = rhs
-         * mods `var` name: tpt = rhs
-         * mods name: tpt = rhs        // in signatures of function and method definitions
-         * self: Bar =>                // self-types
-         *
-         * For user defined value statements, we will instrument the RHS.
-         *
-         * This includes top level non-lazy vals. Lazy vals are generated as stable defs.
-         */
+          * This AST node corresponds to any of the following Scala code:
+          *
+          * mods `val` name: tpt = rhs
+          * mods `var` name: tpt = rhs
+          * mods name: tpt = rhs        // in signatures of function and method definitions
+          * self: Bar =>                // self-types
+          *
+          * For user defined value statements, we will instrument the RHS.
+          *
+          * This includes top level non-lazy vals. Lazy vals are generated as stable defs.
+          */
         case v: ValDef =>
           updateLocation(v)
           treeCopy.ValDef(tree, v.mods, v.name, v.tpt, process(v.rhs))
