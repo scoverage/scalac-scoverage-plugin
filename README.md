@@ -6,7 +6,9 @@ scoverage is available for sbt, maven, and gradle.
 
 [![Build Status](https://travis-ci.org/scoverage/scalac-scoverage-plugin.svg?branch=master)](https://travis-ci.org/scoverage/scalac-scoverage-plugin)
 [![License](http://img.shields.io/:license-Apache%202-red.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
-[<img src="https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.11*.svg?label=latest%20release&20for&202.11"/>](a:"scalac-scoverage-plugin_2.11")
+[<img src="https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.10*.svg?label=latest%20release%20for%202.10"/>](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22scalac-scoverage-plugin_2.10%22)
+[<img src="https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.11*.svg?label=latest%20release%20for%202.11"/>](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22scalac-scoverage-plugin_2.11%22)
+[<img src="https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.12*.svg?label=latest%20release%20for%202.12"/>](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22scalac-scoverage-plugin_2.12%22)
 
 Join the [scoverage](http://groups.google.com/group/scala-code-coverage-tool)
 google group for help, bug reports, feature requests, and general
