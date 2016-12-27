@@ -570,7 +570,7 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
           treeCopy.Try(tree,
             instrument(process(t), t, branch = true),
             transformCases(cases),
-            instrument(process(f), f, branch = true))
+            if (f.isEmpty) f else instrument(process(f), f, branch = true))
 
         // type aliases, type parameters, abstract types
         case t: TypeDef => super.transform(tree)
