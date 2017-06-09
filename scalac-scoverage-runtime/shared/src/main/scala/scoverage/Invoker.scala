@@ -40,7 +40,7 @@ object Invoker {
         threadFiles.set(files)
       }
       val writer = files.getOrElseUpdate(dataDir, new FileWriter(measurementFile(dataDir), true))
-      writer.append(id.toString + '\n').flush()
+      writer.append(Integer.toString(id)).append("\n").flush()
 
       ids.put((dataDir, id), ())
     }
