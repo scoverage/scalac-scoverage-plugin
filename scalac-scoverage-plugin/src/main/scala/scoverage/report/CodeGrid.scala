@@ -14,7 +14,7 @@ class CodeGrid(mFile: MeasuredFile, sourceEncoding: Option[String]) {
 
   case class Cell(char: Char, var status: StatementStatus)
 
-  private val lineBreak = System.getProperty("line.separator")
+  private val lineBreak = "\n"
 
   // Array of lines, each line is an array of cells, where a cell is a character + coverage info for that position
   // All cells default to NoData until the highlighted information is applied
