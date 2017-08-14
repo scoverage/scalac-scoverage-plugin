@@ -581,9 +581,6 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
 
         case _: TypeTree => super.transform(tree)
 
-        // if the rhs of a val is a literal we can just leave it
-        case v: ValDef if v.rhs.isInstanceOf[Literal] => tree
-
         /**
           * We can ignore lazy val defs as they are implemented by a generated defdef
           */
@@ -602,6 +599,7 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
 
         // we need to remove the final mod so that we keep the code in order to check its invoked
         case v: ValDef if v.mods.isFinal =>
+          updateLocation(v)
           treeCopy.ValDef(v, v.mods.&~(ModifierFlags.FINAL), v.name, v.tpt, process(v.rhs))
 
         /**
