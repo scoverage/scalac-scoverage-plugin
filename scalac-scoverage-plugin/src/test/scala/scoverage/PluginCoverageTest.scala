@@ -23,7 +23,7 @@ class PluginCoverageTest
     // we expect:
     // instrumenting the default-param which becomes a method call invocation
     // the method makeGreeting is entered.
-    compiler.assertNMeasuredStatements(1)
+    compiler.assertNMeasuredStatements(2)
   }
 
   test("scoverage should skip macros") {
@@ -68,7 +68,7 @@ class PluginCoverageTest
                                    |} """.stripMargin)
     assert(!compiler.reporter.hasErrors)
     // we should have 3 statements - initialising the val, executing println, and executing the parameter
-    compiler.assertNMeasuredStatements(7)
+    compiler.assertNMeasuredStatements(8)
   }
 
   test("scoverage should not instrument the match as a statement") {
