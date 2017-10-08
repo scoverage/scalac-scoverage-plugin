@@ -9,6 +9,7 @@ scoverage is available for sbt, maven, and gradle.
 [<img src="https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.10*.svg?label=latest%20release%20for%202.10"/>](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22scalac-scoverage-plugin_2.10%22)
 [<img src="https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.11*.svg?label=latest%20release%20for%202.11"/>](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22scalac-scoverage-plugin_2.11%22)
 [<img src="https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.12*.svg?label=latest%20release%20for%202.12"/>](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22scalac-scoverage-plugin_2.12%22)
+[<img src="https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.13*.svg?label=latest%20release%20for%202.13"/>](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22scalac-scoverage-plugin_2.13%22)
 
 Join the [scoverage](http://groups.google.com/group/scala-code-coverage-tool)
 google group for help, bug reports, feature requests, and general
@@ -19,6 +20,10 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 ![Screenshot of scoverage report html](misc/screenshot2.png)
 
 ### Release History
+
+##### (not released yet) - 1.4.0
+
+* Added Scala 2.13 support
 
 ##### 6th November 2016 - 1.3.0
 

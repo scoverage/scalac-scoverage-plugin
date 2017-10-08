@@ -27,8 +27,8 @@ trait ScalaLoggingSupport {
     }
     else {
       Seq(
-        findIvyJar("org.slf4j", "slf4j-api", "1.7.21"),
-        findCrossedIvyJar("com.typesafe.scala-logging", "scala-logging", "3.5.0", "bundle")
+        findIvyJar("org.slf4j", "slf4j-api", "1.7.25"),
+        findCrossedIvyJar("com.typesafe.scala-logging", "scala-logging", "3.7.2", "bundle")
       )
     }
   }

@@ -8,12 +8,12 @@ import org.scalajs.sbtplugin.cross.CrossType
 
 val Org = "org.scoverage"
 val MockitoVersion = "1.10.19"
-val ScalatestVersion = "3.0.0"
+val ScalatestVersion = "3.0.3"
 
 val appSettings = Seq(
     organization := Org,
     scalaVersion := "2.12.3",
-    crossScalaVersions := Seq("2.10.6", "2.11.11", "2.12.3"),
+    crossScalaVersions := Seq("2.10.6", "2.11.11", "2.12.3", "2.13.0-M1"),
     fork in Test := false,
     publishMavenStyle := true,
     publishArtifact in Test := false,
@@ -90,8 +90,8 @@ lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plug
   )).settings(libraryDependencies ++= {
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, scalaMajor)) if scalaMajor > 10 => Seq(
-        "org.scala-lang.modules" %% "scala-xml" % "1.0.5",
-        "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0" % "test"
+        "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
+        "com.typesafe.scala-logging" %% "scala-logging" % "3.7.2" % "test"
       )
       case _ => Seq(
         "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2" % "test"
