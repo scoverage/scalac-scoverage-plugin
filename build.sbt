@@ -59,6 +59,7 @@ lazy val root = Project("scalac-scoverage", file("."))
     .settings(name := "scalac-scoverage")
     .settings(appSettings: _*)
     .settings(publishArtifact := false)
+    .settings(publishLocal := {})
     .aggregate(plugin, runtime.jvm, runtime.js)
 
 lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scoverage-runtime"), CrossType.Full)
