@@ -8,12 +8,12 @@ import org.scalajs.sbtplugin.cross.CrossType
 
 val Org = "org.scoverage"
 val MockitoVersion = "1.10.19"
-val ScalatestVersion = "3.0.3"
+val ScalatestVersion = "3.0.4"
 
 val appSettings = Seq(
     organization := Org,
     scalaVersion := "2.12.4",
-    crossScalaVersions := Seq("2.10.6", "2.11.11", "2.12.4", "2.13.0-M1"),
+    crossScalaVersions := Seq("2.10.6", "2.11.11", "2.12.4", "2.13.0-M2"),
     fork in Test := false,
     publishMavenStyle := true,
     publishArtifact in Test := false,
