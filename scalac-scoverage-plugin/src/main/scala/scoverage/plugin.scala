@@ -293,6 +293,9 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
         // ignore macro expanded code, do not send to super as we don't want any children to be instrumented
         case t if t.attachments.all.toString().contains("MacroExpansionAttachment") => t
 
+        // ignore "meta" macro generated code
+        case t if t.pos.isDefined && t.pos.source.path == "<macro>" => t
+
         //        /**
         //         * Object creation from new.
         //         * Ignoring creation calls to anon functions
