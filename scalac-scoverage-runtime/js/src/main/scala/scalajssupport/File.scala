@@ -69,10 +69,10 @@ object File {
 
   val jsFile: JsFileObject = if (globalObject.hasOwnProperty("Packages").asInstanceOf[Boolean])
     RhinoFile
-  else if (!globalObject.hasOwnProperty("window").asInstanceOf[Boolean])
-    NodeFile
-  else
+  else if (globalObject.hasOwnProperty("callPhantom").asInstanceOf[Boolean])
     PhantomFile
+  else
+    NodeFile
   // Factorize this
 
   def pathJoin(path: String, child: String): String =
