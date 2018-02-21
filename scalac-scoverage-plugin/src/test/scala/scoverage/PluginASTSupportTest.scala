@@ -165,7 +165,7 @@ class PluginASTSupportTest
                           |  final val foo = 1L
                           |}
                           |@SerialVersionUID(Foo.foo)
-                          |class Bar
+                          |case class Bar()
                           |""".stripMargin)
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
