@@ -12,7 +12,7 @@ matrix:
     - jdk: oraclejdk8
       scala: 2.12.4
     - jdk: oraclejdk8
-      scala: 2.13.0-M2
+      scala: 2.13.0-M3
 
 before_cache:
   - find "$HOME/.sbt/" -name '*.lock' -print0 | xargs -0 rm
