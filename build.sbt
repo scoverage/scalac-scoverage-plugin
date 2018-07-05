@@ -2,9 +2,8 @@ import sbt._
 import sbt.Keys._
 import sbtrelease.ReleasePlugin.autoImport._
 import com.typesafe.sbt.pgp.PgpKeys
-import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
-import org.scalajs.sbtplugin.cross.CrossProject
-import org.scalajs.sbtplugin.cross.CrossType
+import sbtcrossproject.CrossProject
+import sbtcrossproject.CrossType
 
 val Org = "org.scoverage"
 val MockitoVersion = "2.19.0"
@@ -62,7 +61,8 @@ lazy val root = Project("scalac-scoverage", file("."))
     .settings(publishLocal := {})
     .aggregate(plugin, runtime.jvm, runtime.js)
 
-lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scoverage-runtime"), CrossType.Full)
+lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scoverage-runtime"))(JVMPlatform, JSPlatform)
+    .crossType(CrossType.Full)
     .settings(name := "scalac-scoverage-runtime")
     .settings(appSettings: _*)
     .jvmSettings(
