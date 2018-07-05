@@ -7,7 +7,7 @@ import org.scalajs.sbtplugin.cross.CrossProject
 import org.scalajs.sbtplugin.cross.CrossType
 
 val Org = "org.scoverage"
-val MockitoVersion = "1.10.19"
+val MockitoVersion = "2.19.0"
 val ScalatestVersion = "3.0.5-M1"
 
 val appSettings = Seq(
@@ -67,7 +67,7 @@ lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scovera
     .settings(appSettings: _*)
     .jvmSettings(
       libraryDependencies ++= Seq(
-      "org.mockito" % "mockito-all" % MockitoVersion % "test",
+      "org.mockito" % "mockito-core" % MockitoVersion % "test",
       "org.scalatest" %% "scalatest" % ScalatestVersion % "test"
       )
     )
@@ -85,7 +85,7 @@ lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plug
     .settings(name := "scalac-scoverage-plugin")
     .settings(appSettings: _*)
     .settings(libraryDependencies ++= Seq(
-    "org.mockito" % "mockito-all" % MockitoVersion % "test",
+    "org.mockito" % "mockito-core" % MockitoVersion % "test",
     "org.scalatest" %% "scalatest" % ScalatestVersion % "test",
     "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided"
   )).settings(libraryDependencies ++= {
