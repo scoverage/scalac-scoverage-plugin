@@ -3,16 +3,14 @@ language: scala
 script:
   - sbt ++$TRAVIS_SCALA_VERSION test
 
-matrix:
-  include:
-    - jdk: oraclejdk7
-      scala: 2.10.7
-    - jdk: oraclejdk7
-      scala: 2.11.12
-    - jdk: oraclejdk8
-      scala: 2.12.4
-    - jdk: oraclejdk8
-      scala: 2.13.0-M3
+jdk:
+  - oraclejdk8
+
+scala:
+  - 2.10.7
+  - 2.11.12
+  - 2.12.4
+  - 2.13.0-M3
 
 before_cache:
   - find "$HOME/.sbt/" -name '*.lock' -print0 | xargs -0 rm
