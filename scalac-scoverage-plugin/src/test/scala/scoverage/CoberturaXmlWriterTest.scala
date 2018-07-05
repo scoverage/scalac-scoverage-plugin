@@ -65,16 +65,16 @@ class CoberturaXmlWriterTest extends FunSuite with BeforeAndAfter with OneInstan
     val builder = domFactory.newDocumentBuilder()
     builder.setErrorHandler(new ErrorHandler() {
       @Override
-      def error(e: SAXParseException) {
+      def error(e: SAXParseException): Unit = {
         fail(e)
       }
       @Override
-      def fatalError(e: SAXParseException) {
+      def fatalError(e: SAXParseException): Unit = {
         fail(e)
       }
 
       @Override
-      def warning(e: SAXParseException) {
+      def warning(e: SAXParseException): Unit = {
         fail(e)
       }
     })

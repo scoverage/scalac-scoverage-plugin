@@ -18,7 +18,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
   val instrumentationComponent = new ScoverageInstrumentationComponent(global, extraAfterPhase, extraBeforePhase)
   override val components: List[PluginComponent] = List(instrumentationComponent)
 
-  override def processOptions(opts: List[String], error: String => Unit) {
+  override def processOptions(opts: List[String], error: String => Unit): Unit = {
     val options = new ScoverageOptions
     for (opt <- opts) {
       if (opt.startsWith("excludedPackages:")) {
@@ -227,7 +227,7 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
     def isStatementIncluded(pos: Position): Boolean = coverageFilter.isLineIncluded(pos)
     def isSymbolIncluded(symbol: Symbol): Boolean = coverageFilter.isSymbolIncluded(symbol.fullNameString)
 
-    def updateLocation(t: Tree) {
+    def updateLocation(t: Tree): Unit = {
       Location(global)(t) match {
         case Some(loc) => this.location = loc
         case _ => reporter.warning(t.pos, s"[warn] Cannot update location for $t")
@@ -259,7 +259,7 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
       )
     }
 
-    def debug(t: Tree) {
+    def debug(t: Tree): Unit = {
       import scala.reflect.runtime.{universe => u}
       reporter.echo(t.getClass.getSimpleName + ": LINE " + safeLine(t) + ": " + u.showRaw(t))
     }

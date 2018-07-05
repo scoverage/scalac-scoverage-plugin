@@ -145,7 +145,7 @@ class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tool
     }
   }
 
-  override def computeInternalPhases() {
+  override def computeInternalPhases(): Unit = {
     super.computeInternalPhases()
     addToPhasesSet(validator, "scoverage validator")
     addToPhasesSet(instrumentationComponent, "scoverage instrumentationComponent")
