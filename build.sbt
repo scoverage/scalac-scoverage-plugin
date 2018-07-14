@@ -92,7 +92,7 @@ lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plug
     CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2, scalaMajor)) if scalaMajor > 10 => Seq(
         "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
-        "com.typesafe.scala-logging" %% "scala-logging" % "3.8.0" % "test"
+        "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0" % "test"
       )
       case _ => Seq(
         "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2" % "test"
