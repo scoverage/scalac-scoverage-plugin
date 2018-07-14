@@ -1,7 +1,6 @@
 package scoverage
 
 import scala.collection.concurrent.TrieMap
-import scala.collection.generic.{ CanBuildFrom, MutableMapFactory }
 import java.io.{
   File => SupportFile,
   FileWriter => SupportFileWriter,

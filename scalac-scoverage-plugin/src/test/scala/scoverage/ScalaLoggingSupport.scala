@@ -1,12 +1,6 @@
 package scoverage
 
 import java.io.{File, FileNotFoundException}
-import java.net.URL
-
-import scala.collection.mutable.ListBuffer
-import scala.tools.nsc.{Settings, Global}
-import scala.tools.nsc.plugins.PluginComponent
-import scala.tools.nsc.transform.{Transform, TypingTransformers}
 
 trait ScalaLoggingSupport {
 

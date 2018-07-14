@@ -1,7 +1,6 @@
 package scoverage
 
 import scala.collection.mutable.HashMap
-import scala.collection.generic.{ CanBuildFrom, MutableMapFactory }
 import scalajssupport.{
   File => SupportFile,
   FileWriter => SupportFileWriter,

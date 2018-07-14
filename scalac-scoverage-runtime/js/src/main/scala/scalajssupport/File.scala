@@ -1,7 +1,6 @@
 package scalajssupport
 
 import scala.scalajs.js
-import js.Dynamic.{ global => g }
 
 /**
  * This wraps RhinoFile, NodeFile, or PhantomFile depending on which javascript
