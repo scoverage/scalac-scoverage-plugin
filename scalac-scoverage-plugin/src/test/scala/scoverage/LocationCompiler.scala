@@ -43,7 +43,7 @@ class LocationCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools
     }
   }
 
-  override def computeInternalPhases() {
+  override def computeInternalPhases(): Unit = {
     super.computeInternalPhases()
     addToPhasesSet(locationSetter, "sets locations")
   }

@@ -26,7 +26,7 @@ trait FileFilter {
 }
 
 trait JsFileObject {
-  def write(path: String, data: String, mode: String = "a")
+  def write(path: String, data: String, mode: String = "a"): Unit
   def pathJoin(path: String, child: String): String
   def apply(path: String): JsFile
 }
