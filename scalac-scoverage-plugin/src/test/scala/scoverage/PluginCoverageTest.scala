@@ -264,8 +264,8 @@ class PluginCoverageTest
                                    |  }""".stripMargin)
     assert(!compiler.reporter.hasErrors)
     // 2 statements for the two applies in Seq, one for each literal which is 6, one for the flat map,
-    // one for the map, one for the yield op.
-    compiler.assertNMeasuredStatements(11)
+    // one for the map.
+    compiler.assertNMeasuredStatements(10)
   }
 
   test("plugin should not instrument local macro implementation") {
