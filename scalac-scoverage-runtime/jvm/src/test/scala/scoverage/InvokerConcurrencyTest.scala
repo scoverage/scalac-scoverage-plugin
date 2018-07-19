@@ -5,7 +5,6 @@ import java.util.concurrent.Executors
 
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
-import scala.collection.breakOut
 import scala.concurrent._
 import scala.concurrent.duration._
 
@@ -33,7 +32,7 @@ class InvokerConcurrencyTest extends FunSuite with BeforeAndAfter {
       Future {
         Invoker.invoked(i, measurementDir.toString)
       }
-    }(breakOut)
+    }.toList
 
     futures.foreach(Await.result(_, 1.second))
 
