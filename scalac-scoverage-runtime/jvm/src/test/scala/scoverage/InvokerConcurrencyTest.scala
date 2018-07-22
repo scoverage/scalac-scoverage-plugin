@@ -28,17 +28,17 @@ class InvokerConcurrencyTest extends FunSuite with BeforeAndAfter {
 
     // Create 1k "invoked" calls on the common thread pool, to stress test
     // the method
-    val futures: List[Future[Unit]] = testIds.map { i: Int =>
+    val futures: Set[Future[Unit]] = testIds.map { i: Int =>
       Future {
         Invoker.invoked(i, measurementDir.toString)
       }
-    }.toList
+    }
 
     futures.foreach(Await.result(_, 1.second))
 
     // Now verify that the measurement file is not corrupted by loading it
     val measurementFiles = Invoker.findMeasurementFiles(measurementDir)
-    val idsFromFile = Invoker.invoked(measurementFiles).toSet
+    val idsFromFile = Invoker.invoked(measurementFiles.toIndexedSeq).toSet
 
     idsFromFile === testIds
   }
