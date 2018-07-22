@@ -18,15 +18,19 @@ class ScoveragePlugin(val global: Global) extends Plugin {
   val instrumentationComponent = new ScoverageInstrumentationComponent(global, extraAfterPhase, extraBeforePhase)
   override val components: List[PluginComponent] = List(instrumentationComponent)
 
+  private def parseExclusionEntry(entryName: String, inOption: String): Seq[String] =
+    inOption.substring(entryName.length).split(";").map(_.trim).toIndexedSeq.filterNot(_.isEmpty)
+
   override def processOptions(opts: List[String], error: String => Unit): Unit = {
     val options = new ScoverageOptions
+
     for (opt <- opts) {
       if (opt.startsWith("excludedPackages:")) {
-        options.excludedPackages = opt.substring("excludedPackages:".length).split(";").map(_.trim).filterNot(_.isEmpty)
+        options.excludedPackages = parseExclusionEntry("excludedPackages", opt)
       } else if (opt.startsWith("excludedFiles:")) {
-        options.excludedFiles = opt.substring("excludedFiles:".length).split(";").map(_.trim).filterNot(_.isEmpty)
+        options.excludedFiles = parseExclusionEntry("excludedFiles", opt)
       } else if (opt.startsWith("excludedSymbols:")) {
-        options.excludedSymbols = opt.substring("excludedSymbols:".length).split(";").map(_.trim).filterNot(_.isEmpty)
+        options.excludedSymbols = parseExclusionEntry("excludedSymbols", opt)
       } else if (opt.startsWith("dataDir:")) {
         options.dataDir = opt.substring("dataDir:".length)
       } else if (opt.startsWith("extraAfterPhase:") || opt.startsWith("extraBeforePhase:")) {
