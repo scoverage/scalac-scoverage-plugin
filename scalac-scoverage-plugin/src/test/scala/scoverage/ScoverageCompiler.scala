@@ -103,15 +103,11 @@ class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tool
   def assertNoCoverage() = assert(!testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked"))
 
 
-  def assertAtLeastNStatements(n: Int): Unit = {
+  def assertNMeasuredStatements(n: Int): Unit = {
     for (k <- 1 to n) {
       assert(testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked($k,"),
         s"Should be $n invoked statements but missing #$k")
     }
-  }
-
-  def assertNMeasuredStatements(n: Int): Unit = {
-    assertAtLeastNStatements(n)
     assert(!testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked(${n + 1},"),
       s"Found statement ${n + 1} but only expected $n")
   }
@@ -144,7 +140,7 @@ class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tool
     class Transformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
 
       override def transform(tree: global.Tree) = {
-        sources append tree.toString
+        sources += tree.toString
         tree
       }
     }

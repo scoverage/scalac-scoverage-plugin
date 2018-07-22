@@ -265,7 +265,8 @@ class PluginCoverageTest
     assert(!compiler.reporter.hasErrors)
     // 2 statements for the two applies in Seq, one for each literal which is 6, one for the operation passed to yield.
     // Depending on the collections api version, there can be additional implicit canBuildFrom statements.
-    compiler.assertAtLeastNStatements(9)
+    val expectedStatementsCount = if (ScoverageCompiler.ShortScalaVersion < "2.13") 11 else 9
+    compiler.assertNMeasuredStatements(expectedStatementsCount)
   }
 
   test("plugin should not instrument local macro implementation") {
