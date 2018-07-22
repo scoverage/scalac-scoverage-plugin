@@ -263,9 +263,10 @@ class PluginCoverageTest
                                    |    }
                                    |  }""".stripMargin)
     assert(!compiler.reporter.hasErrors)
-    // 2 statements for the two applies in Seq, one for each literal which is 6, one for the flat map,
-    // one for the map, one for the yield op.
-    compiler.assertNMeasuredStatements(11)
+    // 2 statements for the two applies in Seq, one for each literal which is 6, one for the operation passed to yield.
+    // Depending on the collections api version, there can be additional implicit canBuildFrom statements.
+    val expectedStatementsCount = if (ScoverageCompiler.ShortScalaVersion < "2.13") 11 else 9
+    compiler.assertNMeasuredStatements(expectedStatementsCount)
   }
 
   test("plugin should not instrument local macro implementation") {

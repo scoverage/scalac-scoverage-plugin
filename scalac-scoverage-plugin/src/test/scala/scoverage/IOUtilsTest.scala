@@ -36,7 +36,7 @@ class IOUtilsTest extends FreeSpec with MockitoSugar with OneInstancePerTest wit
       writer2.close()
 
       val files = IOUtils.findMeasurementFiles(file1.getParent)
-      val invoked = IOUtils.invoked(files)
+      val invoked = IOUtils.invoked(files.toIndexedSeq)
       assert(invoked.toSet === Set(1, 2, 5, 7, 9, 10, 14))
 
       file1.delete()
