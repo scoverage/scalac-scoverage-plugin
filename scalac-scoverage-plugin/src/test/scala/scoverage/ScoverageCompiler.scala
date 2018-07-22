@@ -102,7 +102,6 @@ class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tool
 
   def assertNoCoverage() = assert(!testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked"))
 
-
   def assertNMeasuredStatements(n: Int): Unit = {
     for (k <- 1 to n) {
       assert(testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked($k,"),

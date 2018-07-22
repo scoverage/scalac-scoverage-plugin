@@ -16,7 +16,7 @@ class IOUtilsTest extends FreeSpec with MockitoSugar with OneInstancePerTest wit
       writer.write("1\n5\n9\n\n10\n")
       writer.close()
       val invoked = IOUtils.invoked(Seq(file))
-      assert(invoked.toSet === Set(1, 5, 9, 10))
+      assert(invoked === Set(1, 5, 9, 10))
 
       file.delete()
     }
@@ -37,7 +37,7 @@ class IOUtilsTest extends FreeSpec with MockitoSugar with OneInstancePerTest wit
 
       val files = IOUtils.findMeasurementFiles(file1.getParent)
       val invoked = IOUtils.invoked(files.toIndexedSeq)
-      assert(invoked.toSet === Set(1, 2, 5, 7, 9, 10, 14))
+      assert(invoked === Set(1, 2, 5, 7, 9, 10, 14))
 
       file1.delete()
       file2.delete()
@@ -66,7 +66,7 @@ class IOUtilsTest extends FreeSpec with MockitoSugar with OneInstancePerTest wit
 
       val files = IOUtils.reportFileSearch(base, IOUtils.isReportFile)
       val invoked = IOUtils.invoked(files)
-      assert(invoked.toSet === Set(1, 2, 3, 4, 5, 6, 7, 8, 11, 20, 30, 44))
+      assert(invoked === Set(1, 2, 3, 4, 5, 6, 7, 8, 11, 20, 30, 44))
 
       file1.delete()
       file2.delete()

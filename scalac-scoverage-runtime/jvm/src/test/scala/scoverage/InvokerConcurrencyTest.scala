@@ -38,7 +38,7 @@ class InvokerConcurrencyTest extends FunSuite with BeforeAndAfter {
 
     // Now verify that the measurement file is not corrupted by loading it
     val measurementFiles = Invoker.findMeasurementFiles(measurementDir)
-    val idsFromFile = Invoker.invoked(measurementFiles.toIndexedSeq).toSet
+    val idsFromFile = Invoker.invoked(measurementFiles.toIndexedSeq)
 
     idsFromFile === testIds
   }
