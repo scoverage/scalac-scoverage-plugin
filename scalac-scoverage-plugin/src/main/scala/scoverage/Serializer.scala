@@ -68,7 +68,7 @@ object Serializer {
     }
 
     writeHeader(writer)
-    coverage.statements.foreach(stmt => writeStatement(stmt, writer))
+    coverage.statements.toSeq.sortBy(_.id).foreach(stmt => writeStatement(stmt, writer))
   }
 
   def coverageFile(dataDir: File): File = coverageFile(dataDir.getAbsolutePath)
