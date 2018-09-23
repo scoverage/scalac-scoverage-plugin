@@ -21,15 +21,15 @@ class ScoverageHtmlWriterTest extends FunSuite {
   val pathToClassInSubDir = pathToClassFile("subdir/ClassInSubDir.scala")
   val pathToClassInMainDir = pathToClassFile("ClassInMainDir.scala")
 
-  val statementForClassContainingHtml = Statement(pathToClassContainingHtml,
-    Location("coverage.sample", "ClassContainingHtml", "ClassContainingHtml", ClassType.Class, "some_html", pathToClassInSubDir),
+  val statementForClassContainingHtml = Statement(
+    Location("coverage.sample", "ClassContainingHtml", "ClassContainingHtml", ClassType.Class, "some_html", pathToClassContainingHtml),
     3, 74, 97, 4, "<div>HTML content</div>",
     "scala.Predef.println", "Apply", false, 0)
-  val statementForClassInSubDir = Statement(pathToClassInSubDir,
+  val statementForClassInSubDir = Statement(
     Location("coverage.sample", "ClassInSubDir", "ClassInSubDir", ClassType.Class, "msg_test", pathToClassInSubDir),
     2, 64, 84, 4, "scala.this.Predef.println(\"test code\")",
     "scala.Predef.println", "Apply", false, 0)
-  val statementForClassInMainDir = Statement(pathToClassInMainDir,
+  val statementForClassInMainDir = Statement(
     Location("coverage.sample", "ClassInMainDir", "ClassInMainDir", ClassType.Class, "msg_coverage", pathToClassInMainDir),
     1, 69, 104, 4, "scala.this.Predef.println(\"measure coverage of code\")",
     "scala.Predef.println", "Apply", false, 0)

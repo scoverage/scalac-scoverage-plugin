@@ -202,7 +202,6 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
         case Some(source) =>
           val id = statementIds.incrementAndGet
           val statement = Statement(
-            source.path,
             location,
             id,
             safeStart(tree),

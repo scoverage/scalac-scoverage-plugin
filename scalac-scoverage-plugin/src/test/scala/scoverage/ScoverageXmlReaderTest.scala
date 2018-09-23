@@ -17,7 +17,7 @@ class ScoverageXmlReaderTest extends FreeSpec with Matchers {
 
       val coverage = Coverage()
 
-      coverage.add(Statement(canonicalPath("com/scoverage/class.scala"),
+      coverage.add(Statement(
         Location("com.scoverage",
           "Test",
           "com.scoverage.TopLevel.Test",
@@ -34,7 +34,7 @@ class ScoverageXmlReaderTest extends FreeSpec with Matchers {
         true,
         2))
 
-      coverage.add(Statement(canonicalPath("com/scoverage/foo/class.scala"),
+      coverage.add(Statement(
         Location("com.scoverage.foo",
           "ServiceState",
           "com.scoverage.foo.Service.ServiceState",

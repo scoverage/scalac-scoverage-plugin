@@ -43,7 +43,6 @@ object ScoverageXmlReader {
       id = id + 1
 
       coverage add Statement(
-        source.text,
         location,
         id,
         start.text.toInt,

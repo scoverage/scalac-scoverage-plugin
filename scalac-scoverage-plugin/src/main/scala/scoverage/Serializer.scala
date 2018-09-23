@@ -108,7 +108,7 @@ object Serializer {
         case "Object" => ClassType.Object
         case _ => ClassType.Class
       }
-      Statement(source,
+      Statement(
         Location(_package, _class, fullClassName, classType, method, path),
         id,
         start,
