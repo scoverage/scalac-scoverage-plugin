@@ -1,9 +1,8 @@
 package scoverage
 
-import java.io._
+import java.io.{BufferedWriter, File, FileOutputStream, OutputStreamWriter, Writer}
 
-import scala.io.Source
-import scala.xml.{Utility, XML}
+import scala.io.{Codec, Source}
 
 object Serializer {
 
@@ -12,147 +11,109 @@ object Serializer {
 
   // Write out coverage data to given file.
   def serialize(coverage: Coverage, file: File): Unit = {
-    val writer = new BufferedWriter(new FileWriter(file))
-    serialize(coverage, writer)
-    writer.close()
+    val writer: Writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Codec.UTF8.name))
+    try {
+      serialize(coverage, writer)
+    }
+    finally {
+      writer.flush()
+      writer.close()
+    }
   }
 
   def serialize(coverage: Coverage, writer: Writer): Unit = {
-    def writeStatement(stmt: Statement, writer: Writer): Unit = {
-      writer.write {
-        val xml = <statement>
-          <source>
-            {stmt.source}
-          </source>
-          <package>
-            {stmt.location.packageName}
-          </package>
-          <class>
-            {stmt.location.className}
-          </class>
-          <classType>
-            {stmt.location.classType.toString}
-          </classType>
-          <fullClassName>
-            {stmt.location.fullClassName}
-          </fullClassName>
-          <method>
-            {stmt.location.method}
-          </method>
-          <path>
-            {stmt.location.sourcePath}
-          </path>
-          <id>
-            {stmt.id.toString}
-          </id>
-          <start>
-            {stmt.start.toString}
-          </start>
-          <end>
-            {stmt.end.toString}
-          </end>
-          <line>
-            {stmt.line.toString}
-          </line>
-          <description>
-            {escape(stmt.desc)}
-          </description>
-          <symbolName>
-            {escape(stmt.symbolName)}
-          </symbolName>
-          <treeName>
-            {escape(stmt.treeName)}
-          </treeName>
-          <branch>
-            {stmt.branch.toString}
-          </branch>
-          <count>
-            {stmt.count.toString}
-          </count>
-          <ignored>
-            {stmt.ignored.toString}
-          </ignored>
-        </statement>
-        Utility.trim(xml) + "\n"
-      }
+    def writeHeader(writer: Writer): Unit = {
+      writer.write(s"""# Coverage data, format version: 2.0
+        |# Statement data:
+        |# - id
+        |# - source path
+        |# - package name
+        |# - class name
+        |# - class type (Class, Object or Trait)
+        |# - full class name
+        |# - method name
+        |# - start offset
+        |# - end offset
+        |# - line number
+        |# - symbol name
+        |# - tree name
+        |# - is branch
+        |# - invocations count
+        |# - is ignored
+        |# - description (can be multi-line)
+        |# '\f' sign
+        |# ------------------------------------------
+        |""".stripMargin)
     }
-    writer.write("<statements>\n")
-    coverage.statements.foreach(stmt => writeStatement(stmt, writer))
-    writer.write("</statements>")
+
+    def writeStatement(stmt: Statement, writer: Writer): Unit = {
+      writer.write(s"""${stmt.id}
+        |${stmt.location.sourcePath}
+        |${stmt.location.packageName}
+        |${stmt.location.className}
+        |${stmt.location.classType}
+        |${stmt.location.fullClassName}
+        |${stmt.location.method}
+        |${stmt.start}
+        |${stmt.end}
+        |${stmt.line}
+        |${stmt.symbolName}
+        |${stmt.treeName}
+        |${stmt.branch}
+        |${stmt.count}
+        |${stmt.ignored}
+        |${stmt.desc}
+        |\f
+        |""".stripMargin)
+    }
+
+    writeHeader(writer)
+    coverage.statements.toSeq.sortBy(_.id).foreach(stmt => writeStatement(stmt, writer))
   }
 
   def coverageFile(dataDir: File): File = coverageFile(dataDir.getAbsolutePath)
   def coverageFile(dataDir: String): File = new File(dataDir, Constants.CoverageFileName)
 
-  def deserialize(str: String): Coverage = {
-    val xml = XML.loadString(str)
-    val statements = xml \ "statement" map (node => {
-      val source = (node \ "source").text
-      val count = (node \ "count").text.toInt
-      val ignored = (node \ "ignored").text.toBoolean
-      val branch = (node \ "branch").text.toBoolean
-      val _package = (node \ "package").text
-      val _class = (node \ "class").text
-      val fullClassName = (node \ "fullClassName").text
-      val method = (node \ "method").text
-      val path = (node \ "path").text
-      val treeName = (node \ "treeName").text
-      val symbolName = (node \ "symbolName").text
-      val id = (node \ "id").text.toInt
-      val line = (node \ "line").text.toInt
-      val desc = (node \ "description").text
-      val start = (node \ "start").text.toInt
-      val end = (node \ "end").text.toInt
-      val classType = (node \ "classType").text match {
-        case "Trait" => ClassType.Trait
-        case "Object" => ClassType.Object
-        case _ => ClassType.Class
-      }
-      Statement(source,
-        Location(_package, _class, fullClassName, classType, method, path),
-        id,
-        start,
-        end,
-        line,
-        desc,
-        symbolName,
-        treeName, branch, count, ignored)
-    })
+  def deserialize(file: File): Coverage = {
+    deserialize(Source.fromFile(file)(Codec.UTF8).getLines)
+  }
 
+  def deserialize(lines: Iterator[String]): Coverage = {
+    def toStatement(lines: Iterator[String]): Statement = {
+      val id: Int = lines.next.toInt
+      val sourcePath = lines.next
+      val packageName = lines.next
+      val className = lines.next
+      val classType = lines.next
+      val fullClassName = lines.next
+      val method = lines.next
+      val loc = Location(packageName, className, fullClassName, ClassType.fromString(classType), method, sourcePath)
+      val start: Int = lines.next.toInt
+      val end: Int = lines.next.toInt
+      val lineNo: Int = lines.next.toInt
+      val symbolName: String = lines.next
+      val treeName: String = lines.next
+      val branch: Boolean = lines.next.toBoolean
+      val count: Int = lines.next.toInt
+      val ignored: Boolean = lines.next.toBoolean
+      val desc = lines.toList.mkString("\n")
+      Statement(loc, id, start, end, lineNo, desc, symbolName, treeName, branch, count, ignored)
+    }
+
+    val headerFirstLine = lines.next
+    require(headerFirstLine == "# Coverage data, format version: 2.0", "Wrong file format")
+
+    val linesWithoutHeader = lines.dropWhile(_.startsWith("#"))
     val coverage = Coverage()
-    for ( statement <- statements )
-      if (statement.ignored) coverage.addIgnoredStatement(statement)
-      else coverage.add(statement)
+    while (!linesWithoutHeader.isEmpty) {
+      val oneStatementLines = linesWithoutHeader.takeWhile(_ != "\f")
+      val statement = toStatement(oneStatementLines)
+      if (statement.ignored)
+        coverage.addIgnoredStatement(statement)
+      else
+        coverage.add(statement)
+    }
     coverage
   }
 
-  def deserialize(file: File): Coverage = {
-    val str = Source.fromFile(file).mkString
-    deserialize(str)
-  }
-
-  /**
-   * This method ensures that the output String has only
-   * valid XML unicode characters as specified by the
-   * XML 1.0 standard. For reference, please see
-   * <a href="http://www.w3.org/TR/2000/REC-xml-20001006#NT-Char">the
-   * standard</a>. This method will return an empty
-   * String if the input is null or empty.
-   *
-   * @param in The String whose non-valid characters we want to remove.
-   * @return The in String, stripped of non-valid characters.
-   * @see http://blog.mark-mclaren.info/2007/02/invalid-xml-characters-when-valid-utf8_5873.html
-   *
-   */
-  def escape(in: String): String = {
-    val out = new StringBuilder()
-    for ( current <- Option(in).getOrElse("").toCharArray ) {
-      if ((current == 0x9) || (current == 0xA) || (current == 0xD) ||
-        ((current >= 0x20) && (current <= 0xD7FF)) ||
-        ((current >= 0xE000) && (current <= 0xFFFD)) ||
-        ((current >= 0x10000) && (current <= 0x10FFFF)))
-        out.append(current)
-    }
-    out.mkString
-  }
 }

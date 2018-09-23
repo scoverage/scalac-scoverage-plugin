@@ -109,8 +109,7 @@ case class MeasuredFile(source: String, statements: Iterable[Statement])
   override def ignoredStatements: Iterable[Statement] = Seq()
 }
 
-case class Statement(source: String,
-                     location: Location,
+case class Statement(location: Location,
                      id: Int,
                      start: Int,
                      end: Int,
@@ -121,6 +120,7 @@ case class Statement(source: String,
                      branch: Boolean,
                      var count: Int = 0,
                      ignored: Boolean = false) extends java.io.Serializable {
+  def source = location.sourcePath
   def invoked(): Unit = count = count + 1
   def isInvoked = count > 0
 }
