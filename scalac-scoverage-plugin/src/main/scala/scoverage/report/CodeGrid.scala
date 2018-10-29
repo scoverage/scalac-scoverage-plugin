@@ -69,7 +69,7 @@ class CodeGrid(mFile: MeasuredFile, sourceEncoding: Option[String]) {
       sb append "</span>"
       sb.toString
     }) mkString ""
-    s"<pre style='font-size: 12pt; font-family: courier;'>$code</pre>"
+    s"<pre style='font-size: 12pt; font-family: courier, monospace;'>$code</pre>"
   }
 
   private def source(mfile: MeasuredFile): String = {
