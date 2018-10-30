@@ -14,7 +14,7 @@ import scala.xml.XML
 class CoberturaXmlWriterTest extends FunSuite with BeforeAndAfter with OneInstancePerTest {
 
   def tempDir(): File = {
-    val dir = new File(IOUtils.getTempDirectory, UUID.randomUUID().toString)
+    val dir = new File(IOUtils.getTempDirectory, UUID.randomUUID.toString)
     dir.mkdirs()
     dir.deleteOnExit()
     dir

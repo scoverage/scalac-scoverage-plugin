@@ -9,8 +9,8 @@ jdk:
 scala:
   - 2.10.7
   - 2.11.12
-  - 2.12.6
-  - 2.13.0-M4
+  - 2.12.7
+  - 2.13.0-M5
 
 before_cache:
   - find "$HOME/.sbt/" -name '*.lock' -print0 | xargs -0 rm

@@ -35,7 +35,7 @@ class ScoverageHtmlWriterTest extends FunSuite {
     "scala.Predef.println", "Apply", false, 0)
 
   def createTemporaryDir(): File = {
-    val dir = new File(IOUtils.getTempDirectory, UUID.randomUUID().toString)
+    val dir = new File(IOUtils.getTempDirectory, UUID.randomUUID.toString)
     dir.mkdirs()
     dir.deleteOnExit()
     dir
