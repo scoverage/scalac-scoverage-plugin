@@ -47,7 +47,7 @@ class CodeGrid(mFile: MeasuredFile, sourceEncoding: Option[String]) {
     val code = lines map (line => {
       var style = cellStyle(NoData)
       val sb = new StringBuilder
-      sb append lineNumber + " "
+      sb append lineNumber append " "
       lineNumber = lineNumber + 1
       sb append spanStart(NoData)
       line.map(cell => {

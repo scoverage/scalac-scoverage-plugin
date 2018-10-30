@@ -96,7 +96,7 @@ class SerializerTest extends FunSuite with MockitoSugar with OneInstancePerTest 
         |false
         |def test : String
         |\f
-        |""".stripMargin.split("\n").toIterator
+        |""".stripMargin.split("\n").iterator
     val statements = List(Statement(
       Location("org.scoverage", "test", "org.scoverage.test", ClassType.Trait, "mymethod", "mypath"),
       14, 100, 200, 4, "def test : String", "test", "DefDef", true, 1
