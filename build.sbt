@@ -73,8 +73,7 @@ lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scovera
     )
     .jsSettings(
       libraryDependencies += "org.scalatest" %%% "scalatest" % ScalatestVersion % "test",
-      scalaJSStage := FastOptStage,
-      inConfig(Test)(jsEnv := RhinoJSEnv().value)
+      scalaJSStage := FastOptStage
     )
 
 lazy val `scalac-scoverage-runtimeJVM` = runtime.jvm
