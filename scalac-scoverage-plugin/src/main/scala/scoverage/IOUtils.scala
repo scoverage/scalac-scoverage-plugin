@@ -54,10 +54,13 @@ object IOUtils {
     override def accept(pathname: File): Boolean = pathname.getName.startsWith(Constants.MeasurementsPrefix)
   })
 
-  def reportFileSearch(baseDir: File, condition: File => Boolean): Seq[File] = {
+  def scoverageDataDirsSearch(baseDir: File): Seq[File] = {
+    def directoryFilter = new FileFilter {
+      override def accept(pathname: File): Boolean = pathname.isDirectory
+    }
     def search(file: File): Seq[File] = file match {
-      case dir if dir.isDirectory => dir.listFiles().toSeq.map(search).flatten
-      case f if isReportFile(f) => Seq(f)
+      case dir if dir.isDirectory && dir.getName == Constants.DataDir => Seq(dir)
+      case dir if dir.isDirectory => dir.listFiles(directoryFilter).toSeq.flatMap(search)
       case _ => Nil
     }
     search(baseDir)

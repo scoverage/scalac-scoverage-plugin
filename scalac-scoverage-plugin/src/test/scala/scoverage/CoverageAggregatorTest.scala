@@ -1,10 +1,10 @@
 package scoverage
 
-import java.io.File
+import java.io.{File, FileWriter}
 import java.util.UUID
 
 import org.scalatest.{FreeSpec, Matchers}
-import scoverage.report.{CoverageAggregator, ScoverageXmlWriter}
+import scoverage.report.CoverageAggregator
 
 class CoverageAggregatorTest extends FreeSpec with Matchers {
 
@@ -23,33 +23,41 @@ class CoverageAggregatorTest extends FreeSpec with Matchers {
         "methlab",
         source)
 
+      val cov1Stmt1 = Statement(location, 1, 155, 176, 4, "", "", "", true, 1)
+      val cov1Stmt2 = Statement(location, 2, 200, 300, 5, "", "", "", false, 1)
       val coverage1 = Coverage()
-      coverage1.add(Statement(location, 1, 155, 176, 4, "", "", "", true, 1))
-      coverage1.add(Statement(location, 2, 200, 300, 5, "", "", "", false, 2))
+      coverage1.add(cov1Stmt1.copy(count = 0))
+      coverage1.add(cov1Stmt2.copy(count = 0))
       val dir1 = new File(IOUtils.getTempPath, UUID.randomUUID.toString)
       dir1.mkdir()
-      new ScoverageXmlWriter(sourceRoot, dir1, false).write(coverage1)
+      Serializer.serialize(coverage1, Serializer.coverageFile(dir1))
+      val measurementsFile1 = new File(dir1, s"${Constants.MeasurementsPrefix}1")
+      val measurementsFile1Writer = new FileWriter(measurementsFile1)
+      measurementsFile1Writer.write("1\n2\n")
+      measurementsFile1Writer.close()
 
+      val cov2Stmt1 = Statement(location, 1, 95, 105, 19, "", "", "", false, 0)
       val coverage2 = Coverage()
-      coverage2.add(Statement(location, 1, 95, 105, 19, "", "", "", false, 0))
+      coverage2.add(cov2Stmt1)
       val dir2 = new File(IOUtils.getTempPath, UUID.randomUUID.toString)
       dir2.mkdir()
-      new ScoverageXmlWriter(sourceRoot, dir2, false).write(coverage2)
+      Serializer.serialize(coverage2, Serializer.coverageFile(dir2))
 
+      val cov3Stmt1 = Statement(location, 2, 14, 1515, 544, "", "", "", false, 1)
       val coverage3 = Coverage()
-      coverage3.add(Statement(location, 2, 14, 1515, 544, "", "", "", false, 1))
+      coverage3.add(cov3Stmt1.copy(count = 0))
       val dir3 = new File(IOUtils.getTempPath, UUID.randomUUID.toString)
       dir3.mkdir()
-      new ScoverageXmlWriter(sourceRoot, dir3, false).write(coverage3)
+      Serializer.serialize(coverage3, Serializer.coverageFile(dir3))
+      val measurementsFile3 = new File(dir3, s"${Constants.MeasurementsPrefix}1")
+      val measurementsFile3Writer = new FileWriter(measurementsFile3)
+      measurementsFile3Writer.write("2\n")
+      measurementsFile3Writer.close()
 
-      val aggregated = CoverageAggregator.aggregatedCoverage(
-        Seq(IOUtils.reportFile(dir1, debug = false),
-          IOUtils.reportFile(dir2, debug = false),
-          IOUtils.reportFile(dir3, debug = false))
-      )
+      val aggregated = CoverageAggregator.aggregatedCoverage(Seq(dir1, dir2, dir3))
       aggregated.statements.toSet.size shouldBe 4
       aggregated.statements.map(_.copy(id = 0)).toSet shouldBe
-        (coverage1.statements ++ coverage2.statements ++ coverage3.statements).map(_.copy(id = 0)).toSet
+        Set(cov1Stmt1, cov1Stmt2, cov2Stmt1, cov3Stmt1).map(_.copy(id = 0))
     }
   }
 }
