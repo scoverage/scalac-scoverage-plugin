@@ -209,7 +209,8 @@ You can exclude whole classes or packages by name. Pass a semicolon separated
 list of regexes to the 'excludedPackages' option.
 
 For example:
-  -P:scoverage:excludedPackages:.*\.utils\..*;.*\.SomeClass;org\.apache\..*
+
+    -P:scoverage:excludedPackages:.*\.utils\..*;.*\.SomeClass;org\.apache\..*
 
 The regular expressions are matched against the fully qualified class name, and must match the entire string to take effect.
 
