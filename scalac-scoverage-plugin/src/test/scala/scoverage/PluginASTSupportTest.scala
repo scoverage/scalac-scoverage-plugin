@@ -1,12 +1,10 @@
 package scoverage
 
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest._
 
 /** @author Stephen Samuel */
 class PluginASTSupportTest
   extends FunSuite
-  with MockitoSugar
   with OneInstancePerTest
   with BeforeAndAfterEachTestData
   with ScalaLoggingSupport {
