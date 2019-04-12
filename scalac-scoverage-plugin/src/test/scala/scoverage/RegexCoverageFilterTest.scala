@@ -1,13 +1,11 @@
 package scoverage
 
-import org.mockito.Mockito
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{FreeSpec, Matchers}
 
-import scala.reflect.internal.util._
-import scala.reflect.io.AbstractFile
+import scala.reflect.internal.util.{BatchSourceFile, NoFile, SourceFile}
+import scala.reflect.io.VirtualFile
 
-class RegexCoverageFilterTest extends FreeSpec with Matchers with MockitoSugar {
+class RegexCoverageFilterTest extends FreeSpec with Matchers {
 
   "isClassIncluded" - {
 
@@ -40,8 +38,7 @@ class RegexCoverageFilterTest extends FreeSpec with Matchers with MockitoSugar {
     }
   }
   "isFileIncluded" - {
-    val abstractFile = mock[AbstractFile]
-    Mockito.when(abstractFile.path).thenReturn("sammy.scala")
+    val abstractFile = new VirtualFile("sammy.scala")
     "should return true for empty excludes" in {
       val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
       new RegexCoverageFilter(Nil, Nil, Nil).isFileIncluded(file) shouldBe true

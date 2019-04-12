@@ -3,11 +3,10 @@ package scoverage
 import java.io.{File, FileWriter}
 import java.util.UUID
 
-import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
 
 /** @author Stephen Samuel */
-class IOUtilsTest extends FreeSpec with MockitoSugar with OneInstancePerTest with Matchers {
+class IOUtilsTest extends FreeSpec with OneInstancePerTest with Matchers {
 
   "io utils" - {
     "should parse measurement files" in {
