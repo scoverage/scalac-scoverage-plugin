@@ -79,17 +79,27 @@ lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plug
     .dependsOn(`scalac-scoverage-runtimeJVM` % "test")
     .settings(name := "scalac-scoverage-plugin")
     .settings(appSettings: _*)
-    .settings(libraryDependencies ++= Seq(
-    "org.scalatest" %% "scalatest" % ScalatestVersion % "test",
-    "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided"
-  )).settings(libraryDependencies ++= {
-    CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, scalaMajor)) if scalaMajor > 10 => Seq(
-        "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
-        "com.typesafe.scala-logging" %% "scala-logging" % "3.9.0" % "test"
+    .settings(
+      libraryDependencies ++= Seq(
+        "org.scalatest" %% "scalatest" % ScalatestVersion % "test",
+        "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided"
       )
-      case _ => Seq(
-        "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2" % "test"
-      )
-    }
-  })
+    )
+    .settings(
+      unmanagedSourceDirectories in Test ++= {
+        CrossVersion.partialVersion(scalaVersion.value) match {
+          case Some((2, scalaMajor)) if scalaMajor > 10 =>
+            Seq((sourceDirectory in Test).value / "scala-2.11+")
+          case _ =>
+            Seq()
+        }
+      },
+      libraryDependencies ++= {
+        CrossVersion.partialVersion(scalaVersion.value) match {
+          case Some((2, scalaMajor)) if scalaMajor > 10 =>
+            Seq("org.scala-lang.modules" %% "scala-xml" % "1.1.1")
+          case _ =>
+            Seq()
+        }
+      }
+    )

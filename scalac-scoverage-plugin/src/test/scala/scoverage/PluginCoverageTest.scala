@@ -7,7 +7,7 @@ class PluginCoverageTest
   extends FunSuite
   with OneInstancePerTest
   with BeforeAndAfterEachTestData
-  with ScalaLoggingSupport {
+  with MacroSupport {
 
   test("scoverage should instrument default arguments with methods") {
     val compiler = ScoverageCompiler.default
@@ -285,12 +285,13 @@ class PluginCoverageTest
     compiler.assertNoCoverage()
   }
 
-  test("plugin should not instrument expanded macro code github.com/skinny-framework/skinny-framework/issues/97") {
+  test("plugin should not instrument expanded macro code http://github.com/skinny-framework/skinny-framework/issues/97") {
     val compiler = ScoverageCompiler.default
-    scalaLoggingDeps.foreach(compiler.addToClassPath(_))
-    compiler.compileCodeSnippet( s"""import ${scalaLoggingPackageName}.StrictLogging
-                                   |class MacroTest extends StrictLogging {
-                                   |  logger.info("will break")
+    macroSupportDeps.foreach(compiler.addToClassPath(_))
+    compiler.compileCodeSnippet( s"""import scoverage.macrosupport.Tester
+                                   |
+                                   |class MacroTest {
+                                   |  Tester.test
                                    |} """.stripMargin)
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
