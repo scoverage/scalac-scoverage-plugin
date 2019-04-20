@@ -7,7 +7,7 @@ class PluginASTSupportTest
   extends FunSuite
   with OneInstancePerTest
   with BeforeAndAfterEachTestData
-  with ScalaLoggingSupport {
+  with MacroSupport {
 
   override protected def afterEach(testData: TestData): Unit = {
     val compiler = ScoverageCompiler.default
@@ -145,12 +145,11 @@ class PluginASTSupportTest
   // https://github.com/skinny-framework/skinny-framework/issues/97
   test("macro range positions should not break plugin") {
     val compiler = ScoverageCompiler.default
-    scalaLoggingDeps.foreach(compiler.addToClassPath(_))
-    compiler.compileCodeSnippet( s"""import ${scalaLoggingPackageName}.StrictLogging
+    macroSupportDeps.foreach(compiler.addToClassPath(_))
+    compiler.compileCodeSnippet( s"""import scoverage.macrosupport.Tester
                           |
-                          |object MacroTest extends StrictLogging {
-                          |  println("Hello")
-                          |  logger.info("will break")
+                          |object MacroTest {
+                          | Tester.test
                           |} """.stripMargin)
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
