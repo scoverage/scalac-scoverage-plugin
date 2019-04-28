@@ -35,18 +35,18 @@ class PluginCoverageTest
               }
 
               object Macros {
-                def poly[T] = macro Impl.poly[T]
+                def poly[T]: String = macro Impl.poly[T]
               }"""
     else
-               """
+               s"""
               import scala.language.experimental.macros
-              import scala.reflect.macros.Context
+              import scala.reflect.macros.blackbox.Context
               class Impl(val c: Context) {
                 import c.universe._
-                def poly[T: c.WeakTypeTag] = c.literal(c.weakTypeOf[T].toString)
+                def poly[T: c.WeakTypeTag] = q"$${c.weakTypeOf[T].toString}"
               }
               object Macros {
-                def poly[T] = macro Impl.poly[T]
+                def poly[T]: String = macro Impl.poly[T]
               }"""
     compiler.compileCodeSnippet(code)
     assert(!compiler.reporter.hasErrors)
@@ -269,11 +269,11 @@ class PluginCoverageTest
 
   test("plugin should not instrument local macro implementation") {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """
+    compiler.compileCodeSnippet( s"""
                                    | object MyMacro {
                                    | import scala.language.experimental.macros
-                                   | import scala.reflect.macros.Context
-                                   |  def test = macro testImpl
+                                   | import ${macroContextPackageName}.Context
+                                   |  def test: Unit = macro testImpl
                                    |  def testImpl(c: Context): c.Expr[Unit] = {
                                    |    import c.universe._
                                    |    reify {
