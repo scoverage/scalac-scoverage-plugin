@@ -28,7 +28,7 @@ object CoverageAggregator {
       if (coverageFile.exists) {
         val subcoverage: Coverage = Serializer.deserialize(coverageFile)
         val measurementFiles: Array[File] = IOUtils.findMeasurementFiles(dataDir)
-        val measurements = IOUtils.invoked(measurementFiles)
+        val measurements = IOUtils.invoked(measurementFiles.toIndexedSeq)
         subcoverage.apply(measurements)
         subcoverage.statements foreach { stmt =>
           // need to ensure all the ids are unique otherwise the coverage object will have stmt collisions

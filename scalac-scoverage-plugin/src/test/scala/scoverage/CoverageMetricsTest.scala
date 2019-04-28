@@ -21,7 +21,7 @@ class CoverageMetricsTest extends FreeSpec with Matchers {
       override def ignoredStatements: Iterable[Statement] = Seq()
     }
     metrics.branchCount shouldBe 0
-    metrics.branchCoverage - 1 shouldBe < (0.0001)
+    metrics.branchCoverage shouldBe 1.0 +- 0.0001
   }
 
   "no branches with no invoked statements should have 0% branch coverage" in {

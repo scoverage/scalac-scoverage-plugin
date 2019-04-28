@@ -83,11 +83,11 @@ class PluginASTSupportTest
 
   test("scoverage component should ignore basic macros") {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """
+    compiler.compileCodeSnippet( s"""
                           | object MyMacro {
                           | import scala.language.experimental.macros
-                          | import scala.reflect.macros.Context
-                          |  def test = macro testImpl
+                          | import ${macroContextPackageName}.Context
+                          |  def test: Unit = macro testImpl
                           |  def testImpl(c: Context): c.Expr[Unit] = {
                           |    import c.universe._
                           |    reify {
@@ -100,12 +100,12 @@ class PluginASTSupportTest
 
   test("scoverage component should ignore complex macros #11") {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """ object ComplexMacro {
+    compiler.compileCodeSnippet( s""" object ComplexMacro {
                           |
                           |  import scala.language.experimental.macros
-                          |  import scala.reflect.macros.Context
+                          |  import ${macroContextPackageName}.Context
                           |
-                          |  def debug(params: Any*) = macro debugImpl
+                          |  def debug(params: Any*): Unit = macro debugImpl
                           |
                           |  def debugImpl(c: Context)(params: c.Expr[Any]*) = {
                           |    import c.universe._
@@ -114,7 +114,7 @@ class PluginASTSupportTest
                           |      case Literal(Constant(_)) => reify { print(param.splice) }
                           |      case _ => reify {
                           |        val variable = c.Expr[String](Literal(Constant(show(param.tree)))).splice
-                          |        print(s"$variable = ${param.splice}")
+                          |        print(s"$$variable = $${param.splice}")
                           |      }
                           |    }).tree
                           |    }

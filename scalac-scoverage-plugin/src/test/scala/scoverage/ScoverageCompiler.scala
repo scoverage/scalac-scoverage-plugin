@@ -22,6 +22,7 @@ object ScoverageCompiler {
   def settings: Settings = {
     val s = new scala.tools.nsc.Settings
     s.Xprint.value = List("all")
+    s.deprecation.value = true
     s.Yrangepos.value = true
     s.Yposdebug.value = true
     s.classpath.value = classPath.mkString(File.pathSeparator)
