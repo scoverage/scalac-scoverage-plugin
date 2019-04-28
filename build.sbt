@@ -6,12 +6,12 @@ import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
 val Org = "org.scoverage"
-val ScalatestVersion = "3.0.6-SNAP4"
+val ScalatestVersion = "3.0.8-RC2"
 
 val appSettings = Seq(
     organization := Org,
     scalaVersion := "2.12.8",
-    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0-M5"),
+    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0-RC1"),
     fork in Test := false,
     publishMavenStyle := true,
     publishArtifact in Test := false,
@@ -42,6 +42,11 @@ val appSettings = Seq(
             <id>sksamuel</id>
             <name>Stephen Samuel</name>
             <url>http://github.com/sksamuel</url>
+          </developer>
+          <developer>
+            <id>gslowikowski</id>
+            <name>Grzegorz Slowikowski</name>
+            <url>http://github.com/gslowikowski</url>
           </developer>
         </developers>
     },
@@ -97,7 +102,7 @@ lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plug
       libraryDependencies ++= {
         CrossVersion.partialVersion(scalaVersion.value) match {
           case Some((2, scalaMajor)) if scalaMajor > 10 =>
-            Seq("org.scala-lang.modules" %% "scala-xml" % "1.1.1")
+            Seq("org.scala-lang.modules" %% "scala-xml" % "1.2.0")
           case _ =>
             Seq()
         }

@@ -14,7 +14,7 @@ class PluginCoverageTest
     compiler.compileCodeSnippet( """ object DefaultArgumentsObject {
                                    |  val defaultName = "world"
                                    |  def makeGreeting(name: String = defaultName): String = {
-                                   |    s"Hello, $name"
+                                   |    "Hello, " + name
                                    |  }
                                    |} """.stripMargin)
     assert(!compiler.reporter.hasErrors)
