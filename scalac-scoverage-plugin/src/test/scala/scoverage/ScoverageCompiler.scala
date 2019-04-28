@@ -21,7 +21,7 @@ object ScoverageCompiler {
 
   def settings: Settings = {
     val s = new scala.tools.nsc.Settings
-    s.Xprint.value = List("all")
+    s.Xprint.value = List("all", "_")
     s.deprecation.value = true
     s.Yrangepos.value = true
     s.Yposdebug.value = true
