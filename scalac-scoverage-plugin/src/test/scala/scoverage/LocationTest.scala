@@ -19,7 +19,7 @@ class LocationTest extends FreeSpec with Matchers {
       }
       "for objects" in {
         val compiler = ScoverageCompiler.locationCompiler
-        compiler.compile("package com.test\nobject Bammy { def foo = 'boo } ")
+        compiler.compile("package com.test\nobject Bammy { def foo = Symbol(\"boo\") } ")
         val loc = compiler.locations.result().find(_._1 == "Template").get._2
         loc.packageName shouldBe "com.test"
         loc.className shouldBe "Bammy"
@@ -30,7 +30,7 @@ class LocationTest extends FreeSpec with Matchers {
       }
       "for traits" in {
         val compiler = ScoverageCompiler.locationCompiler
-        compiler.compile("package com.test\ntrait Gammy { def goo = 'hoo } ")
+        compiler.compile("package com.test\ntrait Gammy { def goo = Symbol(\"hoo\") } ")
         val loc = compiler.locations.result().find(_._1 == "Template").get._2
         loc.packageName shouldBe "com.test"
         loc.className shouldBe "Gammy"
@@ -42,7 +42,7 @@ class LocationTest extends FreeSpec with Matchers {
     }
     "should correctly process methods" in {
       val compiler = ScoverageCompiler.locationCompiler
-      compiler.compile("package com.methodtest \n class Hammy { def foo = 'boo } ")
+      compiler.compile("package com.methodtest \n class Hammy { def foo = Symbol(\"boo\") } ")
       val loc = compiler.locations.result().find(_._2.method == "foo").get._2
       loc.packageName shouldBe "com.methodtest"
       loc.className shouldBe "Hammy"
@@ -150,7 +150,7 @@ class LocationTest extends FreeSpec with Matchers {
     "should use <none> method name" - {
       "for class constructor body" in {
         val compiler = ScoverageCompiler.locationCompiler
-        compiler.compile("package com.b \n class Tammy { val name = 'sam } ")
+        compiler.compile("package com.b \n class Tammy { val name = Symbol(\"sam\") } ")
         val loc = compiler.locations.result().find(_._1 == "ValDef").get._2
         loc.packageName shouldBe "com.b"
         loc.className shouldBe "Tammy"
@@ -161,7 +161,7 @@ class LocationTest extends FreeSpec with Matchers {
       }
       "for object constructor body" in {
         val compiler = ScoverageCompiler.locationCompiler
-        compiler.compile("package com.b \n object Yammy { val name = 'sam } ")
+        compiler.compile("package com.b \n object Yammy { val name = Symbol(\"sam\") } ")
         val loc = compiler.locations.result().find(_._1 == "ValDef").get._2
         loc.packageName shouldBe "com.b"
         loc.className shouldBe "Yammy"
@@ -172,7 +172,7 @@ class LocationTest extends FreeSpec with Matchers {
       }
       "for trait constructor body" in {
         val compiler = ScoverageCompiler.locationCompiler
-        compiler.compile("package com.b \n trait Wammy { val name = 'sam } ")
+        compiler.compile("package com.b \n trait Wammy { val name = Symbol(\"sam\") } ")
         val loc = compiler.locations.result().find(_._1 == "ValDef").get._2
         loc.packageName shouldBe "com.b"
         loc.className shouldBe "Wammy"
@@ -209,7 +209,7 @@ class LocationTest extends FreeSpec with Matchers {
     }
     "doubly nested classes should report correct fullClassName" in {
       val compiler = ScoverageCompiler.locationCompiler
-      compiler.compile("package com.a \n object Foo { object Boo { object Moo { val name = 'sam } } }")
+      compiler.compile("package com.a \n object Foo { object Boo { object Moo { val name = Symbol(\"sam\") } } }")
       val loc = compiler.locations.result().find(_._1 == "ValDef").get._2
       loc.packageName shouldBe "com.a"
       loc.className shouldBe "Moo"

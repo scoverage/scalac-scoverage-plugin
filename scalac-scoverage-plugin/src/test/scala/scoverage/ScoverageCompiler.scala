@@ -99,9 +99,10 @@ class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tool
     compileSourceFiles(urls.map(_.getFile).map(new File(_)): _*)
   }
 
-  def assertNoErrors() = assert(!reporter.hasErrors)
+  def assertNoErrors() = assert(!reporter.hasErrors, "There are compilation errors")
 
-  def assertNoCoverage() = assert(!testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked"))
+  def assertNoCoverage() = assert(!testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked"),
+    "There are scoverage.Invoker.invoked instructions added to the code")
 
   def assertNMeasuredStatements(n: Int): Unit = {
     for (k <- 1 to n) {
