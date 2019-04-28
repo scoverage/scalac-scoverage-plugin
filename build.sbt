@@ -70,6 +70,7 @@ lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scovera
     .settings(name := "scalac-scoverage-runtime")
     .settings(appSettings: _*)
     .jvmSettings(
+      fork in Test := true,
       libraryDependencies += "org.scalatest" %% "scalatest" % ScalatestVersion % "test"
     )
     .jsSettings(
