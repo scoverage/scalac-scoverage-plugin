@@ -187,8 +187,6 @@ class LocationTest extends FreeSpec with Matchers {
       compiler
         .compile(
           "package com.a; object A { def foo(b : B) : Unit = b.invoke }; trait B { def invoke : Unit }; class C { A.foo(new B { def invoke = () }) }")
-      println()
-      println(compiler.locations.result().mkString("\n"))
       val loc = compiler.locations.result().filter(_._1 == "Template").last._2
       loc.packageName shouldBe "com.a"
       loc.className shouldBe "C"
