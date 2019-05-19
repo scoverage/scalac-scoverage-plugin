@@ -6,12 +6,12 @@ import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
 val Org = "org.scoverage"
-val ScalatestVersion = "3.0.8-RC2"
+val ScalatestVersion = "3.1.0-SNAP11"
 
 val appSettings = Seq(
     organization := Org,
     scalaVersion := "2.12.8",
-    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0-RC1"),
+    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0-RC2"),
     fork in Test := false,
     publishMavenStyle := true,
     publishArtifact in Test := false,
