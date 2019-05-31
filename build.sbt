@@ -6,7 +6,7 @@ import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
 val Org = "org.scoverage"
-val ScalatestVersion = "3.1.0-SNAP11"
+val ScalatestVersion = "3.0.8-RC5"
 
 val appSettings = Seq(
     organization := Org,
