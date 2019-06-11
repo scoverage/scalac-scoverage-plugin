@@ -1,13 +1,18 @@
 package scoverage
 
-import scoverage.Platform.File
+import java.lang.management.ManagementFactory
 
+import scoverage.Platform.File
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
 /**
  * Verify that [[Invoker.invoked()]] can handle a multi-module project
  */
 class InvokerMultiModuleTest extends FunSuite with BeforeAndAfter {
+
+  //Getting the process id here so that it can be concatenated with the measurement file name.
+  //This will ensure that no two process are going to write in the same measurement file
+
 
   val measurementDir = Array(
     new File("target/invoker-test.measurement0"),

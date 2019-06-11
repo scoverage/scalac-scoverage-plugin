@@ -1,6 +1,8 @@
 package scoverage
 
-import scala.collection.{mutable, Set}
+import java.lang.management.ManagementFactory
+
+import scala.collection.{Set, mutable}
 import scoverage.Platform._
 
 /** @author Stephen Samuel */
@@ -13,7 +15,9 @@ object Invoker {
   // seen and recorded. We're using a map as a set, so we only care about its keys and can ignore
   // its values.
   private val dataDirToIds = ThreadSafeMap.empty[String, ThreadSafeMap[Int, Any]]
-
+  //Getting the process id here so that it can be concatenated with the measurement file name.
+  //This will ensure that no two process are going to write in the same measurement file
+  private val pid = ManagementFactory.getRuntimeMXBean.getName;
   /**
    * We record that the given id has been invoked by appending its id to the coverage
    * data file.
@@ -60,7 +64,10 @@ object Invoker {
   }
 
   def measurementFile(dataDir: File): File = measurementFile(dataDir.getAbsolutePath)
-  def measurementFile(dataDir: String): File = new File(dataDir, MeasurementsPrefix + Thread.currentThread.getId)
+
+  //Cancatenating the measurement file with process id so that no two process can write in the same file
+  //def measurementFile(dataDir: String): File = new File(dataDir, MeasurementsPrefix + Thread.currentThread.getId)
+  def measurementFile(dataDir: String): File = new File(dataDir, MeasurementsPrefix + Thread.currentThread.getId+pid)
 
   def findMeasurementFiles(dataDir: String): Array[File] = findMeasurementFiles(new File(dataDir))
   def findMeasurementFiles(dataDir: File): Array[File] = dataDir.listFiles(new FileFilter {
