@@ -116,19 +116,19 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
 
     override def run(): Unit = {
-      reporter.echo(s"[info] Cleaning datadir [${options.dataDir}]")
+      reporter.echo(s"Cleaning datadir [${options.dataDir}]")
       // we clean the data directory, because if the code has changed, then the number / order of
       // statements has changed by definition. So the old data would reference statements incorrectly
       // and thus skew the results.
       IOUtils.clean(options.dataDir)
 
-      reporter.echo("[info] Beginning coverage instrumentation")
+      reporter.echo("Beginning coverage instrumentation")
       super.run()
-      reporter.echo(s"[info] Instrumentation completed [${coverage.statements.size} statements]")
+      reporter.echo(s"Instrumentation completed [${coverage.statements.size} statements]")
 
       Serializer.serialize(coverage, Serializer.coverageFile(options.dataDir))
-      reporter.echo(s"[info] Wrote instrumentation file [${Serializer.coverageFile(options.dataDir)}]")
-      reporter.echo(s"[info] Will write measurement data to [${options.dataDir}]")
+      reporter.echo(s"Wrote instrumentation file [${Serializer.coverageFile(options.dataDir)}]")
+      reporter.echo(s"Will write measurement data to [${options.dataDir}]")
     }
   }
 
