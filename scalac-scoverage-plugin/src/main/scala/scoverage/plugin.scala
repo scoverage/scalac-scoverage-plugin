@@ -11,7 +11,6 @@ import scala.tools.nsc.transform.{Transform, TypingTransformers}
 
 /** @author Stephen Samuel */
 class ScoveragePlugin(val global: Global) extends Plugin {
-
   override val name: String = "scoverage"
   override val description: String = "scoverage code coverage compiler plugin"
   private val (extraAfterPhase, extraBeforePhase) = processPhaseOptions(pluginOptions)
@@ -35,16 +34,23 @@ class ScoveragePlugin(val global: Global) extends Plugin {
         options.dataDir = opt.substring("dataDir:".length)
       } else if (opt.startsWith("extraAfterPhase:") || opt.startsWith("extraBeforePhase:")) {
         // skip here, these flags are processed elsewhere
-      } else {
+      } else if (opt.startsWith("useEnvironment:")) {
+        options.useEnvironment = opt.substring("useEnvironment:".length).toBoolean
+      } else{
         error("Unknown option: " + opt)
       }
     }
-    if (!opts.exists(_.startsWith("dataDir:")))
-      throw new RuntimeException("Cannot invoke plugin without specifying <dataDir>")
+
+    if (opts.exists{p: String => p.contains("useEnvironment") && p.contains("false")} || (!opts.exists(_.startsWith("useEnvironment")))) {
+      if (!opts.exists(_.startsWith("dataDir:")))
+        throw new RuntimeException("Cannot invoke plugin without specifying <dataDir>")
+    }
     instrumentationComponent.setOptions(options)
   }
 
   override val optionsHelp: Option[String] = Some(Seq(
+    "-P:scoverage:useEnvironment:<boolean>                 if true, use the environment variable to store measurements" +
+                                                            "and store instruments to the output classpath where compiler emits classfiles.",
     "-P:scoverage:dataDir:<pathtodatadir>                  where the coverage files should be written\n",
     "-P:scoverage:excludedPackages:<regex>;<regex>         semicolon separated list of regexs for packages to exclude",
     "-P:scoverage:excludedFiles:<regex>;<regex>            semicolon separated list of regexs for paths to exclude",
@@ -82,6 +88,13 @@ class ScoverageOptions {
   var excludedFiles: Seq[String] = Nil
   var excludedSymbols: Seq[String] = Seq("scala.reflect.api.Exprs.Expr", "scala.reflect.api.Trees.Tree", "scala.reflect.macros.Universe.Tree")
   var dataDir: String = IOUtils.getTempPath
+
+  // Adding additional option for https://github.com/scoverage/scalac-scoverage-plugin/issues/265
+  // If the option is false, scoverage works the usual way.
+  // If the option is true, the instruments are stored on to the classpath and
+  // the measurements are written to the directory specified by the environment variable
+  // `SCOVERAGE_MEASUREMENT_PATH`. By default, the option is set to false.
+  var useEnvironment: Boolean = false
 }
 
 class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Option[String], extraBeforePhase: Option[String])
@@ -108,9 +121,20 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
   private var coverageFilter: CoverageFilter = AllCoverageFilter
 
   def setOptions(options: ScoverageOptions): Unit = {
+
     this.options = options
+
+    // If useEnvironment is true, we set the output directory to output classpath,
+    // i.e to the directory where compiler is going to output the classfiles.
+    if(options.useEnvironment){
+      settings.outputDirs.getSingleOutput match {
+        case Some(dest) => options.dataDir = dest.toString() + "/META-INF/scoverage"
+        case None => throw new RuntimeException("No output classpath specified.")
+      }
+    }
     coverageFilter = new RegexCoverageFilter(options.excludedPackages, options.excludedFiles, options.excludedSymbols)
     new File(options.dataDir).mkdirs() // ensure data directory is created
+
   }
 
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
@@ -128,7 +152,12 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
 
       Serializer.serialize(coverage, Serializer.coverageFile(options.dataDir))
       reporter.echo(s"Wrote instrumentation file [${Serializer.coverageFile(options.dataDir)}]")
-      reporter.echo(s"Will write measurement data to [${options.dataDir}]")
+
+      // Measurements are not necessarily written to
+      // [options.dataDir] in case [useEnvironment] is set to true.
+      if(!options.useEnvironment) {
+        reporter.echo(s"Will write measurement data to [${ options.dataDir }]")
+      }
     }
   }
 
@@ -153,23 +182,48 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
     def safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
 
     def invokeCall(id: Int): Tree = {
-      Apply(
-        Select(
+      /**
+       * We still pass in [options.dataDir] as one of the instruments with
+       * [invokedUseEnvironment] as it helps differentiating the source
+       * files at runtime, i.e helps in creating a unique subdir for each source file.
+       */
+      if (options.useEnvironment){
+        Apply(
           Select(
-            Ident("scoverage"),
-            newTermName("Invoker")
+            Select(
+              Ident("scoverage"),
+              newTermName("Invoker")
+            ),
+            newTermName("invokedUseEnvironment")
           ),
-          newTermName("invoked")
-        ),
-        List(
-          Literal(
-            Constant(id)
-          ),
-          Literal(
-            Constant(options.dataDir)
+          List(
+            Literal(
+              Constant(id)
+            ),
+            Literal(
+              Constant(options.dataDir)
+            )
           )
         )
-      )
+      }else {
+        Apply(
+          Select(
+            Select(
+              Ident("scoverage"),
+              newTermName("Invoker")
+            ),
+            newTermName("invoked")
+          ),
+          List(
+            Literal(
+              Constant(id)
+            ),
+            Literal(
+              Constant(options.dataDir)
+            )
+          )
+        )
+      }
     }
 
     override def transform(tree: Tree) = process(tree)
@@ -288,6 +342,7 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
     def allConstArgs(args: List[Tree]) = args.forall(arg => arg.isInstanceOf[Literal] || arg.isInstanceOf[Ident])
 
     def process(tree: Tree): Tree = {
+
       tree match {
 
         //        // non ranged inside ranged will break validation after typer, which only kicks in for yrangepos.
