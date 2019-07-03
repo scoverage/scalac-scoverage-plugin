@@ -29,16 +29,16 @@ class InvokerUseEnvironmentTest extends FunSuite with BeforeAndAfter {
     testIds.map { i: Int => Invoker.invokedWriteToClasspath(i, instrumentsDir(i % 2).toString)}
 
     // Verify measurements went to correct directory under the environment variable.
-    val dir0 = s"${System.getenv("SCOVERAGE_MEASUREMENT_PATH")}/${Invoker.md5HashString(instrumentsDir(0).toString)}"
+    val dir0 = s"${System.getenv("SCOVERAGE_MEASUREMENT_PATH")}/${Invoker.safe_name(instrumentsDir(0).toString)}"
     val measurementFiles3 = Invoker.findMeasurementFiles(dir0)
     val idsFromFile3 = Invoker.invoked(measurementFiles3.toIndexedSeq)
-    idsFromFile3 === testIds.filter { i: Int => i % 2 == 0}
+    assert (idsFromFile3 == testIds.filter { i: Int => i % 2 == 0})
 
 
-    val dir1 = s"${System.getenv("SCOVERAGE_MEASUREMENT_PATH")}/${Invoker.md5HashString(instrumentsDir(1).toString)}"
+    val dir1 = s"${System.getenv("SCOVERAGE_MEASUREMENT_PATH")}/${Invoker.safe_name(instrumentsDir(1).toString)}"
     val measurementFiles4 = Invoker.findMeasurementFiles(dir1)
     val idsFromFile4 = Invoker.invoked(measurementFiles4.toIndexedSeq)
-    idsFromFile4 === testIds.filter { i: Int => i % 2 == 1}
+    assert (idsFromFile4 == testIds.filter { i: Int => i % 2 == 1})
 
     // Verify that coverage files have been copied correctly.
     assert(Files.exists(Paths.get(s"$dir0/scoverage.coverage")))
@@ -61,7 +61,7 @@ class InvokerUseEnvironmentTest extends FunSuite with BeforeAndAfter {
   private def deleteMeasurementFolders(): Unit = {
     val d = s"${System.getenv("SCOVERAGE_MEASUREMENT_PATH")}"
     instrumentsDir.foreach (i => {
-      val f = new File(s"$d/${Invoker.md5HashString(i.toString)}")
+      val f = new File(s"$d/${Invoker.safe_name(i.toString)}")
       if (f.isDirectory)
         f.listFiles().foreach(_.delete())
     })

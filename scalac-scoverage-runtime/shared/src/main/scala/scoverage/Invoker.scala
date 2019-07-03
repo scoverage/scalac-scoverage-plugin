@@ -88,13 +88,6 @@ object Invoker {
    * @param instrumentsDir the directory where the instrument data is held and needs to be copied from
    */
   def invokedWriteToClasspath(id: Int, instrumentsDir: String): Unit = {
-    // Generating a hash to add as a subdir to the basedir. This is because every
-    // instrumented binary has a coverage object for which measurements will be generated
-    // and it is possible that a test file tests multiple instrumented binaries. Thus, to
-    // segregate reports for each source file, we need this hash. This was not an issue with
-    // previous version as then we explicitly specified a different [dataDir] each time.
-    val instrumentHash = md5HashString(instrumentsDir)
-
     // Get the output data directory from the environment variable or write to a subdir.
     var dataDir: String = ""
     sys.env.get(measurementFileEnv) match {
@@ -102,7 +95,12 @@ object Invoker {
       case None => dataDir = subdir
     }
 
-    dataDir += s"/$instrumentHash"
+    // Generating a hash to add as a subdir to the basedir. This is because every
+    // instrumented binary has a coverage object for which measurements will be generated
+    // and it is possible that a test file tests multiple instrumented binaries. Thus, to
+    // segregate reports for each source file, we need this hash. This was not an issue with
+    // previous version as then we explicitly specified a different [dataDir] each time.
+    dataDir += s"/${safe_name(instrumentsDir)}"
     // [sam] we can do this simple check to save writing out to a file.
     // This won't work across JVMs but since there's no harm in writing out the same id multiple
     // times since for coverage we only care about 1 or more, (it just slows things down to
@@ -170,15 +168,11 @@ object Invoker {
     )
   }
 
-  // used for generating a hash for each instrumentDir.
-  def md5HashString(s: String): String = {
-    import java.security.MessageDigest
-    import java.math.BigInteger
-    val md = MessageDigest.getInstance("MD5")
-    val digest = md.digest(s.getBytes)
-    val bigInt = new BigInteger(1,digest)
-    val hashedString = bigInt.toString(16)
-    hashedString
+  def safe_name(str: String): String =  {
+    val pattern = "[^/]+".r
+    val matches = pattern.findAllIn(str).toList
+    val res = matches.mkString(".")
+    res
   }
 
   // loads all the invoked statement ids from the given files
