@@ -5,7 +5,7 @@ import org.scalatest.{BeforeAndAfter, FunSuite}
 import scoverage.Platform.File
 
 /**
- * Verify that [[Invoker.invoked()]] can handle a multi-module project
+ * Verify that [[Invoker.invokedWriteToClasspath()]] works as expected.
  */
 class InvokerUseEnvironmentTest extends FunSuite with BeforeAndAfter {
 
@@ -26,7 +26,7 @@ class InvokerUseEnvironmentTest extends FunSuite with BeforeAndAfter {
 
     val testIds: Set[Int] = (1 to 10).toSet
 
-    testIds.map { i: Int => Invoker.invokedUseEnvironment(i, instrumentsDir(i % 2).toString)}
+    testIds.map { i: Int => Invoker.invokedWriteToClasspath(i, instrumentsDir(i % 2).toString)}
 
     // Verify measurements went to correct directory under the environment variable.
     val dir0 = s"${System.getenv("SCOVERAGE_MEASUREMENT_PATH")}/${Invoker.md5HashString(instrumentsDir(0).toString)}"
@@ -38,7 +38,7 @@ class InvokerUseEnvironmentTest extends FunSuite with BeforeAndAfter {
     val dir1 = s"${System.getenv("SCOVERAGE_MEASUREMENT_PATH")}/${Invoker.md5HashString(instrumentsDir(1).toString)}"
     val measurementFiles4 = Invoker.findMeasurementFiles(dir1)
     val idsFromFile4 = Invoker.invoked(measurementFiles4.toIndexedSeq)
-    idsFromFile3 === testIds.filter { i: Int => i % 2 == 1}
+    idsFromFile4 === testIds.filter { i: Int => i % 2 == 1}
 
     // Verify that coverage files have been copied correctly.
     assert(Files.exists(Paths.get(s"$dir0/scoverage.coverage")))

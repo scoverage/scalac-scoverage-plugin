@@ -87,7 +87,7 @@ object Invoker {
    * @param id the id of the statement that was invoked
    * @param instrumentsDir the directory where the instrument data is held and needs to be copied from
    */
-  def invokedUseEnvironment(id: Int, instrumentsDir: String): Unit = {
+  def invokedWriteToClasspath(id: Int, instrumentsDir: String): Unit = {
     // Generating a hash to add as a subdir to the basedir. This is because every
     // instrumented binary has a coverage object for which measurements will be generated
     // and it is possible that a test file tests multiple instrumented binaries. Thus, to
@@ -109,17 +109,17 @@ object Invoker {
     // do it more than once), anything we can do to help is good. This helps especially with code
     // that is executed many times quickly, eg tight loops.
     if (!dataDirToIds.contains(dataDir)) {
-      // When code is changed in source file, old measurements present
-      // inside the dataDir can skew the results. Thus, clean the dataDir to remove
-      // old measurements.
-      resetDataDir(dataDir)
-      // copy instruments.
-      if (Files.exists(Paths.get(s"$instrumentsDir/$CoverageFileName"))) {
-        copyCoverageFile(instrumentsDir, dataDir)
-      }
       // Guard against SI-7943: "TrieMap method getOrElseUpdate is not thread-safe".
       dataDirToIds.synchronized {
         if (!dataDirToIds.contains(dataDir)) {
+          // When code is changed in source file, old measurements present
+          // inside the dataDir can skew the results. Thus, clean the dataDir to remove
+          // old measurements.
+          resetDataDir(dataDir)
+          // copy instruments.
+          if (Files.exists(Paths.get(s"$instrumentsDir/$CoverageFileName"))) {
+            copyCoverageFile(instrumentsDir, dataDir)
+          }
           dataDirToIds(dataDir) = ThreadSafeMap.empty[Int, Any]
         }
       }

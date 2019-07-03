@@ -34,14 +34,21 @@ class ScoveragePlugin(val global: Global) extends Plugin {
         options.dataDir = opt.substring("dataDir:".length)
       } else if (opt.startsWith("extraAfterPhase:") || opt.startsWith("extraBeforePhase:")) {
         // skip here, these flags are processed elsewhere
-      } else if (opt.startsWith("useEnvironment:")) {
-        options.useEnvironment = opt.substring("useEnvironment:".length).toBoolean
+      } else if (opt.startsWith("classpathSubdir:")){
+        options.classpathSubdir = opt.substring("classpathSubdir:".length)
+      }else if (opt.startsWith("writeToClasspath:")) {
+        try {
+          options.writeToClasspath = opt.substring("writeToClasspath:".length).toBoolean
+        } catch {
+          case _: IllegalArgumentException => throw new RuntimeException("writeToClasspath can only be a boolean value: true or false")
+          case e: Exception => throw e
+        }
       } else{
         error("Unknown option: " + opt)
       }
     }
 
-    if (opts.exists{p: String => p.contains("useEnvironment") && p.contains("false")} || (!opts.exists(_.startsWith("useEnvironment")))) {
+    if (opts.exists{p: String => p.contains("writeToClasspath") && p.contains("false")} || (!opts.exists(_.startsWith("writeToClasspath")))) {
       if (!opts.exists(_.startsWith("dataDir:")))
         throw new RuntimeException("Cannot invoke plugin without specifying <dataDir>")
     }
@@ -49,8 +56,11 @@ class ScoveragePlugin(val global: Global) extends Plugin {
   }
 
   override val optionsHelp: Option[String] = Some(Seq(
-    "-P:scoverage:useEnvironment:<boolean>                 if true, use the environment variable to store measurements" +
-                                                            "and store instruments to the output classpath where compiler emits classfiles.",
+    "-P:scoverage:writeToClasspath:<boolean>               if true, use the environment variable to store measurements" +
+                                                           "and store instruments to the output classpath where compiler emits classfiles." +
+                                                           "Overrides the datadir with the output classpath.",
+    "-P:scoverage:classpathSubdir:<pathtosubdir>           subdir to attach to classpath. Default: META-INF/scoverage",
+
     "-P:scoverage:dataDir:<pathtodatadir>                  where the coverage files should be written\n",
     "-P:scoverage:excludedPackages:<regex>;<regex>         semicolon separated list of regexs for packages to exclude",
     "-P:scoverage:excludedFiles:<regex>;<regex>            semicolon separated list of regexs for paths to exclude",
@@ -93,8 +103,11 @@ class ScoverageOptions {
   // If the option is false, scoverage works the usual way.
   // If the option is true, the instruments are stored on to the classpath and
   // the measurements are written to the directory specified by the environment variable
-  // `SCOVERAGE_MEASUREMENT_PATH`. By default, the option is set to false.
-  var useEnvironment: Boolean = false
+  // `SCOVERAGE_MEASUREMENT_PATH`. This means setting [writeToClasspath] to true overrides the [dataDir]
+  // as the [dataDir] will now point to the output classpath of the compiler.
+  // By default, the option is set to false.
+  var writeToClasspath: Boolean = false
+  var classpathSubdir: String = "META-INF/scoverage"
 }
 
 class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Option[String], extraBeforePhase: Option[String])
@@ -124,11 +137,12 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
 
     this.options = options
 
-    // If useEnvironment is true, we set the output directory to output classpath,
+    // Overriding the [dataDir] if [writeToClasspath] is true.
+    // If writeToClasspath is true, we set the output directory to output classpath,
     // i.e to the directory where compiler is going to output the classfiles.
-    if(options.useEnvironment){
+    if(options.writeToClasspath){
       settings.outputDirs.getSingleOutput match {
-        case Some(dest) => options.dataDir = dest.toString() + "/META-INF/scoverage"
+        case Some(dest) => options.dataDir = s"${dest.toString()}/${options.classpathSubdir}"
         case None => throw new RuntimeException("No output classpath specified.")
       }
     }
@@ -154,9 +168,13 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
       reporter.echo(s"Wrote instrumentation file [${Serializer.coverageFile(options.dataDir)}]")
 
       // Measurements are not necessarily written to
-      // [options.dataDir] in case [useEnvironment] is set to true.
-      if(!options.useEnvironment) {
+      // [options.dataDir] in case [writeToClasspath] is set to true.
+      if(!options.writeToClasspath) {
         reporter.echo(s"Will write measurement data to [${ options.dataDir }]")
+      }
+      else {
+        reporter.echo(s"Will write measurements data to the directory specified by environment" +
+          s" variable SCOVERAGE_MEASUREMENT_PATH at runtime.")
       }
     }
   }
@@ -187,14 +205,14 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
        * [invokedUseEnvironment] as it helps differentiating the source
        * files at runtime, i.e helps in creating a unique subdir for each source file.
        */
-      if (options.useEnvironment){
+      if (options.writeToClasspath){
         Apply(
           Select(
             Select(
               Ident("scoverage"),
               newTermName("Invoker")
             ),
-            newTermName("invokedUseEnvironment")
+            newTermName("invokedWriteToClasspath")
           ),
           List(
             Literal(
