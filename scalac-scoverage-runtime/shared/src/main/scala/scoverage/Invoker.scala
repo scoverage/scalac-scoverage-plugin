@@ -81,7 +81,7 @@ object Invoker {
    * Same method as above but added additional features to make it work with
    * https://github.com/scoverage/scalac-scoverage-plugin/issues/265. Typically, we clean the dataDir
    * and add coverage instruments to the measurement file at runtime rather than compile time. This is
-   * needed as ahe runtime process may be running on a different host than the compile time one.
+   * needed as the runtime process may be running on a different host than the compile time one.
    * However, since the instruments are on the classpath, we can retrieve the instruments from different hosts.
    *
    * @param id the id of the statement that was invoked
@@ -95,7 +95,7 @@ object Invoker {
       case None => dataDir = subdir
     }
 
-    // Generating a hash to add as a subdir to the basedir. This is because every
+    // Adding subdir to the basedir. This is because every
     // instrumented binary has a coverage object for which measurements will be generated
     // and it is possible that a test file tests multiple instrumented binaries. Thus, to
     // segregate reports for each source file, we need this hash. This was not an issue with
