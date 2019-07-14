@@ -54,7 +54,7 @@ class CoverageAggregatorTest extends FreeSpec with Matchers {
       measurementsFile3Writer.write("2\n")
       measurementsFile3Writer.close()
 
-      val aggregated = CoverageAggregator.aggregatedCoverage(Seq(dir1, dir2, dir3))
+      val aggregated = CoverageAggregator.aggregatedCoverage(Array(dir1, dir2, dir3))
       aggregated.statements.toSet.size shouldBe 4
       aggregated.statements.map(_.copy(id = 0)).toSet shouldBe
         Set(cov1Stmt1, cov1Stmt2, cov2Stmt1, cov3Stmt1).map(_.copy(id = 0))

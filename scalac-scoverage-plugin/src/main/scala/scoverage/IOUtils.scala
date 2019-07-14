@@ -54,14 +54,14 @@ object IOUtils {
     override def accept(pathname: File): Boolean = pathname.getName.startsWith(Constants.MeasurementsPrefix)
   })
 
-  def scoverageDataDirsSearch(baseDir: File): Seq[File] = {
+  def scoverageDataDirsSearch(baseDir: File): Array[File] = {
     def directoryFilter = new FileFilter {
       override def accept(pathname: File): Boolean = pathname.isDirectory
     }
-    def search(file: File): Seq[File] = file match {
-      case dir if dir.isDirectory && dir.getName == Constants.DataDir => Seq(dir)
-      case dir if dir.isDirectory => dir.listFiles(directoryFilter).toSeq.flatMap(search)
-      case _ => Nil
+    def search(file: File): Array[File] = file match {
+      case dir if dir.isDirectory && dir.getName == Constants.DataDir => Array(dir)
+      case dir if dir.isDirectory => dir.listFiles(directoryFilter).flatMap(search)
+      case _ => Array.empty 
     }
     search(baseDir)
   }
@@ -71,7 +71,7 @@ object IOUtils {
   val isDebugReportFile = (file: File) => file.getName == Constants.XMLReportFilenameWithDebug
 
   // loads all the invoked statement ids from the given files
-  def invoked(files: Seq[File]): Set[Int] = {
+  def invoked(files: Array[File]): Set[Int] = {
     val acc = mutable.Set[Int]()
     files.foreach { file =>
       val reader = Source.fromFile(file)
