@@ -46,20 +46,19 @@ class ScoveragePlugin(val global: Global) extends Plugin {
       }
     }
 
-    if (opts.exists{p: String => p.contains("writeToClasspath") && p.contains("false")} || (!opts.exists(_.startsWith("writeToClasspath")))) {
-      if (!opts.exists(_.startsWith("dataDir:")))
-        throw new RuntimeException("Cannot invoke plugin without specifying <dataDir>")
-    }
+    if (!opts.exists(_.startsWith("dataDir:")))
+      throw new RuntimeException("Cannot invoke plugin without specifying <dataDir>")
+
     instrumentationComponent.setOptions(options)
   }
 
   override val optionsHelp: Option[String] = Some(Seq(
-    "-P:scoverage:writeToClasspath:<boolean>               if true, use the system property variable [scoverage_measurement_path]" +
-                                                           " to store measurements " +
-                                                           "and store instruments file to the output classpath where compiler emits classfiles. " +
-                                                           "Overrides the datadir with the output classpath.",
+    "-P:scoverage:writeToClasspath:<boolean>               if true, use the system property variable [scoverage_measurement_path] " +
+                                                           "to store measurements and store instruments file to the output classpath " +
+                                                           "where compiler emits classfiles. " +
+                                                           "Uses dataDir to create a targetId and then overrides the datadir with the output classpath.",
 
-    "-P:scoverage:dataDir:<pathtodatadir>                  where the coverage files should be written\n",
+    "-P:scoverage:dataDir:<pathtodatadir>                  where the coverage files should be written\n Acts as a targteId in case [writeToClasspath] is true",
     "-P:scoverage:excludedPackages:<regex>;<regex>         semicolon separated list of regexs for packages to exclude",
     "-P:scoverage:excludedFiles:<regex>;<regex>            semicolon separated list of regexs for paths to exclude",
     "-P:scoverage:excludedSymbols:<regex>;<regex>          semicolon separated list of regexs for symbols to exclude",
@@ -101,7 +100,8 @@ class ScoverageOptions {
   // If the option is false, scoverage works the usual way.
   // If the option is true, the instrument files [scoverage.coverage] are stored on to the classpath and
   // the measurement files are written to the directory specified by the system property
-  // `scoverage_measurement_path`. This means setting [writeToClasspath] to true overrides the [dataDir]
+  // `scoverage_measurement_path`. This means setting [writeToClasspath] to true creates a `targetId`
+  // out of the given value of [dataDir] and overrides the [dataDir]
   // as the [dataDir] will now point to the output classpath of the compiler.
   // By default, the option is set to false.
   var writeToClasspath: Boolean = false
@@ -131,7 +131,7 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
   private var coverageFilter: CoverageFilter = AllCoverageFilter
 
   // This [targetId] is used below in case [writeToClasspath] option
-  // is true. It is used for:
+  // is true. It is created using the option given in [dataDir]. It is used for:
   // 1. Creating a unique subdir under the classpath to store the instrument files, i.e
   //    path to instrument files will be `< classpath >/META-INF/scoverage/< targetId >/scoverage.coverage`
   // 2. Instrumenting the binaries with the [targetId], i.e binaries will be instrumented with
@@ -139,17 +139,6 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
   //    Consequently, at runtime, we can get the "correct" instrument file located at `.../< targetId >/scoverage.coverage`
   //    from the classpath and store it with its appropriate measurements file.
   private var targetId: String = ""
-
-  // used for generating the targetId.
-  def md5HashString(s: String): String = {
-    import java.security.MessageDigest
-    import java.math.BigInteger
-    val md = MessageDigest.getInstance("MD5")
-    val digest = md.digest(s.getBytes)
-    val bigInt = new BigInteger(1,digest)
-    val hashedString = bigInt.toString(16)
-    hashedString
-  }
 
   def setOptions(options: ScoverageOptions): Unit = {
 
@@ -161,8 +150,9 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
     if(options.writeToClasspath){
       settings.outputDirs.getSingleOutput match {
         case Some(dest) =>
-          targetId = md5HashString(s"${dest.toString()}")
-          // Setting [dataDir] to `< classpath >/META-INF/scoverage/< targetId >`.
+          //creating targetId out of [dataDir]
+          targetId = options.dataDir
+          // Overriding [dataDir] to `< classpath >/META-INF/scoverage/< targetId >`.
           // This is where the instrument file [scoverage.coverage] for this target will now be stored.
           options.dataDir = s"${dest.toString()}/${Constants.ClasspathSubdir}/$targetId"
         case None => throw new RuntimeException("No output classpath specified.")
