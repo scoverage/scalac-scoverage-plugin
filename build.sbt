@@ -71,7 +71,6 @@ lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scovera
     .settings(appSettings: _*)
     .jvmSettings(
       fork in Test := true,
-      envVars in Test := Map("SCOVERAGE_MEASUREMENT_PATH" -> "scoverageMeasurementFiles"),
       libraryDependencies ++= Seq(
         "org.scalatest" %% "scalatest" % ScalatestVersion % "test"
       )

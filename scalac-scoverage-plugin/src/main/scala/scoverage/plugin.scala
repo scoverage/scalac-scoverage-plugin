@@ -34,9 +34,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
         options.dataDir = opt.substring("dataDir:".length)
       } else if (opt.startsWith("extraAfterPhase:") || opt.startsWith("extraBeforePhase:")) {
         // skip here, these flags are processed elsewhere
-      } else if (opt.startsWith("classpathSubdir:")){
-        options.classpathSubdir = opt.substring("classpathSubdir:".length)
-      }else if (opt.startsWith("writeToClasspath:")) {
+      } else if (opt.startsWith("writeToClasspath:")) {
         try {
           options.writeToClasspath = opt.substring("writeToClasspath:".length).toBoolean
         } catch {
@@ -56,10 +54,10 @@ class ScoveragePlugin(val global: Global) extends Plugin {
   }
 
   override val optionsHelp: Option[String] = Some(Seq(
-    "-P:scoverage:writeToClasspath:<boolean>               if true, use the environment variable to store measurements" +
-                                                           "and store instruments to the output classpath where compiler emits classfiles." +
+    "-P:scoverage:writeToClasspath:<boolean>               if true, use the system property variable [scoverage_measurement_path]" +
+                                                           " to store measurements " +
+                                                           "and store instruments file to the output classpath where compiler emits classfiles. " +
                                                            "Overrides the datadir with the output classpath.",
-    "-P:scoverage:classpathSubdir:<pathtosubdir>           subdir to attach to classpath. Default: META-INF/scoverage",
 
     "-P:scoverage:dataDir:<pathtodatadir>                  where the coverage files should be written\n",
     "-P:scoverage:excludedPackages:<regex>;<regex>         semicolon separated list of regexs for packages to exclude",
@@ -101,13 +99,12 @@ class ScoverageOptions {
 
   // Adding additional option for https://github.com/scoverage/scalac-scoverage-plugin/issues/265
   // If the option is false, scoverage works the usual way.
-  // If the option is true, the instruments are stored on to the classpath and
-  // the measurements are written to the directory specified by the environment variable
-  // `SCOVERAGE_MEASUREMENT_PATH`. This means setting [writeToClasspath] to true overrides the [dataDir]
+  // If the option is true, the instrument files [scoverage.coverage] are stored on to the classpath and
+  // the measurement files are written to the directory specified by the system property
+  // `scoverage_measurement_path`. This means setting [writeToClasspath] to true overrides the [dataDir]
   // as the [dataDir] will now point to the output classpath of the compiler.
   // By default, the option is set to false.
   var writeToClasspath: Boolean = false
-  var classpathSubdir: String = "META-INF/scoverage"
 }
 
 class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Option[String], extraBeforePhase: Option[String])
@@ -133,6 +130,27 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
   private var options: ScoverageOptions = new ScoverageOptions()
   private var coverageFilter: CoverageFilter = AllCoverageFilter
 
+  // This [targetId] is used below in case [writeToClasspath] option
+  // is true. It is used for:
+  // 1. Creating a unique subdir under the classpath to store the instrument files, i.e
+  //    path to instrument files will be `< classpath >/META-INF/scoverage/< targetId >/scoverage.coverage`
+  // 2. Instrumenting the binaries with the [targetId], i.e binaries will be instrumented with
+  //    `Invoker.invokedWriteToClasspath(< statement id >, < targetId >)`
+  //    Consequently, at runtime, we can get the "correct" instrument file located at `.../< targetId >/scoverage.coverage`
+  //    from the classpath and store it with its appropriate measurements file.
+  private var targetId: String = ""
+
+  // used for generating the targetId.
+  def md5HashString(s: String): String = {
+    import java.security.MessageDigest
+    import java.math.BigInteger
+    val md = MessageDigest.getInstance("MD5")
+    val digest = md.digest(s.getBytes)
+    val bigInt = new BigInteger(1,digest)
+    val hashedString = bigInt.toString(16)
+    hashedString
+  }
+
   def setOptions(options: ScoverageOptions): Unit = {
 
     this.options = options
@@ -142,7 +160,11 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
     // i.e to the directory where compiler is going to output the classfiles.
     if(options.writeToClasspath){
       settings.outputDirs.getSingleOutput match {
-        case Some(dest) => options.dataDir = s"${dest.toString()}/${options.classpathSubdir}"
+        case Some(dest) =>
+          targetId = md5HashString(s"${dest.toString()}")
+          // Setting [dataDir] to `< classpath >/META-INF/scoverage/< targetId >`.
+          // This is where the instrument file [scoverage.coverage] for this target will now be stored.
+          options.dataDir = s"${dest.toString()}/${Constants.ClasspathSubdir}/$targetId"
         case None => throw new RuntimeException("No output classpath specified.")
       }
     }
@@ -173,8 +195,8 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
         reporter.echo(s"Will write measurement data to [${ options.dataDir }]")
       }
       else {
-        reporter.echo(s"Will write measurements data to the directory specified by environment" +
-          s" variable SCOVERAGE_MEASUREMENT_PATH at runtime.")
+        reporter.echo(s"Will write measurements data to the directory specified by system" +
+          s" variable scoverage_measurement_path at runtime.")
       }
     }
   }
@@ -199,49 +221,41 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
     def safeLine(tree: Tree): Int = if (tree.pos.isDefined) tree.pos.line else -1
     def safeSource(tree: Tree): Option[SourceFile] = if (tree.pos.isDefined) Some(tree.pos.source) else None
 
-    def invokeCall(id: Int): Tree = {
+    var termName: String = ""
+    var secondArg: String = ""
+    if (options.writeToClasspath){
       /**
-       * We still pass in [options.dataDir] as one of the instruments with
-       * [invokedUseEnvironment] as it helps differentiating the source
-       * files at runtime, i.e helps in creating a unique subdir for each source file.
+       * We pass in [targetId] as one of the instruments with
+       * [invokedUseEnvironment] as it helps in grabbing the "correct" instruments
+       * file from the classpath at runtime. It also helps in
+       * differentiating the targets at runtime, i.e helps in creating a unique subdir for each target.
        */
-      if (options.writeToClasspath){
-        Apply(
+      termName = "invokedWriteToClasspath"
+      secondArg = targetId
+    }
+    else{
+      termName = "invoked"
+      secondArg = options.dataDir
+    }
+
+    def invokeCall(id: Int): Tree = {
+      Apply(
+        Select(
           Select(
-            Select(
-              Ident("scoverage"),
-              newTermName("Invoker")
-            ),
-            newTermName("invokedWriteToClasspath")
+            Ident("scoverage"),
+            newTermName("Invoker")
           ),
-          List(
-            Literal(
-              Constant(id)
-            ),
-            Literal(
-              Constant(options.dataDir)
-            )
+          newTermName(termName)
+        ),
+        List(
+          Literal(
+            Constant(id)
+          ),
+          Literal(
+            Constant(secondArg)
           )
         )
-      }else {
-        Apply(
-          Select(
-            Select(
-              Ident("scoverage"),
-              newTermName("Invoker")
-            ),
-            newTermName("invoked")
-          ),
-          List(
-            Literal(
-              Constant(id)
-            ),
-            Literal(
-              Constant(options.dataDir)
-            )
-          )
-        )
-      }
+      )
     }
 
     override def transform(tree: Tree) = process(tree)
