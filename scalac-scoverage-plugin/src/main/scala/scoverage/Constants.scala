@@ -7,7 +7,7 @@ object Constants {
   // directory that contains all the measurement data but not reports
   val DataDir = "scoverage-data"
   /*********************************************************************
-   * If updating any of the files below, an update is also required to *
+   * If updating any of the file names below, an update is also required to *
    * the corresponding file name in Invoker.scala                      *
    *********************************************************************/
   // the file that contains the statement mappings
