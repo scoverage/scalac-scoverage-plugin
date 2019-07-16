@@ -100,9 +100,9 @@ class ScoverageOptions {
   // If the option is false, scoverage works the usual way.
   // If the option is true, the instrument files [scoverage.coverage] are stored on to the classpath and
   // the measurement files are written to the directory specified by the system property
-  // `scoverage_measurement_path`. This means setting [writeToClasspath] to true creates a `targetId`
-  // out of the given value of [dataDir] and overrides the [dataDir]
-  // as the [dataDir] will now point to the output classpath of the compiler.
+  // `scoverage_measurement_path`. Setting [writeToClasspath] to true creates a `targetId`
+  // out of the given value of [dataDir] and overrides the [dataDir] to point
+  // to the output classpath of the compiler.
   // By default, the option is set to false.
   var writeToClasspath: Boolean = false
 }
@@ -132,26 +132,38 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
 
   // This [targetId] is used below in case [writeToClasspath] option
   // is true. It is created using the option given in [dataDir]. It is used for:
-  // 1. Creating a unique subdir under the classpath to store the instrument files, i.e
+  // 1. Creating a subdir under the classpath to store the instrument files, i.e
   //    path to instrument files will be `< classpath >/META-INF/scoverage/< targetId >/scoverage.coverage`
   // 2. Instrumenting the binaries with the [targetId], i.e binaries will be instrumented with
   //    `Invoker.invokedWriteToClasspath(< statement id >, < targetId >)`
   //    Consequently, at runtime, we can get the "correct" instrument file located at `.../< targetId >/scoverage.coverage`
   //    from the classpath and store it with its appropriate measurements file.
+  // NOTE: It is on user to provide unique value of targetIds by setting the [dataDir] option
+  // uniquely for every target in case [writeToClasspath] is true.
   private var targetId: String = ""
+
+  // Checks if [path] is a relative path.
+  def validateRelativePath(path: String): String = {
+    val tmp: File = new File(path)
+    if (tmp.isAbsolute){
+      throw new RuntimeException("dataDir must be a relative path in case writeToClasspath is true")
+    }else {
+      path
+    }
+  }
 
   def setOptions(options: ScoverageOptions): Unit = {
 
     this.options = options
 
-    // Overriding the [dataDir] if [writeToClasspath] is true.
-    // If writeToClasspath is true, we set the output directory to output classpath,
-    // i.e to the directory where compiler is going to output the classfiles.
+    // If [writeToClasspath] is true:
+    // 1. set targetId to relative path specified by options.dataDir
+    // 2. override options.dataDir to point to output classpath.
     if(options.writeToClasspath){
       settings.outputDirs.getSingleOutput match {
         case Some(dest) =>
           //creating targetId out of [dataDir]
-          targetId = options.dataDir
+          targetId = validateRelativePath(options.dataDir)
           // Overriding [dataDir] to `< classpath >/META-INF/scoverage/< targetId >`.
           // This is where the instrument file [scoverage.coverage] for this target will now be stored.
           options.dataDir = s"${dest.toString()}/${Constants.ClasspathSubdir}/$targetId"
@@ -216,9 +228,10 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
     if (options.writeToClasspath){
       /**
        * We pass in [targetId] as one of the instruments with
-       * [invokedUseEnvironment] as it helps in grabbing the "correct" instruments
-       * file from the classpath at runtime. It also helps in
-       * differentiating the targets at runtime, i.e helps in creating a unique subdir for each target.
+       * [invokedUseEnvironment] as it helps in
+       * 1. grabbing the "correct" instruments file from the classpath at runtime.
+       * 2. creating a unique subdir for each target at runtime.
+       * iff targetIds are unique per target.
        */
       termName = "invokedWriteToClasspath"
       secondArg = targetId
