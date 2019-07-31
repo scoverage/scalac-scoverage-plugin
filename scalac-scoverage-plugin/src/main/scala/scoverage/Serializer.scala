@@ -26,8 +26,9 @@ object Serializer {
     // instead of the canonical path. This is required to make it work with
     // remoting or in a distributed environment.
     def getRelativePath(filePath: String): String = {
-      val base = new File(".").getCanonicalPath + File.separator
-      filePath.replace(base, "")
+      val base = new File(".").getCanonicalFile.toPath
+      val relPath = base.relativize(new File(filePath).getCanonicalFile.toPath)
+      relPath.toString
     }
 
     def writeHeader(writer: Writer): Unit = {
