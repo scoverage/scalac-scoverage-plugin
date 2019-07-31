@@ -22,6 +22,14 @@ object Serializer {
   }
 
   def serialize(coverage: Coverage, writer: Writer): Unit = {
+    // Used for getting the relative filepath for [stmt.location.sourcePath]
+    // instead of the canonical path. This is required to make it work with
+    // remoting or in a distributed environment.
+    def getRelativePath(filePath: String): String = {
+      val base = new File(".").getCanonicalPath + File.separator
+      filePath.replace(base, "")
+    }
+
     def writeHeader(writer: Writer): Unit = {
       writer.write(s"""# Coverage data, format version: 2.0
         |# Statement data:
@@ -48,7 +56,7 @@ object Serializer {
 
     def writeStatement(stmt: Statement, writer: Writer): Unit = {
       writer.write(s"""${stmt.id}
-        |${stmt.location.sourcePath}
+        |${getRelativePath(stmt.location.sourcePath)}
         |${stmt.location.packageName}
         |${stmt.location.className}
         |${stmt.location.classType}
@@ -79,6 +87,13 @@ object Serializer {
   }
 
   def deserialize(lines: Iterator[String]): Coverage = {
+    // To integrate it smoothly with rest of the report writers,
+    // it is necessary to again convert [sourcePath] into a
+    // canonical one.
+    def getAbsolutePath(filePath: String): String = {
+      (new File(filePath)).getCanonicalPath
+    }
+
     def toStatement(lines: Iterator[String]): Statement = {
       val id: Int = lines.next.toInt
       val sourcePath = lines.next
@@ -87,7 +102,7 @@ object Serializer {
       val classType = lines.next
       val fullClassName = lines.next
       val method = lines.next
-      val loc = Location(packageName, className, fullClassName, ClassType.fromString(classType), method, sourcePath)
+      val loc = Location(packageName, className, fullClassName, ClassType.fromString(classType), method, getAbsolutePath(sourcePath))
       val start: Int = lines.next.toInt
       val end: Int = lines.next.toInt
       val lineNo: Int = lines.next.toInt

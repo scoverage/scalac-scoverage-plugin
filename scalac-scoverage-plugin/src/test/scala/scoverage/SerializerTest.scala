@@ -1,6 +1,7 @@
 package scoverage
 
 import java.io.StringWriter
+import java.io.File
 
 import org.scalatest.{OneInstancePerTest, FunSuite}
 
@@ -97,7 +98,7 @@ class SerializerTest extends FunSuite with OneInstancePerTest {
         |\f
         |""".stripMargin.split("\n").iterator
     val statements = List(Statement(
-      Location("org.scoverage", "test", "org.scoverage.test", ClassType.Trait, "mymethod", "mypath"),
+      Location("org.scoverage", "test", "org.scoverage.test", ClassType.Trait, "mymethod", new File("mypath").getCanonicalPath),
       14, 100, 200, 4, "def test : String", "test", "DefDef", true, 1
     ))
     val coverage = Serializer.deserialize(input)
