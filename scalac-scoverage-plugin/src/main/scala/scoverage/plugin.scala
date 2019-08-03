@@ -26,11 +26,11 @@ class ScoveragePlugin(val global: Global) extends Plugin {
 
     for (opt <- opts) {
       if (opt.startsWith("excludedPackages:")) {
-        options.excludedPackages = parseExclusionEntry("excludedPackages", opt)
+        options.excludedPackages = parseExclusionEntry("excludedPackages:", opt)
       } else if (opt.startsWith("excludedFiles:")) {
-        options.excludedFiles = parseExclusionEntry("excludedFiles", opt)
+        options.excludedFiles = parseExclusionEntry("excludedFiles:", opt)
       } else if (opt.startsWith("excludedSymbols:")) {
-        options.excludedSymbols = parseExclusionEntry("excludedSymbols", opt)
+        options.excludedSymbols = parseExclusionEntry("excludedSymbols:", opt)
       } else if (opt.startsWith("dataDir:")) {
         options.dataDir = opt.substring("dataDir:".length)
       } else if (opt.startsWith("extraAfterPhase:") || opt.startsWith("extraBeforePhase:")) {
