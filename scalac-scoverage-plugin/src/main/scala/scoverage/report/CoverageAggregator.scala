@@ -6,6 +6,11 @@ import scoverage.{Coverage, IOUtils, Serializer}
 
 object CoverageAggregator {
 
+  @deprecated("1.4.0", "Used only by gradle-scoverage plugin")
+  def aggregate(baseDir: File, clean: Boolean): Option[Coverage] = {
+    aggregate(IOUtils.scoverageDataDirsSearch(baseDir))
+  }
+
   def aggregate(dataDirs: Array[File]): Option[Coverage] = {
     println(s"[info] Found ${dataDirs.size} subproject scoverage data directories [${dataDirs.mkString(",")}]")
     if (dataDirs.length > 0) {
