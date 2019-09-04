@@ -69,6 +69,7 @@ object ScoverageCompiler {
   }
 }
 
+// reporter should be a FilteringReporter in 2.13.1+, but using plain `Reporter` for cross-compiling
 class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools.nsc.reporters.Reporter)
   extends scala.tools.nsc.Global(settings, reporter) {
 
@@ -99,7 +100,9 @@ class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tool
     compileSourceFiles(urls.map(_.getFile).map(new File(_)): _*)
   }
 
-  def assertNoErrors() = assert(!reporter.hasErrors, "There are compilation errors")
+  // (this: Global).reporter prevents an "ambiguous reference to overloaded definition" in 2.13.1+, where
+  // ScoverageCompiler.reporter is a Reporter, but Global.reporter is a more specific FilteringReporter
+  def assertNoErrors() = assert(!(this: Global).reporter.hasErrors, "There are compilation errors")
 
   def assertNoCoverage() = assert(!testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked"),
     "There are scoverage.Invoker.invoked instructions added to the code")
