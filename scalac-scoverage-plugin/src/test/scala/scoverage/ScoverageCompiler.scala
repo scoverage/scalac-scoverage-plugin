@@ -69,8 +69,8 @@ object ScoverageCompiler {
   }
 }
 
-class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools.nsc.reporters.Reporter)
-  extends scala.tools.nsc.Global(settings, reporter) {
+class ScoverageCompiler(settings: scala.tools.nsc.Settings, nscReporter: scala.tools.nsc.reporters.Reporter)
+  extends scala.tools.nsc.Global(settings, nscReporter) {
 
   def addToClassPath(file: File): Unit = {
     settings.classpath.value = settings.classpath.value + File.pathSeparator + file.getAbsolutePath
@@ -99,7 +99,7 @@ class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tool
     compileSourceFiles(urls.map(_.getFile).map(new File(_)): _*)
   }
 
-  def assertNoErrors() = assert(!reporter.hasErrors, "There are compilation errors")
+  def assertNoErrors() = assert(!nscReporter.hasErrors, "There are compilation errors")
 
   def assertNoCoverage() = assert(!testStore.sources.mkString(" ").contains(s"scoverage.Invoker.invoked"),
     "There are scoverage.Invoker.invoked instructions added to the code")

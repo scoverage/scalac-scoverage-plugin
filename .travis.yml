@@ -10,7 +10,7 @@ scala:
   - 2.10.7
   - 2.11.12
   - 2.12.8
-  - 2.13.0
+  - 2.13.1
 
 before_cache:
   - find "$HOME/.sbt/" -name '*.lock' -print0 | xargs -0 rm
