@@ -107,6 +107,14 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
   private var options: ScoverageOptions = new ScoverageOptions()
   private var coverageFilter: CoverageFilter = AllCoverageFilter
 
+  private val isScalaJsEnabled: Boolean = {
+    try {
+      rootMirror.getClassIfDefined("scala.scalajs.js.Any") != NoSymbol
+    } catch {
+      case _: Throwable => false
+    }
+  }
+
   def setOptions(options: ScoverageOptions): Unit = {
     this.options = options
     coverageFilter = new RegexCoverageFilter(options.excludedPackages, options.excludedFiles, options.excludedSymbols)
@@ -215,6 +223,10 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
           if (tree.pos.isDefined && !isStatementIncluded(tree.pos)) {
             coverage.add(statement.copy(ignored = true))
             tree
+          } else if (isUndefinedParameterInScalaJs(tree.symbol)) {
+            coverage.add(statement.copy(ignored = true))
+            statementIds.decrementAndGet()
+            tree
           } else {
             coverage.add(statement)
 
@@ -225,6 +237,11 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
       }
     }
 
+    def isUndefinedParameterInScalaJs(symbol: Symbol): Boolean = {
+      isScalaJsEnabled && symbol != null && symbol.isSynthetic && symbol.isMethod &&
+        symbol.nameString.contains("$default$") &&
+        symbol.tpe.resultType.annotations.exists(_.symbol.nameString == "uncheckedVariance")
+    }
     def isClassIncluded(symbol: Symbol): Boolean = coverageFilter.isClassIncluded(symbol.fullNameString)
     def isFileIncluded(source: SourceFile): Boolean = coverageFilter.isFileIncluded(source)
     def isStatementIncluded(pos: Position): Boolean = coverageFilter.isLineIncluded(pos)
