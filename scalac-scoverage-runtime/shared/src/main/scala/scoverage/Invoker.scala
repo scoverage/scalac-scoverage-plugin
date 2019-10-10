@@ -31,7 +31,7 @@ object Invoker {
    * @param id the id of the statement that was invoked
    * @param dataDir the directory where the measurement data is held
    */
-  def invoked(id: Int, dataDir: String): Unit = {
+  def invoked(id: Int, dataDir: String, reportTestName: Boolean = false): Unit = {
     // [sam] we can do this simple check to save writing out to a file.
     // This won't work across JVMs but since there's no harm in writing out the same id multiple
     // times since for coverage we only care about 1 or more, (it just slows things down to
@@ -55,10 +55,23 @@ object Invoker {
         threadFiles.set(files)
       }
       val writer = files.getOrElseUpdate(dataDir, new FileWriter(measurementFile(dataDir), true))
-      writer.append(Integer.toString(id)).append("\n").flush()
 
+      // For some reason, the JS build does not print the output the correct way. I will look into this later.
+      if(isJvm && reportTestName) writer.append(Integer.toString(id)).append(" ").append(getCallingScalaTest).append("\n").flush()
+      else writer.append(Integer.toString(id)).append("\n").flush()
       ids.put(id, ())
     }
+  }
+
+  def getCallingScalaTest: String = {
+    val st = Thread.currentThread.getStackTrace
+    val idx = st.indexWhere{
+      ste => {
+        val name = ste.getClassName.toLowerCase()
+        name.endsWith("suite") || name.endsWith("spec") || name.endsWith("test")
+      }
+    }
+    if(idx > 0) st(idx).getClassName else ""
   }
 
   def measurementFile(dataDir: File): File = measurementFile(dataDir.getAbsolutePath)

@@ -71,13 +71,16 @@ object IOUtils {
   val isDebugReportFile = (file: File) => file.getName == Constants.XMLReportFilenameWithDebug
 
   // loads all the invoked statement ids from the given files
-  def invoked(files: Seq[File]): Set[Int] = {
-    val acc = mutable.Set[Int]()
+  def invoked(files: Seq[File]): Set[(Int, String)] = {
+    val acc = mutable.Set[(Int, String)]()
     files.foreach { file =>
       val reader = Source.fromFile(file)
       for ( line <- reader.getLines() ) {
         if (!line.isEmpty) {
-          acc += line.toInt
+          acc += (line.split(" ").toList match {
+            case List(idx, clazz) => (idx.toInt, clazz)
+            case List(idx) => (idx.toInt, "")
+          })
         }
       }
       reader.close()
