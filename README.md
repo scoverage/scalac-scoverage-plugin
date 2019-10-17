@@ -20,7 +20,11 @@ To see scoverage in action check out the [samples](https://github.com/scoverage/
 
 ### Release History
 
-##### (not released yet) - 1.4.0
+##### 17th October 2019 - 1.4.1
+
+* Added Scala 2.13.1 support
+
+##### 13th June 2019 - 1.4.0
 
 * Added Scala 2.13 support
 
