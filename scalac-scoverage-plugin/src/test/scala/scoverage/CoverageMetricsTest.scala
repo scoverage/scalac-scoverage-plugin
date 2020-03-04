@@ -1,8 +1,9 @@
 package scoverage
 
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
-class CoverageMetricsTest extends FreeSpec with Matchers {
+class CoverageMetricsTest extends AnyFreeSpec with Matchers {
 
   "no branches with at least one invoked statement should have 100% branch coverage" in {
     val metrics = new CoverageMetrics {

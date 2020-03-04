@@ -3,10 +3,12 @@ package scoverage
 import java.io.{File, FileWriter}
 import java.util.UUID
 
-import org.scalatest.{FreeSpec, Matchers, OneInstancePerTest}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 /** @author Stephen Samuel */
-class IOUtilsTest extends FreeSpec with OneInstancePerTest with Matchers {
+class IOUtilsTest extends AnyFreeSpec with OneInstancePerTest with Matchers {
 
   "io utils" - {
     "should parse measurement files" in {

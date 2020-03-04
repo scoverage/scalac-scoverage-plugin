@@ -3,10 +3,11 @@ package scoverage
 import java.io.{File, FileWriter}
 import java.util.UUID
 
-import org.scalatest.{FreeSpec, Matchers}
 import scoverage.report.CoverageAggregator
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
-class CoverageAggregatorTest extends FreeSpec with Matchers {
+class CoverageAggregatorTest extends AnyFreeSpec with Matchers {
 
   // Let current directory be our source root
   private val sourceRoot = new File(".")

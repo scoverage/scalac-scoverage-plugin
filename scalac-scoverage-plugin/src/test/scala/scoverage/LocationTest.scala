@@ -1,8 +1,9 @@
 package scoverage
 
-import org.scalatest.{FreeSpec, Matchers}
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
-class LocationTest extends FreeSpec with Matchers {
+class LocationTest extends AnyFreeSpec with Matchers {
 
   "location function" - {
     "should correctly process top level types" - {

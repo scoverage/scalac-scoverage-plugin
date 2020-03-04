@@ -2,12 +2,13 @@ package scoverage
 
 import scoverage.Platform.File
 
-import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.scalatest.BeforeAndAfter
+import org.scalatest.funsuite.AnyFunSuite
 
 /**
  * Verify that [[Invoker.invoked()]] can handle a multi-module project
  */
-class InvokerMultiModuleTest extends FunSuite with BeforeAndAfter {
+class InvokerMultiModuleTest extends AnyFunSuite with BeforeAndAfter {
 
   val measurementDir = Array(
     new File("target/invoker-test.measurement0"),

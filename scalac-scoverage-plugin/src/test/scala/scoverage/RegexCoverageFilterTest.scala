@@ -1,11 +1,12 @@
 package scoverage
 
-import org.scalatest.{FreeSpec, Matchers}
 
 import scala.reflect.internal.util.{BatchSourceFile, NoFile, SourceFile}
 import scala.reflect.io.VirtualFile
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
-class RegexCoverageFilterTest extends FreeSpec with Matchers {
+class RegexCoverageFilterTest extends AnyFreeSpec with Matchers {
 
   "isClassIncluded" - {
 
