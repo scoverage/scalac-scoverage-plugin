@@ -7,10 +7,13 @@ jdk:
   - openjdk8
 
 scala:
-  - 2.10.7
   - 2.11.12
   - 2.12.10
-  - 2.13.1
+  - 2.13.2
+
+env:
+  - SCALAJS_VERSION=0.6.32
+  - SCALAJS_VERSION=1.0.1
 
 before_cache:
   - find "$HOME/.sbt/" -name '*.lock' -print0 | xargs -0 rm
