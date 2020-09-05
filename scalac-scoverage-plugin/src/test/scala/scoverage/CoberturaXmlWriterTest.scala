@@ -4,14 +4,15 @@ import java.io.File
 import java.util.UUID
 import javax.xml.parsers.DocumentBuilderFactory
 
-import org.scalatest.{BeforeAndAfter, FunSuite, OneInstancePerTest}
+import org.scalatest.{BeforeAndAfter, OneInstancePerTest}
 import org.xml.sax.{ErrorHandler, SAXParseException}
 import scoverage.report.CoberturaXmlWriter
 
 import scala.xml.XML
+import org.scalatest.funsuite.AnyFunSuite
 
 /** @author Stephen Samuel */
-class CoberturaXmlWriterTest extends FunSuite with BeforeAndAfter with OneInstancePerTest {
+class CoberturaXmlWriterTest extends AnyFunSuite with BeforeAndAfter with OneInstancePerTest {
 
   def tempDir(): File = {
     val dir = new File(IOUtils.getTempDirectory, UUID.randomUUID.toString)

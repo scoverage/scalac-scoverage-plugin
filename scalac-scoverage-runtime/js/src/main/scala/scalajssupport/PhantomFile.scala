@@ -72,9 +72,7 @@ private[scalajssupport] object PhantomFile extends JsFileObject {
   def removeDirectory(path: String): Boolean = fsCall("removeDirectory", path).asInstanceOf[Boolean]
   val separator: String = fsCall("separator").asInstanceOf[String]
   def write(path: String, content: String, mode: String): Unit = fsCallArray("write", js.Array(path, content, mode))
-  def pathJoin(path: String, child: String): String = {
-    return path + separator + child
-  }
+  def pathJoin(path: String, child: String): String = path + separator + child
 
   def apply(path: String) = {
     new PhantomFile(path)

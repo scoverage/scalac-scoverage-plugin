@@ -8,9 +8,9 @@ import scala.xml.XML
 
 import scoverage.report.ScoverageHtmlWriter
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-class ScoverageHtmlWriterTest extends FunSuite {
+class ScoverageHtmlWriterTest extends AnyFunSuite {
 
   val rootDirForClasses = new File(getClass.getResource("forHtmlWriter/src/main/scala/").getFile)
 

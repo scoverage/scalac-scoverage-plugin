@@ -1,10 +1,11 @@
 package scoverage
 
 import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
 
 /** @author Stephen Samuel */
 class PluginASTSupportTest
-  extends FunSuite
+  extends AnyFunSuite
   with OneInstancePerTest
   with BeforeAndAfterEachTestData
   with MacroSupport {
