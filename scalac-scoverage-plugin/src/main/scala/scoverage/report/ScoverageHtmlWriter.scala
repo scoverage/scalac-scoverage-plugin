@@ -27,11 +27,14 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File, sourceE
   
   def write(coverage: Coverage): Unit = {
     val indexFile = new File(outputDir.getAbsolutePath + "/index.html")
+    val cssFile = new File(outputDir.getAbsolutePath + "/pure-min.css")
     val packageFile = new File(outputDir.getAbsolutePath + "/packages.html")
     val overviewFile = new File(outputDir.getAbsolutePath + "/overview.html")
 
     val index = IOUtils.readStreamAsString(getClass.getResourceAsStream("/scoverage/index.html"))
+    val css = IOUtils.readStreamAsString(getClass.getResourceAsStream("/scoverage/pure-min.css"))
     IOUtils.writeToFile(indexFile, index)
+    IOUtils.writeToFile(cssFile, css)
     IOUtils.writeToFile(packageFile, packageList(coverage).toString())
     IOUtils.writeToFile(overviewFile, overview(coverage).toString())
 
