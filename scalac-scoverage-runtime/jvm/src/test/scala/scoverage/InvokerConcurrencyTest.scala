@@ -3,15 +3,16 @@ package scoverage
 import java.io.File
 import java.util.concurrent.Executors
 
-import org.scalatest.{BeforeAndAfter, FunSuite}
+import org.scalatest.BeforeAndAfter
 
 import scala.concurrent._
 import scala.concurrent.duration._
+import org.scalatest.funsuite.AnyFunSuite
 
 /**
  * Verify that [[Invoker.invoked()]] is thread-safe
  */
-class InvokerConcurrencyTest extends FunSuite with BeforeAndAfter {
+class InvokerConcurrencyTest extends AnyFunSuite with BeforeAndAfter {
 
   implicit val executor = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(8))
 

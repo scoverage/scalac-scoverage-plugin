@@ -6,6 +6,8 @@ import scoverage.Platform._
 /** @author Stephen Samuel */
 object Invoker {
 
+  private val runtimeUUID = java.util.UUID.randomUUID()
+
   private val MeasurementsPrefix = "scoverage.measurements."
   private val threadFiles = new ThreadLocal[mutable.HashMap[String, FileWriter]]
 
@@ -60,7 +62,7 @@ object Invoker {
   }
 
   def measurementFile(dataDir: File): File = measurementFile(dataDir.getAbsolutePath)
-  def measurementFile(dataDir: String): File = new File(dataDir, MeasurementsPrefix + Thread.currentThread.getId)
+  def measurementFile(dataDir: String): File = new File(dataDir, MeasurementsPrefix + runtimeUUID + "."  + Thread.currentThread.getId)
 
   def findMeasurementFiles(dataDir: String): Array[File] = findMeasurementFiles(new File(dataDir))
   def findMeasurementFiles(dataDir: File): Array[File] = dataDir.listFiles(new FileFilter {

@@ -56,9 +56,20 @@ class File(path: String) {
 }
 
 object File {
-  val jsFile: JsFileObject = if (js.Dynamic.global.hasOwnProperty("Packages").asInstanceOf[Boolean])
+  val globalObject: js.Dynamic = {
+    import js.Dynamic.{global => g}
+    if (js.typeOf(g.global) != "undefined" && (g.global.Object eq g.Object)) {
+      // Node.js environment detected
+      g.global
+    } else {
+      // In all other well-known environment, we can use the global `this`
+      js.special.fileLevelThis.asInstanceOf[js.Dynamic]
+    }
+  }
+
+  val jsFile: JsFileObject = if (globalObject.hasOwnProperty("Packages").asInstanceOf[Boolean])
     RhinoFile
-  else if (!js.Dynamic.global.hasOwnProperty("window").asInstanceOf[Boolean])
+  else if (!globalObject.hasOwnProperty("window").asInstanceOf[Boolean])
     NodeFile
   else
     PhantomFile

@@ -31,7 +31,7 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends 
           <line
           number={stmt.line.toString}
           hits={stmt.count.toString}
-          branch="false"/>
+          branch={stmt.branch.toString}/>
       )}
       </lines>
     </method>
@@ -51,7 +51,7 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends 
           <line
           number={stmt.line.toString}
           hits={stmt.count.toString}
-          branch="false"/>
+          branch={stmt.branch.toString}/>
       )}
       </lines>
     </class>

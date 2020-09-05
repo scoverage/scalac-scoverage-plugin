@@ -11,6 +11,9 @@ object CoverageAggregator {
     aggregate(IOUtils.scoverageDataDirsSearch(baseDir))
   }
 
+  // to be used by gradle-scoverage plugin
+  def aggregate(dataDirs: Array[File]): Option[Coverage] = aggregate(dataDirs.toSeq)
+
   def aggregate(dataDirs: Seq[File]): Option[Coverage] = {
     println(s"[info] Found ${dataDirs.size} subproject scoverage data directories [${dataDirs.mkString(",")}]")
     if (dataDirs.size > 0) {

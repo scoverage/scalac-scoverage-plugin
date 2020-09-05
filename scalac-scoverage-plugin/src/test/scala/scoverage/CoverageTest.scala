@@ -1,9 +1,10 @@
 package scoverage
 
-import org.scalatest.{BeforeAndAfter, FunSuite, OneInstancePerTest}
+import org.scalatest.{BeforeAndAfter, OneInstancePerTest}
+import org.scalatest.funsuite.AnyFunSuite
 
 /** @author Stephen Samuel */
-class CoverageTest extends FunSuite with BeforeAndAfter with OneInstancePerTest {
+class CoverageTest extends AnyFunSuite with BeforeAndAfter with OneInstancePerTest {
 
   test("coverage for no statements is 1") {
     val coverage = Coverage()

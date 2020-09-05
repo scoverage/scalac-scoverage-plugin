@@ -2,9 +2,10 @@ package scoverage
 
 import java.io.StringWriter
 
-import org.scalatest.{OneInstancePerTest, FunSuite}
+import org.scalatest.OneInstancePerTest
+import org.scalatest.funsuite.AnyFunSuite
 
-class SerializerTest extends FunSuite with OneInstancePerTest {
+class SerializerTest extends AnyFunSuite with OneInstancePerTest {
 
   test("coverage should be serializable into plain text") {
     val coverage = Coverage()

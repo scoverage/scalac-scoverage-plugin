@@ -6,12 +6,12 @@ import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
 val Org = "org.scoverage"
-val ScalatestVersion = "3.0.8"
+val ScalatestVersion = "3.1.1"
 
 val appSettings = Seq(
     organization := Org,
-    scalaVersion := "2.12.8",
-    crossScalaVersions := Seq("2.10.7", "2.11.12", "2.12.8", "2.13.0"),
+    scalaVersion := "2.12.10",
+    crossScalaVersions := Seq("2.11.12", "2.12.10", "2.13.1"),
     fork in Test := false,
     publishMavenStyle := true,
     publishArtifact in Test := false,
@@ -69,12 +69,13 @@ lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scovera
     .crossType(CrossType.Full)
     .settings(name := "scalac-scoverage-runtime")
     .settings(appSettings: _*)
+    .settings(
+      libraryDependencies += "org.scalatest" %%% "scalatest" % ScalatestVersion % Test
+    )
     .jvmSettings(
-      fork in Test := true,
-      libraryDependencies += "org.scalatest" %% "scalatest" % ScalatestVersion % "test"
+      fork in Test := true
     )
     .jsSettings(
-      libraryDependencies += "org.scalatest" %%% "scalatest" % ScalatestVersion % "test",
       scalaJSStage := FastOptStage
     )
 
@@ -82,30 +83,17 @@ lazy val `scalac-scoverage-runtimeJVM` = runtime.jvm
 lazy val `scalac-scoverage-runtimeJS` = runtime.js
 
 lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
-    .dependsOn(`scalac-scoverage-runtimeJVM` % "test")
+    .dependsOn(`scalac-scoverage-runtimeJVM` % Test)
     .settings(name := "scalac-scoverage-plugin")
     .settings(appSettings: _*)
     .settings(
       libraryDependencies ++= Seq(
-        "org.scalatest" %% "scalatest" % ScalatestVersion % "test",
-        "org.scala-lang" % "scala-compiler" % scalaVersion.value % "provided"
+        "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
+        "org.scalatest" %% "scalatest" % ScalatestVersion % Test,
+        "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided
       )
     )
-    .settings(
-      unmanagedSourceDirectories in Test ++= {
-        CrossVersion.partialVersion(scalaVersion.value) match {
-          case Some((2, scalaMajor)) if scalaMajor > 10 =>
-            Seq((sourceDirectory in Test).value / "scala-2.11+")
-          case _ =>
-            Seq()
-        }
-      },
-      libraryDependencies ++= {
-        CrossVersion.partialVersion(scalaVersion.value) match {
-          case Some((2, scalaMajor)) if scalaMajor > 10 =>
-            Seq("org.scala-lang.modules" %% "scala-xml" % "1.2.0")
-          case _ =>
-            Seq()
-        }
-      }
-    )
+  .settings(
+    unmanagedSourceDirectories in Test += (sourceDirectory in Test).value / "scala-2.11+"
+  )
+
