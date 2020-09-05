@@ -195,6 +195,7 @@ project you will need to use one of the build plugins:
 * [sbt-coveralls](https://github.com/scoverage/sbt-coveralls)
 * [mill-contrib-scoverage](https://www.lihaoyi.com/mill/page/contrib-modules.html#scoverage)
 * Upload report to [Codecov](https://codecov.io): [Example Scala Repository](https://github.com/codecov/example-scala)
+* Upload report to [Codacy](https://www.codacy.com/): [Documentation](https://support.codacy.com/hc/en-us/articles/207279819-Coverage)
 
 Scoverage support is available for the following tools:
 
