@@ -17,6 +17,4 @@ object Platform {
   type FileFilter = SupportFileFilter
 
   lazy val Source = SupportSource
-
-  val isJvm = true
 }

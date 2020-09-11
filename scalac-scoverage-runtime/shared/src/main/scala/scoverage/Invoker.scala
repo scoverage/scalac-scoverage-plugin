@@ -56,23 +56,17 @@ object Invoker {
       }
       val writer = files.getOrElseUpdate(dataDir, new FileWriter(measurementFile(dataDir), true))
 
-      // For some reason, the JS build does not print the output the correct way. I will look into this later.
-      if(isJvm && reportTestName) writer.append(Integer.toString(id)).append(" ").append(getCallingScalaTest).append("\n").flush()
+      if(reportTestName) writer.append(Integer.toString(id)).append(" ").append(getCallingScalaTest).append("\n").flush()
       else writer.append(Integer.toString(id)).append("\n").flush()
       ids.put(id, ())
     }
   }
 
-  def getCallingScalaTest: String = {
-    val st = Thread.currentThread.getStackTrace
-    val idx = st.indexWhere{
-      ste => {
-        val name = ste.getClassName.toLowerCase()
-        name.endsWith("suite") || name.endsWith("spec") || name.endsWith("test")
-      }
-    }
-    if(idx > 0) st(idx).getClassName else ""
-  }
+  def getCallingScalaTest: String =
+    Thread.currentThread.getStackTrace
+      .map(_.getClassName.toLowerCase)
+      .find(name => name.endsWith("suite") || name.endsWith("spec") || name.endsWith("test"))
+      .getOrElse("")
 
   def measurementFile(dataDir: File): File = measurementFile(dataDir.getAbsolutePath)
   def measurementFile(dataDir: String): File = new File(dataDir, MeasurementsPrefix + runtimeUUID + "."  + Thread.currentThread.getId)

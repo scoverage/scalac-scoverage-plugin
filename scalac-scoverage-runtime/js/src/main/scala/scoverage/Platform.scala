@@ -18,5 +18,4 @@ object Platform {
 
   lazy val Source = SupportSource
 
-  val isJvm = false
 }
