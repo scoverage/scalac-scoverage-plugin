@@ -107,6 +107,14 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
   private var options: ScoverageOptions = new ScoverageOptions()
   private var coverageFilter: CoverageFilter = AllCoverageFilter
 
+  private val isScalaJsEnabled: Boolean = {
+    try {
+      rootMirror.getClassIfDefined("scala.scalajs.js.Any") != NoSymbol
+    } catch {
+      case _: Throwable => false
+    }
+  }
+
   def setOptions(options: ScoverageOptions): Unit = {
     this.options = options
     coverageFilter = new RegexCoverageFilter(options.excludedPackages, options.excludedFiles, options.excludedSymbols)
@@ -215,6 +223,10 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
           if (tree.pos.isDefined && !isStatementIncluded(tree.pos)) {
             coverage.add(statement.copy(ignored = true))
             tree
+          } else if (isUndefinedParameterInScalaJs(tree.symbol)) {
+            coverage.add(statement.copy(ignored = true))
+            statementIds.decrementAndGet()
+            tree
           } else {
             coverage.add(statement)
 
@@ -225,6 +237,86 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
       }
     }
 
+    // Copied from
+    // https://github.com/scala-js/scala-js/blob/4619d906baef7feb5d0b6d555d5b33044669434e/compiler/src/main/scala/org/scalajs/nscplugin/GenJSCode.scala#L2696-L2721
+    private def isJSDefaultParam(sym: Symbol): Boolean = {
+      if (isCtorDefaultParam(sym)) {
+        isJSCtorDefaultParam(sym)
+      } else {
+        sym.hasFlag(reflect.internal.Flags.DEFAULTPARAM) &&
+          isJSType(sym.owner) && {
+          /* If this is a default parameter accessor on a
+           * non-native JS class, we need to know if the method for which we
+           * are the default parameter is exposed or not.
+           * We do this by removing the $default suffix from the method name,
+           * and looking up a member with that name in the owner.
+           * Note that this does not work for local methods. But local methods
+           * are never exposed.
+           * Further note that overloads are easy, because either all or none
+           * of them are exposed.
+           */
+          def isAttachedMethodExposed = {
+            val methodName = nme.defaultGetterToMethod(sym.name)
+            val ownerMethod = sym.owner.info.decl(methodName)
+            ownerMethod.filter(isExposed).exists
+          }
+
+          !isNonNativeJSClass(sym.owner) || isAttachedMethodExposed
+        }
+      }
+    }
+    
+    private lazy val JSTypeAnnot = rootMirror.getRequiredClass("scala.scalajs.js.annotation.internal.JSType")
+    private lazy val ExposedJSMemberAnnot = rootMirror.getRequiredClass("scala.scalajs.js.annotation.internal.ExposedJSMember")
+    private lazy val JSNativeAnnotation = rootMirror.getRequiredClass("scala.scalajs.js.native")
+
+    private def isJSType(sym: Symbol): Boolean =
+      sym.hasAnnotation(JSTypeAnnot)
+    
+    def isNonNativeJSClass(sym: Symbol): Boolean =
+      !sym.isTrait && isJSType(sym) && !sym.hasAnnotation(JSNativeAnnotation)
+
+    private def isExposed(sym: Symbol): Boolean = {
+      !sym.isBridge && {
+        if (sym.isLazy)
+          sym.isAccessor && sym.accessed.hasAnnotation(ExposedJSMemberAnnot)
+        else
+          sym.hasAnnotation(ExposedJSMemberAnnot)
+      }
+    }
+    
+    private def isJSCtorDefaultParam(sym: Symbol) = {
+      isCtorDefaultParam(sym) &&
+        isJSType(patchedLinkedClassOfClass(sym.owner))
+    }
+
+    private def patchedLinkedClassOfClass(sym: Symbol): Symbol = {
+      /* Work around a bug of scalac with linkedClassOfClass where package
+       * objects are involved (the companion class would somehow exist twice
+       * in the scope, making an assertion fail in Symbol.suchThat).
+       * Basically this inlines linkedClassOfClass up to companionClass,
+       * then replaces the `suchThat` by a `filter` and `head`.
+       */
+      val flatOwnerInfo = {
+        // inline Symbol.flatOwnerInfo because it is protected
+        if (sym.needsFlatClasses)
+          sym.info
+        sym.owner.rawInfo
+      }
+      val result = flatOwnerInfo.decl(sym.name).filter(_ isCoDefinedWith sym)
+      if (!result.isOverloaded) result
+      else result.alternatives.head
+    }
+
+    private def isCtorDefaultParam(sym: Symbol) = {
+      sym.hasFlag(reflect.internal.Flags.DEFAULTPARAM) &&
+        sym.owner.isModuleClass &&
+        nme.defaultGetterToMethod(sym.name) == nme.CONSTRUCTOR
+    }    
+    
+    def isUndefinedParameterInScalaJs(sym: Symbol): Boolean = {
+      isScalaJsEnabled && sym != null && isJSDefaultParam(sym)
+    }
     def isClassIncluded(symbol: Symbol): Boolean = coverageFilter.isClassIncluded(symbol.fullNameString)
     def isFileIncluded(source: SourceFile): Boolean = coverageFilter.isFileIncluded(source)
     def isStatementIncluded(pos: Position): Boolean = coverageFilter.isLineIncluded(pos)
