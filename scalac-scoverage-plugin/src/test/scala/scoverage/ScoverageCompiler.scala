@@ -62,7 +62,7 @@ object ScoverageCompiler {
 
   private def findIvyJar(groupId: String, artifactId: String, version: String, packaging: String = "jar"): File = {
     val userHome = System.getProperty("user.home")
-    Paths.get(s"$userHome/.ivy2/cache").toFile.listFiles().foreach(println)
+    Paths.get(s"$userHome/.ivy2/cache/$groupId").toFile.listFiles().foreach(println)
     val jarPath = s"$userHome/.ivy2/cache/$groupId/$artifactId/${packaging}s/$artifactId-$version.jar"
     val file = new File(jarPath)
     if (!file.exists)
