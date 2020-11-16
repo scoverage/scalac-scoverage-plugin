@@ -10,8 +10,8 @@ val ScalatestVersion = "3.1.1"
 
 val appSettings = Seq(
     organization := Org,
-    scalaVersion := "2.12.12",
-    crossScalaVersions := Seq("2.12.12", "2.13.3"),
+    scalaVersion := "2.12.10",
+    crossScalaVersions := Seq("2.12.10", "2.13.3"),
     fork in Test := false,
     publishMavenStyle := true,
     publishArtifact in Test := false,
