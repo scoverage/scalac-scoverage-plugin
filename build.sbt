@@ -25,7 +25,7 @@ val appSettings = Seq(
         Some("releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2")
     },
     libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-compiler" % scalaVersion.value
+      "org.scala-lang" % "scala-compiler" % scalaVersion.value % Compile
     ),
     pomExtra := {
       <url>https://github.com/scoverage/scalac-scoverage-plugin</url>
