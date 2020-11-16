@@ -4,7 +4,7 @@ scalac-scoverage-plugin
 scoverage is a free Apache licensed code coverage tool for scala that offers statement and branch coverage.
 scoverage is available for sbt, maven, and gradle.
 
-[![Build Status](https://travis-ci.org/scoverage/scalac-scoverage-plugin.svg?branch=master)](https://travis-ci.org/scoverage/scalac-scoverage-plugin)
+![build](https://github.com/scoverage/scalac-scoverage-plugin/workflows/build/badge.svg)
 [![License](http://img.shields.io/:license-Apache%202-red.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 [![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.10.svg?label=latest%20release%20for%202.10)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.10%22)
 [![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.11.svg?label=latest%20release%20for%202.11)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.11%22)
