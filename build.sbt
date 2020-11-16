@@ -10,7 +10,7 @@ val ScalatestVersion = "3.1.1"
 
 val appSettings = Seq(
     organization := Org,
-    scalaVersion := "2.13.3",
+    scalaVersion := "2.12.12",
     crossScalaVersions := Seq("2.12.12", "2.13.3"),
     fork in Test := false,
     publishMavenStyle := true,
@@ -94,6 +94,6 @@ lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plug
       )
     )
   .settings(
-    unmanagedSourceDirectories in Test += (sourceDirectory in Test).value / "scala-2.11+"
+    unmanagedSourceDirectories in Test += (sourceDirectory in Test).value / "scala-2.12+"
   )
 
