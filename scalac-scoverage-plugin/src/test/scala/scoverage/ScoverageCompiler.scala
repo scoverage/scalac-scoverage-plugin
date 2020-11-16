@@ -2,9 +2,10 @@ package scoverage
 
 import java.io.{File, FileNotFoundException}
 import java.net.URL
+import java.nio.file.{Path, Paths}
 
 import scala.collection.mutable.ListBuffer
-import scala.tools.nsc.{Settings, Global}
+import scala.tools.nsc.{Global, Settings}
 import scala.tools.nsc.plugins.PluginComponent
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
 
@@ -61,6 +62,7 @@ object ScoverageCompiler {
 
   private def findIvyJar(groupId: String, artifactId: String, version: String, packaging: String = "jar"): File = {
     val userHome = System.getProperty("user.home")
+    Paths.get(s"$userHome/.ivy2/cache").toFile.listFiles().foreach(println)
     val jarPath = s"$userHome/.ivy2/cache/$groupId/$artifactId/${packaging}s/$artifactId-$version.jar"
     val file = new File(jarPath)
     if (!file.exists)
