@@ -1,7 +1,6 @@
 import sbt._
 import sbt.Keys._
 import sbtrelease.ReleasePlugin.autoImport._
-import com.typesafe.sbt.pgp.PgpKeys
 import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
