@@ -35,6 +35,8 @@ class ScoveragePlugin(val global: Global) extends Plugin {
         options.dataDir = opt.substring("dataDir:".length)
       } else if (opt.startsWith("extraAfterPhase:") || opt.startsWith("extraBeforePhase:")) {
         // skip here, these flags are processed elsewhere
+      } else if (opt == "reportTestName") {
+        options.reportTestName = true
       } else {
         error("Unknown option: " + opt)
       }
@@ -82,6 +84,7 @@ class ScoverageOptions {
   var excludedFiles: Seq[String] = Nil
   var excludedSymbols: Seq[String] = Seq("scala.reflect.api.Exprs.Expr", "scala.reflect.api.Trees.Tree", "scala.reflect.macros.Universe.Tree")
   var dataDir: String = IOUtils.getTempPath
+  var reportTestName: Boolean = false
 }
 
 class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Option[String], extraBeforePhase: Option[String])
@@ -169,14 +172,17 @@ class ScoverageInstrumentationComponent(val global: Global, extraAfterPhase: Opt
           ),
           newTermName("invoked")
         ),
-        List(
-          Literal(
-            Constant(id)
-          ),
-          Literal(
-            Constant(options.dataDir)
-          )
-        )
+        Literal(
+          Constant(id)
+        ) ::
+        Literal(
+          Constant(options.dataDir)
+        ) ::
+        (if(options.reportTestName)
+          List(Literal(
+            Constant(true)
+          ))
+        else Nil)
       )
     }
 

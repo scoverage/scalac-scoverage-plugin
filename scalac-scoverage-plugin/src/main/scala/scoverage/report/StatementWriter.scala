@@ -24,6 +24,7 @@ class StatementWriter(mFile: MeasuredFile) {
         <th>Pos</th>
         <th>Tree</th>
         <th>Symbol</th>
+        <th>Tests</th>
         <th>Code</th>
       </tr>{mFile.statements.toSeq.sortBy(_.line).map(stmt => {
       <tr>
@@ -43,6 +44,9 @@ class StatementWriter(mFile: MeasuredFile) {
         </td>
         <td>
           {stmt.symbolName}
+        </td>
+        <td>
+          {stmt.tests.mkString(",")}
         </td>
         <td style={cellStyle(stmt.isInvoked)}>
           {stmt.desc}

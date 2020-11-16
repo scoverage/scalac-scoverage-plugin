@@ -17,7 +17,7 @@ class IOUtilsTest extends AnyFreeSpec with OneInstancePerTest with Matchers {
       writer.write("1\n5\n9\n\n10\n")
       writer.close()
       val invoked = IOUtils.invoked(Seq(file))
-      assert(invoked === Set(1, 5, 9, 10))
+      assert(invoked === Set((1, ""), (5, ""), (9, ""), (10, "")))
 
       file.delete()
     }
@@ -38,7 +38,7 @@ class IOUtilsTest extends AnyFreeSpec with OneInstancePerTest with Matchers {
 
       val files = IOUtils.findMeasurementFiles(file1.getParent)
       val invoked = IOUtils.invoked(files.toIndexedSeq)
-      assert(invoked === Set(1, 2, 5, 7, 9, 10, 14))
+      assert(invoked === Set((1, ""), (2, ""), (5, ""), (7, ""), (9, ""), (10, ""), (14, "")))
 
       file1.delete()
       file2.delete()

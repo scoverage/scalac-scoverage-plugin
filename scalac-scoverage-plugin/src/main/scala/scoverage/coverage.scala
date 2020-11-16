@@ -38,8 +38,8 @@ case class Coverage()
   // returns the classes by least coverage
   def risks(limit: Int) = classes.toSeq.sortBy(_.statementCount).reverse.sortBy(_.statementCoverage).take(limit)
 
-  def apply(ids: Iterable[Int]): Unit = ids foreach invoked
-  def invoked(id: Int): Unit = statementsById.get(id).foreach(_.invoked())
+  def apply(ids: Iterable[(Int, String)]): Unit = ids foreach invoked
+  def invoked(id: (Int, String)): Unit = statementsById.get(id._1).foreach(_.invoked(id._2))
 }
 
 trait MethodBuilders {
@@ -119,9 +119,13 @@ case class Statement(location: Location,
                      treeName: String,
                      branch: Boolean,
                      var count: Int = 0,
-                     ignored: Boolean = false) extends java.io.Serializable {
+                     ignored: Boolean = false,
+                     tests: mutable.Set[String] = mutable.Set[String]()) extends java.io.Serializable {
   def source = location.sourcePath
-  def invoked(): Unit = count = count + 1
+  def invoked(test: String): Unit = {
+    count = count + 1
+    if(test != "") tests += test
+  }
   def isInvoked = count > 0
 }
 
