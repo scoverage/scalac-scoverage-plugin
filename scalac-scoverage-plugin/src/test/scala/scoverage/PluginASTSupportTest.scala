@@ -144,7 +144,7 @@ class PluginASTSupportTest
   }
 
   // https://github.com/skinny-framework/skinny-framework/issues/97
-  test("macro range positions should not break plugin") {
+  ignore("macro range positions should not break plugin") {
     val compiler = ScoverageCompiler.default
     macroSupportDeps.foreach(compiler.addToClassPath(_))
     compiler.compileCodeSnippet( s"""import scoverage.macrosupport.Tester

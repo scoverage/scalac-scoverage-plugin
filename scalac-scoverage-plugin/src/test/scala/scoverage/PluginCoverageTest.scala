@@ -286,7 +286,7 @@ class PluginCoverageTest
     compiler.assertNoCoverage()
   }
 
-  test("plugin should not instrument expanded macro code http://github.com/skinny-framework/skinny-framework/issues/97") {
+  ignore("plugin should not instrument expanded macro code http://github.com/skinny-framework/skinny-framework/issues/97") {
     val compiler = ScoverageCompiler.default
     macroSupportDeps.foreach(compiler.addToClassPath(_))
     compiler.compileCodeSnippet( s"""import scoverage.macrosupport.Tester
