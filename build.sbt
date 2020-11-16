@@ -90,7 +90,7 @@ lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plug
       libraryDependencies ++= Seq(
         "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
         "org.scalatest" %% "scalatest" % ScalatestVersion % Test,
-        "org.scala-lang" % "scala-compiler" % scalaVersion.value % Compile
+        "org.scala-lang" % "scala-compiler" % scalaVersion.value
       )
     )
   .settings(
