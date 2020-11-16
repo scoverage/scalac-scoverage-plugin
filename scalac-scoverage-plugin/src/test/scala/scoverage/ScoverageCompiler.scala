@@ -4,20 +4,20 @@ import java.io.{File, FileNotFoundException}
 import java.net.URL
 
 import scala.collection.mutable.ListBuffer
-import scala.tools.nsc.{Settings, Global}
+import scala.tools.nsc.{Global, Settings}
 import scala.tools.nsc.plugins.PluginComponent
 import scala.tools.nsc.transform.{Transform, TypingTransformers}
 
-/** @author Stephen Samuel */
 object ScoverageCompiler {
 
-  val ScalaVersion = scala.util.Properties.versionNumberString
-  val ShortScalaVersion = (ScalaVersion split "[.]").toList match {
+  val ScalaVersion: String = scala.util.Properties.versionNumberString
+  val ShortScalaVersion: String = (ScalaVersion split "[.]").toList match {
     case init :+ last if last forall (_.isDigit) => init mkString "."
-    case _                                       => ScalaVersion
+    case _ => ScalaVersion
   }
 
-  def classPath = getScalaJars.map(_.getAbsolutePath) :+ sbtCompileDir.getAbsolutePath :+ runtimeClasses.getAbsolutePath
+  def classPath: Seq[String] =
+    getScalaJars.map(_.getAbsolutePath) :+ sbtCompileDir.getAbsolutePath :+ runtimeClasses.getAbsolutePath
 
   def settings: Settings = {
     val s = new scala.tools.nsc.Settings
@@ -57,15 +57,25 @@ object ScoverageCompiler {
 
   private def runtimeClasses: File = new File(s"./scalac-scoverage-runtime/jvm/target/scala-$ShortScalaVersion/classes")
 
-  private def findScalaJar(artifactId: String): File = findIvyJar("org.scala-lang", artifactId, ScalaVersion)
+  private def findScalaJar(artifactId: String): File =
+    findIvyJar("org.scala-lang", artifactId, ScalaVersion)
+      .orElse(findCoursierJar(artifactId, ScalaVersion))
+      .getOrElse {
+        throw new FileNotFoundException(s"Could not locate $artifactId/$ScalaVersion")
+      }
 
-  private def findIvyJar(groupId: String, artifactId: String, version: String, packaging: String = "jar"): File = {
+  private def findCoursierJar(artifactId: String, version: String): Option[File] = {
+    val userHome = System.getProperty("user.home")
+    val jarPath = s"$userHome/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/$artifactId/$version/$artifactId-$version.jar"
+    val file = new File(jarPath)
+    if (file.exists()) Some(file) else None
+  }
+
+  private def findIvyJar(groupId: String, artifactId: String, version: String, packaging: String = "jar"): Option[File] = {
     val userHome = System.getProperty("user.home")
     val jarPath = s"$userHome/.ivy2/cache/$groupId/$artifactId/${packaging}s/$artifactId-$version.jar"
     val file = new File(jarPath)
-    if (!file.exists)
-      throw new FileNotFoundException(s"Could not locate [$jarPath].")
-    file
+    if (file.exists()) Some(file) else None
   }
 }
 

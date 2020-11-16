@@ -10,8 +10,8 @@ val ScalatestVersion = "3.1.1"
 
 val appSettings = Seq(
     organization := Org,
-    scalaVersion := "2.13.3",
-    crossScalaVersions := Seq("2.12.12", "2.13.3"),
+    scalaVersion := "2.12.10",
+    crossScalaVersions := Seq("2.12.10", "2.13.3"),
     fork in Test := false,
     publishMavenStyle := true,
     publishArtifact in Test := false,
@@ -24,6 +24,9 @@ val appSettings = Seq(
       else
         Some("releases" at "https://oss.sonatype.org/service/local/staging/deploy/maven2")
     },
+    libraryDependencies ++= Seq(
+      "org.scala-lang" % "scala-compiler" % scalaVersion.value % Compile
+    ),
     pomExtra := {
       <url>https://github.com/scoverage/scalac-scoverage-plugin</url>
         <licenses>
@@ -89,11 +92,10 @@ lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plug
     .settings(
       libraryDependencies ++= Seq(
         "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
-        "org.scalatest" %% "scalatest" % ScalatestVersion % Test,
-        "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided
+        "org.scalatest" %% "scalatest" % ScalatestVersion % Test
       )
     )
   .settings(
-    unmanagedSourceDirectories in Test += (sourceDirectory in Test).value / "scala-2.11+"
+    unmanagedSourceDirectories in Test += (sourceDirectory in Test).value / "scala-2.12+"
   )
 
