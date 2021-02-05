@@ -27,7 +27,7 @@ object ScoverageCompiler {
     s.Yposdebug.value = true
     s.classpath.value = classPath.mkString(File.pathSeparator)
 
-    val path = s"./scalac-scoverage-plugin/target/scala-$ShortScalaVersion/test-generated-classes"
+    val path = s"./scalac-scoverage-plugin/target/scala-$ScalaVersion/test-generated-classes"
     new File(path).mkdirs()
     s.d.value = path
     s
@@ -49,13 +49,13 @@ object ScoverageCompiler {
   }
 
   private def sbtCompileDir: File = {
-    val dir = new File(s"./scalac-scoverage-plugin/target/scala-$ShortScalaVersion/classes")
+    val dir = new File(s"./scalac-scoverage-plugin/target/scala-$ScalaVersion/classes")
     if (!dir.exists)
       throw new FileNotFoundException(s"Could not locate SBT compile directory for plugin files [$dir]")
     dir
   }
 
-  private def runtimeClasses: File = new File(s"./scalac-scoverage-runtime/jvm/target/scala-$ShortScalaVersion/classes")
+  private def runtimeClasses: File = new File(s"./scalac-scoverage-runtime/jvm/target/scala-$ScalaVersion/classes")
 
   private def findScalaJar(artifactId: String): File =
     findIvyJar("org.scala-lang", artifactId, ScalaVersion)
