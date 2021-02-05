@@ -66,9 +66,11 @@ object ScoverageCompiler {
 
   private def findCoursierJar(artifactId: String, version: String): Option[File] = {
     val userHome = System.getProperty("user.home")
-    val jarPath = s"$userHome/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/$artifactId/$version/$artifactId-$version.jar"
-    val file = new File(jarPath)
-    if (file.exists()) Some(file) else None
+    val jarPaths = Seq(
+      s"$userHome/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/$artifactId/$version/$artifactId-$version.jar",
+      s"$userHome/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/$artifactId/$version/$artifactId-$version.jar",
+    )
+    jarPaths.map(new File(_)).filter(_.exists()).headOption
   }
 
   private def findIvyJar(groupId: String, artifactId: String, version: String, packaging: String = "jar"): Option[File] = {
