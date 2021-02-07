@@ -27,7 +27,7 @@ object ScoverageCompiler {
     s.Yposdebug.value = true
     s.classpath.value = classPath.mkString(File.pathSeparator)
 
-    val path = s"./scalac-scoverage-plugin/target/scala-$ShortScalaVersion/test-generated-classes"
+    val path = s"./scalac-scoverage-plugin/target/scala-$ScalaVersion/test-generated-classes"
     new File(path).mkdirs()
     s.d.value = path
     s
@@ -49,13 +49,13 @@ object ScoverageCompiler {
   }
 
   private def sbtCompileDir: File = {
-    val dir = new File(s"./scalac-scoverage-plugin/target/scala-$ShortScalaVersion/classes")
+    val dir = new File(s"./scalac-scoverage-plugin/target/scala-$ScalaVersion/classes")
     if (!dir.exists)
       throw new FileNotFoundException(s"Could not locate SBT compile directory for plugin files [$dir]")
     dir
   }
 
-  private def runtimeClasses: File = new File(s"./scalac-scoverage-runtime/jvm/target/scala-$ShortScalaVersion/classes")
+  private def runtimeClasses: File = new File(s"./scalac-scoverage-runtime/jvm/target/scala-$ScalaVersion/classes")
 
   private def findScalaJar(artifactId: String): File =
     findIvyJar("org.scala-lang", artifactId, ScalaVersion)
@@ -66,9 +66,11 @@ object ScoverageCompiler {
 
   private def findCoursierJar(artifactId: String, version: String): Option[File] = {
     val userHome = System.getProperty("user.home")
-    val jarPath = s"$userHome/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/$artifactId/$version/$artifactId-$version.jar"
-    val file = new File(jarPath)
-    if (file.exists()) Some(file) else None
+    val jarPaths = Seq(
+      s"$userHome/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/$artifactId/$version/$artifactId-$version.jar",
+      s"$userHome/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/$artifactId/$version/$artifactId-$version.jar",
+    )
+    jarPaths.map(new File(_)).filter(_.exists()).headOption
   }
 
   private def findIvyJar(groupId: String, artifactId: String, version: String, packaging: String = "jar"): Option[File] = {

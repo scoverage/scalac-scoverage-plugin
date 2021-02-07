@@ -2,6 +2,7 @@ package scoverage
 
 import scala.collection.mutable
 import scala.reflect.internal.util.{Position, SourceFile}
+import scala.util.matching.Regex
 
 /**
  * Methods related to filtering the instrumentation and coverage.
@@ -73,6 +74,12 @@ class RegexCoverageFilter(excludedPackages: Seq[String],
   }
 
   /**
+   * Provides overloads to paper over 2.12.13+ SourceFile incompatibility
+   */
+  def compatFindAllIn(regexp: Regex, pattern: Array[Char]): Regex.MatchIterator = regexp.findAllIn(new String(pattern))
+  def compatFindAllIn(regexp: Regex, pattern: String): Regex.MatchIterator = regexp.findAllIn(pattern)
+
+  /**
    * Checks the given sourceFile for any magic comments which exclude lines
    * from coverage. Returns a list of Ranges of lines that should be excluded.
    *
@@ -83,7 +90,7 @@ class RegexCoverageFilter(excludedPackages: Seq[String],
     linesExcludedByScoverageCommentsCache.get(sourceFile) match {
       case Some(lineNumbers) => lineNumbers
       case None =>
-        val lineNumbers = scoverageExclusionCommentsRegex.findAllIn(sourceFile.content).matchData.map { m =>
+        val lineNumbers = compatFindAllIn(scoverageExclusionCommentsRegex, sourceFile.content).matchData.map { m =>
           // Asking a SourceFile for the line number of the char after
           // the end of the file gives an exception
           val endChar = math.min(m.end(2), sourceFile.content.length - 1)
