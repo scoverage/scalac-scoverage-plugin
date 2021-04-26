@@ -7,21 +7,28 @@ import sbtcrossproject.CrossType
 val Org = "org.scoverage"
 val ScalatestVersion = "3.1.1"
 
-val bin212 = Seq("2.12.13", "2.12.12", "2.12.11", "2.12.10")
-val bin213 = Seq("2.13.4", "2.13.3", "2.13.2", "2.13.1", "2.13.0")
+lazy val Scala212 = "2.12.13"
+lazy val Scala213 = "2.13.4"
+
+lazy val CurrentVersions = Seq(Scala213, Scala212)
+val Legacy212 = Seq("2.12.12", "2.12.11", "2.12.10")
+val Legacy213 = Seq("2.13.3", "2.13.2", "2.13.1", "2.13.0")
+
+lazy val fullCrossVersionSettings = Seq(
+  crossVersion := CrossVersion.full,
+  crossScalaVersions := CurrentVersions ++ Legacy213 ++ Legacy212,
+  crossTarget := target.value / s"scala-${scalaVersion.value}",
+)
 
 val appSettings = Seq(
     organization := Org,
-    scalaVersion := "2.12.13",
-    crossScalaVersions := bin212 ++ bin213,
-    crossVersion := CrossVersion.full,
-    crossTarget := target.value / s"scala-${scalaVersion.value}",
-    fork in Test := false,
+    scalaVersion := Scala212,
+    Test / fork := false,
     publishMavenStyle := true,
-    publishArtifact in Test := false,
-    parallelExecution in Test := false,
+    Test / publishArtifact := false,
+    Test / parallelExecution := false,
     scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8"),
-    concurrentRestrictions in Global += Tags.limit(Tags.Test, 1),
+    Global / concurrentRestrictions += Tags.limit(Tags.Test, 1),
     publishTo := {
       if (isSnapshot.value)
         Some("snapshots" at "https://oss.sonatype.org/content/repositories/snapshots")
@@ -73,14 +80,14 @@ lazy val root = Project("scalac-scoverage", file("."))
     .aggregate(plugin, runtime.jvm, runtime.js)
 
 lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scoverage-runtime"))(JVMPlatform, JSPlatform)
-    .crossType(CrossType.Full)
     .settings(name := "scalac-scoverage-runtime")
     .settings(appSettings: _*)
     .settings(
+      crossScalaVersions := CurrentVersions,
       libraryDependencies += "org.scalatest" %%% "scalatest" % ScalatestVersion % Test
     )
     .jvmSettings(
-      fork in Test := true
+      Test / fork := true
     )
     .jsSettings(
       scalaJSStage := FastOptStage
@@ -93,6 +100,7 @@ lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plug
     .dependsOn(`scalac-scoverage-runtimeJVM` % Test)
     .settings(name := "scalac-scoverage-plugin")
     .settings(appSettings: _*)
+    .settings(fullCrossVersionSettings: _*)
     .settings(
       libraryDependencies ++= Seq(
         "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
@@ -100,6 +108,6 @@ lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plug
       )
     )
   .settings(
-    unmanagedSourceDirectories in Test += (sourceDirectory in Test).value / "scala-2.12+"
+    Test / unmanagedSourceDirectories += (Test / sourceDirectory).value / "scala-2.12+"
   )
 
