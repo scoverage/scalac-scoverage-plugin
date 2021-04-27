@@ -83,6 +83,9 @@ lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scovera
       fork in Test := true
     )
     .jsSettings(
+      // This seems a bit hacky but when using the CrossVersion.full, crossproject seems
+      // to no longer add on the _sjs1 here.
+      name := name.value + "_sjs1",
       scalaJSStage := FastOptStage
     )
 
