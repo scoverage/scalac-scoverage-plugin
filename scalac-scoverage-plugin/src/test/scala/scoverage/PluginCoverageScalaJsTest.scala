@@ -1,12 +1,13 @@
 package scoverage
 
-import org.scalatest.{ BeforeAndAfterEachTestData, FunSuite, OneInstancePerTest }
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.{BeforeAndAfterEachTestData, OneInstancePerTest}
 
 /**
  * https://github.com/scoverage/scalac-scoverage-plugin/issues/196
  */
 class PluginCoverageScalaJsTest
-  extends FunSuite
+  extends AnyFunSuite
   with OneInstancePerTest
   with BeforeAndAfterEachTestData
   with MacroSupport {

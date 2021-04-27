@@ -8,7 +8,7 @@ val Org = "org.scoverage"
 val ScalatestVersion = "3.1.1"
 
 val bin212 = Seq("2.12.13", "2.12.12", "2.12.11", "2.12.10")
-val bin213 = Seq("2.13.4", "2.13.3", "2.13.2", "2.13.1", "2.13.0")
+val bin213 = Seq("2.13.5", "2.13.4", "2.13.3", "2.13.2", "2.13.1", "2.13.0")
 
 val appSettings = Seq(
     organization := Org,
@@ -16,12 +16,12 @@ val appSettings = Seq(
     crossScalaVersions := bin212 ++ bin213,
     crossVersion := CrossVersion.full,
     crossTarget := target.value / s"scala-${scalaVersion.value}",
-    fork in Test := false,
+    Test / fork := false,
     publishMavenStyle := true,
-    publishArtifact in Test := false,
-    parallelExecution in Test := false,
+    Test / publishArtifact := false,
+    Test / parallelExecution := false,
     scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8"),
-    concurrentRestrictions in Global += Tags.limit(Tags.Test, 1),
+    Global / concurrentRestrictions += Tags.limit(Tags.Test, 1),
     publishTo := {
       if (isSnapshot.value)
         Some("snapshots" at "https://oss.sonatype.org/content/repositories/snapshots")
@@ -74,15 +74,17 @@ lazy val root = Project("scalac-scoverage", file("."))
 
 lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scoverage-runtime"))(JVMPlatform, JSPlatform)
     .crossType(CrossType.Full)
+    .withoutSuffixFor(JVMPlatform)
     .settings(name := "scalac-scoverage-runtime")
     .settings(appSettings: _*)
     .settings(
       libraryDependencies += "org.scalatest" %%% "scalatest" % ScalatestVersion % Test
     )
     .jvmSettings(
-      fork in Test := true
+      Test / fork := true
     )
     .jsSettings(
+      crossVersion := CrossVersion.fullWith("sjs" + scalaJSVersion.substring(0, 3) + "_", ""),
       scalaJSStage := FastOptStage
     )
 
@@ -100,6 +102,6 @@ lazy val plugin = Project("scalac-scoverage-plugin", file("scalac-scoverage-plug
       )
     )
   .settings(
-    unmanagedSourceDirectories in Test += (sourceDirectory in Test).value / "scala-2.12+"
+    (Test/ unmanagedSourceDirectories) += (Test / sourceDirectory).value / "scala-2.12+"
   )
 
