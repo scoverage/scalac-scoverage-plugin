@@ -70,7 +70,7 @@ object ScoverageCompiler {
       s"$userHome/.cache/coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/$artifactId/$version/$artifactId-$version.jar",
       s"$userHome/Library/Caches/Coursier/v1/https/repo1.maven.org/maven2/org/scala-lang/$artifactId/$version/$artifactId-$version.jar",
     )
-    jarPaths.map(new File(_)).filter(_.exists()).headOption
+    jarPaths.map(new File(_)).find(_.exists())
   }
 
   private def findIvyJar(groupId: String, artifactId: String, version: String, packaging: String = "jar"): Option[File] = {

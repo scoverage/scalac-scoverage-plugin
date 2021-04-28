@@ -21,7 +21,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
   private def parseExclusionEntry(entryName: String, inOption: String): Seq[String] =
     inOption.substring(entryName.length).split(";").map(_.trim).toIndexedSeq.filterNot(_.isEmpty)
 
-  override def processOptions(opts: List[String], error: String => Unit): Unit = {
+  override def init(opts: List[String], error: String => Unit): Boolean = {
     val options = new ScoverageOptions
 
     for (opt <- opts) {
@@ -44,6 +44,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
     if (!opts.exists(_.startsWith("dataDir:")))
       throw new RuntimeException("Cannot invoke plugin without specifying <dataDir>")
     instrumentationComponent.setOptions(options)
+    true
   }
 
   override val optionsHelp: Option[String] = Some(Seq(
