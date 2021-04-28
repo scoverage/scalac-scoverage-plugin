@@ -84,7 +84,7 @@ lazy val runtime = CrossProject("scalac-scoverage-runtime", file("scalac-scovera
       Test / fork := true
     )
     .jsSettings(
-      crossVersion := CrossVersion.fullWith("sjs" + scalaJSVersion.substring(0, 3) + "_", ""),
+      crossVersion := CrossVersion.fullWith("sjs" + scalaJSVersion.take(1) + "_", ""),
       scalaJSStage := FastOptStage
     )
 
