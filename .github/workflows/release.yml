@@ -1,63 +1,20 @@
-name: release
-
+name: Release
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "The release version"
-        required: true
-      branch:
-        description: "The branch to release from"
-        required: true
-
+  push:
+    branches: [master]
+    tags: ["*"]
 jobs:
-  scala:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java: [ '11' ]
-        scala: [
-            { version: '2.12.13' },
-            { version: '2.12.12' },
-            { version: '2.12.11' },
-            { version: '2.12.10' },
-            { version: '2.12.9' },
-            { version: '2.12.8' },
-            { version: '2.13.5' },
-            { version: '2.13.4' },
-            { version: '2.13.3' },
-            { version: '2.13.2' },
-            { version: '2.13.1' },
-            { version: '2.13.0' }
-          ]
+  publish:
+    runs-on: ubuntu-20.04
     steps:
-      - name: checkout the repo
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2.3.4
         with:
           fetch-depth: 0
-
-      - name: Set up JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: ${{ matrix.java }}
-
-      - name: Import GPG key
-        id: import_gpg
-        uses: crazy-max/ghaction-import-gpg@v3
-        with:
-          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.PGP_PASSPHRASE }}
-
-      - name: GPG user IDs
-        run: |
-          echo "fingerprint: ${{ steps.import_gpg.outputs.fingerprint }}"
-          echo "keyid:       ${{ steps.import_gpg.outputs.keyid }}"
-          echo "name:        ${{ steps.import_gpg.outputs.name }}"
-          echo "email:       ${{ steps.import_gpg.outputs.email }}"
-
-      - name: publish release
-        run: sbt ++${{ matrix.scala.version }} publishSigned
+      - uses: olafurpg/setup-scala@v10
+      - uses: olafurpg/setup-gpg@v3
+      - run: sbt ci-release
         env:
-          RELEASE_VERSION: ${{ github.event.inputs.version }}
-          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
