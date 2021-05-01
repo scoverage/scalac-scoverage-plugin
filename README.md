@@ -4,8 +4,8 @@
 [![Gitter](https://img.shields.io/gitter/room/scoverage/scoverage.svg)](https://gitter.im/scoverage/scoverage)
 [![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.10.svg?label=latest%20release%20for%202.10)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.10%22)
 [![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.11.svg?label=latest%20release%20for%202.11)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.11%22)
-[![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.12.13.svg?label=latest%202.12%20Scala%20support%20[2.12.13]%sand%20latest%20version)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.12.13%22)
-[![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.13.5svg?label=latest%202.13%20Scala%20support%20[2.13.5]%20and%20version)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.13.5%22)
+[![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.12.13.svg?label=latest%202.12%20Scala%20support%20[2.12.13]%20and%20latest%20version)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.12.13%22)
+[![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.13.5.svg?label=latest%202.13%20Scala%20support%20[2.13.5]%20and%20version)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.13.5%22)
 
 [![License](http://img.shields.io/:license-Apache%202-red.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
@@ -23,10 +23,14 @@ you covered and non-covered statements, along with an upload to coveralls.
 
 ### Release History
 
+##### 1st May 2021 - 1.4.4
+
+* Add support for legacy Scala versions 2.12.9 and 2.12.8
+
 ##### 28th April 2021 - 1.4.3
 
 * Added Scala 2.12.13+, 2.13.5+ support
-* All versions are now cross built with the full scala version (instead of binary only)
+* All versions are now cross built with the full Scala version (instead of binary only)
 
 ##### 12th June 2019 - 1.4.0
 
