@@ -8,6 +8,7 @@ on:
       - '*.md'
     branches:
       - master
+    pull_requests:
 
 jobs:
   scala:

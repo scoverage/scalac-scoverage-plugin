@@ -36,7 +36,7 @@ inThisBuild(
     },
     scalaVersion := bin213.head,
     crossScalaVersions := bin212 ++ bin213,
-    crossVersion := CrossVersion.full,
+    versionScheme := Some("early-semver"),
     Test / fork := false,
     Test / publishArtifact := false,
     Test / parallelExecution := false,
@@ -55,9 +55,11 @@ inThisBuild(
 )
 
 lazy val root = Project("scalac-scoverage", file("."))
-  .settings(name := "scalac-scoverage")
-  .settings(publishArtifact := false)
-  .settings(publishLocal := {})
+  .settings(
+    name := "scalac-scoverage",
+    publishArtifact := false,
+    publishLocal := {}
+  )
   .aggregate(plugin, runtime.jvm, runtime.js)
 
 lazy val runtime = CrossProject(
@@ -66,9 +68,10 @@ lazy val runtime = CrossProject(
 )(JVMPlatform, JSPlatform)
   .crossType(CrossType.Full)
   .withoutSuffixFor(JVMPlatform)
-  .settings(name := "scalac-scoverage-runtime")
   .settings(
+    name := "scalac-scoverage-runtime",
     crossTarget := target.value / s"scala-${scalaVersion.value}",
+    crossVersion := CrossVersion.full,
     libraryDependencies += "org.scalatest" %%% "scalatest" % ScalatestVersion % Test
   )
   .jvmSettings(
@@ -86,9 +89,10 @@ lazy val `scalac-scoverage-runtimeJS` = runtime.js
 lazy val plugin =
   Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
     .dependsOn(`scalac-scoverage-runtimeJVM` % Test)
-    .settings(name := "scalac-scoverage-plugin")
     .settings(
+      name := "scalac-scoverage-plugin",
       crossTarget := target.value / s"scala-${scalaVersion.value}",
+      crossVersion := CrossVersion.full,
       libraryDependencies ++= Seq(
         "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
         "org.scalatest" %% "scalatest" % ScalatestVersion % Test
