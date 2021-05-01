@@ -1,7 +1,7 @@
 import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
-def localSnapshotVersion = "1.4.4-SNAPSHOT"
+def localSnapshotVersion = "1.4.5-SNAPSHOT"
 def isCI = System.getenv("CI") != null
 
 val ScalatestVersion = "3.1.1"
