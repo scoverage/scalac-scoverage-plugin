@@ -1,21 +1,23 @@
-scalac-scoverage-plugin
-==========
-
-scoverage is a free Apache licensed code coverage tool for scala that offers statement and branch coverage.
-scoverage is available for sbt, maven, and gradle.
+# scalac-scoverage-plugin
 
 ![build](https://github.com/scoverage/scalac-scoverage-plugin/workflows/build/badge.svg)
-[![License](http://img.shields.io/:license-Apache%202-red.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
+[![Gitter](https://img.shields.io/gitter/room/scoverage/scoverage.svg)](https://gitter.im/scoverage/scoverage)
 [![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.10.svg?label=latest%20release%20for%202.10)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.10%22)
 [![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.11.svg?label=latest%20release%20for%202.11)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.11%22)
-[![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.12.svg?label=latest%20release%20for%202.12)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.12%22)
-[![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.13.svg?label=latest%20release%20for%202.13)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.13%22)
+[![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.12.13.svg?label=latest%202.12%20Scala%20support%20[2.12.13]%sand%20latest%20version)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.12.13%22)
+[![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.13.5svg?label=latest%202.13%20Scala%20support%20[2.13.5]%20and%20version)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.13.5%22)
 
-Join the [scoverage](http://groups.google.com/group/scala-code-coverage-tool)
-google group for help, bug reports, feature requests, and general
-discussion on scoverage.
+[![License](http://img.shields.io/:license-Apache%202-red.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-To see scoverage in action check out the [samples](https://github.com/scoverage/scoverage-samples) project which shows you covered and non-covered statements, along with upload to coveralls.
+scoverage is a free Apache licensed code coverage tool for Scala that offers
+statement and branch coverage.  scoverage is available for
+[sbt](https://github.com/scoverage/sbt-scoverage),
+[Maven](https://github.com/scoverage/scoverage-maven-plugin), and
+[Gradle](https://github.com/scoverage/gradle-scoverage).
+
+To see scoverage in action check out the
+[samples](https://github.com/scoverage/scoverage-samples) project which shows
+you covered and non-covered statements, along with an upload to coveralls.
 
 ![Screenshot of scoverage report html](misc/screenshot2.png)
 
