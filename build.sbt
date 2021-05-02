@@ -47,10 +47,7 @@ inThisBuild(
       "-encoding",
       "utf8"
     ),
-    Global / concurrentRestrictions += Tags.limit(Tags.Test, 1),
-    libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-compiler" % scalaVersion.value % Compile
-    )
+    Global / concurrentRestrictions += Tags.limit(Tags.Test, 1)
   )
 )
 
@@ -72,7 +69,10 @@ lazy val runtime = CrossProject(
     name := "scalac-scoverage-runtime",
     crossTarget := target.value / s"scala-${scalaVersion.value}",
     crossVersion := CrossVersion.full,
-    libraryDependencies += "org.scalatest" %%% "scalatest" % scalatestVersion % Test
+    libraryDependencies ++= Seq(
+      "org.scalatest" %%% "scalatest" % scalatestVersion % Test,
+      "org.scala-lang" % "scala-compiler" % scalaVersion.value % Compile
+    )
   )
   .jvmSettings(
     Test / fork := true
@@ -95,7 +95,8 @@ lazy val plugin =
       crossVersion := CrossVersion.full,
       libraryDependencies ++= Seq(
         "org.scala-lang.modules" %% "scala-xml" % "1.3.0",
-        "org.scalatest" %% "scalatest" % scalatestVersion % Test
+        "org.scalatest" %% "scalatest" % scalatestVersion % Test,
+        "org.scala-lang" % "scala-compiler" % scalaVersion.value % Compile
       )
     )
     .settings(
