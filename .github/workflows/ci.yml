@@ -7,7 +7,7 @@ on:
       - 'docs/**'
       - '*.md'
     branches:
-      - master
+      - main
   pull_request:
 
 jobs:
