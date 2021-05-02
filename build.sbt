@@ -94,7 +94,7 @@ lazy val plugin =
       crossTarget := target.value / s"scala-${scalaVersion.value}",
       crossVersion := CrossVersion.full,
       libraryDependencies ++= Seq(
-        "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
+        "org.scala-lang.modules" %% "scala-xml" % "1.3.0",
         "org.scalatest" %% "scalatest" % scalatestVersion % Test
       )
     )
