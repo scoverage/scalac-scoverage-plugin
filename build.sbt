@@ -4,7 +4,7 @@ import sbtcrossproject.CrossType
 def localSnapshotVersion = "1.4.5-SNAPSHOT"
 def isCI = System.getenv("CI") != null
 
-val ScalatestVersion = "3.1.1"
+val scalatestVersion = "3.2.8"
 
 val bin212 = Seq("2.12.13", "2.12.12", "2.12.11", "2.12.10", "2.12.9", "2.12.8")
 val bin213 = Seq("2.13.5", "2.13.4", "2.13.3", "2.13.2", "2.13.1", "2.13.0")
@@ -72,7 +72,7 @@ lazy val runtime = CrossProject(
     name := "scalac-scoverage-runtime",
     crossTarget := target.value / s"scala-${scalaVersion.value}",
     crossVersion := CrossVersion.full,
-    libraryDependencies += "org.scalatest" %%% "scalatest" % ScalatestVersion % Test
+    libraryDependencies += "org.scalatest" %%% "scalatest" % scalatestVersion % Test
   )
   .jvmSettings(
     Test / fork := true
@@ -95,7 +95,7 @@ lazy val plugin =
       crossVersion := CrossVersion.full,
       libraryDependencies ++= Seq(
         "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
-        "org.scalatest" %% "scalatest" % ScalatestVersion % Test
+        "org.scalatest" %% "scalatest" % scalatestVersion % Test
       )
     )
     .settings(
