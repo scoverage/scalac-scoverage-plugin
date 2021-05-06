@@ -1,7 +1,7 @@
 import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
-def localSnapshotVersion = "1.4.5-SNAPSHOT"
+def localSnapshotVersion = "1.4.6-SNAPSHOT"
 def isCI = System.getenv("CI") != null
 
 val scalatestVersion = "3.2.8"
@@ -68,18 +68,14 @@ lazy val runtime = CrossProject(
   .settings(
     name := "scalac-scoverage-runtime",
     crossTarget := target.value / s"scala-${scalaVersion.value}",
-    crossVersion := CrossVersion.full,
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % scalatestVersion % Test,
-      "org.scala-lang" % "scala-compiler" % scalaVersion.value % Compile
+      "org.scalatest" %%% "scalatest" % scalatestVersion % Test
     )
   )
   .jvmSettings(
     Test / fork := true
   )
   .jsSettings(
-    crossVersion := CrossVersion
-      .fullWith("sjs" + scalaJSVersion.take(1) + "_", ""),
     scalaJSStage := FastOptStage
   )
 
@@ -96,7 +92,7 @@ lazy val plugin =
       libraryDependencies ++= Seq(
         "org.scala-lang.modules" %% "scala-xml" % "1.3.0",
         "org.scalatest" %% "scalatest" % scalatestVersion % Test,
-        "org.scala-lang" % "scala-compiler" % scalaVersion.value % Compile
+        "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided
       )
     )
     .settings(
