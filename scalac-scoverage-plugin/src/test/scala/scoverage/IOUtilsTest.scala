@@ -1,6 +1,7 @@
 package scoverage
 
-import java.io.{File, FileWriter}
+import java.io.File
+import java.io.FileWriter
 import java.util.UUID
 
 import org.scalatest.OneInstancePerTest
@@ -23,7 +24,7 @@ class IOUtilsTest extends AnyFreeSpec with OneInstancePerTest with Matchers {
     }
     "should parse multiple measurement files" in {
       // clean up any existing measurement files
-      for ( file <- IOUtils.findMeasurementFiles(IOUtils.getTempDirectory) )
+      for (file <- IOUtils.findMeasurementFiles(IOUtils.getTempDirectory))
         file.delete()
 
       val file1 = File.createTempFile("scoverage.measurements.1", "txt")
@@ -38,7 +39,17 @@ class IOUtilsTest extends AnyFreeSpec with OneInstancePerTest with Matchers {
 
       val files = IOUtils.findMeasurementFiles(file1.getParent)
       val invoked = IOUtils.invoked(files.toIndexedSeq)
-      assert(invoked === Set((1, ""), (2, ""), (5, ""), (7, ""), (9, ""), (10, ""), (14, "")))
+      assert(
+        invoked === Set(
+          (1, ""),
+          (2, ""),
+          (5, ""),
+          (7, ""),
+          (9, ""),
+          (10, ""),
+          (14, "")
+        )
+      )
 
       file1.delete()
       file2.delete()

@@ -1,14 +1,14 @@
 package scoverage.report
 
-import _root_.scoverage.MeasuredFile
-
 import scala.io.Source
+
+import _root_.scoverage.MeasuredFile
 
 /** @author Stephen Samuel */
 class CodeGrid(mFile: MeasuredFile, sourceEncoding: Option[String]) {
 
   // for backward compatibility only
-  def this (mFile: MeasuredFile) = {
+  def this(mFile: MeasuredFile) = {
     this(mFile, None);
   }
 
@@ -19,14 +19,16 @@ class CodeGrid(mFile: MeasuredFile, sourceEncoding: Option[String]) {
   // Array of lines, each line is an array of cells, where a cell is a character + coverage info for that position
   // All cells default to NoData until the highlighted information is applied
   // note: we must re-include the line sep to keep source positions correct.
-  private val lines = source(mFile).split(lineBreak).map(line => (line.toCharArray ++ lineBreak).map(Cell(_, NoData)))
+  private val lines = source(mFile)
+    .split(lineBreak)
+    .map(line => (line.toCharArray ++ lineBreak).map(Cell(_, NoData)))
 
   // useful to have a single array to write into the cells
   private val cells = lines.flatten
 
   // apply the instrumentation data to the cells updating their coverage info
   mFile.statements.foreach(stmt => {
-    for ( k <- stmt.start until stmt.end ) {
+    for (k <- stmt.start until stmt.end) {
       if (k < cells.size) {
         // if the cell is set to Invoked, then it be changed to NotInvoked, as an inner statement will override
         // outer containing statements. If a cell is NotInvoked then it can not be changed further.
@@ -59,11 +61,11 @@ class CodeGrid(mFile: MeasuredFile, sourceEncoding: Option[String]) {
         }
         // escape xml characters
         cell.char match {
-          case '<'  => sb.append("&lt;")
-          case '>'  => sb.append("&gt;")
-          case '&'  => sb.append("&amp;")
-          case '"'  => sb.append("&quot;")
-          case c    => sb.append(c)
+          case '<' => sb.append("&lt;")
+          case '>' => sb.append("&gt;")
+          case '&' => sb.append("&amp;")
+          case '"' => sb.append("&quot;")
+          case c   => sb.append(c)
         }
       })
       sb append "</span>"
@@ -74,22 +76,22 @@ class CodeGrid(mFile: MeasuredFile, sourceEncoding: Option[String]) {
 
   private def source(mfile: MeasuredFile): String = {
     val src = sourceEncoding match {
-     case Some(enc) => Source.fromFile(mfile.source, enc)
-     case None => Source.fromFile(mfile.source)
+      case Some(enc) => Source.fromFile(mfile.source, enc)
+      case None      => Source.fromFile(mfile.source)
     }
     src.mkString
   }
 
-  private def spanStart(status: StatementStatus): String = s"<span style='${cellStyle(status)}'>"
+  private def spanStart(status: StatementStatus): String =
+    s"<span style='${cellStyle(status)}'>"
 
   private def cellStyle(status: StatementStatus): String = {
     val GREEN = "#AEF1AE"
     val RED = "#F0ADAD"
     status match {
-      case Invoked => s"background: $GREEN"
+      case Invoked    => s"background: $GREEN"
       case NotInvoked => s"background: $RED"
-      case NoData => ""
+      case NoData     => ""
     }
   }
 }
-

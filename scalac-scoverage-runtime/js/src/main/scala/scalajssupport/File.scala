@@ -2,10 +2,9 @@ package scalajssupport
 
 import scala.scalajs.js
 
-/**
- * This wraps RhinoFile, NodeFile, or PhantomFile depending on which javascript
- * environment is being used, and emulates a subset of the java.io.File API.
- */
+/** This wraps RhinoFile, NodeFile, or PhantomFile depending on which javascript
+  * environment is being used, and emulates a subset of the java.io.File API.
+  */
 class File(path: String) {
   import File._
 
@@ -67,12 +66,13 @@ object File {
     }
   }
 
-  val jsFile: JsFileObject = if (globalObject.hasOwnProperty("Packages").asInstanceOf[Boolean])
-    RhinoFile
-  else if (globalObject.hasOwnProperty("callPhantom").asInstanceOf[Boolean])
-    PhantomFile
-  else
-    NodeFile
+  val jsFile: JsFileObject =
+    if (globalObject.hasOwnProperty("Packages").asInstanceOf[Boolean])
+      RhinoFile
+    else if (globalObject.hasOwnProperty("callPhantom").asInstanceOf[Boolean])
+      PhantomFile
+    else
+      NodeFile
   // Factorize this
 
   def pathJoin(path: String, child: String): String =

@@ -1,13 +1,11 @@
 package scoverage
 
-import scoverage.Platform.File
-
 import org.scalatest.BeforeAndAfter
 import org.scalatest.funsuite.AnyFunSuite
+import scoverage.Platform.File
 
-/**
- * Verify that [[Invoker.invoked()]] can handle a multi-module project
- */
+/** Verify that [[Invoker.invoked()]] can handle a multi-module project
+  */
 class InvokerMultiModuleTest extends AnyFunSuite with BeforeAndAfter {
 
   val measurementDir = Array(
@@ -20,7 +18,9 @@ class InvokerMultiModuleTest extends AnyFunSuite with BeforeAndAfter {
     measurementDir.foreach(_.mkdirs())
   }
 
-  test("calling Invoker.invoked on with different directories puts measurements in different directories") {
+  test(
+    "calling Invoker.invoked on with different directories puts measurements in different directories"
+  ) {
 
     val testIds: Set[Int] = (1 to 10).toSet
 

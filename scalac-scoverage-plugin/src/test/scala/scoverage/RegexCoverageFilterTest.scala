@@ -1,8 +1,10 @@
 package scoverage
 
-
-import scala.reflect.internal.util.{BatchSourceFile, NoFile, SourceFile}
+import scala.reflect.internal.util.BatchSourceFile
+import scala.reflect.internal.util.NoFile
+import scala.reflect.internal.util.SourceFile
 import scala.reflect.io.VirtualFile
+
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -19,23 +21,38 @@ class RegexCoverageFilterTest extends AnyFreeSpec with Matchers {
     }
 
     "should exclude scoverage -> scoverage" in {
-      assert(!new RegexCoverageFilter(Seq("scoverage"), Nil, Nil).isClassIncluded("scoverage"))
+      assert(
+        !new RegexCoverageFilter(Seq("scoverage"), Nil, Nil)
+          .isClassIncluded("scoverage")
+      )
     }
 
     "should include scoverage -> scoverageeee" in {
-      assert(new RegexCoverageFilter(Seq("scoverage"), Nil, Nil).isClassIncluded("scoverageeee"))
+      assert(
+        new RegexCoverageFilter(Seq("scoverage"), Nil, Nil)
+          .isClassIncluded("scoverageeee")
+      )
     }
 
     "should exclude scoverage* -> scoverageeee" in {
-      assert(!new RegexCoverageFilter(Seq("scoverage*"), Nil, Nil).isClassIncluded("scoverageeee"))
+      assert(
+        !new RegexCoverageFilter(Seq("scoverage*"), Nil, Nil)
+          .isClassIncluded("scoverageeee")
+      )
     }
 
     "should include eee -> scoverageeee" in {
-      assert(new RegexCoverageFilter(Seq("eee"), Nil, Nil).isClassIncluded("scoverageeee"))
+      assert(
+        new RegexCoverageFilter(Seq("eee"), Nil, Nil)
+          .isClassIncluded("scoverageeee")
+      )
     }
 
     "should exclude .*eee -> scoverageeee" in {
-      assert(!new RegexCoverageFilter(Seq(".*eee"), Nil, Nil).isClassIncluded("scoverageeee"))
+      assert(
+        !new RegexCoverageFilter(Seq(".*eee"), Nil, Nil)
+          .isClassIncluded("scoverageeee")
+      )
     }
   }
   "isFileIncluded" - {
@@ -46,15 +63,18 @@ class RegexCoverageFilterTest extends AnyFreeSpec with Matchers {
     }
     "should exclude by filename" in {
       val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
-      new RegexCoverageFilter(Nil, Seq("sammy"), Nil).isFileIncluded(file) shouldBe false
+      new RegexCoverageFilter(Nil, Seq("sammy"), Nil)
+        .isFileIncluded(file) shouldBe false
     }
     "should exclude by regex wildcard" in {
       val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
-      new RegexCoverageFilter(Nil, Seq("sam.*"), Nil).isFileIncluded(file) shouldBe false
+      new RegexCoverageFilter(Nil, Seq("sam.*"), Nil)
+        .isFileIncluded(file) shouldBe false
     }
     "should not exclude non matching regex" in {
       val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
-      new RegexCoverageFilter(Nil, Seq("qweqeqwe"), Nil).isFileIncluded(file) shouldBe true
+      new RegexCoverageFilter(Nil, Seq("qweqeqwe"), Nil)
+        .isFileIncluded(file) shouldBe true
     }
   }
   "isSymbolIncluded" - {
@@ -68,31 +88,55 @@ class RegexCoverageFilterTest extends AnyFreeSpec with Matchers {
     }
 
     "should exclude scoverage -> scoverage" in {
-      assert(!new RegexCoverageFilter(Nil, Nil, Seq("scoverage")).isSymbolIncluded("scoverage"))
+      assert(
+        !new RegexCoverageFilter(Nil, Nil, Seq("scoverage"))
+          .isSymbolIncluded("scoverage")
+      )
     }
 
     "should include scoverage -> scoverageeee" in {
-      assert(new RegexCoverageFilter(Nil, Nil, Seq("scoverage")).isSymbolIncluded("scoverageeee"))
+      assert(
+        new RegexCoverageFilter(Nil, Nil, Seq("scoverage"))
+          .isSymbolIncluded("scoverageeee")
+      )
     }
     "should exclude scoverage* -> scoverageeee" in {
-      assert(!new RegexCoverageFilter(Nil, Nil, Seq("scoverage*")).isSymbolIncluded("scoverageeee"))
+      assert(
+        !new RegexCoverageFilter(Nil, Nil, Seq("scoverage*"))
+          .isSymbolIncluded("scoverageeee")
+      )
     }
 
     "should include eee -> scoverageeee" in {
-      assert(new RegexCoverageFilter(Nil, Nil, Seq("eee")).isSymbolIncluded("scoverageeee"))
+      assert(
+        new RegexCoverageFilter(Nil, Nil, Seq("eee"))
+          .isSymbolIncluded("scoverageeee")
+      )
     }
 
     "should exclude .*eee -> scoverageeee" in {
-      assert(!new RegexCoverageFilter(Nil, Nil, Seq(".*eee")).isSymbolIncluded("scoverageeee"))
+      assert(
+        !new RegexCoverageFilter(Nil, Nil, Seq(".*eee"))
+          .isSymbolIncluded("scoverageeee")
+      )
     }
     "should exclude scala.reflect.api.Exprs.Expr" in {
-      assert(!new RegexCoverageFilter(Nil, Nil, options.excludedSymbols).isSymbolIncluded("scala.reflect.api.Exprs.Expr"))
+      assert(
+        !new RegexCoverageFilter(Nil, Nil, options.excludedSymbols)
+          .isSymbolIncluded("scala.reflect.api.Exprs.Expr")
+      )
     }
     "should exclude scala.reflect.macros.Universe.Tree" in {
-      assert(!new RegexCoverageFilter(Nil, Nil, options.excludedSymbols).isSymbolIncluded("scala.reflect.macros.Universe.Tree"))
+      assert(
+        !new RegexCoverageFilter(Nil, Nil, options.excludedSymbols)
+          .isSymbolIncluded("scala.reflect.macros.Universe.Tree")
+      )
     }
     "should exclude scala.reflect.api.Trees.Tree" in {
-      assert(!new RegexCoverageFilter(Nil, Nil, options.excludedSymbols).isSymbolIncluded("scala.reflect.api.Trees.Tree"))
+      assert(
+        !new RegexCoverageFilter(Nil, Nil, options.excludedSymbols)
+          .isSymbolIncluded("scala.reflect.api.Trees.Tree")
+      )
     }
   }
   "getExcludedLineNumbers" - {
@@ -108,7 +152,8 @@ class RegexCoverageFilterTest extends AnyFreeSpec with Matchers {
           |8
         """.stripMargin
 
-      val numbers = new RegexCoverageFilter(Nil, Nil, Nil).getExcludedLineNumbers(mockSourceFile(file))
+      val numbers = new RegexCoverageFilter(Nil, Nil, Nil)
+        .getExcludedLineNumbers(mockSourceFile(file))
       numbers === List.empty
     }
     "should exclude lines between magic comments" in {
@@ -131,7 +176,8 @@ class RegexCoverageFilterTest extends AnyFreeSpec with Matchers {
           |16
         """.stripMargin
 
-      val numbers = new RegexCoverageFilter(Nil, Nil, Nil).getExcludedLineNumbers(mockSourceFile(file))
+      val numbers = new RegexCoverageFilter(Nil, Nil, Nil)
+        .getExcludedLineNumbers(mockSourceFile(file))
       numbers === List(Range(4, 9), Range(12, 14))
     }
     "should exclude all lines after an upaired magic comment" in {
@@ -153,7 +199,8 @@ class RegexCoverageFilterTest extends AnyFreeSpec with Matchers {
           |15
         """.stripMargin
 
-      val numbers = new RegexCoverageFilter(Nil, Nil, Nil).getExcludedLineNumbers(mockSourceFile(file))
+      val numbers = new RegexCoverageFilter(Nil, Nil, Nil)
+        .getExcludedLineNumbers(mockSourceFile(file))
       numbers === List(Range(4, 9), Range(12, 16))
     }
     "should allow text comments on the same line as the markers" in {
@@ -175,7 +222,8 @@ class RegexCoverageFilterTest extends AnyFreeSpec with Matchers {
           |15
         """.stripMargin
 
-      val numbers = new RegexCoverageFilter(Nil, Nil, Nil).getExcludedLineNumbers(mockSourceFile(file))
+      val numbers = new RegexCoverageFilter(Nil, Nil, Nil)
+        .getExcludedLineNumbers(mockSourceFile(file))
       numbers === List(Range(4, 9), Range(12, 16))
     }
   }

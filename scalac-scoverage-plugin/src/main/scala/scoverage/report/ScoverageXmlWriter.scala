@@ -2,14 +2,19 @@ package scoverage.report
 
 import java.io.File
 
+import scala.xml.Node
+import scala.xml.PrettyPrinter
+
 import scoverage._
 
-import scala.xml.{Node, PrettyPrinter}
-
 /** @author Stephen Samuel */
-class ScoverageXmlWriter(sourceDirectories: Seq[File], outputDir: File, debug: Boolean) extends BaseReportWriter(sourceDirectories, outputDir) {
+class ScoverageXmlWriter(
+    sourceDirectories: Seq[File],
+    outputDir: File,
+    debug: Boolean
+) extends BaseReportWriter(sourceDirectories, outputDir) {
 
-  def this (sourceDir: File, outputDir: File, debug: Boolean) = {
+  def this(sourceDir: File, outputDir: File, debug: Boolean) = {
     this(Seq(sourceDir), outputDir, debug)
   }
 
@@ -51,7 +56,7 @@ class ScoverageXmlWriter(sourceDirectories: Seq[File], outputDir: File, debug: B
           {escape(stmt.desc)}
         </statement>
       case false =>
-          <statement package={stmt.location.packageName}
+        <statement package={stmt.location.packageName}
                      class={stmt.location.className}
                      class-type={stmt.location.classType.toString}
                      full-class-name={stmt.location.fullClassName}
@@ -101,8 +106,8 @@ class ScoverageXmlWriter(sourceDirectories: Seq[File], outputDir: File, debug: B
       </classes>
     </package>
   }
-  /**
-    * This method ensures that the output String has only
+
+  /** This method ensures that the output String has only
     * valid XML unicode characters as specified by the
     * XML 1.0 standard. For reference, please see
     * <a href="http://www.w3.org/TR/2000/REC-xml-20001006#NT-Char">the
@@ -112,15 +117,16 @@ class ScoverageXmlWriter(sourceDirectories: Seq[File], outputDir: File, debug: B
     * @param in The String whose non-valid characters we want to remove.
     * @return The in String, stripped of non-valid characters.
     * @see http://blog.mark-mclaren.info/2007/02/invalid-xml-characters-when-valid-utf8_5873.html
-    *
     */
   def escape(in: String): String = {
     val out = new StringBuilder()
-    for ( current <- Option(in).getOrElse("").toCharArray ) {
-      if ((current == 0x9) || (current == 0xA) || (current == 0xD) ||
-        ((current >= 0x20) && (current <= 0xD7FF)) ||
-        ((current >= 0xE000) && (current <= 0xFFFD)) ||
-        ((current >= 0x10000) && (current <= 0x10FFFF)))
+    for (current <- Option(in).getOrElse("").toCharArray) {
+      if (
+        (current == 0x9) || (current == 0xa) || (current == 0xd) ||
+        ((current >= 0x20) && (current <= 0xd7ff)) ||
+        ((current >= 0xe000) && (current <= 0xfffd)) ||
+        ((current >= 0x10000) && (current <= 0x10ffff))
+      )
         out.append(current)
     }
     out.mkString

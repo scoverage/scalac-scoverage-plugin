@@ -2,22 +2,27 @@ package scoverage.report
 
 import java.io.File
 
+import scala.xml.Node
+import scala.xml.PrettyPrinter
+
 import scoverage.DoubleFormat.twoFractionDigits
 import scoverage._
 
-import scala.xml.{Node, PrettyPrinter}
-
 /** @author Stephen Samuel */
-class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends BaseReportWriter(sourceDirectories, outputDir) {
+class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File)
+    extends BaseReportWriter(sourceDirectories, outputDir) {
 
-  def this (baseDir: File, outputDir: File) = {
+  def this(baseDir: File, outputDir: File) = {
     this(Seq(baseDir), outputDir)
   }
 
   def write(coverage: Coverage): Unit = {
     val file = new File(outputDir, "cobertura.xml")
-    IOUtils.writeToFile(file, "<?xml version=\"1.0\"?>\n<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-04.dtd\">\n" +
-        new PrettyPrinter(120, 4).format(xml(coverage)))
+    IOUtils.writeToFile(
+      file,
+      "<?xml version=\"1.0\"?>\n<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-04.dtd\">\n" +
+        new PrettyPrinter(120, 4).format(xml(coverage))
+    )
   }
 
   def method(method: MeasuredMethod): Node = {
@@ -27,12 +32,12 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends 
             branch-rate={twoFractionDigits(method.branchCoverage)}
             complexity="0">
       <lines>
-        {method.statements.map(stmt =>
-          <line
+        {
+          method.statements.map(stmt => <line
           number={stmt.line.toString}
           hits={stmt.count.toString}
-          branch={stmt.branch.toString}/>
-      )}
+          branch={stmt.branch.toString}/>)
+        }
       </lines>
     </method>
   }
@@ -47,12 +52,12 @@ class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends 
         {klass.methods.map(method)}
       </methods>
       <lines>
-        {klass.statements.map(stmt =>
-          <line
+        {
+          klass.statements.map(stmt => <line
           number={stmt.line.toString}
           hits={stmt.count.toString}
-          branch={stmt.branch.toString}/>
-      )}
+          branch={stmt.branch.toString}/>)
+        }
       </lines>
     </class>
   }
