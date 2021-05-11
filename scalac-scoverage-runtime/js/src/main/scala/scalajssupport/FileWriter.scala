@@ -9,7 +9,7 @@ class FileWriter(file: File, append: Boolean) {
   def this(file: String, append: Boolean) = this(new File(file), append)
 
   def append(csq: CharSequence) = {
-    File.write(file.getPath, csq.toString)
+    File.write(file.getPath(), csq.toString)
     this
   }
 

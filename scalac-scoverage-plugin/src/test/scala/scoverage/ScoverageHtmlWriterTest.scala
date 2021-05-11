@@ -59,7 +59,7 @@ class ScoverageHtmlWriterTest extends AnyFunSuite {
     val htmls = List("overview.html", "coverage.sample.html")
 
     for (html <- htmls) {
-      val xml = XML.loadString(Source.fromFile(new File(outputDir, html)).getLines.mkString)
+      val xml = XML.loadString(Source.fromFile(new File(outputDir, html)).getLines().mkString)
       val links = for (node <- xml \\ "a") yield {
         node.attribute("href") match {
           case Some(url) => url.toString
@@ -77,7 +77,7 @@ class ScoverageHtmlWriterTest extends AnyFunSuite {
     coverage.add(statementForClassContainingHtml)
     val outputDir = writeCoverageToTemporaryDir(coverage)
 
-    val contentsOfFileWithEmbeddedHtml = Source.fromFile(new File(outputDir, "ClassContainingHtml.scala.html")).getLines.mkString
+    val contentsOfFileWithEmbeddedHtml = Source.fromFile(new File(outputDir, "ClassContainingHtml.scala.html")).getLines().mkString
     assert( !contentsOfFileWithEmbeddedHtml.contains("<div>HTML content</div>") )
     assert( contentsOfFileWithEmbeddedHtml.contains("&lt;div&gt;HTML content&lt;/div&gt;") )
   }

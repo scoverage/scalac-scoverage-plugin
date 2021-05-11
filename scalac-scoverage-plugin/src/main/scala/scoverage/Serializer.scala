@@ -75,32 +75,32 @@ object Serializer {
   def coverageFile(dataDir: String): File = new File(dataDir, Constants.CoverageFileName)
 
   def deserialize(file: File): Coverage = {
-    deserialize(Source.fromFile(file)(Codec.UTF8).getLines)
+    deserialize(Source.fromFile(file)(Codec.UTF8).getLines())
   }
 
   def deserialize(lines: Iterator[String]): Coverage = {
     def toStatement(lines: Iterator[String]): Statement = {
-      val id: Int = lines.next.toInt
-      val sourcePath = lines.next
-      val packageName = lines.next
-      val className = lines.next
-      val classType = lines.next
-      val fullClassName = lines.next
-      val method = lines.next
+      val id: Int = lines.next().toInt
+      val sourcePath = lines.next()
+      val packageName = lines.next()
+      val className = lines.next()
+      val classType = lines.next()
+      val fullClassName = lines.next()
+      val method = lines.next()
       val loc = Location(packageName, className, fullClassName, ClassType.fromString(classType), method, sourcePath)
-      val start: Int = lines.next.toInt
-      val end: Int = lines.next.toInt
-      val lineNo: Int = lines.next.toInt
-      val symbolName: String = lines.next
-      val treeName: String = lines.next
-      val branch: Boolean = lines.next.toBoolean
-      val count: Int = lines.next.toInt
-      val ignored: Boolean = lines.next.toBoolean
+      val start: Int = lines.next().toInt
+      val end: Int = lines.next().toInt
+      val lineNo: Int = lines.next().toInt
+      val symbolName: String = lines.next()
+      val treeName: String = lines.next()
+      val branch: Boolean = lines.next().toBoolean
+      val count: Int = lines.next().toInt
+      val ignored: Boolean = lines.next().toBoolean
       val desc = lines.toList.mkString("\n")
       Statement(loc, id, start, end, lineNo, desc, symbolName, treeName, branch, count, ignored)
     }
 
-    val headerFirstLine = lines.next
+    val headerFirstLine = lines.next()
     require(headerFirstLine == "# Coverage data, format version: 2.0", "Wrong file format")
 
     val linesWithoutHeader = lines.dropWhile(_.startsWith("#"))

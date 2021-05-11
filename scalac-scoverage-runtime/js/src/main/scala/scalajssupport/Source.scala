@@ -10,7 +10,7 @@ object Source {
   def fromFile(file: File) = {
     new OrigSource {
 
-      val iter = file.readFile.toCharArray.iterator
+      val iter = file.readFile().toCharArray.iterator
     }
   }
 }

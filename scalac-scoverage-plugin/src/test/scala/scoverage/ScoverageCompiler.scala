@@ -29,7 +29,7 @@ object ScoverageCompiler {
 
     val path = s"./scalac-scoverage-plugin/target/scala-$ScalaVersion/test-generated-classes"
     new File(path).mkdirs()
-    s.d.value = path
+    s.outdir.value = path
     s
   }
 
