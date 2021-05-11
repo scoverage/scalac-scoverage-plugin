@@ -1,9 +1,6 @@
 import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
-def localSnapshotVersion = "1.4.6-SNAPSHOT"
-def isCI = System.getenv("CI") != null
-
 val scalatestVersion = "3.2.8"
 
 val bin212 = Seq("2.12.13", "2.12.12", "2.12.11", "2.12.10", "2.12.9", "2.12.8")
@@ -30,10 +27,6 @@ inThisBuild(
     licenses := Seq(
       "Apache-2.0" -> url("http://www.apache.org/license/LICENSE-2.0")
     ),
-    version ~= { dynVer =>
-      if (isCI) dynVer
-      else localSnapshotVersion // only for local publishing
-    },
     scalaVersion := bin213.head,
     crossScalaVersions := bin212 ++ bin213,
     versionScheme := Some("early-semver"),
