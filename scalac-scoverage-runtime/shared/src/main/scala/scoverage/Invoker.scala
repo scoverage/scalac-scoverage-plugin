@@ -68,12 +68,12 @@ object Invoker {
       .find(name => name.endsWith("suite") || name.endsWith("spec") || name.endsWith("test"))
       .getOrElse("")
 
-  def measurementFile(dataDir: File): File = measurementFile(dataDir.getAbsolutePath)
+  def measurementFile(dataDir: File): File = measurementFile(dataDir.getAbsolutePath())
   def measurementFile(dataDir: String): File = new File(dataDir, MeasurementsPrefix + runtimeUUID + "."  + Thread.currentThread.getId)
 
   def findMeasurementFiles(dataDir: String): Array[File] = findMeasurementFiles(new File(dataDir))
   def findMeasurementFiles(dataDir: File): Array[File] = dataDir.listFiles(new FileFilter {
-    override def accept(pathname: File): Boolean = pathname.getName.startsWith(MeasurementsPrefix)
+    override def accept(pathname: File): Boolean = pathname.getName().startsWith(MeasurementsPrefix)
   })
 
   // loads all the invoked statement ids from the given files

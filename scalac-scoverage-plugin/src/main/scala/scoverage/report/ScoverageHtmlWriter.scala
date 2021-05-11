@@ -11,17 +11,17 @@ import scala.xml.Node
 class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File, sourceEncoding: Option[String]) extends BaseReportWriter(sourceDirectories, outputDir) {
 
   // to be used by gradle-scoverage plugin
-  def this (sourceDirectories: Array[File], outputDir: File, sourceEncoding: Option[String]) {
+  def this (sourceDirectories: Array[File], outputDir: File, sourceEncoding: Option[String]) = {
     this (sourceDirectories.toSeq, outputDir, sourceEncoding)
   }
 
   // for backward compatibility only
-  def this (sourceDirectories: Seq[File], outputDir: File) {
+  def this (sourceDirectories: Seq[File], outputDir: File) = {
     this(sourceDirectories, outputDir, None);
   }
   
   // for backward compatibility only
-  def this (sourceDirectory: File, outputDir: File) {
+  def this (sourceDirectory: File, outputDir: File) = {
     this(Seq(sourceDirectory), outputDir)
   }
   

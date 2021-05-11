@@ -8,7 +8,7 @@ import scala.io.Source
 class CodeGrid(mFile: MeasuredFile, sourceEncoding: Option[String]) {
 
   // for backward compatibility only
-  def this (mFile: MeasuredFile) {
+  def this (mFile: MeasuredFile) = {
     this(mFile, None);
   }
 

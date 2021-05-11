@@ -80,6 +80,9 @@ object IOUtils {
           acc += (line.split(" ").toList match {
             case List(idx, clazz) => (idx.toInt, clazz)
             case List(idx) => (idx.toInt, "")
+            // This should never really happen but to avoid a match error we'll default to a 0
+            // index here since we start with 1 anyways.
+            case _ => (0, "")
           })
         }
       }

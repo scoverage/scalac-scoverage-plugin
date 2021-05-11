@@ -39,12 +39,12 @@ class InvokerMultiModuleTest extends AnyFunSuite with BeforeAndAfter {
 
   after {
     deleteMeasurementFiles()
-    measurementDir.foreach(_.delete)
+    measurementDir.foreach(_.delete())
   }
 
   private def deleteMeasurementFiles(): Unit = {
     measurementDir.foreach((md) => {
-      if (md.isDirectory)
+      if (md.isDirectory())
         md.listFiles().foreach(_.delete())
     })
   }

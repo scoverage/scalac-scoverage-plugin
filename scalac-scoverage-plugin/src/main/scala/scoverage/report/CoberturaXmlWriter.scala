@@ -10,7 +10,7 @@ import scala.xml.{Node, PrettyPrinter}
 /** @author Stephen Samuel */
 class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File) extends BaseReportWriter(sourceDirectories, outputDir) {
 
-  def this (baseDir: File, outputDir: File) {
+  def this (baseDir: File, outputDir: File) = {
     this(Seq(baseDir), outputDir)
   }
 
