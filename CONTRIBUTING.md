@@ -1,5 +1,16 @@
 # Contributing
 
+When working in the code base it's a good idea to utilize the
+`.git-blame-ignore.revs` file at the root of this project. You can add it
+locally by doing a:
+
+```sh
+git config blame.ignoreRevsFile .git-blame-ignore-revs
+```
+
+This will ensure that when you are using `git blame` functionality that the
+listed commit in that file are ignored.
+
 ## Making a release
 
 scalac-scoverage-plugin relies on
