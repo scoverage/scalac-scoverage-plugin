@@ -1,0 +1,6 @@
+# It's a good idea to ignore the following commits from git blame.
+# You can read more about this here if you're unfamiliar:
+# https://www.moxio.com/blog/43/ignoring-bulk-change-commits-with-git-blame
+#
+# Added scallafix and scalafmt
+03aeb373675b76d3fd021854fda776aafef07bd7
