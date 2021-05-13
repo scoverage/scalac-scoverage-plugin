@@ -1,12 +1,11 @@
 package scoverage
 
 import scala.collection.mutable.HashMap
-import scalajssupport.{
-  File => SupportFile,
-  FileWriter => SupportFileWriter,
-  FileFilter => SupportFileFilter,
-  Source => SupportSource
-}
+
+import scalajssupport.{File => SupportFile}
+import scalajssupport.{FileFilter => SupportFileFilter}
+import scalajssupport.{FileWriter => SupportFileWriter}
+import scalajssupport.{Source => SupportSource}
 
 object Platform {
   type ThreadSafeMap[A, B] = HashMap[A, B]

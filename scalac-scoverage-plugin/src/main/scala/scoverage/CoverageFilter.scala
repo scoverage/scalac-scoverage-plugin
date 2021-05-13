@@ -1,14 +1,14 @@
 package scoverage
 
 import scala.collection.mutable
-import scala.reflect.internal.util.{Position, SourceFile}
+import scala.reflect.internal.util.Position
+import scala.reflect.internal.util.SourceFile
 import scala.util.matching.Regex
 
-/**
- * Methods related to filtering the instrumentation and coverage.
- *
- * @author Stephen Samuel
- */
+/** Methods related to filtering the instrumentation and coverage.
+  *
+  * @author Stephen Samuel
+  */
 trait CoverageFilter {
   def isClassIncluded(className: String): Boolean
   def isFileIncluded(file: SourceFile): Boolean
@@ -25,40 +25,44 @@ object AllCoverageFilter extends CoverageFilter {
   override def isSymbolIncluded(symbolName: String): Boolean = true
 }
 
-class RegexCoverageFilter(excludedPackages: Seq[String],
-                          excludedFiles: Seq[String],
-                          excludedSymbols: Seq[String]) extends CoverageFilter {
+class RegexCoverageFilter(
+    excludedPackages: Seq[String],
+    excludedFiles: Seq[String],
+    excludedSymbols: Seq[String]
+) extends CoverageFilter {
 
   val excludedClassNamePatterns = excludedPackages.map(_.r.pattern)
   val excludedFilePatterns = excludedFiles.map(_.r.pattern)
   val excludedSymbolPatterns = excludedSymbols.map(_.r.pattern)
 
-  /**
-   * We cache the excluded ranges to avoid scanning the source code files
-   * repeatedly. For a large project there might be a lot of source code
-   * data, so we only hold a weak reference.
-   */
-  val linesExcludedByScoverageCommentsCache: mutable.Map[SourceFile, List[Range]] = mutable.WeakHashMap.empty
+  /** We cache the excluded ranges to avoid scanning the source code files
+    * repeatedly. For a large project there might be a lot of source code
+    * data, so we only hold a weak reference.
+    */
+  val linesExcludedByScoverageCommentsCache
+      : mutable.Map[SourceFile, List[Range]] = mutable.WeakHashMap.empty
 
   final val scoverageExclusionCommentsRegex =
     """(?ms)^\s*//\s*(\$COVERAGE-OFF\$).*?(^\s*//\s*\$COVERAGE-ON\$|\Z)""".r
 
-  /**
-   * True if the given className has not been excluded by the
-   * `excludedPackages` option.
-   */
+  /** True if the given className has not been excluded by the
+    * `excludedPackages` option.
+    */
   override def isClassIncluded(className: String): Boolean = {
-    excludedClassNamePatterns.isEmpty || !excludedClassNamePatterns.exists(_.matcher(className).matches)
+    excludedClassNamePatterns.isEmpty || !excludedClassNamePatterns.exists(
+      _.matcher(className).matches
+    )
   }
 
   override def isFileIncluded(file: SourceFile): Boolean = {
-    def isFileMatch(file: SourceFile) = excludedFilePatterns.exists(_.matcher(file.path.replace(".scala", "")).matches)
+    def isFileMatch(file: SourceFile) = excludedFilePatterns.exists(
+      _.matcher(file.path.replace(".scala", "")).matches
+    )
     excludedFilePatterns.isEmpty || !isFileMatch(file)
   }
 
-  /**
-   * True if the line containing `position` has not been excluded by a magic comment.
-   */
+  /** True if the line containing `position` has not been excluded by a magic comment.
+    */
   def isLineIncluded(position: Position): Boolean = {
     if (position.isDefined) {
       val excludedLineNumbers = getExcludedLineNumbers(position.source)
@@ -70,27 +74,34 @@ class RegexCoverageFilter(excludedPackages: Seq[String],
   }
 
   override def isSymbolIncluded(symbolName: String): Boolean = {
-    excludedSymbolPatterns.isEmpty || !excludedSymbolPatterns.exists(_.matcher(symbolName).matches)
+    excludedSymbolPatterns.isEmpty || !excludedSymbolPatterns.exists(
+      _.matcher(symbolName).matches
+    )
   }
 
-  /**
-   * Provides overloads to paper over 2.12.13+ SourceFile incompatibility
-   */
-  def compatFindAllIn(regexp: Regex, pattern: Array[Char]): Regex.MatchIterator = regexp.findAllIn(new String(pattern))
-  def compatFindAllIn(regexp: Regex, pattern: String): Regex.MatchIterator = regexp.findAllIn(pattern)
+  /** Provides overloads to paper over 2.12.13+ SourceFile incompatibility
+    */
+  def compatFindAllIn(
+      regexp: Regex,
+      pattern: Array[Char]
+  ): Regex.MatchIterator = regexp.findAllIn(new String(pattern))
+  def compatFindAllIn(regexp: Regex, pattern: String): Regex.MatchIterator =
+    regexp.findAllIn(pattern)
 
-  /**
-   * Checks the given sourceFile for any magic comments which exclude lines
-   * from coverage. Returns a list of Ranges of lines that should be excluded.
-   *
-   * The line numbers returned are conventional 1-based line numbers (i.e. the
-   * first line is line number 1)
-   */
+  /** Checks the given sourceFile for any magic comments which exclude lines
+    * from coverage. Returns a list of Ranges of lines that should be excluded.
+    *
+    * The line numbers returned are conventional 1-based line numbers (i.e. the
+    * first line is line number 1)
+    */
   def getExcludedLineNumbers(sourceFile: SourceFile): List[Range] = {
     linesExcludedByScoverageCommentsCache.get(sourceFile) match {
       case Some(lineNumbers) => lineNumbers
       case None =>
-        val lineNumbers = compatFindAllIn(scoverageExclusionCommentsRegex, sourceFile.content).matchData.map { m =>
+        val lineNumbers = compatFindAllIn(
+          scoverageExclusionCommentsRegex,
+          sourceFile.content
+        ).matchData.map { m =>
           // Asking a SourceFile for the line number of the char after
           // the end of the file gives an exception
           val endChar = math.min(m.end(2), sourceFile.content.length - 1)
@@ -100,7 +111,8 @@ class RegexCoverageFilter(excludedPackages: Seq[String],
           // line numbers
           Range(
             1 + sourceFile.offsetToLine(m.start(1)),
-            1 + sourceFile.offsetToLine(endChar))
+            1 + sourceFile.offsetToLine(endChar)
+          )
         }.toList
         linesExcludedByScoverageCommentsCache.put(sourceFile, lineNumbers)
         lineNumbers

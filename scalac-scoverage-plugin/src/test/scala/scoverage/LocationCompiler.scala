@@ -4,17 +4,21 @@ import java.io.File
 
 import scala.tools.nsc.Global
 import scala.tools.nsc.plugins.PluginComponent
-import scala.tools.nsc.transform.{Transform, TypingTransformers}
+import scala.tools.nsc.transform.Transform
+import scala.tools.nsc.transform.TypingTransformers
 
-class LocationCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools.nsc.reporters.Reporter)
-  extends scala.tools.nsc.Global(settings, reporter) {
+class LocationCompiler(
+    settings: scala.tools.nsc.Settings,
+    reporter: scala.tools.nsc.reporters.Reporter
+) extends scala.tools.nsc.Global(settings, reporter) {
 
   val locations = List.newBuilder[(String, Location)]
   private val locationSetter = new LocationSetter(this)
 
   def compile(code: String): Unit = {
     val files = writeCodeSnippetToTempFile(code)
-    val command = new scala.tools.nsc.CompilerCommand(List(files.getAbsolutePath), settings)
+    val command =
+      new scala.tools.nsc.CompilerCommand(List(files.getAbsolutePath), settings)
     new Run().compile(command.files)
   }
 
@@ -25,17 +29,23 @@ class LocationCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tools
     file
   }
 
-  class LocationSetter(val global: Global) extends PluginComponent with TypingTransformers with Transform {
+  class LocationSetter(val global: Global)
+      extends PluginComponent
+      with TypingTransformers
+      with Transform {
 
     override val phaseName = "location-setter"
     override val runsAfter = List("typer")
     override val runsBefore = List("patmat")
 
-    override protected def newTransformer(unit: global.CompilationUnit): global.Transformer = new Transformer(unit)
-    class Transformer(unit: global.CompilationUnit) extends TypingTransformer(unit) {
+    override protected def newTransformer(
+        unit: global.CompilationUnit
+    ): global.Transformer = new Transformer(unit)
+    class Transformer(unit: global.CompilationUnit)
+        extends TypingTransformer(unit) {
 
       override def transform(tree: global.Tree) = {
-        for ( location <- Location(global)(tree) ) {
+        for (location <- Location(global)(tree)) {
           locations += (tree.getClass.getSimpleName -> location)
         }
         super.transform(tree)

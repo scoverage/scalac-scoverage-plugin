@@ -3,36 +3,48 @@ package scoverage.report
 import java.io.File
 import java.util.Date
 
-import scoverage._
-
 import scala.xml.Node
 
+import scoverage._
+
 /** @author Stephen Samuel */
-class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File, sourceEncoding: Option[String]) extends BaseReportWriter(sourceDirectories, outputDir) {
+class ScoverageHtmlWriter(
+    sourceDirectories: Seq[File],
+    outputDir: File,
+    sourceEncoding: Option[String]
+) extends BaseReportWriter(sourceDirectories, outputDir) {
 
   // to be used by gradle-scoverage plugin
-  def this (sourceDirectories: Array[File], outputDir: File, sourceEncoding: Option[String]) = {
-    this (sourceDirectories.toSeq, outputDir, sourceEncoding)
+  def this(
+      sourceDirectories: Array[File],
+      outputDir: File,
+      sourceEncoding: Option[String]
+  ) = {
+    this(sourceDirectories.toSeq, outputDir, sourceEncoding)
   }
 
   // for backward compatibility only
-  def this (sourceDirectories: Seq[File], outputDir: File) = {
+  def this(sourceDirectories: Seq[File], outputDir: File) = {
     this(sourceDirectories, outputDir, None);
   }
-  
+
   // for backward compatibility only
-  def this (sourceDirectory: File, outputDir: File) = {
+  def this(sourceDirectory: File, outputDir: File) = {
     this(Seq(sourceDirectory), outputDir)
   }
-  
+
   def write(coverage: Coverage): Unit = {
     val indexFile = new File(outputDir.getAbsolutePath + "/index.html")
     val cssFile = new File(outputDir.getAbsolutePath + "/pure-min.css")
     val packageFile = new File(outputDir.getAbsolutePath + "/packages.html")
     val overviewFile = new File(outputDir.getAbsolutePath + "/overview.html")
 
-    val index = IOUtils.readStreamAsString(getClass.getResourceAsStream("/scoverage/index.html"))
-    val css = IOUtils.readStreamAsString(getClass.getResourceAsStream("/scoverage/pure-min.css"))
+    val index = IOUtils.readStreamAsString(
+      getClass.getResourceAsStream("/scoverage/index.html")
+    )
+    val css = IOUtils.readStreamAsString(
+      getClass.getResourceAsStream("/scoverage/pure-min.css")
+    )
     IOUtils.writeToFile(indexFile, index)
     IOUtils.writeToFile(cssFile, css)
     IOUtils.writeToFile(packageFile, packageList(coverage).toString())
@@ -58,7 +70,8 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File, sourceE
     IOUtils.writeToFile(file, filePage(mfile).toString())
   }
 
-  private def packageOverviewRelativePath(pkg: MeasuredPackage) = pkg.name.replace("<empty>", "(empty)") + ".html"
+  private def packageOverviewRelativePath(pkg: MeasuredPackage) =
+    pkg.name.replace("<empty>", "(empty)") + ".html"
 
   private def filePage(mfile: MeasuredFile): Node = {
     val filename = relativeSource(mfile.source) + ".html"
@@ -216,7 +229,9 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File, sourceE
 
     val filename: String = {
 
-      val fileRelativeToSource = new File(relativeSource(klass.source) + ".html")
+      val fileRelativeToSource = new File(
+        relativeSource(klass.source) + ".html"
+      )
       val path = fileRelativeToSource.getParent
       val value = fileRelativeToSource.getName
 
@@ -238,7 +253,11 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File, sourceE
         </a>
       </td>
       <td>
-        {klass.statements.headOption.map(_.source.split(File.separatorChar).last).getOrElse("")}
+        {
+          klass.statements.headOption
+            .map(_.source.split(File.separatorChar).last)
+            .getOrElse("")
+        }
       </td>
       <td>
         {klass.loc.toString}
@@ -299,14 +318,18 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File, sourceE
             </tr>
           </thead>
           <tbody>
-            {coverage.packages.map(arg =>
-            <tr>
+            {
+              coverage.packages.map(arg =>
+                <tr>
               <td>
-                <a href={packageOverviewRelativePath(arg)} target="mainFrame">{arg.name}</a>
+                <a href={packageOverviewRelativePath(arg)} target="mainFrame">{
+                  arg.name
+                }</a>
               </td>
               <td>{arg.statementCoverageFormatted}%</td>
             </tr>
-          )}
+              )
+            }
           </tbody>
         </table>
       </body>
@@ -341,8 +364,10 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File, sourceE
         </tr>
       </thead>
       <tbody>
-        {coverage.risks(limit).map(klass =>
-        <tr>
+        {
+          coverage
+            .risks(limit)
+            .map(klass => <tr>
           <td>
             {klass.displayClassName}
           </td>
@@ -366,7 +391,8 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File, sourceE
             {klass.branchCoverageFormatted}
             %
           </td>
-        </tr>)}
+        </tr>)
+        }
       </tbody>
     </table>
   }
@@ -424,9 +450,9 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File, sourceE
 
   def stats(coverage: Coverage): Node = {
 
-    val statement0f = Math.round(coverage.statementCoveragePercent).toInt.toString
+    val statement0f =
+      Math.round(coverage.statementCoveragePercent).toInt.toString
     val branch0f = Math.round(coverage.branchCoveragePercent).toInt.toString
-
 
     <table class="table">
       <tr>
@@ -549,7 +575,7 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File, sourceE
       </tr>
     </table>
   }
-  
+
   def plugins = {
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.20.1/css/theme.default.min.css" type="text/css"/>
@@ -557,7 +583,11 @@ class ScoverageHtmlWriter(sourceDirectories: Seq[File], outputDir: File, sourceE
       <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" type="text/css"/>
       <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
       <script type="text/javascript">
-        {xml.Unparsed("""$(document).ready(function() {$(".tablesorter").tablesorter();});""")}
+        {
+          xml.Unparsed(
+            """$(document).ready(function() {$(".tablesorter").tablesorter();});"""
+          )
+        }
       </script>
   }
 

@@ -2,7 +2,9 @@ package scoverage.report
 
 import java.io.File
 
-import scoverage.{Coverage, IOUtils, Serializer}
+import scoverage.Coverage
+import scoverage.IOUtils
+import scoverage.Serializer
 
 object CoverageAggregator {
 
@@ -12,10 +14,14 @@ object CoverageAggregator {
   }
 
   // to be used by gradle-scoverage plugin
-  def aggregate(dataDirs: Array[File]): Option[Coverage] = aggregate(dataDirs.toSeq)
+  def aggregate(dataDirs: Array[File]): Option[Coverage] = aggregate(
+    dataDirs.toSeq
+  )
 
   def aggregate(dataDirs: Seq[File]): Option[Coverage] = {
-    println(s"[info] Found ${dataDirs.size} subproject scoverage data directories [${dataDirs.mkString(",")}]")
+    println(
+      s"[info] Found ${dataDirs.size} subproject scoverage data directories [${dataDirs.mkString(",")}]"
+    )
     if (dataDirs.size > 0) {
       Some(aggregatedCoverage(dataDirs))
     } else {
@@ -30,7 +36,8 @@ object CoverageAggregator {
       val coverageFile: File = Serializer.coverageFile(dataDir)
       if (coverageFile.exists) {
         val subcoverage: Coverage = Serializer.deserialize(coverageFile)
-        val measurementFiles: Array[File] = IOUtils.findMeasurementFiles(dataDir)
+        val measurementFiles: Array[File] =
+          IOUtils.findMeasurementFiles(dataDir)
         val measurements = IOUtils.invoked(measurementFiles.toIndexedSeq)
         subcoverage.apply(measurements)
         subcoverage.statements foreach { stmt =>

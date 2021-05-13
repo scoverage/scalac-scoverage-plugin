@@ -2,9 +2,10 @@ import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
 val scalatestVersion = "3.2.8"
-
+val defaultScala213 = "2.13.5"
 val bin212 = Seq("2.12.13", "2.12.12", "2.12.11", "2.12.10", "2.12.9", "2.12.8")
-val bin213 = Seq("2.13.5", "2.13.4", "2.13.3", "2.13.2", "2.13.1", "2.13.0")
+val bin213 =
+  Seq(defaultScala213, "2.13.4", "2.13.3", "2.13.2", "2.13.1", "2.13.0")
 
 inThisBuild(
   List(
@@ -27,12 +28,12 @@ inThisBuild(
     licenses := Seq(
       "Apache-2.0" -> url("http://www.apache.org/license/LICENSE-2.0")
     ),
-    scalaVersion := bin213.head,
-    crossScalaVersions := bin212 ++ bin213,
+    scalaVersion := defaultScala213,
     versionScheme := Some("early-semver"),
     Test / fork := false,
     Test / publishArtifact := false,
     Test / parallelExecution := false,
+    Global / concurrentRestrictions += Tags.limit(Tags.Test, 1),
     scalacOptions := Seq(
       "-unchecked",
       "-deprecation",
@@ -40,8 +41,22 @@ inThisBuild(
       "-encoding",
       "utf8"
     ),
-    Global / concurrentRestrictions += Tags.limit(Tags.Test, 1)
+    scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0",
+    semanticdbEnabled := true,
+    semanticdbVersion := scalafixSemanticdb.revision,
+    scalafixScalaBinaryVersion := scalaBinaryVersion.value
   )
+)
+
+lazy val sharedSettings = List(
+  scalacOptions := {
+    if (scalaVersion.value == defaultScala213) {
+      scalacOptions.value :+ "-Wunused:imports"
+    } else {
+      scalacOptions.value
+    }
+  },
+  crossScalaVersions := bin212 ++ bin213
 )
 
 lazy val root = Project("scalac-scoverage", file("."))
@@ -63,7 +78,8 @@ lazy val runtime = CrossProject(
     crossTarget := target.value / s"scala-${scalaVersion.value}",
     libraryDependencies ++= Seq(
       "org.scalatest" %%% "scalatest" % scalatestVersion % Test
-    )
+    ),
+    sharedSettings
   )
   .jvmSettings(
     Test / fork := true
@@ -86,8 +102,19 @@ lazy val plugin =
         "org.scala-lang.modules" %% "scala-xml" % "1.3.0",
         "org.scalatest" %% "scalatest" % scalatestVersion % Test,
         "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided
-      )
+      ),
+      sharedSettings
     )
     .settings(
       (Test / unmanagedSourceDirectories) += (Test / sourceDirectory).value / "scala-2.12+"
     )
+
+addCommandAlias(
+  "styleFix",
+  "scalafixAll ; scalafmtAll ; scalafmtSbt"
+)
+
+addCommandAlias(
+  "styleCheck",
+  "scalafmtCheckAll ; scalafmtSbtCheck ; scalafix --check"
+)

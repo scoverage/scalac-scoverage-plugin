@@ -1,8 +1,8 @@
 package scoverage.report
 
-import _root_.scoverage.MeasuredFile
-
 import scala.xml.Node
+
+import _root_.scoverage.MeasuredFile
 
 /** @author Stephen Samuel */
 class StatementWriter(mFile: MeasuredFile) {
@@ -13,7 +13,7 @@ class StatementWriter(mFile: MeasuredFile) {
   def output: Node = {
 
     def cellStyle(invoked: Boolean): String = invoked match {
-      case true => s"background: $GREEN"
+      case true  => s"background: $GREEN"
       case false => s"background: $RED"
     }
 
@@ -26,7 +26,10 @@ class StatementWriter(mFile: MeasuredFile) {
         <th>Symbol</th>
         <th>Tests</th>
         <th>Code</th>
-      </tr>{mFile.statements.toSeq.sortBy(_.line).map(stmt => {
+      </tr>{
+        mFile.statements.toSeq
+          .sortBy(_.line)
+          .map(stmt => {
       <tr>
         <td>
           {stmt.line}
@@ -52,7 +55,8 @@ class StatementWriter(mFile: MeasuredFile) {
           {stmt.desc}
         </td>
       </tr>
-    })}
+          })
+      }
     </table>
   }
 }

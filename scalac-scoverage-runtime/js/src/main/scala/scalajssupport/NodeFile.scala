@@ -34,15 +34,17 @@ class NodeFile(path: String) extends JsFile {
   }
 
   def mkdirs(): Unit = {
-    path.split("/").foldLeft("")((acc: String, x: String) => {
-      val new_acc = NodeFile.nodePath.join(acc, x)
-      try {
-        NodeFile.fs.mkdirSync(new_acc)
-      } catch {
-        case e: Exception =>
-      }
-      new_acc
-    })
+    path
+      .split("/")
+      .foldLeft("")((acc: String, x: String) => {
+        val new_acc = NodeFile.nodePath.join(acc, x)
+        try {
+          NodeFile.fs.mkdirSync(new_acc)
+        } catch {
+          case e: Exception =>
+        }
+        new_acc
+      })
   }
 
   def listFiles(): Array[File] = {
@@ -76,7 +78,11 @@ trait FS extends js.Object {
   def readFileSync(path: String, options: js.Dynamic): String = js.native
   def rmdirSync(path: String): Unit = js.native
   def unlinkSync(path: String): Unit = js.native
-  def writeFileSync(path: String, data: String, options: js.Dynamic = js.Dynamic.literal()): Unit = js.native
+  def writeFileSync(
+      path: String,
+      data: String,
+      options: js.Dynamic = js.Dynamic.literal()
+  ): Unit = js.native
 }
 
 @js.native
@@ -87,7 +93,8 @@ trait NodePath extends js.Object {
 
 private[scalajssupport] object NodeFile extends JsFileObject {
   val fs: FS = js.Dynamic.global.require("fs").asInstanceOf[FS]
-  val nodePath: NodePath = js.Dynamic.global.require("path").asInstanceOf[NodePath]
+  val nodePath: NodePath =
+    js.Dynamic.global.require("path").asInstanceOf[NodePath]
   def write(path: String, data: String, mode: String = "a") = {
     fs.writeFileSync(path, data, js.Dynamic.literal(flag = mode))
   }

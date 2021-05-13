@@ -1,9 +1,9 @@
 package scalajssupport
 
 import scala.scalajs.js
+import scala.scalajs.js.Dynamic.{global => g}
+import scala.scalajs.js.Dynamic.{newInstance => jsnew}
 import scala.scalajs.js.annotation.JSGlobal
-
-import js.Dynamic.{ global => g, newInstance => jsnew }
 
 @JSGlobal("Packages.java.io.File")
 @js.native
@@ -41,7 +41,8 @@ class RhinoFile(_file: NativeRhinoFile) extends JsFile {
   def getName(): String = "" + _file.getName()
 
   def getPath(): String = {
-    "" + _file.getPath() // Rhino bug: doesn't seem to actually returns a string, we have to convert it ourselves
+    "" + _file
+      .getPath() // Rhino bug: doesn't seem to actually returns a string, we have to convert it ourselves
   }
 
   def isDirectory(): Boolean = _file.isDirectory()
@@ -60,7 +61,8 @@ class RhinoFile(_file: NativeRhinoFile) extends JsFile {
   def readFile(): String = {
     val fis = jsnew(g.Packages.java.io.FileInputStream)(_file)
     val data = g.Packages.java.lang.reflect.Array.newInstance(
-      g.Packages.java.lang.Byte.TYPE, _file.length()
+      g.Packages.java.lang.Byte.TYPE,
+      _file.length()
     )
     fis.read(data)
     fis.close()
@@ -70,7 +72,8 @@ class RhinoFile(_file: NativeRhinoFile) extends JsFile {
 
 private[scalajssupport] object RhinoFile extends JsFileObject {
   def write(path: String, data: String, mode: String) = {
-    val outputstream = jsnew(g.Packages.java.io.FileOutputStream)(path, mode == "a")
+    val outputstream =
+      jsnew(g.Packages.java.io.FileOutputStream)(path, mode == "a")
     val jString = jsnew(g.Packages.java.lang.String)(data)
     outputstream.write(jString.getBytes())
   }

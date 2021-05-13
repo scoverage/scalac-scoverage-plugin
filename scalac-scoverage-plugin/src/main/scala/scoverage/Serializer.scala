@@ -1,21 +1,28 @@
 package scoverage
 
-import java.io.{BufferedWriter, File, FileOutputStream, OutputStreamWriter, Writer}
+import java.io.BufferedWriter
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStreamWriter
+import java.io.Writer
 
-import scala.io.{Codec, Source}
+import scala.io.Codec
+import scala.io.Source
 
 object Serializer {
 
   // Write out coverage data to the given data directory, using the default coverage filename
-  def serialize(coverage: Coverage, dataDir: String): Unit = serialize(coverage, coverageFile(dataDir))
+  def serialize(coverage: Coverage, dataDir: String): Unit =
+    serialize(coverage, coverageFile(dataDir))
 
   // Write out coverage data to given file.
   def serialize(coverage: Coverage, file: File): Unit = {
-    val writer: Writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Codec.UTF8.name))
+    val writer: Writer = new BufferedWriter(
+      new OutputStreamWriter(new FileOutputStream(file), Codec.UTF8.name)
+    )
     try {
       serialize(coverage, writer)
-    }
-    finally {
+    } finally {
       writer.flush()
       writer.close()
     }
@@ -24,55 +31,58 @@ object Serializer {
   def serialize(coverage: Coverage, writer: Writer): Unit = {
     def writeHeader(writer: Writer): Unit = {
       writer.write(s"""# Coverage data, format version: 2.0
-        |# Statement data:
-        |# - id
-        |# - source path
-        |# - package name
-        |# - class name
-        |# - class type (Class, Object or Trait)
-        |# - full class name
-        |# - method name
-        |# - start offset
-        |# - end offset
-        |# - line number
-        |# - symbol name
-        |# - tree name
-        |# - is branch
-        |# - invocations count
-        |# - is ignored
-        |# - description (can be multi-line)
-        |# '\f' sign
-        |# ------------------------------------------
-        |""".stripMargin)
+                      |# Statement data:
+                      |# - id
+                      |# - source path
+                      |# - package name
+                      |# - class name
+                      |# - class type (Class, Object or Trait)
+                      |# - full class name
+                      |# - method name
+                      |# - start offset
+                      |# - end offset
+                      |# - line number
+                      |# - symbol name
+                      |# - tree name
+                      |# - is branch
+                      |# - invocations count
+                      |# - is ignored
+                      |# - description (can be multi-line)
+                      |# '\f' sign
+                      |# ------------------------------------------
+                      |""".stripMargin)
     }
 
     def writeStatement(stmt: Statement, writer: Writer): Unit = {
       writer.write(s"""${stmt.id}
-        |${stmt.location.sourcePath}
-        |${stmt.location.packageName}
-        |${stmt.location.className}
-        |${stmt.location.classType}
-        |${stmt.location.fullClassName}
-        |${stmt.location.method}
-        |${stmt.start}
-        |${stmt.end}
-        |${stmt.line}
-        |${stmt.symbolName}
-        |${stmt.treeName}
-        |${stmt.branch}
-        |${stmt.count}
-        |${stmt.ignored}
-        |${stmt.desc}
-        |\f
-        |""".stripMargin)
+                      |${stmt.location.sourcePath}
+                      |${stmt.location.packageName}
+                      |${stmt.location.className}
+                      |${stmt.location.classType}
+                      |${stmt.location.fullClassName}
+                      |${stmt.location.method}
+                      |${stmt.start}
+                      |${stmt.end}
+                      |${stmt.line}
+                      |${stmt.symbolName}
+                      |${stmt.treeName}
+                      |${stmt.branch}
+                      |${stmt.count}
+                      |${stmt.ignored}
+                      |${stmt.desc}
+                      |\f
+                      |""".stripMargin)
     }
 
     writeHeader(writer)
-    coverage.statements.toSeq.sortBy(_.id).foreach(stmt => writeStatement(stmt, writer))
+    coverage.statements.toSeq
+      .sortBy(_.id)
+      .foreach(stmt => writeStatement(stmt, writer))
   }
 
   def coverageFile(dataDir: File): File = coverageFile(dataDir.getAbsolutePath)
-  def coverageFile(dataDir: String): File = new File(dataDir, Constants.CoverageFileName)
+  def coverageFile(dataDir: String): File =
+    new File(dataDir, Constants.CoverageFileName)
 
   def deserialize(file: File): Coverage = {
     deserialize(Source.fromFile(file)(Codec.UTF8).getLines())
@@ -87,7 +97,14 @@ object Serializer {
       val classType = lines.next()
       val fullClassName = lines.next()
       val method = lines.next()
-      val loc = Location(packageName, className, fullClassName, ClassType.fromString(classType), method, sourcePath)
+      val loc = Location(
+        packageName,
+        className,
+        fullClassName,
+        ClassType.fromString(classType),
+        method,
+        sourcePath
+      )
       val start: Int = lines.next().toInt
       val end: Int = lines.next().toInt
       val lineNo: Int = lines.next().toInt
@@ -97,11 +114,26 @@ object Serializer {
       val count: Int = lines.next().toInt
       val ignored: Boolean = lines.next().toBoolean
       val desc = lines.toList.mkString("\n")
-      Statement(loc, id, start, end, lineNo, desc, symbolName, treeName, branch, count, ignored)
+      Statement(
+        loc,
+        id,
+        start,
+        end,
+        lineNo,
+        desc,
+        symbolName,
+        treeName,
+        branch,
+        count,
+        ignored
+      )
     }
 
     val headerFirstLine = lines.next()
-    require(headerFirstLine == "# Coverage data, format version: 2.0", "Wrong file format")
+    require(
+      headerFirstLine == "# Coverage data, format version: 2.0",
+      "Wrong file format"
+    )
 
     val linesWithoutHeader = lines.dropWhile(_.startsWith("#"))
     val coverage = Coverage()

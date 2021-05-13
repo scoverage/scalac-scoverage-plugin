@@ -1,23 +1,26 @@
 package scoverage
 
-import org.scalatest.{BeforeAndAfterEachTestData, OneInstancePerTest}
+import org.scalatest.BeforeAndAfterEachTestData
+import org.scalatest.OneInstancePerTest
 import org.scalatest.funsuite.AnyFunSuite
 
 /** @author Stephen Samuel */
 class PluginCoverageTest
-  extends AnyFunSuite
-  with OneInstancePerTest
-  with BeforeAndAfterEachTestData
-  with MacroSupport {
+    extends AnyFunSuite
+    with OneInstancePerTest
+    with BeforeAndAfterEachTestData
+    with MacroSupport {
 
   test("scoverage should instrument default arguments with methods") {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """ object DefaultArgumentsObject {
-                                   |  val defaultName = "world"
-                                   |  def makeGreeting(name: String = defaultName): String = {
-                                   |    "Hello, " + name
-                                   |  }
-                                   |} """.stripMargin)
+    compiler.compileCodeSnippet(
+      """ object DefaultArgumentsObject {
+        |  val defaultName = "world"
+        |  def makeGreeting(name: String = defaultName): String = {
+        |    "Hello, " + name
+        |  }
+        |} """.stripMargin
+    )
     assert(!compiler.reporter.hasErrors)
     // we expect:
     // instrumenting the default-param which becomes a method call invocation
@@ -27,8 +30,9 @@ class PluginCoverageTest
 
   test("scoverage should skip macros") {
     val compiler = ScoverageCompiler.default
-    val code = if (ScoverageCompiler.ShortScalaVersion == "2.10")
-               """
+    val code =
+      if (ScoverageCompiler.ShortScalaVersion == "2.10")
+        """
               import scala.language.experimental.macros
               import scala.reflect.macros.Context
               object Impl {
@@ -38,8 +42,8 @@ class PluginCoverageTest
               object Macros {
                 def poly[T]: String = macro Impl.poly[T]
               }"""
-    else
-               s"""
+      else
+        s"""
               import scala.language.experimental.macros
               import scala.reflect.macros.blackbox.Context
               class Impl(val c: Context) {
@@ -56,15 +60,15 @@ class PluginCoverageTest
 
   test("scoverage should instrument final vals") {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """ object FinalVals {
-                                   |  final val name = {
-                                   |     val name = "sammy"
-                                   |     if (System.currentTimeMillis() > 0) {
-                                   |      println(name)
-                                   |     }
-                                   |  }
-                                   |  println(name)
-                                   |} """.stripMargin)
+    compiler.compileCodeSnippet(""" object FinalVals {
+                                  |  final val name = {
+                                  |     val name = "sammy"
+                                  |     if (System.currentTimeMillis() > 0) {
+                                  |      println(name)
+                                  |     }
+                                  |  }
+                                  |  println(name)
+                                  |} """.stripMargin)
     assert(!compiler.reporter.hasErrors)
     // we should have 3 statements - initialising the val, executing println, and executing the parameter
     compiler.assertNMeasuredStatements(8)
@@ -72,11 +76,11 @@ class PluginCoverageTest
 
   test("scoverage should not instrument the match as a statement") {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """ object A {
-                                   |    System.currentTimeMillis() match {
-                                   |      case x => println(x)
-                                   |    }
-                                   |} """.stripMargin)
+    compiler.compileCodeSnippet(""" object A {
+                                  |    System.currentTimeMillis() match {
+                                  |      case x => println(x)
+                                  |    }
+                                  |} """.stripMargin)
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
 
@@ -87,13 +91,13 @@ class PluginCoverageTest
   }
   test("scoverage should instrument match guards") {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """ object A {
-                                   |    System.currentTimeMillis() match {
-                                   |      case l if l < 1000 => println("a")
-                                   |      case l if l > 1000 => println("b")
-                                   |      case _ => println("c")
-                                   |    }
-                                   |} """.stripMargin)
+    compiler.compileCodeSnippet(""" object A {
+                                  |    System.currentTimeMillis() match {
+                                  |      case l if l < 1000 => println("a")
+                                  |      case l if l > 1000 => println("b")
+                                  |      case _ => println("c")
+                                  |    }
+                                  |} """.stripMargin)
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
 
@@ -105,12 +109,12 @@ class PluginCoverageTest
 
   test("scoverage should instrument non basic selector") {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """ trait A {
-                                   |  def someValue = "sammy"
-                                   |  def foo(a:String) = someValue match {
-                                   |    case any => "yes"
-                                   |  }
-                                   |} """.stripMargin)
+    compiler.compileCodeSnippet(""" trait A {
+                                  |  def someValue = "sammy"
+                                  |  def foo(a:String) = someValue match {
+                                  |    case any => "yes"
+                                  |  }
+                                  |} """.stripMargin)
     assert(!compiler.reporter.hasErrors)
     // should instrument:
     // the someValue method entry
@@ -121,11 +125,13 @@ class PluginCoverageTest
 
   test("scoverage should instrument conditional selectors in a match") {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """ trait A {
-                                   |  def foo(a:String) = (if (a == "hello") 1 else 2) match {
-                                   |    case any => "yes"
-                                   |  }
-                                   |} """.stripMargin)
+    compiler.compileCodeSnippet(
+      """ trait A {
+        |  def foo(a:String) = (if (a == "hello") 1 else 2) match {
+        |    case any => "yes"
+        |  }
+        |} """.stripMargin
+    )
     assert(!compiler.reporter.hasErrors)
     // should instrument:
     // the if clause,
@@ -138,11 +144,15 @@ class PluginCoverageTest
   }
 
   // https://github.com/scoverage/sbt-scoverage/issues/16
-  test("scoverage should instrument for-loops but not the generated scaffolding") {
+  test(
+    "scoverage should instrument for-loops but not the generated scaffolding"
+  ) {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """ trait A {
-                                   |  def print1(list: List[String]) = for (string: String <- list) println(string)
-                                   |} """.stripMargin)
+    compiler.compileCodeSnippet(
+      """ trait A {
+        |  def print1(list: List[String]) = for (string: String <- list) println(string)
+        |} """.stripMargin
+    )
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
     // should instrument:
@@ -155,10 +165,12 @@ class PluginCoverageTest
   test("scoverage should instrument for-loop guards") {
     val compiler = ScoverageCompiler.default
 
-    compiler.compileCodeSnippet( """object A {
-                                   |  def foo(list: List[String]) = for (string: String <- list if string.length > 5)
-                                   |    println(string)
-                                   |} """.stripMargin)
+    compiler.compileCodeSnippet(
+      """object A {
+        |  def foo(list: List[String]) = for (string: String <- list if string.length > 5)
+        |    println(string)
+        |} """.stripMargin
+    )
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
     // should instrument:
@@ -168,22 +180,26 @@ class PluginCoverageTest
     compiler.assertNMeasuredStatements(3)
   }
 
-  test("scoverage should correctly handle new with args (apply with list of args)") {
+  test(
+    "scoverage should correctly handle new with args (apply with list of args)"
+  ) {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """ object A {
-                                   |  new String(new String(new String))
-                                   | } """.stripMargin)
+    compiler.compileCodeSnippet(""" object A {
+                                  |  new String(new String(new String))
+                                  | } """.stripMargin)
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
     // should have 3 statements, one for each of the nested strings
     compiler.assertNMeasuredStatements(3)
   }
 
-  test("scoverage should correctly handle no args new (apply, empty list of args)") {
+  test(
+    "scoverage should correctly handle no args new (apply, empty list of args)"
+  ) {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """ object A {
-                                   |  new String
-                                   | } """.stripMargin)
+    compiler.compileCodeSnippet(""" object A {
+                                  |  new String
+                                  | } """.stripMargin)
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
     // should have 1. the apply that wraps the select.
@@ -192,10 +208,12 @@ class PluginCoverageTest
 
   test("scoverage should correctly handle new that invokes nested statements") {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """
-                                   | object A {
-                                   |  val value = new java.util.concurrent.CountDownLatch(if (System.currentTimeMillis > 1) 5 else 10)
-                                   | } """.stripMargin)
+    compiler.compileCodeSnippet(
+      """
+        | object A {
+        |  val value = new java.util.concurrent.CountDownLatch(if (System.currentTimeMillis > 1) 5 else 10)
+        | } """.stripMargin
+    )
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
     // should have 6 statements - the apply/new statement, two literals, the if cond, if elsep, if thenp
@@ -204,9 +222,9 @@ class PluginCoverageTest
 
   test("scoverage should instrument val RHS") {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """object A {
-                                   |  val name = BigDecimal(50.0)
-                                   |} """.stripMargin)
+    compiler.compileCodeSnippet("""object A {
+                                  |  val name = BigDecimal(50.0)
+                                  |} """.stripMargin)
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
     compiler.assertNMeasuredStatements(1)
@@ -227,7 +245,8 @@ class PluginCoverageTest
         |        case (_, _) => false
         |      }
         |    }
-      """.stripMargin)
+      """.stripMargin
+    )
 
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
@@ -238,13 +257,13 @@ class PluginCoverageTest
 
   test("scoverage should instrument all case statements in an explicit match") {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """ trait A {
-                                   |  def foo(name: Any) = name match {
-                                   |    case i : Int => 1
-                                   |    case b : Boolean => println("boo")
-                                   |    case _ => 3
-                                   |  }
-                                   |} """.stripMargin)
+    compiler.compileCodeSnippet(""" trait A {
+                                  |  def foo(name: Any) = name match {
+                                  |    case i : Int => 1
+                                  |    case b : Boolean => println("boo")
+                                  |    case _ => 3
+                                  |  }
+                                  |} """.stripMargin)
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
     // should have one statement for each case body
@@ -254,23 +273,26 @@ class PluginCoverageTest
 
   test("plugin should support yields") {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( """
-                                   |  object Yielder {
-                                   |    val holidays = for ( name <- Seq("sammy", "clint", "lee");
-                                   |                         place <- Seq("london", "philly", "iowa") ) yield {
-                                   |      name + " has been to " + place
-                                   |    }
-                                   |  }""".stripMargin)
+    compiler.compileCodeSnippet(
+      """
+        |  object Yielder {
+        |    val holidays = for ( name <- Seq("sammy", "clint", "lee");
+        |                         place <- Seq("london", "philly", "iowa") ) yield {
+        |      name + " has been to " + place
+        |    }
+        |  }""".stripMargin
+    )
     assert(!compiler.reporter.hasErrors)
     // 2 statements for the two applies in Seq, one for each literal which is 6, one for the operation passed to yield.
     // Depending on the collections api version, there can be additional implicit canBuildFrom statements.
-    val expectedStatementsCount = if (ScoverageCompiler.ShortScalaVersion < "2.13") 11 else 9
+    val expectedStatementsCount =
+      if (ScoverageCompiler.ShortScalaVersion < "2.13") 11 else 9
     compiler.assertNMeasuredStatements(expectedStatementsCount)
   }
 
   test("plugin should not instrument local macro implementation") {
     val compiler = ScoverageCompiler.default
-    compiler.compileCodeSnippet( s"""
+    compiler.compileCodeSnippet(s"""
                                    | object MyMacro {
                                    | import scala.language.experimental.macros
                                    | import ${macroContextPackageName}.Context
@@ -286,10 +308,12 @@ class PluginCoverageTest
     compiler.assertNoCoverage()
   }
 
-  ignore("plugin should not instrument expanded macro code http://github.com/skinny-framework/skinny-framework/issues/97") {
+  ignore(
+    "plugin should not instrument expanded macro code http://github.com/skinny-framework/skinny-framework/issues/97"
+  ) {
     val compiler = ScoverageCompiler.default
     macroSupportDeps.foreach(compiler.addToClassPath(_))
-    compiler.compileCodeSnippet( s"""import scoverage.macrosupport.Tester
+    compiler.compileCodeSnippet(s"""import scoverage.macrosupport.Tester
                                    |
                                    |class MacroTest {
                                    |  Tester.test
@@ -299,7 +323,9 @@ class PluginCoverageTest
     compiler.assertNoCoverage()
   }
 
-  ignore("plugin should handle return inside catch github.com/scoverage/scalac-scoverage-plugin/issues/93") {
+  ignore(
+    "plugin should handle return inside catch github.com/scoverage/scalac-scoverage-plugin/issues/93"
+  ) {
     val compiler = ScoverageCompiler.default
     compiler.compileCodeSnippet(
       """
@@ -318,7 +344,8 @@ class PluginCoverageTest
         |      }
         |      def recover(it: Boolean): Boolean = it
         |    }
-      """.stripMargin)
+      """.stripMargin
+    )
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
     compiler.assertNMeasuredStatements(11)

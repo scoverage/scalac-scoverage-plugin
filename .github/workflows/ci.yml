@@ -11,12 +11,12 @@ on:
   pull_request:
 
 jobs:
-  scala:
+  test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        java: [ '1.8', '1.11' ]
+        java: [ '8', '11' ]
         scala: [
             { version: '2.12.13' },
             { version: '2.12.12' },
@@ -37,10 +37,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Scala env
-        uses: olafurpg/setup-scala@v10
+      - name: Set up JVM
+        uses: actions/setup-java@v2
         with:
-          java-version: adopt@${{ matrix.java }}
+          distribution: 'adopt'
+          java-version: ${{ matrix.java }}
 
       - name: run tests
         run: sbt ++${{ matrix.scala.version }} test
+
+  style-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout the repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up JVM
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '8'
+
+      - name: styleCheck
+        run: sbt styleCheck

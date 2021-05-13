@@ -1,12 +1,11 @@
 package scoverage
 
+import java.io.{File => SupportFile}
+import java.io.{FileFilter => SupportFileFilter}
+import java.io.{FileWriter => SupportFileWriter}
+
 import scala.collection.concurrent.TrieMap
-import java.io.{
-  File => SupportFile,
-  FileWriter => SupportFileWriter,
-  FileFilter => SupportFileFilter
-}
-import scala.io.{ Source => SupportSource }
+import scala.io.{Source => SupportSource}
 
 object Platform {
   type ThreadSafeMap[A, B] = TrieMap[A, B]
