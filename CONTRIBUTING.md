@@ -1,7 +1,7 @@
 # Contributing
 
 When working in the code base it's a good idea to utilize the
-`.git-blame-ignore.revs` file at the root of this project. You can add it
+`.git-blame-ignore-revs` file at the root of this project. You can add it
 locally by doing a:
 
 ```sh
