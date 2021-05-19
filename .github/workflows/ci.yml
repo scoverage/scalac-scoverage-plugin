@@ -18,6 +18,7 @@ jobs:
       matrix:
         java: [ '8', '11' ]
         scala: [
+            { version: '2.11.12' },
             { version: '2.12.13' },
             { version: '2.12.12' },
             { version: '2.12.11' },
