@@ -2,10 +2,20 @@ import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
 val scalatestVersion = "3.2.9"
-val defaultScala213 = "2.13.5"
+val scalametaVersion = "4.4.18"
+val defaultScala213 = "2.13.6"
+val bin211 = Seq("2.11.12")
 val bin212 = Seq("2.12.13", "2.12.12", "2.12.11", "2.12.10", "2.12.9", "2.12.8")
 val bin213 =
-  Seq(defaultScala213, "2.13.4", "2.13.3", "2.13.2", "2.13.1", "2.13.0")
+  Seq(
+    defaultScala213,
+    "2.13.5",
+    "2.13.4",
+    "2.13.3",
+    "2.13.2",
+    "2.13.1",
+    "2.13.0"
+  )
 
 inThisBuild(
   List(
@@ -43,7 +53,7 @@ inThisBuild(
     ),
     scalafixDependencies += "com.github.liancheng" %% "organize-imports" % "0.5.0",
     semanticdbEnabled := true,
-    semanticdbVersion := scalafixSemanticdb.revision,
+    semanticdbVersion := scalametaVersion,
     scalafixScalaBinaryVersion := scalaBinaryVersion.value
   )
 )
@@ -56,7 +66,7 @@ lazy val sharedSettings = List(
       scalacOptions.value
     }
   },
-  crossScalaVersions := bin212 ++ bin213
+  crossScalaVersions := bin211 ++ bin212 ++ bin213
 )
 
 lazy val root = Project("scalac-scoverage", file("."))
