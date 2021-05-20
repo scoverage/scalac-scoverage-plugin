@@ -3,8 +3,11 @@ package scoverage
 import java.io.File
 import java.util.UUID
 import javax.xml.parsers.DocumentBuilderFactory
+import javax.xml.parsers.SAXParserFactory
 
+import scala.xml.Elem
 import scala.xml.XML
+import scala.xml.factory.XMLLoader
 
 import org.scalatest.BeforeAndAfter
 import org.scalatest.OneInstancePerTest
@@ -314,7 +317,16 @@ class CoberturaXmlWriterTest
     val writer = new CoberturaXmlWriter(sourceRoot, dir)
     writer.write(coverage)
 
-    val xml = XML.loadFile(fileIn(dir))
+    val customXML: XMLLoader[Elem] = XML.withSAXParser {
+      val factory = SAXParserFactory.newInstance()
+      factory.setFeature(
+        "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+        false
+      )
+      factory.newSAXParser()
+    }
+
+    val xml = customXML.loadFile(fileIn(dir))
 
     assert((xml \\ "coverage" \ "@line-rate").text === "0.33", "line-rate")
     assert((xml \\ "coverage" \ "@branch-rate").text === "0.50", "branch-rate")
