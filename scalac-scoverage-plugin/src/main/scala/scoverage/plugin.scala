@@ -510,6 +510,9 @@ class ScoverageInstrumentationComponent(
               .contains("MacroExpansionAttachment") =>
           t
 
+        // ignore "meta" macro generated code
+        case t if t.pos.isDefined && t.pos.source.path == "<macro>" => t
+
         //        /**
         //         * Object creation from new.
         //         * Ignoring creation calls to anon functions
