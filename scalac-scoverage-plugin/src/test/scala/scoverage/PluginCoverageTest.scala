@@ -84,8 +84,8 @@ class PluginCoverageTest
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
 
-    /** should have the following statements instrumented:
-      * the selector, clause 1
+    /** should have the following statements instrumented: the selector, clause
+      * 1
       */
     compiler.assertNMeasuredStatements(2)
   }
@@ -101,8 +101,8 @@ class PluginCoverageTest
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
 
-    /** should have the following statements instrumented:
-      * the selector, guard 1, clause 1, guard 2, clause 2, clause 3
+    /** should have the following statements instrumented: the selector, guard
+      * 1, clause 1, guard 2, clause 2, clause 3
       */
     compiler.assertNMeasuredStatements(6)
   }
