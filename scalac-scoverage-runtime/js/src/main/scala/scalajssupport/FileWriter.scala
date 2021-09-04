@@ -1,6 +1,7 @@
 package scalajssupport
 
-/** Emulates a subset of the java.io.FileWriter API required for scoverage to work.
+/** Emulates a subset of the java.io.FileWriter API required for scoverage to
+  * work.
   */
 class FileWriter(file: File, append: Boolean) {
   def this(file: File) = this(file, false)

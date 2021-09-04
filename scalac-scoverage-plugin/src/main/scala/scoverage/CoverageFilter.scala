@@ -7,7 +7,8 @@ import scala.util.matching.Regex
 
 /** Methods related to filtering the instrumentation and coverage.
   *
-  * @author Stephen Samuel
+  * @author
+  *   Stephen Samuel
   */
 trait CoverageFilter {
   def isClassIncluded(className: String): Boolean
@@ -36,8 +37,8 @@ class RegexCoverageFilter(
   val excludedSymbolPatterns = excludedSymbols.map(_.r.pattern)
 
   /** We cache the excluded ranges to avoid scanning the source code files
-    * repeatedly. For a large project there might be a lot of source code
-    * data, so we only hold a weak reference.
+    * repeatedly. For a large project there might be a lot of source code data,
+    * so we only hold a weak reference.
     */
   val linesExcludedByScoverageCommentsCache
       : mutable.Map[SourceFile, List[Range]] = mutable.WeakHashMap.empty
@@ -61,7 +62,8 @@ class RegexCoverageFilter(
     excludedFilePatterns.isEmpty || !isFileMatch(file)
   }
 
-  /** True if the line containing `position` has not been excluded by a magic comment.
+  /** True if the line containing `position` has not been excluded by a magic
+    * comment.
     */
   def isLineIncluded(position: Position): Boolean = {
     if (position.isDefined) {

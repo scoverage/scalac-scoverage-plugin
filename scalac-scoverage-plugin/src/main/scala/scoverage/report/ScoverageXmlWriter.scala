@@ -107,16 +107,18 @@ class ScoverageXmlWriter(
     </package>
   }
 
-  /** This method ensures that the output String has only
-    * valid XML unicode characters as specified by the
-    * XML 1.0 standard. For reference, please see
+  /** This method ensures that the output String has only valid XML unicode
+    * characters as specified by the XML 1.0 standard. For reference, please see
     * <a href="http://www.w3.org/TR/2000/REC-xml-20001006#NT-Char">the
-    * standard</a>. This method will return an empty
-    * String if the input is null or empty.
+    * standard</a>. This method will return an empty String if the input is null
+    * or empty.
     *
-    * @param in The String whose non-valid characters we want to remove.
-    * @return The in String, stripped of non-valid characters.
-    * @see http://blog.mark-mclaren.info/2007/02/invalid-xml-characters-when-valid-utf8_5873.html
+    * @param in
+    *   The String whose non-valid characters we want to remove.
+    * @return
+    *   The in String, stripped of non-valid characters.
+    * @see
+    *   http://blog.mark-mclaren.info/2007/02/invalid-xml-characters-when-valid-utf8_5873.html
     */
   def escape(in: String): String = {
     val out = new StringBuilder()
