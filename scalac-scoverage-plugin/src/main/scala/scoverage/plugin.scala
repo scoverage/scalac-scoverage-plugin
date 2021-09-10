@@ -138,10 +138,9 @@ class ScoverageInstrumentationComponent(
   override val runsBefore: List[String] =
     List("patmat") ::: extraBeforePhase.toList
 
-  /** Our options are not provided at construction time, but shortly after,
-    * so they start as None.
-    * You must call "setOptions" before running any commands that rely on
-    * the options.
+  /** Our options are not provided at construction time, but shortly after, so
+    * they start as None. You must call "setOptions" before running any commands
+    * that rely on the options.
     */
   private var options: ScoverageOptions = new ScoverageOptions()
   private var coverageFilter: CoverageFilter = AllCoverageFilter
@@ -198,10 +197,10 @@ class ScoverageInstrumentationComponent(
     // contains the location of the last node
     var location: Location = _
 
-    /** The 'start' of the position, if it is available, else -1
-      * We cannot use 'isDefined' to test whether pos.start will work, as some
-      * classes (e.g. scala.reflect.internal.util.OffsetPosition have
-      * isDefined true, but throw on `start`
+    /** The 'start' of the position, if it is available, else -1 We cannot use
+      * 'isDefined' to test whether pos.start will work, as some classes (e.g.
+      * scala.reflect.internal.util.OffsetPosition have isDefined true, but
+      * throw on `start`
       */
     def safeStart(tree: Tree): Int =
       scala.util.Try(tree.pos.start).getOrElse(-1)
@@ -517,15 +516,15 @@ class ScoverageInstrumentationComponent(
         //        case a: GenericApply if a.symbol.isConstructor && a.symbol.enclClass.isAnonymousFunction => tree
         //        case a: GenericApply if a.symbol.isConstructor => instrument(a)
 
-        /** When an apply has no parameters, or is an application of purely literals or idents
-          * then we can simply instrument the outer call. Ie, we can treat it all as one single statement
-          * for the purposes of code coverage.
-          * This will include calls to case apply.
+        /** When an apply has no parameters, or is an application of purely
+          * literals or idents then we can simply instrument the outer call. Ie,
+          * we can treat it all as one single statement for the purposes of code
+          * coverage. This will include calls to case apply.
           */
         case a: GenericApply if allConstArgs(a.args) => instrument(a, a)
 
-        /** Applications of methods with non trivial args means the args themselves
-          * must also be instrumented
+        /** Applications of methods with non trivial args means the args
+          * themselves must also be instrumented
           */
         //todo remove once scala merges into Apply proper
         case a: ApplyToImplicitArgs =>
@@ -560,17 +559,15 @@ class ScoverageInstrumentationComponent(
             a
           )
 
-        /** pattern match with syntax `Assign(lhs, rhs)`.
-          * This AST node corresponds to the following Scala code:
-          * lhs = rhs
+        /** pattern match with syntax `Assign(lhs, rhs)`. This AST node
+          * corresponds to the following Scala code: lhs = rhs
           */
         case assign: Assign =>
           treeCopy.Assign(assign, assign.lhs, process(assign.rhs))
 
-        /** pattern match with syntax `Block(stats, expr)`.
-          * This AST node corresponds to the following Scala code:
-          * { stats; expr }
-          * If the block is empty, the `expr` is set to `Literal(Constant(()))`.
+        /** pattern match with syntax `Block(stats, expr)`. This AST node
+          * corresponds to the following Scala code: { stats; expr } If the
+          * block is empty, the `expr` is set to `Literal(Constant(()))`.
           */
         case b: Block =>
           treeCopy.Block(b, transformStatements(b.stats), transform(b.expr))
@@ -624,10 +621,12 @@ class ScoverageInstrumentationComponent(
         // we can ignore primary constructors because they are just empty at this stage, the body is added later.
         case d: DefDef if d.symbol.isPrimaryConstructor => tree
 
-        /** Case class accessors for vals
-          * EG for case class CreditReject(req: MarketOrderRequest, client: ActorRef)
-          * <stable> <caseaccessor> <accessor> <paramaccessor> def req: com.sksamuel.scoverage.samples.MarketOrderRequest
-          * <stable> <caseaccessor> <accessor> <paramaccessor> def client: akka.actor.ActorRef
+        /** Case class accessors for vals EG for case class CreditReject(req:
+          * MarketOrderRequest, client: ActorRef) <stable> <caseaccessor>
+          * <accessor> <paramaccessor> def req:
+          * com.sksamuel.scoverage.samples.MarketOrderRequest <stable>
+          * <caseaccessor> <accessor> <paramaccessor> def client:
+          * akka.actor.ActorRef
           */
         case d: DefDef if d.symbol.isCaseAccessor => tree
 
@@ -652,34 +651,35 @@ class ScoverageInstrumentationComponent(
         /** Stable getters are methods generated for access to a top level val.
           * Should be ignored as this is compiler generated code.
           *
-          * Eg
-          * <stable> <accessor> def MaxCredit: scala.math.BigDecimal = CreditEngine.this.MaxCredit
-          * <stable> <accessor> def alwaysTrue: String = InstrumentLoader.this.alwaysTrue
+          * Eg <stable> <accessor> def MaxCredit: scala.math.BigDecimal =
+          * CreditEngine.this.MaxCredit <stable> <accessor> def alwaysTrue:
+          * String = InstrumentLoader.this.alwaysTrue
           */
         case d: DefDef if d.symbol.isStable && d.symbol.isGetter => tree
 
-        /** Accessors are auto generated setters and getters.
-          * Eg
-          * <accessor> private def _clientName: String =
-          * <accessor> def cancellable: akka.actor.Cancellable = PriceEngine.this.cancellable
-          * <accessor> def cancellable_=(x$1: akka.actor.Cancellable): Unit = PriceEngine.this.cancellable = x$1
+        /** Accessors are auto generated setters and getters. Eg <accessor>
+          * private def _clientName: String = <accessor> def cancellable:
+          * akka.actor.Cancellable = PriceEngine.this.cancellable <accessor> def
+          * cancellable_=(x$1: akka.actor.Cancellable): Unit =
+          * PriceEngine.this.cancellable = x$1
           */
         case d: DefDef if d.symbol.isAccessor => tree
 
         // was `abstract' for members | trait is virtual
         case d: DefDef if tree.symbol.isDeferred => tree
 
-        /** eg
-          * override <synthetic> def hashCode(): Int
-          * <synthetic> def copy$default$1: com.sksamuel.scoverage.samples.MarketOrderRequest
-          * <synthetic> def <init>$default$3: Option[org.joda.time.LocalDate] @scala.annotation.unchecked.uncheckedVariance = scala.None
+        /** eg override <synthetic> def hashCode(): Int <synthetic> def
+          * copy$default$1: com.sksamuel.scoverage.samples.MarketOrderRequest
+          * <synthetic> def <init>$default$3: Option[org.joda.time.LocalDate]
+          * @scala.annotation.unchecked.uncheckedVariance = scala.None
           */
         case d: DefDef if d.symbol.isSynthetic => tree
 
         /** Match all remaining def definitions
           *
-          * If the return type is not specified explicitly (i.e. is meant to be inferred),
-          * this is expressed by having `tpt` set to `TypeTree()` (but not to an `EmptyTree`!).
+          * If the return type is not specified explicitly (i.e. is meant to be
+          * inferred), this is expressed by having `tpt` set to `TypeTree()`
+          * (but not to an `EmptyTree`!).
           */
         case d: DefDef =>
           updateLocation(d)
@@ -755,8 +755,8 @@ class ScoverageInstrumentationComponent(
             m
           }
 
-        /** match with syntax `New(tpt)`.
-          * This AST node corresponds to the following Scala code:
+        /** match with syntax `New(tpt)`. This AST node corresponds to the
+          * following Scala code:
           *
           * `new` T
           *
@@ -770,13 +770,9 @@ class ScoverageInstrumentationComponent(
           *
           * is the following code:
           *
-          * Apply(
-          * Apply(
-          * TypeApply(
-          * Select(New(TypeTree(typeOf[Example])), nme.CONSTRUCTOR)
-          * TypeTree(typeOf[Int])),
-          * List(Literal(Constant(2)))),
-          * List(Literal(Constant(3))))
+          * Apply( Apply( TypeApply( Select(New(TypeTree(typeOf[Example])),
+          * nme.CONSTRUCTOR) TypeTree(typeOf[Int])),
+          * List(Literal(Constant(2)))), List(Literal(Constant(3))))
           */
         case n: New => n
 
@@ -792,21 +788,22 @@ class ScoverageInstrumentationComponent(
         case r: Return =>
           treeCopy.Return(r, transform(r.expr))
 
-        /** pattern match with syntax `Select(qual, name)`.
-          * This AST node corresponds to the following Scala code:
+        /** pattern match with syntax `Select(qual, name)`. This AST node
+          * corresponds to the following Scala code:
           *
           * qualifier.selector
           *
-          * Should only be used with `qualifier` nodes which are terms, i.e. which have `isTerm` returning `true`.
-          * Otherwise `SelectFromTypeTree` should be used instead.
+          * Should only be used with `qualifier` nodes which are terms, i.e.
+          * which have `isTerm` returning `true`. Otherwise `SelectFromTypeTree`
+          * should be used instead.
           *
-          * foo.Bar // represented as Select(Ident(<foo>), <Bar>)
-          * Foo#Bar // represented as SelectFromTypeTree(Ident(<Foo>), <Bar>)
+          * foo.Bar // represented as Select(Ident(<foo>), <Bar>) Foo#Bar //
+          * represented as SelectFromTypeTree(Ident(<Foo>), <Bar>)
           */
         case s: Select if location == null => tree
 
-        /** I think lazy selects are the LHS of a lazy assign.
-          * todo confirm we can ignore
+        /** I think lazy selects are the LHS of a lazy assign. todo confirm we
+          * can ignore
           */
         case s: Select if s.symbol.isLazy => tree
 
@@ -850,12 +847,12 @@ class ScoverageInstrumentationComponent(
 
         case _: TypeTree => super.transform(tree)
 
-        /** We can ignore lazy val defs as they are implemented by a generated defdef
+        /** We can ignore lazy val defs as they are implemented by a generated
+          * defdef
           */
         case v: ValDef if v.symbol.isLazy => tree
 
-        /** <synthetic> val default: A1 => B1 =
-          * <synthetic> val x1: Any = _
+        /** <synthetic> val default: A1 => B1 = <synthetic> val x1: Any = _
           */
         case v: ValDef if v.symbol.isSynthetic => tree
 
@@ -877,14 +874,14 @@ class ScoverageInstrumentationComponent(
 
         /** This AST node corresponds to any of the following Scala code:
           *
-          * mods `val` name: tpt = rhs
-          * mods `var` name: tpt = rhs
-          * mods name: tpt = rhs        // in signatures of function and method definitions
-          * self: Bar =>                // self-types
+          * mods `val` name: tpt = rhs mods `var` name: tpt = rhs mods name: tpt
+          * = rhs // in signatures of function and method definitions self: Bar
+          * => // self-types
           *
           * For user defined value statements, we will instrument the RHS.
           *
-          * This includes top level non-lazy vals. Lazy vals are generated as stable defs.
+          * This includes top level non-lazy vals. Lazy vals are generated as
+          * stable defs.
           */
         case v: ValDef =>
           updateLocation(v)

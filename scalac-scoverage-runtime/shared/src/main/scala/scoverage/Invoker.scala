@@ -19,19 +19,21 @@ object Invoker {
   private val dataDirToIds =
     ThreadSafeMap.empty[String, ThreadSafeMap[Int, Any]]
 
-  /** We record that the given id has been invoked by appending its id to the coverage
-    * data file.
+  /** We record that the given id has been invoked by appending its id to the
+    * coverage data file.
     *
-    * This will happen concurrently on as many threads as the application is using,
-    * so we use one file per thread, named for the thread id.
+    * This will happen concurrently on as many threads as the application is
+    * using, so we use one file per thread, named for the thread id.
     *
-    * This method is not thread-safe if the threads are in different JVMs, because
-    * the thread IDs may collide.
-    * You may not use `scoverage` on multiple processes in parallel without risking
-    * corruption of the measurement file.
+    * This method is not thread-safe if the threads are in different JVMs,
+    * because the thread IDs may collide. You may not use `scoverage` on
+    * multiple processes in parallel without risking corruption of the
+    * measurement file.
     *
-    * @param id the id of the statement that was invoked
-    * @param dataDir the directory where the measurement data is held
+    * @param id
+    *   the id of the statement that was invoked
+    * @param dataDir
+    *   the directory where the measurement data is held
     */
   def invoked(
       id: Int,

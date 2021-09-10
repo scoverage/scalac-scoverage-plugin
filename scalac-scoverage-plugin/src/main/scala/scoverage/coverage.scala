@@ -6,7 +6,8 @@ import scala.collection.mutable
 
 import scoverage.DoubleFormat.twoFractionDigits
 
-/** @author Stephen Samuel
+/** @author
+  *   Stephen Samuel
   */
 case class Coverage()
     extends CoverageMetrics
@@ -103,9 +104,9 @@ case class MeasuredClass(fullClassName: String, statements: Iterable[Statement])
   def source: String = statements.head.source
   def loc = statements.map(_.line).max
 
-  /** The class name for display is the FQN minus the package,
-    * for example "com.a.Foo.Bar.Baz" should display as "Foo.Bar.Baz"
-    * and "com.a.Foo" should display as "Foo".
+  /** The class name for display is the FQN minus the package, for example
+    * "com.a.Foo.Bar.Baz" should display as "Foo.Bar.Baz" and "com.a.Foo" should
+    * display as "Foo".
     *
     * This is used in the class lists in the package and overview pages.
     */
@@ -206,7 +207,8 @@ trait CoverageMetrics {
   def invokedBranches: Iterable[Statement] = branches.filter(_.count > 0)
   def invokedBranchesCount = invokedBranches.size
 
-  /** @see http://stackoverflow.com/questions/25184716/scoverage-ambiguous-measurement-from-branch-coverage
+  /** @see
+    *   http://stackoverflow.com/questions/25184716/scoverage-ambiguous-measurement-from-branch-coverage
     */
   def branchCoverage: Double = {
     // if there are zero branches, then we have a single line of execution.

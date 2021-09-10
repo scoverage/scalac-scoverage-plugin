@@ -8,10 +8,12 @@ class BaseReportWriter(sourceDirectories: Seq[File], outputDir: File) {
   private val formattedSourcePaths: Seq[String] =
     sourceDirectories filter (_.isDirectory) map (_.getCanonicalPath + File.separator)
 
-  /** Converts absolute path to relative one if any of the source directories is it's parent.
-    * If there is no parent directory, the path is returned unchanged (absolute).
+  /** Converts absolute path to relative one if any of the source directories is
+    * it's parent. If there is no parent directory, the path is returned
+    * unchanged (absolute).
     *
-    * @param src absolute file path in canonical form
+    * @param src
+    *   absolute file path in canonical form
     */
   def relativeSource(src: String): String =
     relativeSource(src, formattedSourcePaths)
