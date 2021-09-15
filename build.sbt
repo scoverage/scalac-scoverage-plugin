@@ -2,11 +2,20 @@ import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
 val scalatestVersion = "3.2.9"
-val scalametaVersion = "4.4.20"
+val scalametaVersion = "4.4.28"
 val defaultScala213 = "2.13.6"
 val bin211 = Seq("2.11.12")
 val bin212 =
-  Seq("2.12.14", "2.12.13", "2.12.12", "2.12.11", "2.12.10", "2.12.9", "2.12.8")
+  Seq(
+    "2.12.15",
+    "2.12.14",
+    "2.12.13",
+    "2.12.12",
+    "2.12.11",
+    "2.12.10",
+    "2.12.9",
+    "2.12.8"
+  )
 val bin213 =
   Seq(
     defaultScala213,
