@@ -85,7 +85,9 @@ object Serializer {
     new File(dataDir, Constants.CoverageFileName)
 
   def deserialize(file: File): Coverage = {
-    deserialize(Source.fromFile(file)(Codec.UTF8).getLines())
+    val source = Source.fromFile(file)(Codec.UTF8)
+    try deserialize(source.getLines())
+    finally source.close()
   }
 
   def deserialize(lines: Iterator[String]): Coverage = {
