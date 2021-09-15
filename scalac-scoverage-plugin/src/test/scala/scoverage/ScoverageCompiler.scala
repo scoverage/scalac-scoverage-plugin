@@ -84,9 +84,9 @@ object ScoverageCompiler {
   ): Option[File] = {
     val userHome = System.getProperty("user.home")
     val jarPaths = Iterator(
-      ".cache/coursier",
-      "Library/Caches/Coursier",
-      "AppData/Local/Coursier/cache"
+      ".cache/coursier", // Linux
+      "Library/Caches/Coursier", // MacOSX
+      "AppData/Local/Coursier/cache" // Windows
     ).map(loc =>
       s"$userHome/$loc/v1/https/repo1.maven.org/maven2/org/scala-lang/$artifactId/$version/$artifactId-$version.jar"
     )
