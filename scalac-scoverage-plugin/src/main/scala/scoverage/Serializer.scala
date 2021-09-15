@@ -86,7 +86,10 @@ object Serializer {
 
   def deserialize(file: File): Coverage = {
     val source = Source.fromFile(file)(Codec.UTF8)
-    deserialize(try source.getLines() finally source.close())
+    deserialize(
+      try source.getLines()
+      finally source.close()
+    )
   }
 
   def deserialize(lines: Iterator[String]): Coverage = {
