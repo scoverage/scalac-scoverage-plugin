@@ -39,12 +39,16 @@ class ScoverageHtmlWriter(
     val packageFile = new File(outputDir.getAbsolutePath + "/packages.html")
     val overviewFile = new File(outputDir.getAbsolutePath + "/overview.html")
 
-    val index = IOUtils.readStreamAsString(
-      getClass.getResourceAsStream("/scoverage/index.html")
-    )
-    val css = IOUtils.readStreamAsString(
-      getClass.getResourceAsStream("/scoverage/pure-min.css")
-    )
+    val index = {
+      val in = getClass.getResourceAsStream("/scoverage/index.html")
+      try IOUtils.readStreamAsString(in)
+      finally in.close()
+    }
+    val css = {
+      val in = getClass.getResourceAsStream("/scoverage/pure-min.css")
+      try IOUtils.readStreamAsString(in)
+      finally in.close()
+    }
     IOUtils.writeToFile(indexFile, index)
     IOUtils.writeToFile(cssFile, css)
     IOUtils.writeToFile(packageFile, packageList(coverage).toString())
