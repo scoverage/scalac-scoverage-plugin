@@ -79,7 +79,8 @@ class CodeGrid(mFile: MeasuredFile, sourceEncoding: Option[String]) {
       case Some(enc) => Source.fromFile(mfile.source, enc)
       case None      => Source.fromFile(mfile.source)
     }
-    src.mkString
+    try src.mkString
+    finally src.close()
   }
 
   private def spanStart(status: StatementStatus): String =
