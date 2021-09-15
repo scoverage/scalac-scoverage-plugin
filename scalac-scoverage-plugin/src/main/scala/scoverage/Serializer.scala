@@ -50,7 +50,7 @@ object Serializer {
                       |# - description (can be multi-line)
                       |# '\f' sign
                       |# ------------------------------------------
-                      |""".stripMargin)
+                      |""".stripMargin.replaceAll("(\r\n)|\n|\r", "\n"))
     }
 
     def writeStatement(stmt: Statement, writer: Writer): Unit = {
@@ -71,7 +71,7 @@ object Serializer {
                       |${stmt.ignored}
                       |${stmt.desc}
                       |\f
-                      |""".stripMargin)
+                      |""".stripMargin.replaceAll("(\r\n)|\n|\r", "\n"))
     }
 
     writeHeader(writer)
