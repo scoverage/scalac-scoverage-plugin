@@ -111,7 +111,7 @@ class SerializerTest extends AnyFunSuite with OneInstancePerTest {
                    |false
                    |def test : String
                    |\f
-                   |""".stripMargin.split("\n").iterator
+                   |""".stripMargin.split("(\r\n)|\n|\r").iterator
     val statements = List(
       Statement(
         Location(
