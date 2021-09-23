@@ -4,7 +4,6 @@ import sbtcrossproject.CrossType
 val scalatestVersion = "3.2.10"
 val scalametaVersion = "4.4.28"
 val defaultScala213 = "2.13.6"
-val bin211 = Seq("2.11.12")
 val bin212 =
   Seq(
     "2.12.15",
@@ -76,7 +75,7 @@ lazy val sharedSettings = List(
       scalacOptions.value
     }
   },
-  crossScalaVersions := bin211 ++ bin212 ++ bin213
+  crossScalaVersions := bin212 ++ bin213
 )
 
 lazy val root = Project("scalac-scoverage", file("."))
