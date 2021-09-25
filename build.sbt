@@ -42,6 +42,12 @@ inThisBuild(
         "Grzegorz Slowikowski",
         "gslowikowski@gmail.com",
         url("https://github.com/gslowikowski")
+      ),
+      Developer(
+        "ckipp01",
+        "Chris Kipp",
+        "open-source@chris-kipp.io",
+        url("https://www.chris-kipp.io/")
       )
     ),
     licenses := Seq(
