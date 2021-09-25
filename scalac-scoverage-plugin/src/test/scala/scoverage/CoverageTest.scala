@@ -1,18 +1,13 @@
 package scoverage
 
-import org.scalatest.BeforeAndAfter
-import org.scalatest.OneInstancePerTest
-import org.scalatest.funsuite.AnyFunSuite
+import munit.FunSuite
 
 /** @author Stephen Samuel */
-class CoverageTest
-    extends AnyFunSuite
-    with BeforeAndAfter
-    with OneInstancePerTest {
+class CoverageTest extends FunSuite {
 
   test("coverage for no statements is 1") {
     val coverage = Coverage()
-    assert(1.0 === coverage.statementCoverage)
+    assertEquals(1.0, coverage.statementCoverage)
   }
 
   test("coverage for no invoked statements is 0") {
@@ -31,7 +26,7 @@ class CoverageTest
         0
       )
     )
-    assert(0 === coverage.statementCoverage)
+    assertEquals(0.0, coverage.statementCoverage)
   }
 
   test("coverage for invoked statements") {
@@ -92,6 +87,6 @@ class CoverageTest
         0
       )
     )
-    assert(0.25 === coverage.statementCoverage)
+    assertEquals(0.25, coverage.statementCoverage)
   }
 }

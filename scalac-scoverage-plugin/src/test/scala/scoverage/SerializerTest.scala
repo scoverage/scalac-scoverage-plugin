@@ -3,10 +3,9 @@ package scoverage
 import java.io.File
 import java.io.StringWriter
 
-import org.scalatest.OneInstancePerTest
-import org.scalatest.funsuite.AnyFunSuite
+import munit.FunSuite
 
-class SerializerTest extends AnyFunSuite with OneInstancePerTest {
+class SerializerTest extends FunSuite {
   private val sourceRoot = new File(".").getCanonicalFile()
 
   test("coverage should be serializable into plain text") {
@@ -73,7 +72,7 @@ class SerializerTest extends AnyFunSuite with OneInstancePerTest {
          |""".stripMargin
     val writer = new StringWriter() //TODO-use UTF-8
     val actual = Serializer.serialize(coverage, writer, sourceRoot)
-    assert(expected === writer.toString)
+    assertEquals(expected, writer.toString)
   }
 
   test("coverage should be deserializable from plain text") {
@@ -140,7 +139,7 @@ class SerializerTest extends AnyFunSuite with OneInstancePerTest {
       )
     )
     val coverage = Serializer.deserialize(input, sourceRoot)
-    assert(statements === coverage.statements.toList)
+    assertEquals(statements, coverage.statements.toList)
   }
   test("coverage should serialize sourcePath relatively") {
     val coverage = Coverage()
@@ -206,7 +205,7 @@ class SerializerTest extends AnyFunSuite with OneInstancePerTest {
          |""".stripMargin
     val writer = new StringWriter() //TODO-use UTF-8
     val actual = Serializer.serialize(coverage, writer, sourceRoot)
-    assert(expected === writer.toString)
+    assertEquals(expected, writer.toString)
   }
 
   test("coverage should deserialize sourcePath by prefixing cwd") {
@@ -271,6 +270,6 @@ class SerializerTest extends AnyFunSuite with OneInstancePerTest {
       )
     )
     val coverage = Serializer.deserialize(input, sourceRoot)
-    assert(statements === coverage.statements.toList)
+    assertEquals(statements, coverage.statements.toList)
   }
 }

@@ -1,16 +1,14 @@
 package scoverage
 
-import org.scalatest._
-import org.scalatest.funsuite.AnyFunSuite
+import scala.concurrent.Future
+
+import munit.FunSuite
+import munit.GenericAfterEach
 
 /** @author Stephen Samuel */
-class PluginASTSupportTest
-    extends AnyFunSuite
-    with OneInstancePerTest
-    with BeforeAndAfterEachTestData
-    with MacroSupport {
+class PluginASTSupportTest extends FunSuite with MacroSupport {
 
-  override protected def afterEach(testData: TestData): Unit = {
+  override def afterEach(context: GenericAfterEach[Future[Any]]): Unit = {
     val compiler = ScoverageCompiler.default
     assert(!compiler.reporter.hasErrors)
   }
@@ -140,7 +138,7 @@ class PluginASTSupportTest
   }
 
   // https://github.com/skinny-framework/skinny-framework/issues/97
-  ignore("macro range positions should not break plugin") {
+  test("macro range positions should not break plugin".ignore) {
     val compiler = ScoverageCompiler.default
     macroSupportDeps.foreach(compiler.addToClassPath(_))
     compiler.compileCodeSnippet(s"""import scoverage.macrosupport.Tester

@@ -1,15 +1,9 @@
 package scoverage
 
-import org.scalatest.BeforeAndAfterEachTestData
-import org.scalatest.OneInstancePerTest
-import org.scalatest.funsuite.AnyFunSuite
+import munit.FunSuite
 
 /** @author Stephen Samuel */
-class PluginCoverageTest
-    extends AnyFunSuite
-    with OneInstancePerTest
-    with BeforeAndAfterEachTestData
-    with MacroSupport {
+class PluginCoverageTest extends FunSuite with MacroSupport {
 
   test("scoverage should instrument default arguments with methods") {
     val compiler = ScoverageCompiler.default
@@ -308,8 +302,8 @@ class PluginCoverageTest
     compiler.assertNoCoverage()
   }
 
-  ignore(
-    "plugin should not instrument expanded macro code http://github.com/skinny-framework/skinny-framework/issues/97"
+  test(
+    "plugin should not instrument expanded macro code http://github.com/skinny-framework/skinny-framework/issues/97".ignore
   ) {
     val compiler = ScoverageCompiler.default
     macroSupportDeps.foreach(compiler.addToClassPath(_))
@@ -323,8 +317,8 @@ class PluginCoverageTest
     compiler.assertNoCoverage()
   }
 
-  ignore(
-    "plugin should handle return inside catch github.com/scoverage/scalac-scoverage-plugin/issues/93"
+  test(
+    "plugin should handle return inside catch github.com/scoverage/scalac-scoverage-plugin/issues/93".ignore
   ) {
     val compiler = ScoverageCompiler.default
     compiler.compileCodeSnippet(
