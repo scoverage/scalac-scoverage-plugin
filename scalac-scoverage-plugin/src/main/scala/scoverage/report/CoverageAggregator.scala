@@ -8,34 +8,32 @@ import scoverage.Serializer
 
 object CoverageAggregator {
 
-  @deprecated("1.4.0", "Used only by gradle-scoverage plugin")
-  def aggregate(baseDir: File, clean: Boolean): Option[Coverage] = {
-    aggregate(IOUtils.scoverageDataDirsSearch(baseDir))
-  }
-
   // to be used by gradle-scoverage plugin
-  def aggregate(dataDirs: Array[File]): Option[Coverage] = aggregate(
-    dataDirs.toSeq
-  )
+  def aggregate(dataDirs: Array[File], sourceRoot: File): Option[Coverage] =
+    aggregate(
+      dataDirs.toSeq,
+      sourceRoot
+    )
 
-  def aggregate(dataDirs: Seq[File]): Option[Coverage] = {
+  def aggregate(dataDirs: Seq[File], sourceRoot: File): Option[Coverage] = {
     println(
       s"[info] Found ${dataDirs.size} subproject scoverage data directories [${dataDirs.mkString(",")}]"
     )
     if (dataDirs.size > 0) {
-      Some(aggregatedCoverage(dataDirs))
+      Some(aggregatedCoverage(dataDirs, sourceRoot))
     } else {
       None
     }
   }
 
-  def aggregatedCoverage(dataDirs: Seq[File]): Coverage = {
+  def aggregatedCoverage(dataDirs: Seq[File], sourceRoot: File): Coverage = {
     var id = 0
     val coverage = Coverage()
     dataDirs foreach { dataDir =>
       val coverageFile: File = Serializer.coverageFile(dataDir)
       if (coverageFile.exists) {
-        val subcoverage: Coverage = Serializer.deserialize(coverageFile)
+        val subcoverage: Coverage =
+          Serializer.deserialize(coverageFile, sourceRoot)
         val measurementFiles: Array[File] =
           IOUtils.findMeasurementFiles(dataDir)
         val measurements = IOUtils.invoked(measurementFiles.toIndexedSeq)

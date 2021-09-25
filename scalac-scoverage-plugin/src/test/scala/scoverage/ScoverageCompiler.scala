@@ -119,6 +119,7 @@ class ScoverageCompiler(
 
   val instrumentationComponent =
     new ScoverageInstrumentationComponent(this, None, None)
+
   instrumentationComponent.setOptions(new ScoverageOptions())
   val testStore = new ScoverageTestStoreComponent(this)
   val validator = new PositionValidator(this)

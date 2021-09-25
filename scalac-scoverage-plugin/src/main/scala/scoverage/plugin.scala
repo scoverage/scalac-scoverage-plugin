@@ -51,6 +51,8 @@ class ScoveragePlugin(val global: Global) extends Plugin {
         options.excludedSymbols = parseExclusionEntry("excludedSymbols:", opt)
       } else if (opt.startsWith("dataDir:")) {
         options.dataDir = opt.substring("dataDir:".length)
+      } else if (opt.startsWith("sourceRoot:")) {
+        options.sourceRoot = opt.substring("sourceRoot:".length())
       } else if (
         opt
           .startsWith("extraAfterPhase:") || opt.startsWith("extraBeforePhase:")
@@ -66,6 +68,10 @@ class ScoveragePlugin(val global: Global) extends Plugin {
       throw new RuntimeException(
         "Cannot invoke plugin without specifying <dataDir>"
       )
+    if (!opts.exists(_.startsWith("sourceRoot:")))
+      throw new RuntimeException(
+        "Cannot invoke plugin without specifying <sourceRoot>"
+      )
     instrumentationComponent.setOptions(options)
     true
   }
@@ -73,6 +79,7 @@ class ScoveragePlugin(val global: Global) extends Plugin {
   override val optionsHelp: Option[String] = Some(
     Seq(
       "-P:scoverage:dataDir:<pathtodatadir>                  where the coverage files should be written\n",
+      "-P:scoverage:sourceRoot:<pathtosourceRoot>            the root dir of your sources, used for path relativization\n",
       "-P:scoverage:excludedPackages:<regex>;<regex>         semicolon separated list of regexs for packages to exclude",
       "-P:scoverage:excludedFiles:<regex>;<regex>            semicolon separated list of regexs for paths to exclude",
       "-P:scoverage:excludedSymbols:<regex>;<regex>          semicolon separated list of regexs for symbols to exclude",
@@ -107,6 +114,8 @@ class ScoveragePlugin(val global: Global) extends Plugin {
   }
 }
 
+// TODO refactor this into a case class. We'll also refactor how we parse the
+// options to get rid of all these vars
 class ScoverageOptions {
   var excludedPackages: Seq[String] = Nil
   var excludedFiles: Seq[String] = Nil
@@ -117,6 +126,12 @@ class ScoverageOptions {
   )
   var dataDir: String = IOUtils.getTempPath
   var reportTestName: Boolean = false
+  // TODO again, we'll refactor this later so this won't have a default here.
+  // However for tests we'll have to create this. However, make sure you create
+  // either both in temp or neither in temp, since on windows your temp dir
+  // will be in another drive, so the relativize functinality won't work if
+  // correctly.
+  var sourceRoot: String = IOUtils.getTempPath
 }
 
 class ScoverageInstrumentationComponent(
@@ -179,7 +194,12 @@ class ScoverageInstrumentationComponent(
         s"Instrumentation completed [${coverage.statements.size} statements]"
       )
 
-      Serializer.serialize(coverage, Serializer.coverageFile(options.dataDir))
+      // TODO do we need to verify this sourceRoot exists? How does semanticdb do this?
+      Serializer.serialize(
+        coverage,
+        Serializer.coverageFile(options.dataDir),
+        new File(options.sourceRoot)
+      )
       reporter.echo(
         s"Wrote instrumentation file [${Serializer.coverageFile(options.dataDir)}]"
       )
