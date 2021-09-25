@@ -9,18 +9,13 @@ import scala.xml.Elem
 import scala.xml.XML
 import scala.xml.factory.XMLLoader
 
-import org.scalatest.BeforeAndAfter
-import org.scalatest.OneInstancePerTest
-import org.scalatest.funsuite.AnyFunSuite
+import munit.FunSuite
 import org.xml.sax.ErrorHandler
 import org.xml.sax.SAXParseException
 import scoverage.report.CoberturaXmlWriter
 
 /** @author Stephen Samuel */
-class CoberturaXmlWriterTest
-    extends AnyFunSuite
-    with BeforeAndAfter
-    with OneInstancePerTest {
+class CoberturaXmlWriterTest extends FunSuite {
 
   def tempDir(): File = {
     val dir = new File(IOUtils.getTempDirectory, UUID.randomUUID.toString)
@@ -227,16 +222,16 @@ class CoberturaXmlWriterTest
     builder.setErrorHandler(new ErrorHandler() {
       @Override
       def error(e: SAXParseException): Unit = {
-        fail(e)
+        fail(e.getMessage(), e.getCause())
       }
       @Override
       def fatalError(e: SAXParseException): Unit = {
-        fail(e)
+        fail(e.getMessage(), e.getCause())
       }
 
       @Override
       def warning(e: SAXParseException): Unit = {
-        fail(e)
+        fail(e.getMessage(), e.getCause())
       }
     })
     builder.parse(fileIn(dir))
@@ -329,8 +324,12 @@ class CoberturaXmlWriterTest
 
     val xml = customXML.loadFile(fileIn(dir))
 
-    assert((xml \\ "coverage" \ "@line-rate").text === "0.33", "line-rate")
-    assert((xml \\ "coverage" \ "@branch-rate").text === "0.50", "branch-rate")
+    assertEquals((xml \\ "coverage" \ "@line-rate").text, "0.33", "line-rate")
+    assertEquals(
+      (xml \\ "coverage" \ "@branch-rate").text,
+      "0.50",
+      "branch-rate"
+    )
 
   }
 }

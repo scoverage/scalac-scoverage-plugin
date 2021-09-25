@@ -6,10 +6,10 @@ import java.util.UUID
 import scala.io.Source
 import scala.xml.XML
 
-import org.scalatest.funsuite.AnyFunSuite
+import munit.FunSuite
 import scoverage.report.ScoverageHtmlWriter
 
-class ScoverageHtmlWriterTest extends AnyFunSuite {
+class ScoverageHtmlWriterTest extends FunSuite {
 
   val rootDirForClasses = new File(
     getClass.getResource("forHtmlWriter/src/main/scala/").getFile
@@ -111,7 +111,7 @@ class ScoverageHtmlWriterTest extends AnyFunSuite {
       val links = for (node <- xml \\ "a") yield {
         node.attribute("href") match {
           case Some(url) => url.toString
-          case None      => fail()
+          case None      => fail("href isn't a url")
         }
       }
 

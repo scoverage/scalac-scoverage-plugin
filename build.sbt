@@ -1,7 +1,7 @@
 import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
-val scalatestVersion = "3.2.10"
+val munitVersion = "0.7.29"
 val scalametaVersion = "4.4.28"
 val defaultScala213 = "2.13.6"
 val bin212 =
@@ -102,7 +102,7 @@ lazy val runtime = CrossProject(
     name := "scalac-scoverage-runtime",
     crossTarget := target.value / s"scala-${scalaVersion.value}",
     libraryDependencies ++= Seq(
-      "org.scalatest" %%% "scalatest" % scalatestVersion % Test
+      "org.scalameta" %% "munit" % munitVersion % Test
     ),
     sharedSettings
   )
@@ -125,7 +125,7 @@ lazy val plugin =
       crossVersion := CrossVersion.full,
       libraryDependencies ++= Seq(
         "org.scala-lang.modules" %% "scala-xml" % "2.0.0",
-        "org.scalatest" %% "scalatest" % scalatestVersion % Test,
+        "org.scalameta" %% "munit" % munitVersion % Test,
         "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided
       ),
       sharedSettings

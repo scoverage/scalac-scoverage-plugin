@@ -6,19 +6,18 @@ import java.util.concurrent.Executors
 import scala.concurrent._
 import scala.concurrent.duration._
 
-import org.scalatest.BeforeAndAfter
-import org.scalatest.funsuite.AnyFunSuite
+import munit.FunSuite
 
 /** Verify that [[Invoker.invoked()]] is thread-safe
   */
-class InvokerConcurrencyTest extends AnyFunSuite with BeforeAndAfter {
+class InvokerConcurrencyTest extends FunSuite {
 
   implicit val executor =
     ExecutionContext.fromExecutor(Executors.newFixedThreadPool(8))
 
   val measurementDir = new File("target/invoker-test.measurement")
 
-  before {
+  override def beforeAll(): Unit = {
     deleteMeasurementFiles()
     measurementDir.mkdirs()
   }
@@ -43,10 +42,10 @@ class InvokerConcurrencyTest extends AnyFunSuite with BeforeAndAfter {
     val measurementFiles = Invoker.findMeasurementFiles(measurementDir)
     val idsFromFile = Invoker.invoked(measurementFiles.toIndexedSeq)
 
-    idsFromFile === testIds
+    assertEquals(idsFromFile, testIds)
   }
 
-  after {
+  override def afterAll(): Unit = {
     deleteMeasurementFiles()
     measurementDir.delete()
   }

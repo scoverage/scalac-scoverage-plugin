@@ -1,18 +1,12 @@
 package scoverage
 
-import org.scalatest.BeforeAndAfterEachTestData
-import org.scalatest.OneInstancePerTest
-import org.scalatest.funsuite.AnyFunSuite
+import munit.FunSuite
 
 /** https://github.com/scoverage/scalac-scoverage-plugin/issues/196
   */
-class PluginCoverageScalaJsTest
-    extends AnyFunSuite
-    with OneInstancePerTest
-    with BeforeAndAfterEachTestData
-    with MacroSupport {
+class PluginCoverageScalaJsTest extends FunSuite with MacroSupport {
 
-  ignore("scoverage should ignore default undefined parameter") {
+  test("scoverage should ignore default undefined parameter".ignore) {
     val compiler = ScoverageCompiler.default
     compiler.compileCodeSnippet(
       """import scala.scalajs.js

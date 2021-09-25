@@ -1,19 +1,18 @@
 package scoverage
 
-import org.scalatest.BeforeAndAfter
-import org.scalatest.funsuite.AnyFunSuite
+import munit.FunSuite
 import scoverage.Platform.File
 
 /** Verify that [[Invoker.invoked()]] can handle a multi-module project
   */
-class InvokerMultiModuleTest extends AnyFunSuite with BeforeAndAfter {
+class InvokerMultiModuleTest extends FunSuite {
 
   val measurementDir = Array(
     new File("target/invoker-test.measurement0"),
     new File("target/invoker-test.measurement1")
   )
 
-  before {
+  override def beforeAll(): Unit = {
     deleteMeasurementFiles()
     measurementDir.foreach(_.mkdirs())
   }
@@ -24,20 +23,23 @@ class InvokerMultiModuleTest extends AnyFunSuite with BeforeAndAfter {
 
     val testIds: Set[Int] = (1 to 10).toSet
 
-    testIds.map { i: Int => Invoker.invoked(i, measurementDir(i % 2).toString) }
+    testIds.map((i: Int) =>
+      Invoker.invoked(i, measurementDir(i % 2).toString())
+    )
 
     // Verify measurements went to correct directory
     val measurementFiles0 = Invoker.findMeasurementFiles(measurementDir(0))
     val idsFromFile0 = Invoker.invoked(measurementFiles0.toIndexedSeq)
 
-    idsFromFile0 === testIds.filter { i: Int => i % 2 == 0 }
+    assertEquals(idsFromFile0, testIds.filter((i: Int) => i % 2 == 0))
 
-    val measurementFiles1 = Invoker.findMeasurementFiles(measurementDir(0))
+    val measurementFiles1 = Invoker.findMeasurementFiles(measurementDir(1))
     val idsFromFile1 = Invoker.invoked(measurementFiles1.toIndexedSeq)
-    idsFromFile1 === testIds.filter { i: Int => i % 2 == 1 }
+
+    assertEquals(idsFromFile1, testIds.filter((i: Int) => i % 2 == 1))
   }
 
-  after {
+  override def afterAll(): Unit = {
     deleteMeasurementFiles()
     measurementDir.foreach(_.delete())
   }
