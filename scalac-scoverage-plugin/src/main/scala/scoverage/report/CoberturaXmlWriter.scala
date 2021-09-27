@@ -9,11 +9,14 @@ import scoverage.DoubleFormat.twoFractionDigits
 import scoverage._
 
 /** @author Stephen Samuel */
-class CoberturaXmlWriter(sourceDirectories: Seq[File], outputDir: File)
-    extends BaseReportWriter(sourceDirectories, outputDir) {
+class CoberturaXmlWriter(
+    sourceDirectories: Seq[File],
+    outputDir: File,
+    sourceEncoding: Option[String]
+) extends BaseReportWriter(sourceDirectories, outputDir, sourceEncoding) {
 
-  def this(baseDir: File, outputDir: File) = {
-    this(Seq(baseDir), outputDir)
+  def this(baseDir: File, outputDir: File, sourceEncoding: Option[String]) = {
+    this(Seq(baseDir), outputDir, sourceEncoding)
   }
 
   def write(coverage: Coverage): Unit = {

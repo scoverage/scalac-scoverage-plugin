@@ -213,7 +213,7 @@ class CoberturaXmlWriterTest extends FunSuite {
         )
       )
 
-    val writer = new CoberturaXmlWriter(sourceRoot, dir)
+    val writer = new CoberturaXmlWriter(sourceRoot, dir, None)
     writer.write(coverage)
 
     val domFactory = DocumentBuilderFactory.newInstance()
@@ -309,7 +309,7 @@ class CoberturaXmlWriterTest extends FunSuite {
         )
       )
 
-    val writer = new CoberturaXmlWriter(sourceRoot, dir)
+    val writer = new CoberturaXmlWriter(sourceRoot, dir, None)
     writer.write(coverage)
 
     // Needed to acount for https://github.com/scala/scala-xml/pull/177

@@ -2,11 +2,15 @@ package scoverage.report
 
 import java.io.File
 
+import scala.io.Codec
+
 import scoverage.Coverage
 import scoverage.IOUtils
 import scoverage.Serializer
 
 object CoverageAggregator {
+
+  implicit val encoding: String = Codec.UTF8.name
 
   // to be used by gradle-scoverage plugin
   def aggregate(dataDirs: Array[File], sourceRoot: File): Option[Coverage] =

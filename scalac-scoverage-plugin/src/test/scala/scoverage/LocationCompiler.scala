@@ -2,6 +2,7 @@ package scoverage
 
 import java.io.File
 
+import scala.io.Codec
 import scala.tools.nsc.Global
 import scala.tools.nsc.plugins.PluginComponent
 import scala.tools.nsc.transform.Transform
@@ -24,7 +25,7 @@ class LocationCompiler(
 
   def writeCodeSnippetToTempFile(code: String): File = {
     val file = File.createTempFile("code_snippet", ".scala")
-    IOUtils.writeToFile(file, code)
+    IOUtils.writeToFile(file, code)(Codec.UTF8.name)
     file.deleteOnExit()
     file
   }
