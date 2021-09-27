@@ -17,7 +17,6 @@ object IOUtils {
 
   private val UnixSeperator: Char = '/'
   private val WindowsSeperator: Char = '\\'
-  private val UTF8Encoding: String = "UTF-8"
 
   def getName(path: String): Any = {
     val index = {
@@ -37,9 +36,12 @@ object IOUtils {
     findMeasurementFiles(dataDir).foreach(_.delete)
   def clean(dataDir: String): Unit = clean(new File(dataDir))
 
-  def writeToFile(file: File, str: String) = {
+  def writeToFile(file: File, str: String)(implicit encoding: String) = {
     val writer = new BufferedWriter(
-      new OutputStreamWriter(new FileOutputStream(file), UTF8Encoding)
+      new OutputStreamWriter(
+        new FileOutputStream(file),
+        encoding
+      )
     )
     try {
       writer.write(str)
@@ -86,10 +88,13 @@ object IOUtils {
     file.getName == Constants.XMLReportFilenameWithDebug
 
   // loads all the invoked statement ids from the given files
-  def invoked(files: Seq[File]): Set[(Int, String)] = {
+  def invoked(
+      files: Seq[File]
+  )(implicit encoding: String): Set[(Int, String)] = {
     val acc = mutable.Set[(Int, String)]()
     files.foreach { file =>
-      val reader = Source.fromFile(file)
+      val reader =
+        Source.fromFile(file, encoding)
       for (line <- reader.getLines()) {
         if (!line.isEmpty) {
           acc += (line.split(" ").toList match {

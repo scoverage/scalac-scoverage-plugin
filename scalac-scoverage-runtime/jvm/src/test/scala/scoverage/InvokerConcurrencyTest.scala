@@ -36,7 +36,7 @@ class InvokerConcurrencyTest extends FunSuite {
       }
     }
 
-    futures.foreach(Await.result(_, 1.second))
+    futures.foreach(Await.result(_, 3.second))
 
     // Now verify that the measurement file is not corrupted by loading it
     val measurementFiles = Invoker.findMeasurementFiles(measurementDir)

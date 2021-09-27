@@ -1,5 +1,6 @@
 package scoverage.report
 
+import scala.io.Codec
 import scala.io.Source
 
 import _root_.scoverage.MeasuredFile
@@ -77,7 +78,7 @@ class CodeGrid(mFile: MeasuredFile, sourceEncoding: Option[String]) {
   private def source(mfile: MeasuredFile): String = {
     val src = sourceEncoding match {
       case Some(enc) => Source.fromFile(mfile.source, enc)
-      case None      => Source.fromFile(mfile.source)
+      case None      => Source.fromFile(mfile.source, Codec.UTF8.name)
     }
     try src.mkString
     finally src.close()

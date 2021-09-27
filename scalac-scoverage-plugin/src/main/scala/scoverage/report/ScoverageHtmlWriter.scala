@@ -12,7 +12,7 @@ class ScoverageHtmlWriter(
     sourceDirectories: Seq[File],
     outputDir: File,
     sourceEncoding: Option[String]
-) extends BaseReportWriter(sourceDirectories, outputDir) {
+) extends BaseReportWriter(sourceDirectories, outputDir, sourceEncoding) {
 
   // to be used by gradle-scoverage plugin
   def this(

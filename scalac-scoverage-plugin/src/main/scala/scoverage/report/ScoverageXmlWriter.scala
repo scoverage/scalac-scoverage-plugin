@@ -11,11 +11,17 @@ import scoverage._
 class ScoverageXmlWriter(
     sourceDirectories: Seq[File],
     outputDir: File,
-    debug: Boolean
-) extends BaseReportWriter(sourceDirectories, outputDir) {
+    debug: Boolean,
+    sourceEncoding: Option[String]
+) extends BaseReportWriter(sourceDirectories, outputDir, sourceEncoding) {
 
-  def this(sourceDir: File, outputDir: File, debug: Boolean) = {
-    this(Seq(sourceDir), outputDir, debug)
+  def this(
+      sourceDir: File,
+      outputDir: File,
+      debug: Boolean,
+      sourceEncoding: Option[String]
+  ) = {
+    this(Seq(sourceDir), outputDir, debug, sourceEncoding)
   }
 
   def write(coverage: Coverage): Unit = {
