@@ -121,7 +121,12 @@ class ScoverageCompiler(
   val instrumentationComponent =
     new ScoverageInstrumentationComponent(this, None, None)
 
-  instrumentationComponent.setOptions(new ScoverageOptions())
+  val coverageOptions = ScoverageOptions
+    .default()
+    .copy(dataDir = IOUtils.getTempPath)
+    .copy(sourceRoot = IOUtils.getTempPath)
+
+  instrumentationComponent.setOptions(coverageOptions)
   val testStore = new ScoverageTestStoreComponent(this)
   val validator = new PositionValidator(this)
 

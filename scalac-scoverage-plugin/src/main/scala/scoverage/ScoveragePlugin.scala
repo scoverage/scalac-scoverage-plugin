@@ -14,124 +14,57 @@ import scala.tools.nsc.transform.TypingTransformers
 /** @author Stephen Samuel */
 class ScoveragePlugin(val global: Global) extends Plugin {
 
-  override val name: String = "scoverage"
-  override val description: String = "scoverage code coverage compiler plugin"
-  private val (extraAfterPhase, extraBeforePhase) = processPhaseOptions(
-    pluginOptions
-  )
+  override val name: String = ScoveragePlugin.name
+  override val description: String = ScoveragePlugin.description
+
+  // TODO I'm not 100% sure why, but historically these have been parsed out
+  // first. One thing to play around with in the future would be to not do this
+  // here and rather do it later when we utilize setOpts and instead just
+  // initialize then in the instrumentationCompoent. This will save us
+  // iterating over these options twice.
+  private val (extraAfterPhase, extraBeforePhase) =
+    ScoverageOptions.processPhaseOptions(
+      pluginOptions
+    )
+
   val instrumentationComponent = new ScoverageInstrumentationComponent(
     global,
     extraAfterPhase,
     extraBeforePhase
   )
+
   override val components: List[PluginComponent] = List(
     instrumentationComponent
   )
 
-  private def parseExclusionEntry(
-      entryName: String,
-      inOption: String
-  ): Seq[String] =
-    inOption
-      .substring(entryName.length)
-      .split(";")
-      .map(_.trim)
-      .toIndexedSeq
-      .filterNot(_.isEmpty)
-
   override def init(opts: List[String], error: String => Unit): Boolean = {
-    val options = new ScoverageOptions
 
-    for (opt <- opts) {
-      if (opt.startsWith("excludedPackages:")) {
-        options.excludedPackages = parseExclusionEntry("excludedPackages:", opt)
-      } else if (opt.startsWith("excludedFiles:")) {
-        options.excludedFiles = parseExclusionEntry("excludedFiles:", opt)
-      } else if (opt.startsWith("excludedSymbols:")) {
-        options.excludedSymbols = parseExclusionEntry("excludedSymbols:", opt)
-      } else if (opt.startsWith("dataDir:")) {
-        options.dataDir = opt.substring("dataDir:".length)
-      } else if (opt.startsWith("sourceRoot:")) {
-        options.sourceRoot = opt.substring("sourceRoot:".length())
-      } else if (
-        opt
-          .startsWith("extraAfterPhase:") || opt.startsWith("extraBeforePhase:")
-      ) {
-        // skip here, these flags are processed elsewhere
-      } else if (opt == "reportTestName") {
-        options.reportTestName = true
-      } else {
-        error("Unknown option: " + opt)
-      }
-    }
-    if (!opts.exists(_.startsWith("dataDir:")))
+    val options =
+      ScoverageOptions.parse(opts, error, ScoverageOptions.default())
+
+    if (options.dataDir.isEmpty())
       throw new RuntimeException(
         "Cannot invoke plugin without specifying <dataDir>"
       )
-    if (!opts.exists(_.startsWith("sourceRoot:")))
+
+    if (options.sourceRoot.isEmpty())
       throw new RuntimeException(
         "Cannot invoke plugin without specifying <sourceRoot>"
       )
+
     instrumentationComponent.setOptions(options)
     true
   }
 
-  override val optionsHelp: Option[String] = Some(
-    Seq(
-      "-P:scoverage:dataDir:<pathtodatadir>                  where the coverage files should be written\n",
-      "-P:scoverage:sourceRoot:<pathtosourceRoot>            the root dir of your sources, used for path relativization\n",
-      "-P:scoverage:excludedPackages:<regex>;<regex>         semicolon separated list of regexs for packages to exclude",
-      "-P:scoverage:excludedFiles:<regex>;<regex>            semicolon separated list of regexs for paths to exclude",
-      "-P:scoverage:excludedSymbols:<regex>;<regex>          semicolon separated list of regexs for symbols to exclude",
-      "-P:scoverage:extraAfterPhase:<phaseName>              phase after which scoverage phase runs (must be after typer phase)",
-      "-P:scoverage:extraBeforePhase:<phaseName>             phase before which scoverage phase runs (must be before patmat phase)",
-      "                                                      Any classes whose fully qualified name matches the regex will",
-      "                                                      be excluded from coverage."
-    ).mkString("\n")
-  )
+  override val optionsHelp: Option[String] = ScoverageOptions.help
 
-  // copied from scala 2.11
   private def pluginOptions: List[String] = {
     // Process plugin options of form plugin:option
     def namec = name + ":"
-    global.settings.pluginOptions.value filter (_ startsWith namec) map (_ stripPrefix namec)
+    global.settings.pluginOptions.value
+      .filter(_.startsWith(namec))
+      .map(_.stripPrefix(namec))
   }
-
-  private def processPhaseOptions(
-      opts: List[String]
-  ): (Option[String], Option[String]) = {
-    var afterPhase: Option[String] = None
-    var beforePhase: Option[String] = None
-    for (opt <- opts) {
-      if (opt.startsWith("extraAfterPhase:")) {
-        afterPhase = Some(opt.substring("extraAfterPhase:".length))
-      }
-      if (opt.startsWith("extraBeforePhase:")) {
-        beforePhase = Some(opt.substring("extraBeforePhase:".length))
-      }
-    }
-    (afterPhase, beforePhase)
-  }
-}
-
-// TODO refactor this into a case class. We'll also refactor how we parse the
-// options to get rid of all these vars
-class ScoverageOptions {
-  var excludedPackages: Seq[String] = Nil
-  var excludedFiles: Seq[String] = Nil
-  var excludedSymbols: Seq[String] = Seq(
-    "scala.reflect.api.Exprs.Expr",
-    "scala.reflect.api.Trees.Tree",
-    "scala.reflect.macros.Universe.Tree"
-  )
-  var dataDir: String = IOUtils.getTempPath
-  var reportTestName: Boolean = false
-  // TODO again, we'll refactor this later so this won't have a default here.
-  // However for tests we'll have to create this. However, make sure you create
-  // either both in temp or neither in temp, since on windows your temp dir
-  // will be in another drive, so the relativize functinality won't work if
-  // correctly.
-  var sourceRoot: String = IOUtils.getTempPath
 }
 
 class ScoverageInstrumentationComponent(
@@ -147,7 +80,7 @@ class ScoverageInstrumentationComponent(
   val statementIds = new AtomicInteger(0)
   val coverage = new Coverage
 
-  override val phaseName: String = "scoverage-instrumentation"
+  override val phaseName: String = ScoveragePlugin.phaseName
   override val runsAfter: List[String] =
     List("typer") ::: extraAfterPhase.toList
   override val runsBefore: List[String] =
@@ -158,7 +91,7 @@ class ScoverageInstrumentationComponent(
     * You must call "setOptions" before running any commands that rely on
     * the options.
     */
-  private var options: ScoverageOptions = new ScoverageOptions()
+  private var options: ScoverageOptions = ScoverageOptions.default()
   private var coverageFilter: CoverageFilter = AllCoverageFilter
 
   private val isScalaJsEnabled: Boolean = {
@@ -194,7 +127,6 @@ class ScoverageInstrumentationComponent(
         s"Instrumentation completed [${coverage.statements.size} statements]"
       )
 
-      // TODO do we need to verify this sourceRoot exists? How does semanticdb do this?
       Serializer.serialize(
         coverage,
         Serializer.coverageFile(options.dataDir),
@@ -919,4 +851,10 @@ class ScoverageInstrumentationComponent(
       }
     }
   }
+}
+
+object ScoveragePlugin {
+  val name: String = "scoverage"
+  val description: String = "scoverage code coverage compiler plugin"
+  val phaseName: String = "scoverage-instrumentation"
 }

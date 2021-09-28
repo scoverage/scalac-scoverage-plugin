@@ -83,7 +83,7 @@ class RegexCoverageFilterTest extends FunSuite {
     )
   }
 
-  val options = new ScoverageOptions()
+  val options = ScoverageOptions.default()
 
   test("isSymbolIncluded should return true for empty excludes") {
     assert(new RegexCoverageFilter(Nil, Nil, Nil).isSymbolIncluded("x"))
