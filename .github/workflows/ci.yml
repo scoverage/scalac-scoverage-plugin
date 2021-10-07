@@ -17,24 +17,18 @@ jobs:
       fail-fast: false
       matrix:
         os: [ 'ubuntu-latest', 'windows-latest' ]
-        java: [ '8', '11' ]
+        java: [ '8', '11', '17' ]
         scala: [
             { version: '2.11.12' },
             { version: '2.12.15' },
             { version: '2.12.14' },
             { version: '2.12.13' },
-            { version: '2.12.12' },
-            { version: '2.12.11' },
-            { version: '2.12.10' },
             { version: '2.12.9' },
             { version: '2.12.8' },
             { version: '2.13.6' },
             { version: '2.13.5' },
             { version: '2.13.4' },
             { version: '2.13.3' },
-            { version: '2.13.2' },
-            { version: '2.13.1' },
-            { version: '2.13.0' }
           ]
     steps:
       - name: checkout the repo
@@ -45,7 +39,7 @@ jobs:
       - name: Set up JVM
         uses: actions/setup-java@v2
         with:
-          distribution: 'adopt'
+          distribution: 'temurin'
           java-version: ${{ matrix.java }}
 
       - name: run tests
@@ -63,7 +57,7 @@ jobs:
       - name: Set up JVM
         uses: actions/setup-java@v2
         with:
-          distribution: 'adopt'
+          distribution: 'temurin'
           java-version: '8'
 
       - name: styleCheck
