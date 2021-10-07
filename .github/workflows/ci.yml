@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ 'ubuntu-latest', 'windows-latest' ]
-        java: [ '8', '11' ]
+        java: [ '8', '11', '17' ]
         scala: [
             { version: '2.12.15' },
             { version: '2.12.14' },
@@ -36,7 +36,7 @@ jobs:
       - name: Set up JVM
         uses: actions/setup-java@v2
         with:
-          distribution: 'adopt'
+          distribution: 'temurin'
           java-version: ${{ matrix.java }}
 
       - name: run tests
@@ -54,8 +54,8 @@ jobs:
       - name: Set up JVM
         uses: actions/setup-java@v2
         with:
-          distribution: 'adopt'
-          java-version: '8'
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: styleCheck
         run: sbt styleCheck
