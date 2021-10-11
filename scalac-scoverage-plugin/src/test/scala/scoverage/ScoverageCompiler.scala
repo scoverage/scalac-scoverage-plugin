@@ -5,7 +5,6 @@ import java.io.FileNotFoundException
 import java.net.URL
 
 import scala.collection.mutable.ListBuffer
-import scala.io.Codec
 import scala.tools.nsc.Global
 import scala.tools.nsc.Settings
 import scala.tools.nsc.plugins.PluginComponent
@@ -141,7 +140,7 @@ class ScoverageCompiler(
 
   def writeCodeSnippetToTempFile(code: String): File = {
     val file = File.createTempFile("scoverage_snippet", ".scala")
-    IOUtils.writeToFile(file, code)(Codec.UTF8.name)
+    IOUtils.writeToFile(file, code)
     file.deleteOnExit()
     file
   }
