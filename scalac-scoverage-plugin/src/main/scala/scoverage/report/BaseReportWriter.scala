@@ -2,15 +2,11 @@ package scoverage.report
 
 import java.io.File
 
-import scala.io.Codec
-
 class BaseReportWriter(
     sourceDirectories: Seq[File],
     outputDir: File,
     sourceEncoding: Option[String]
 ) {
-
-  implicit val encoding = sourceEncoding.fold(Codec.UTF8.name)(identity)
 
   // Source paths in canonical form WITH trailing file separator
   private val formattedSourcePaths: Seq[String] =

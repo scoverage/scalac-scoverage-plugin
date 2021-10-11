@@ -99,14 +99,13 @@ object ScoverageOptions {
         options = options.copy(excludedSymbols = parseExclusionOption(symbols))
       case DataDir(dir) =>
         options = options.copy(dataDir = dir)
-      case SourceRoot(root) =>
-        options.copy(sourceRoot = root)
+      case SourceRoot(root) => options = options.copy(sourceRoot = root)
       // NOTE that both the extra phases are actually parsed out early on, so
       // we just ignore them here
       case ExtraAfterPhase(afterPhase)   => ()
       case ExtraBeforePhase(beforePhase) => ()
       case "reportTestName" =>
-        options.copy(reportTestName = true)
+        options = options.copy(reportTestName = true)
       case opt => errFn("Unknown option: " + opt)
     }
 

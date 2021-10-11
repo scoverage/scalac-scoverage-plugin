@@ -4,14 +4,10 @@ import java.io.File
 import java.io.FileWriter
 import java.util.UUID
 
-import scala.io.Codec
-
 import munit.FunSuite
 
 /** @author Stephen Samuel */
 class IOUtilsTest extends FunSuite {
-
-  implicit val encoding: String = Codec.UTF8.name
 
   test("should parse measurement files") {
     val file = File.createTempFile("scoveragemeasurementtest", "txt")

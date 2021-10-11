@@ -4,6 +4,7 @@ import java.io._
 
 import scala.collection.Set
 import scala.collection.mutable
+import scala.io.Codec
 import scala.io.Source
 
 /** @author Stephen Samuel */
@@ -36,7 +37,11 @@ object IOUtils {
     findMeasurementFiles(dataDir).foreach(_.delete)
   def clean(dataDir: String): Unit = clean(new File(dataDir))
 
-  def writeToFile(file: File, str: String)(implicit encoding: String) = {
+  def writeToFile(
+      file: File,
+      str: String,
+      encoding: String = Codec.UTF8.name
+  ) = {
     val writer = new BufferedWriter(
       new OutputStreamWriter(
         new FileOutputStream(file),
@@ -89,8 +94,9 @@ object IOUtils {
 
   // loads all the invoked statement ids from the given files
   def invoked(
-      files: Seq[File]
-  )(implicit encoding: String): Set[(Int, String)] = {
+      files: Seq[File],
+      encoding: String = Codec.UTF8.name
+  ): Set[(Int, String)] = {
     val acc = mutable.Set[(Int, String)]()
     files.foreach { file =>
       val reader =
