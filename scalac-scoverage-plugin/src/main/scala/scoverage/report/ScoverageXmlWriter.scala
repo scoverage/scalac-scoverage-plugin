@@ -91,7 +91,7 @@ class ScoverageXmlWriter(
 
   private def klass(klass: MeasuredClass): Node = {
     <class name={klass.fullClassName}
-           filename={relativeSource(klass.source)}
+           filename={klass.source}
            statement-count={klass.statementCount.toString}
            statements-invoked={klass.invokedStatementCount.toString}
            statement-rate={klass.statementCoverageFormatted}
