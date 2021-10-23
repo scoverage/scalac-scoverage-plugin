@@ -10,7 +10,9 @@ class BaseReportWriter(
 
   // Source paths in canonical form WITH trailing file separator
   private val formattedSourcePaths: Seq[String] =
-    sourceDirectories filter (_.isDirectory) map (_.getCanonicalPath + File.separator)
+    sourceDirectories
+      .filter(_.isDirectory)
+      .map(_.getCanonicalPath + File.separator)
 
   /** Converts absolute path to relative one if any of the source directories is it's parent.
     * If there is no parent directory, the path is returned unchanged (absolute).
