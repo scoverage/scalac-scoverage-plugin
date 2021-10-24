@@ -2,6 +2,8 @@ package scoverage.reporter
 
 import java.io.File
 
+import scoverage.domain.Coverage
+
 object CoverageAggregator {
 
   // to be used by gradle-scoverage plugin

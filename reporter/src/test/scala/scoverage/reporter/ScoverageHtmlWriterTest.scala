@@ -7,6 +7,10 @@ import scala.io.Source
 import scala.xml.XML
 
 import munit.FunSuite
+import scoverage.domain.ClassType
+import scoverage.domain.Coverage
+import scoverage.domain.Location
+import scoverage.domain.Statement
 
 class ScoverageHtmlWriterTest extends FunSuite {
 

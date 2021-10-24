@@ -5,6 +5,11 @@ import java.io.FileWriter
 import java.util.UUID
 
 import munit.FunSuite
+import scoverage.domain.ClassType
+import scoverage.domain.Constants
+import scoverage.domain.Coverage
+import scoverage.domain.Location
+import scoverage.domain.Statement
 
 class CoverageAggregatorTest extends FunSuite {
 

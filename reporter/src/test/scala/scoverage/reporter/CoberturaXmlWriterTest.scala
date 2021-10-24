@@ -12,6 +12,10 @@ import scala.xml.factory.XMLLoader
 import munit.FunSuite
 import org.xml.sax.ErrorHandler
 import org.xml.sax.SAXParseException
+import scoverage.domain.ClassType
+import scoverage.domain.Coverage
+import scoverage.domain.Location
+import scoverage.domain.Statement
 
 /** @author Stephen Samuel */
 class CoberturaXmlWriterTest extends FunSuite {
@@ -34,7 +38,7 @@ class CoberturaXmlWriterTest extends FunSuite {
 
     val dir = tempDir()
 
-    val coverage = scoverage.reporter.Coverage()
+    val coverage = Coverage()
     coverage
       .add(
         Statement(

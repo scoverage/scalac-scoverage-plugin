@@ -1,7 +1,7 @@
 package scoverage
 
 import munit.FunSuite
-import scoverage.reporter.ClassType
+import scoverage.domain.ClassType
 
 class LocationTest extends FunSuite {
 

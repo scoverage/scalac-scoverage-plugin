@@ -2,6 +2,8 @@ package scoverage.reporter
 
 import scala.xml.Node
 
+import scoverage.domain.MeasuredFile
+
 /** @author Stephen Samuel */
 class StatementWriter(mFile: MeasuredFile) {
 

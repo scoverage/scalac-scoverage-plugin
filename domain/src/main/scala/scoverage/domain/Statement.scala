@@ -1,4 +1,4 @@
-package scoverage.reporter
+package scoverage.domain
 
 import scala.collection.mutable
 

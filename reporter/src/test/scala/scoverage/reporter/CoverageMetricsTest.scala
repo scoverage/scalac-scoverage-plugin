@@ -1,6 +1,8 @@
 package scoverage.reporter
 
 import munit.FunSuite
+import scoverage.domain.CoverageMetrics
+import scoverage.domain.Statement
 
 class CoverageMetricsTest extends FunSuite {
 

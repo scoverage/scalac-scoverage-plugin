@@ -2,11 +2,11 @@ package scoverage
 
 import scala.tools.nsc.Global
 
-import scoverage.reporter.ClassType
+import scoverage.domain.ClassType
 
 object Location {
 
-  def fromGlobal(global: Global): global.Tree => Option[reporter.Location] = {
+  def fromGlobal(global: Global): global.Tree => Option[domain.Location] = {
     tree =>
       def packageName(s: global.Symbol): String = {
         s.enclosingPackage.fullName
@@ -44,7 +44,7 @@ object Location {
       }
 
       Option(tree.symbol) map { symbol =>
-        reporter.Location(
+        domain.Location(
           packageName(symbol),
           className(symbol),
           fullClassName(symbol),

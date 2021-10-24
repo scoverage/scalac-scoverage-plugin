@@ -5,6 +5,12 @@ import java.util.Date
 
 import scala.xml.Node
 
+import scoverage.domain.CodeGrid
+import scoverage.domain.Coverage
+import scoverage.domain.MeasuredClass
+import scoverage.domain.MeasuredFile
+import scoverage.domain.MeasuredPackage
+
 /** @author Stephen Samuel */
 class ScoverageHtmlWriter(
     sourceDirectories: Seq[File],

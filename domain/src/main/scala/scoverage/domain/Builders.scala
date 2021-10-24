@@ -1,4 +1,4 @@
-package scoverage.reporter
+package scoverage.domain
 
 trait MethodBuilders {
   def statements: Iterable[Statement]

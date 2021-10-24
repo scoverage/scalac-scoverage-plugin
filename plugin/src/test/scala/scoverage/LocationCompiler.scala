@@ -8,14 +8,13 @@ import scala.tools.nsc.transform.Transform
 import scala.tools.nsc.transform.TypingTransformers
 
 import scoverage.reporter.IOUtils
-import scoverage.reporter.{Location => LocationThatNeedsABetterName}
 
 class LocationCompiler(
     settings: scala.tools.nsc.Settings,
     reporter: scala.tools.nsc.reporters.Reporter
 ) extends scala.tools.nsc.Global(settings, reporter) {
 
-  val locations = List.newBuilder[(String, LocationThatNeedsABetterName)]
+  val locations = List.newBuilder[(String, domain.Location)]
   private val locationSetter = new LocationSetter(this)
 
   def compile(code: String): Unit = {

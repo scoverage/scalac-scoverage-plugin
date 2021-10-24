@@ -9,6 +9,12 @@ import java.io.Writer
 import scala.io.Codec
 import scala.io.Source
 
+import scoverage.domain.ClassType
+import scoverage.domain.Constants
+import scoverage.domain.Coverage
+import scoverage.domain.Location
+import scoverage.domain.Statement
+
 object Serializer {
 
   val coverageDataFormatVersion = "3.0"

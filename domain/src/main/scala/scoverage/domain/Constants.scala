@@ -1,4 +1,4 @@
-package scoverage.reporter
+package scoverage.domain
 
 object Constants {
   // the file that contains the statement mappings

@@ -1,8 +1,6 @@
-package scoverage.reporter
+package scoverage.domain
 
 import java.io.File
-
-import scoverage.reporter.DoubleFormat.twoFractionDigits
 
 trait CoverageMetrics {
   def statements: Iterable[Statement]
@@ -16,7 +14,7 @@ trait CoverageMetrics {
   def statementCoverage: Double = if (statementCount == 0) 1
   else invokedStatementCount / statementCount.toDouble
   def statementCoveragePercent = statementCoverage * 100
-  def statementCoverageFormatted: String = twoFractionDigits(
+  def statementCoverageFormatted: String = DoubleFormat.twoFractionDigits(
     statementCoveragePercent
   )
   def branches: Iterable[Statement] = statements.filter(_.branch)
@@ -38,7 +36,8 @@ trait CoverageMetrics {
       invokedBranchesCount / branchCount.toDouble
     }
   }
-  def branchCoverageFormatted: String = twoFractionDigits(branchCoveragePercent)
+  def branchCoverageFormatted: String =
+    DoubleFormat.twoFractionDigits(branchCoveragePercent)
 }
 
 case class MeasuredMethod(name: String, statements: Iterable[Statement])

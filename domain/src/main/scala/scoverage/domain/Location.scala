@@ -1,4 +1,4 @@
-package scoverage.reporter
+package scoverage.domain
 
 /** @param packageName the name of the enclosing package
   * @param className the name of the closest enclosing class

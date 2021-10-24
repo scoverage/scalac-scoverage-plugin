@@ -11,11 +11,10 @@ import scala.tools.nsc.plugins.PluginComponent
 import scala.tools.nsc.transform.Transform
 import scala.tools.nsc.transform.TypingTransformers
 
-import scoverage.reporter.Coverage
+import scoverage.domain.Coverage
+import scoverage.domain.Statement
 import scoverage.reporter.IOUtils
 import scoverage.reporter.Serializer
-import scoverage.reporter.Statement
-import scoverage.reporter.{Location => LocationThatNeedsANewName}
 
 /** @author Stephen Samuel */
 class ScoveragePlugin(val global: Global) extends Plugin {
@@ -154,7 +153,7 @@ class ScoverageInstrumentationComponent(
     import global._
 
     // contains the location of the last node
-    var location: LocationThatNeedsANewName = _
+    var location: domain.Location = _
 
     /** The 'start' of the position, if it is available, else -1
       * We cannot use 'isDefined' to test whether pos.start will work, as some

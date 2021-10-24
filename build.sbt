@@ -91,7 +91,7 @@ lazy val root = Project("scalac-scoverage", file("."))
     publishArtifact := false,
     publishLocal := {}
   )
-  .aggregate(plugin, runtime.jvm, runtime.js, reporter)
+  .aggregate(plugin, runtime.jvm, runtime.js, reporter, domain)
 
 lazy val runtime = CrossProject(
   "runtime",
@@ -127,7 +127,6 @@ lazy val plugin =
       crossScalaVersions := bin212 ++ bin213,
       crossVersion := CrossVersion.full,
       libraryDependencies ++= Seq(
-        "org.scala-lang.modules" %% "scala-xml" % "2.0.0",
         "org.scalameta" %% "munit" % munitVersion % Test,
         "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided
       ),
@@ -136,7 +135,7 @@ lazy val plugin =
     .settings(
       (Test / unmanagedSourceDirectories) += (Test / sourceDirectory).value / "scala-2.12+"
     )
-    .dependsOn(reporter)
+    .dependsOn(reporter, domain)
 
 lazy val reporter =
   Project("reporter", file("reporter"))
@@ -144,6 +143,18 @@ lazy val reporter =
       name := "scalac-scoverage-reporter",
       libraryDependencies ++= Seq(
         "org.scala-lang.modules" %% "scala-xml" % "2.0.0",
+        "org.scalameta" %% "munit" % munitVersion % Test
+      ),
+      sharedSettings,
+      crossScalaVersions := Seq(defaultScala212, defaultScala213, defaultScala3)
+    )
+    .dependsOn(domain)
+
+lazy val domain =
+  Project("domain", file("domain"))
+    .settings(
+      name := "scalac-scoverage-domain",
+      libraryDependencies ++= Seq(
         "org.scalameta" %% "munit" % munitVersion % Test
       ),
       sharedSettings,

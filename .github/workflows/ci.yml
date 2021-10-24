@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ 'ubuntu-latest', 'windows-latest' ]
-        java: ['11', '17']
+        java: ['8', '17']
         scala: [
             { version: '2.12.15' },
             { version: '2.12.14' },
@@ -48,8 +48,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ 'ubuntu-latest', 'windows-latest' ]
-        java: ['11', '17' ]
-        module: ['runtime', 'runtimeJS', 'reporter']
+        java: ['8', '17' ]
+        module: ['runtime', 'runtimeJS', 'reporter', 'domain']
     steps:
       - name: checkout the repo
         uses: actions/checkout@v2

@@ -7,10 +7,11 @@ import scala.collection.mutable
 import scala.io.Codec
 import scala.io.Source
 
+import scoverage.domain.Constants
+
 /** @author Stephen Samuel */
 object IOUtils {
 
-  // TODO Should any of this stuff actually stay in here. probably not
   def coverageFile(dataDir: File): File = coverageFile(dataDir.getAbsolutePath)
   def coverageFile(dataDir: String): File =
     new File(dataDir, Constants.CoverageFileName)

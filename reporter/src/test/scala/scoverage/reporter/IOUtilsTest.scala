@@ -5,6 +5,7 @@ import java.io.FileWriter
 import java.util.UUID
 
 import munit.FunSuite
+import scoverage.domain.Constants
 
 /** @author Stephen Samuel */
 class IOUtilsTest extends FunSuite {

@@ -4,6 +4,10 @@ import java.io.File
 import java.io.StringWriter
 
 import munit.FunSuite
+import scoverage.domain.ClassType
+import scoverage.domain.Coverage
+import scoverage.domain.Location
+import scoverage.domain.Statement
 
 class SerializerTest extends FunSuite {
   private val sourceRoot = new File(".").getCanonicalFile()

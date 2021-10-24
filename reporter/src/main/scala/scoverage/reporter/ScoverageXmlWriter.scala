@@ -5,6 +5,12 @@ import java.io.File
 import scala.xml.Node
 import scala.xml.PrettyPrinter
 
+import scoverage.domain.Coverage
+import scoverage.domain.MeasuredClass
+import scoverage.domain.MeasuredMethod
+import scoverage.domain.MeasuredPackage
+import scoverage.domain.Statement
+
 /** @author Stephen Samuel */
 class ScoverageXmlWriter(
     sourceDirectories: Seq[File],

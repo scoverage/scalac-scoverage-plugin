@@ -1,4 +1,4 @@
-package scoverage.reporter
+package scoverage.domain
 
 /** @author Stephen Samuel */
 sealed trait StatementStatus

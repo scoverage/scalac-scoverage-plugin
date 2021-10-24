@@ -5,7 +5,11 @@ import java.io.File
 import scala.xml.Node
 import scala.xml.PrettyPrinter
 
-import scoverage.reporter.DoubleFormat.twoFractionDigits
+import scoverage.domain.Coverage
+import scoverage.domain.DoubleFormat
+import scoverage.domain.MeasuredClass
+import scoverage.domain.MeasuredMethod
+import scoverage.domain.MeasuredPackage
 
 /** @author Stephen Samuel */
 class CoberturaXmlWriter(
@@ -30,8 +34,8 @@ class CoberturaXmlWriter(
   def method(method: MeasuredMethod): Node = {
     <method name={method.name}
             signature="()V"
-            line-rate={twoFractionDigits(method.statementCoverage)}
-            branch-rate={twoFractionDigits(method.branchCoverage)}
+            line-rate={DoubleFormat.twoFractionDigits(method.statementCoverage)}
+            branch-rate={DoubleFormat.twoFractionDigits(method.branchCoverage)}
             complexity="0">
       <lines>
         {
@@ -47,8 +51,8 @@ class CoberturaXmlWriter(
   def klass(klass: MeasuredClass): Node = {
     <class name={klass.fullClassName}
            filename={klass.source}
-           line-rate={twoFractionDigits(klass.statementCoverage)}
-           branch-rate={twoFractionDigits(klass.branchCoverage)}
+           line-rate={DoubleFormat.twoFractionDigits(klass.statementCoverage)}
+           branch-rate={DoubleFormat.twoFractionDigits(klass.branchCoverage)}
            complexity="0">
       <methods>
         {klass.methods.map(method)}
@@ -66,8 +70,8 @@ class CoberturaXmlWriter(
 
   def pack(pack: MeasuredPackage): Node = {
     <package name={pack.name}
-             line-rate={twoFractionDigits(pack.statementCoverage)}
-             branch-rate={twoFractionDigits(pack.branchCoverage)}
+             line-rate={DoubleFormat.twoFractionDigits(pack.statementCoverage)}
+             branch-rate={DoubleFormat.twoFractionDigits(pack.branchCoverage)}
              complexity="0">
       <classes>
         {pack.classes.map(klass)}
@@ -80,12 +84,16 @@ class CoberturaXmlWriter(
   }
 
   def xml(coverage: Coverage): Node = {
-    <coverage line-rate={twoFractionDigits(coverage.statementCoverage)}
+    <coverage line-rate={
+      DoubleFormat.twoFractionDigits(coverage.statementCoverage)
+    }
               lines-valid={coverage.statementCount.toString}
               lines-covered={coverage.invokedStatementCount.toString}
               branches-valid={coverage.branchCount.toString}
               branches-covered={coverage.invokedBranchesCount.toString}
-              branch-rate={twoFractionDigits(coverage.branchCoverage)}
+              branch-rate={
+                DoubleFormat.twoFractionDigits(coverage.branchCoverage)
+              }
               complexity="0"
               version="1.0"
               timestamp={System.currentTimeMillis.toString}>

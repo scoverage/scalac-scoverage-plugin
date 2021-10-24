@@ -1,8 +1,6 @@
-package scoverage.reporter
+package scoverage.domain
 
 import scala.collection.mutable
-
-import scoverage.reporter.DoubleFormat.twoFractionDigits
 
 /** @author Stephen Samuel
   */
@@ -24,18 +22,19 @@ case class Coverage()
     ignoredStatementsById.put(stmt.id, stmt)
 
   def avgClassesPerPackage = classCount / packageCount.toDouble
-  def avgClassesPerPackageFormatted: String = twoFractionDigits(
+  def avgClassesPerPackageFormatted: String = DoubleFormat.twoFractionDigits(
     avgClassesPerPackage
   )
 
   def avgMethodsPerClass = methodCount / classCount.toDouble
-  def avgMethodsPerClassFormatted: String = twoFractionDigits(
+  def avgMethodsPerClassFormatted: String = DoubleFormat.twoFractionDigits(
     avgMethodsPerClass
   )
 
   def loc = files.map(_.loc).sum
   def linesPerFile = loc / fileCount.toDouble
-  def linesPerFileFormatted: String = twoFractionDigits(linesPerFile)
+  def linesPerFileFormatted: String =
+    DoubleFormat.twoFractionDigits(linesPerFile)
 
   // returns the classes by least coverage
   def risks(limit: Int) = classes.toSeq
