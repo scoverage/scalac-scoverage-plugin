@@ -68,7 +68,7 @@ class SerializerTest extends AnyFunSuite with OneInstancePerTest {
                       |def test : String
                       |\f
                       |""".stripMargin.replaceAll("(\r\n)|\n|\r", "\n")
-    val writer = new StringWriter() //TODO-use UTF-8
+    val writer = new StringWriter() // TODO-use UTF-8
     val actual = Serializer.serialize(coverage, writer)
     assert(expected === writer.toString)
   }
