@@ -15,7 +15,7 @@ import scoverage.domain.Coverage
 import scoverage.domain.Location
 import scoverage.domain.Statement
 
-object Serializer {
+object Deserializer {
 
   val coverageDataFormatVersion = "3.0"
 

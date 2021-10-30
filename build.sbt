@@ -119,7 +119,7 @@ lazy val `runtimeJVM` = runtime.jvm
 lazy val `runtimeJS` = runtime.js
 
 lazy val plugin =
-  Project("plugin", file("plugin"))
+  project
     .dependsOn(runtimeJVM % Test)
     .settings(
       name := "scalac-scoverage-plugin",
@@ -133,12 +133,12 @@ lazy val plugin =
       sharedSettings
     )
     .settings(
-      (Test / unmanagedSourceDirectories) += (Test / sourceDirectory).value / "scala-2.12+"
+      Test / unmanagedSourceDirectories += (Test / sourceDirectory).value / "scala-2.12+"
     )
-    .dependsOn(reporter, domain)
+    .dependsOn(domain, reporter % "test->compile")
 
 lazy val reporter =
-  Project("reporter", file("reporter"))
+  project
     .settings(
       name := "scalac-scoverage-reporter",
       libraryDependencies ++= Seq(
@@ -151,7 +151,7 @@ lazy val reporter =
     .dependsOn(domain)
 
 lazy val domain =
-  Project("domain", file("domain"))
+  project
     .settings(
       name := "scalac-scoverage-domain",
       libraryDependencies ++= Seq(

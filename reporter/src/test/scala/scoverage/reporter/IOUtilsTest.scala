@@ -6,6 +6,7 @@ import java.util.UUID
 
 import munit.FunSuite
 import scoverage.domain.Constants
+import scoverage.reporter.IOUtils
 
 /** @author Stephen Samuel */
 class IOUtilsTest extends FunSuite {

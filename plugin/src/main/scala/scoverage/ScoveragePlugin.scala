@@ -13,8 +13,6 @@ import scala.tools.nsc.transform.TypingTransformers
 
 import scoverage.domain.Coverage
 import scoverage.domain.Statement
-import scoverage.reporter.IOUtils
-import scoverage.reporter.Serializer
 
 /** @author Stephen Samuel */
 class ScoveragePlugin(val global: Global) extends Plugin {
@@ -124,7 +122,7 @@ class ScoverageInstrumentationComponent(
       // we clean the data directory, because if the code has changed, then the number / order of
       // statements has changed by definition. So the old data would reference statements incorrectly
       // and thus skew the results.
-      IOUtils.clean(options.dataDir)
+      Serializer.clean(options.dataDir)
 
       reporter.echo("Beginning coverage instrumentation")
       super.run()
@@ -134,11 +132,11 @@ class ScoverageInstrumentationComponent(
 
       Serializer.serialize(
         coverage,
-        IOUtils.coverageFile(options.dataDir),
+        Serializer.coverageFile(options.dataDir),
         new File(options.sourceRoot)
       )
       reporter.echo(
-        s"Wrote instrumentation file [${IOUtils.coverageFile(options.dataDir)}]"
+        s"Wrote instrumentation file [${Serializer.coverageFile(options.dataDir)}]"
       )
       reporter.echo(s"Will write measurement data to [${options.dataDir}]")
     }

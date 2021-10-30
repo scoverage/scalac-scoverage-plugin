@@ -31,7 +31,7 @@ object CoverageAggregator {
       val coverageFile: File = IOUtils.coverageFile(dataDir)
       if (coverageFile.exists) {
         val subcoverage: Coverage =
-          Serializer.deserialize(coverageFile, sourceRoot)
+          Deserializer.deserialize(coverageFile, sourceRoot)
         val measurementFiles: Array[File] =
           IOUtils.findMeasurementFiles(dataDir)
         val measurements = IOUtils.invoked(measurementFiles.toIndexedSeq)
