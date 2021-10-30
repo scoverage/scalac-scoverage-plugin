@@ -482,7 +482,7 @@ class ScoverageInstrumentationComponent(
         /** Applications of methods with non trivial args means the args themselves
           * must also be instrumented
           */
-        //todo remove once scala merges into Apply proper
+        // todo remove once scala merges into Apply proper
         case a: ApplyToImplicitArgs =>
           instrument(
             treeCopy.Apply(

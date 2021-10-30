@@ -74,7 +74,7 @@ class SerializerTest extends FunSuite {
          |def test : String
          |\f
          |""".stripMargin
-    val writer = new StringWriter() //TODO-use UTF-8
+    val writer = new StringWriter() // TODO-use UTF-8
     val actual = Deserializer.serialize(coverage, writer, sourceRoot)
     assertEquals(expected, writer.toString)
   }
@@ -207,7 +207,7 @@ class SerializerTest extends FunSuite {
          |def test : String
          |\f
          |""".stripMargin
-    val writer = new StringWriter() //TODO-use UTF-8
+    val writer = new StringWriter() // TODO-use UTF-8
     val actual = Deserializer.serialize(coverage, writer, sourceRoot)
     assertEquals(expected, writer.toString)
   }
