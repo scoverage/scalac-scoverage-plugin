@@ -12,11 +12,6 @@ import scoverage.domain.Constants
 /** @author Stephen Samuel */
 object IOUtils {
 
-  // TODO This is duplicated from Serilizer. We may not need them both
-  def coverageFile(dataDir: File): File = coverageFile(dataDir.getAbsolutePath)
-  def coverageFile(dataDir: String): File =
-    new File(dataDir, Constants.CoverageFileName)
-
   def getTempDirectory: File = new File(getTempPath)
   def getTempPath: String = System.getProperty("java.io.tmpdir")
 

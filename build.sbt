@@ -91,7 +91,7 @@ lazy val root = Project("scalac-scoverage", file("."))
     publishArtifact := false,
     publishLocal := {}
   )
-  .aggregate(plugin, runtime.jvm, runtime.js, reporter, domain)
+  .aggregate(plugin, runtime.jvm, runtime.js, reporter, domain, serializer)
 
 lazy val runtime = CrossProject(
   "runtime",
@@ -135,7 +135,7 @@ lazy val plugin =
     .settings(
       Test / unmanagedSourceDirectories += (Test / sourceDirectory).value / "scala-2.12+"
     )
-    .dependsOn(domain, reporter % "test->compile")
+    .dependsOn(domain, reporter % "test->compile", serializer)
 
 lazy val reporter =
   project
@@ -148,7 +148,7 @@ lazy val reporter =
       sharedSettings,
       crossScalaVersions := Seq(defaultScala212, defaultScala213, defaultScala3)
     )
-    .dependsOn(domain)
+    .dependsOn(domain, serializer)
 
 lazy val domain =
   project
@@ -160,6 +160,18 @@ lazy val domain =
       sharedSettings,
       crossScalaVersions := Seq(defaultScala212, defaultScala213, defaultScala3)
     )
+
+lazy val serializer =
+  project
+    .settings(
+      name := "scalac-scoverage-serializer",
+      libraryDependencies ++= Seq(
+        "org.scalameta" %% "munit" % munitVersion % Test
+      ),
+      sharedSettings,
+      crossScalaVersions := Seq(defaultScala212, defaultScala213, defaultScala3)
+    )
+    .dependsOn(domain)
 
 addCommandAlias(
   "styleFix",

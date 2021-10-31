@@ -13,6 +13,7 @@ import scala.tools.nsc.transform.TypingTransformers
 
 import scoverage.domain.Coverage
 import scoverage.domain.Statement
+import scoverage.serialize.Serializer
 
 /** @author Stephen Samuel */
 class ScoveragePlugin(val global: Global) extends Plugin {
@@ -20,11 +21,11 @@ class ScoveragePlugin(val global: Global) extends Plugin {
   override val name: String = ScoveragePlugin.name
   override val description: String = ScoveragePlugin.description
 
-  // TODO I'm not 100% sure why, but historically these have been parsed out
-  // first. One thing to play around with in the future would be to not do this
-  // here and rather do it later when we utilize setOpts and instead just
-  // initialize then in the instrumentationCompoent. This will save us
-  // iterating over these options twice.
+  // I'm not 100% sure why, but historically these have been parsed out first.
+  // One thing to play around with in the future would be to not do this here
+  // and rather do it later when we utilize setOpts and instead just initialize
+  // then in the instrumentationCompoent. This will save us iterating over
+  // these options twice.
   private val (extraAfterPhase, extraBeforePhase) =
     ScoverageOptions.processPhaseOptions(
       pluginOptions

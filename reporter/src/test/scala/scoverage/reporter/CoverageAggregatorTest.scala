@@ -10,6 +10,7 @@ import scoverage.domain.Constants
 import scoverage.domain.Coverage
 import scoverage.domain.Location
 import scoverage.domain.Statement
+import scoverage.serialize.Serializer
 
 class CoverageAggregatorTest extends FunSuite {
 
@@ -37,9 +38,9 @@ class CoverageAggregatorTest extends FunSuite {
     coverage1.add(cov1Stmt2.copy(count = 0))
     val dir1 = new File(IOUtils.getTempPath, UUID.randomUUID.toString)
     dir1.mkdir()
-    Deserializer.serialize(
+    Serializer.serialize(
       coverage1,
-      Deserializer.coverageFile(dir1),
+      Serializer.coverageFile(dir1),
       new File(sourceRoot)
     )
     val measurementsFile1 =
@@ -53,9 +54,9 @@ class CoverageAggregatorTest extends FunSuite {
     coverage2.add(cov2Stmt1)
     val dir2 = new File(IOUtils.getTempPath, UUID.randomUUID.toString)
     dir2.mkdir()
-    Deserializer.serialize(
+    Serializer.serialize(
       coverage2,
-      Deserializer.coverageFile(dir2),
+      Serializer.coverageFile(dir2),
       new File(sourceRoot)
     )
 
@@ -65,9 +66,9 @@ class CoverageAggregatorTest extends FunSuite {
     coverage3.add(cov3Stmt1.copy(count = 0))
     val dir3 = new File(IOUtils.getTempPath, UUID.randomUUID.toString)
     dir3.mkdir()
-    Deserializer.serialize(
+    Serializer.serialize(
       coverage3,
-      Deserializer.coverageFile(dir3),
+      Serializer.coverageFile(dir3),
       new File(sourceRoot)
     )
     val measurementsFile3 =

@@ -1,10 +1,11 @@
-package scoverage.reporter
+package scoverage.serialize
 
 import java.io.File
 import java.io.StringWriter
 
 import munit.FunSuite
 import scoverage.domain.ClassType
+import scoverage.domain.Constants
 import scoverage.domain.Coverage
 import scoverage.domain.Location
 import scoverage.domain.Statement
@@ -36,7 +37,7 @@ class SerializerTest extends FunSuite {
       )
     )
     val expected =
-      s"""# Coverage data, format version: ${Deserializer.coverageDataFormatVersion}
+      s"""# Coverage data, format version: ${Constants.CoverageDataFormatVersion}
          |# Statement data:
          |# - id
          |# - source path
@@ -74,14 +75,14 @@ class SerializerTest extends FunSuite {
          |def test : String
          |\f
          |""".stripMargin
-    val writer = new StringWriter() // TODO-use UTF-8
-    val actual = Deserializer.serialize(coverage, writer, sourceRoot)
+    val writer = new StringWriter()
+    val actual = Serializer.serialize(coverage, writer, sourceRoot)
     assertEquals(expected, writer.toString)
   }
 
-  test("coverage should be deserializable from plain text") {
+  test("coverage should be eserializable from plain text") {
     val input =
-      s"""# Coverage data, format version: ${Deserializer.coverageDataFormatVersion}
+      s"""# Coverage data, format version: ${Constants.CoverageDataFormatVersion}
          |# Statement data:
          |# - id
          |# - source path
@@ -142,7 +143,7 @@ class SerializerTest extends FunSuite {
         1
       )
     )
-    val coverage = Deserializer.deserialize(input, sourceRoot)
+    val coverage = Serializer.deserialize(input, sourceRoot)
     assertEquals(statements, coverage.statements.toList)
   }
   test("coverage should serialize sourcePath relatively") {
@@ -169,7 +170,7 @@ class SerializerTest extends FunSuite {
       )
     )
     val expected =
-      s"""# Coverage data, format version: ${Deserializer.coverageDataFormatVersion}
+      s"""# Coverage data, format version: ${Constants.CoverageDataFormatVersion}
          |# Statement data:
          |# - id
          |# - source path
@@ -207,14 +208,14 @@ class SerializerTest extends FunSuite {
          |def test : String
          |\f
          |""".stripMargin
-    val writer = new StringWriter() // TODO-use UTF-8
-    val actual = Deserializer.serialize(coverage, writer, sourceRoot)
+    val writer = new StringWriter()
+    val actual = Serializer.serialize(coverage, writer, sourceRoot)
     assertEquals(expected, writer.toString)
   }
 
   test("coverage should deserialize sourcePath by prefixing cwd") {
     val input =
-      s"""# Coverage data, format version: ${Deserializer.coverageDataFormatVersion}
+      s"""# Coverage data, format version: ${Constants.CoverageDataFormatVersion}
          |# Statement data:
          |# - id
          |# - source path
@@ -273,7 +274,7 @@ class SerializerTest extends FunSuite {
         1
       )
     )
-    val coverage = Deserializer.deserialize(input, sourceRoot)
+    val coverage = Serializer.deserialize(input, sourceRoot)
     assertEquals(statements, coverage.statements.toList)
   }
 }

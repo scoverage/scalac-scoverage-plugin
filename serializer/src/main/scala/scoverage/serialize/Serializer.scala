@@ -1,7 +1,8 @@
-package scoverage.reporter
+package scoverage.serialize
 
 import java.io.BufferedWriter
 import java.io.File
+import java.io.FileFilter
 import java.io.FileOutputStream
 import java.io.OutputStreamWriter
 import java.io.Writer
@@ -15,9 +16,11 @@ import scoverage.domain.Coverage
 import scoverage.domain.Location
 import scoverage.domain.Statement
 
-object Deserializer {
+object Serializer {
 
-  val coverageDataFormatVersion = "3.0"
+  def coverageFile(dataDir: File): File = coverageFile(dataDir.getAbsolutePath)
+  def coverageFile(dataDir: String): File =
+    new File(dataDir, Constants.CoverageFileName)
 
   // Write out coverage data to the given data directory, using the default coverage filename
   def serialize(coverage: Coverage, dataDir: String, sourceRoot: String): Unit =
@@ -58,7 +61,7 @@ object Deserializer {
 
     def writeHeader(writer: Writer): Unit = {
       writer.write(
-        s"""# Coverage data, format version: $coverageDataFormatVersion
+        s"""# Coverage data, format version: ${Constants.CoverageDataFormatVersion}
            |# Statement data:
            |# - id
            |# - source path
@@ -108,10 +111,6 @@ object Deserializer {
       .sortBy(_.id)
       .foreach(stmt => writeStatement(stmt, writer))
   }
-
-  def coverageFile(dataDir: File): File = coverageFile(dataDir.getAbsolutePath)
-  def coverageFile(dataDir: String): File =
-    new File(dataDir, Constants.CoverageFileName)
 
   def deserialize(file: File, sourceRoot: File): Coverage = {
     val source = Source.fromFile(file)(Codec.UTF8)
@@ -169,7 +168,7 @@ object Deserializer {
 
     val headerFirstLine = lines.next()
     require(
-      headerFirstLine == s"# Coverage data, format version: $coverageDataFormatVersion",
+      headerFirstLine == s"# Coverage data, format version: ${Constants.CoverageDataFormatVersion}",
       "Wrong file format"
     )
 
@@ -185,5 +184,15 @@ object Deserializer {
     }
     coverage
   }
+
+  def clean(dataDir: File): Unit =
+    findMeasurementFiles(dataDir).foreach(_.delete)
+  def clean(dataDir: String): Unit = clean(new File(dataDir))
+
+  def findMeasurementFiles(dataDir: File): Array[File] =
+    dataDir.listFiles(new FileFilter {
+      override def accept(pathname: File): Boolean =
+        pathname.getName.startsWith(Constants.MeasurementsPrefix)
+    })
 
 }

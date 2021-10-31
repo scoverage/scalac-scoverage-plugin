@@ -49,7 +49,7 @@ jobs:
       matrix:
         os: [ 'ubuntu-latest', 'windows-latest' ]
         java: ['8', '17' ]
-        module: ['runtime', 'runtimeJS', 'reporter', 'domain']
+        module: ['runtime', 'runtimeJS', 'reporter', 'domain', 'serializer']
     steps:
       - name: checkout the repo
         uses: actions/checkout@v2

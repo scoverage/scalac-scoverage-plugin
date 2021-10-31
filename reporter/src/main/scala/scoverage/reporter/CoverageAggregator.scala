@@ -3,6 +3,7 @@ package scoverage.reporter
 import java.io.File
 
 import scoverage.domain.Coverage
+import scoverage.serialize.Serializer
 
 object CoverageAggregator {
 
@@ -28,10 +29,10 @@ object CoverageAggregator {
     var id = 0
     val coverage = Coverage()
     dataDirs foreach { dataDir =>
-      val coverageFile: File = IOUtils.coverageFile(dataDir)
+      val coverageFile: File = Serializer.coverageFile(dataDir)
       if (coverageFile.exists) {
         val subcoverage: Coverage =
-          Deserializer.deserialize(coverageFile, sourceRoot)
+          Serializer.deserialize(coverageFile, sourceRoot)
         val measurementFiles: Array[File] =
           IOUtils.findMeasurementFiles(dataDir)
         val measurements = IOUtils.invoked(measurementFiles.toIndexedSeq)

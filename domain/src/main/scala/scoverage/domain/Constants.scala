@@ -11,5 +11,5 @@ object Constants {
   // the prefix the measurement files have
   val MeasurementsPrefix = "scoverage.measurements."
 
-  val coverageDataFormatVersion = "3.0"
+  val CoverageDataFormatVersion = "3.0"
 }
