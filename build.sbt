@@ -1,12 +1,14 @@
 import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
-val munitVersion = "0.7.29"
-val scalametaVersion = "4.4.28"
-val defaultScala213 = "2.13.6"
-val bin212 =
+lazy val munitVersion = "0.7.29"
+lazy val scalametaVersion = "4.4.28"
+lazy val defaultScala212 = "2.12.15"
+lazy val defaultScala213 = "2.13.6"
+lazy val defaultScala3 = "3.1.0"
+lazy val bin212 =
   Seq(
-    "2.12.15",
+    defaultScala212,
     "2.12.14",
     "2.12.13",
     "2.12.12",
@@ -15,7 +17,7 @@ val bin212 =
     "2.12.9",
     "2.12.8"
   )
-val bin213 =
+lazy val bin213 =
   Seq(
     defaultScala213,
     "2.13.5",
@@ -80,8 +82,7 @@ lazy val sharedSettings = List(
     } else {
       scalacOptions.value
     }
-  },
-  crossScalaVersions := bin212 ++ bin213
+  }
 )
 
 lazy val root = Project("scalac-scoverage", file("."))
@@ -90,16 +91,17 @@ lazy val root = Project("scalac-scoverage", file("."))
     publishArtifact := false,
     publishLocal := {}
   )
-  .aggregate(plugin, runtime.jvm, runtime.js)
+  .aggregate(plugin, runtime.jvm, runtime.js, reporter, domain, serializer)
 
 lazy val runtime = CrossProject(
-  "scalac-scoverage-runtime",
-  file("scalac-scoverage-runtime")
+  "runtime",
+  file("runtime")
 )(JVMPlatform, JSPlatform)
   .crossType(CrossType.Full)
   .withoutSuffixFor(JVMPlatform)
   .settings(
     name := "scalac-scoverage-runtime",
+    crossScalaVersions := Seq(defaultScala212, defaultScala213),
     crossTarget := target.value / s"scala-${scalaVersion.value}",
     libraryDependencies ++= Seq(
       "org.scalameta" %% "munit" % munitVersion % Test
@@ -113,26 +115,63 @@ lazy val runtime = CrossProject(
     scalaJSStage := FastOptStage
   )
 
-lazy val `scalac-scoverage-runtimeJVM` = runtime.jvm
-lazy val `scalac-scoverage-runtimeJS` = runtime.js
+lazy val `runtimeJVM` = runtime.jvm
+lazy val `runtimeJS` = runtime.js
 
 lazy val plugin =
-  Project("scalac-scoverage-plugin", file("scalac-scoverage-plugin"))
-    .dependsOn(`scalac-scoverage-runtimeJVM` % Test)
+  project
+    .dependsOn(runtimeJVM % Test)
     .settings(
       name := "scalac-scoverage-plugin",
       crossTarget := target.value / s"scala-${scalaVersion.value}",
+      crossScalaVersions := bin212 ++ bin213,
       crossVersion := CrossVersion.full,
       libraryDependencies ++= Seq(
-        "org.scala-lang.modules" %% "scala-xml" % "2.0.0",
         "org.scalameta" %% "munit" % munitVersion % Test,
         "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided
       ),
       sharedSettings
     )
     .settings(
-      (Test / unmanagedSourceDirectories) += (Test / sourceDirectory).value / "scala-2.12+"
+      Test / unmanagedSourceDirectories += (Test / sourceDirectory).value / "scala-2.12+"
     )
+    .dependsOn(domain, reporter % "test->compile", serializer)
+
+lazy val reporter =
+  project
+    .settings(
+      name := "scalac-scoverage-reporter",
+      libraryDependencies ++= Seq(
+        "org.scala-lang.modules" %% "scala-xml" % "2.0.0",
+        "org.scalameta" %% "munit" % munitVersion % Test
+      ),
+      sharedSettings,
+      crossScalaVersions := Seq(defaultScala212, defaultScala213, defaultScala3)
+    )
+    .dependsOn(domain, serializer)
+
+lazy val domain =
+  project
+    .settings(
+      name := "scalac-scoverage-domain",
+      libraryDependencies ++= Seq(
+        "org.scalameta" %% "munit" % munitVersion % Test
+      ),
+      sharedSettings,
+      crossScalaVersions := Seq(defaultScala212, defaultScala213, defaultScala3)
+    )
+
+lazy val serializer =
+  project
+    .settings(
+      name := "scalac-scoverage-serializer",
+      libraryDependencies ++= Seq(
+        "org.scalameta" %% "munit" % munitVersion % Test
+      ),
+      sharedSettings,
+      crossScalaVersions := Seq(defaultScala212, defaultScala213, defaultScala3)
+    )
+    .dependsOn(domain)
 
 addCommandAlias(
   "styleFix",
