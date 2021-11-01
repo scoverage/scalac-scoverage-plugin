@@ -3,7 +3,7 @@ import sbtcrossproject.CrossType
 
 val scalatestVersion = "3.2.10"
 val scalametaVersion = "4.4.28"
-val defaultScala213 = "2.13.6"
+val defaultScala213 = "2.13.7"
 val bin211 = Seq("2.11.12")
 val bin212 =
   Seq(
