@@ -82,7 +82,8 @@ lazy val sharedSettings = List(
     } else {
       scalacOptions.value
     }
-  }
+  },
+  libraryDependencies += "org.scalameta" %% "munit" % munitVersion % Test
 )
 
 lazy val root = Project("scalac-scoverage", file("."))
@@ -103,9 +104,6 @@ lazy val runtime = CrossProject(
     name := "scalac-scoverage-runtime",
     crossScalaVersions := Seq(defaultScala212, defaultScala213),
     crossTarget := target.value / s"scala-${scalaVersion.value}",
-    libraryDependencies ++= Seq(
-      "org.scalameta" %% "munit" % munitVersion % Test
-    ),
     sharedSettings
   )
   .jvmSettings(
@@ -126,10 +124,7 @@ lazy val plugin =
       crossTarget := target.value / s"scala-${scalaVersion.value}",
       crossScalaVersions := bin212 ++ bin213,
       crossVersion := CrossVersion.full,
-      libraryDependencies ++= Seq(
-        "org.scalameta" %% "munit" % munitVersion % Test,
-        "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided
-      ),
+      libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided,
       sharedSettings
     )
     .settings(
@@ -141,10 +136,16 @@ lazy val reporter =
   project
     .settings(
       name := "scalac-scoverage-reporter",
-      libraryDependencies ++= Seq(
-        "org.scala-lang.modules" %% "scala-xml" % "2.0.0",
-        "org.scalameta" %% "munit" % munitVersion % Test
-      ),
+      libraryDependencies += CrossVersion
+        .partialVersion(
+          scalaVersion.value
+        )
+        .map {
+          // Lock this for 2.12 to align with the compiler
+          // https://github.com/scala/scala/pull/9743
+          case ((2, 12)) => "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
+          case _         => "org.scala-lang.modules" %% "scala-xml" % "2.0.1"
+        },
       sharedSettings,
       crossScalaVersions := Seq(defaultScala212, defaultScala213, defaultScala3)
     )
@@ -154,9 +155,6 @@ lazy val domain =
   project
     .settings(
       name := "scalac-scoverage-domain",
-      libraryDependencies ++= Seq(
-        "org.scalameta" %% "munit" % munitVersion % Test
-      ),
       sharedSettings,
       crossScalaVersions := Seq(defaultScala212, defaultScala213, defaultScala3)
     )
@@ -165,9 +163,6 @@ lazy val serializer =
   project
     .settings(
       name := "scalac-scoverage-serializer",
-      libraryDependencies ++= Seq(
-        "org.scalameta" %% "munit" % munitVersion % Test
-      ),
       sharedSettings,
       crossScalaVersions := Seq(defaultScala212, defaultScala213, defaultScala3)
     )
