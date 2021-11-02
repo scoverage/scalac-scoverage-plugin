@@ -21,6 +21,7 @@ coursier fetch \
   org.scoverage:scalac-scoverage-plugin_2.13.5:$version \
   org.scoverage:scalac-scoverage-plugin_2.13.5:$version \
   org.scoverage:scalac-scoverage-plugin_2.13.6:$version \
+  org.scoverage:scalac-scoverage-plugin_2.13.7:$version \
   org.scoverage:scalac-scoverage-runtime_2.11:$version \
   org.scoverage:scalac-scoverage-runtime_2.12:$version \
   org.scoverage:scalac-scoverage-runtime_2.13:$version \
