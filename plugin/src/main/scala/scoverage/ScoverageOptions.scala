@@ -92,7 +92,8 @@ object ScoverageOptions {
 
     scalacOptions.foreach {
       case ExcludedPackages(packages) =>
-        options = options.copy(excludedFiles = parseExclusionOption(packages))
+        options =
+          options.copy(excludedPackages = parseExclusionOption(packages))
       case ExcludedFiles(files) =>
         options = options.copy(excludedFiles = parseExclusionOption(files))
       case ExcludedSymbols(symbols) =>
