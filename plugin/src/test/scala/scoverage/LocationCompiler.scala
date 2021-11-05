@@ -9,7 +9,7 @@ import scala.tools.nsc.transform.TypingTransformers
 
 import scoverage.reporter.IOUtils
 
-class LocationCompiler(
+private[scoverage] class LocationCompiler(
     settings: scala.tools.nsc.Settings,
     reporter: scala.tools.nsc.reporters.Reporter
 ) extends scala.tools.nsc.Global(settings, reporter) {
@@ -26,7 +26,7 @@ class LocationCompiler(
 
   def writeCodeSnippetToTempFile(code: String): File = {
     val file = File.createTempFile("code_snippet", ".scala")
-    IOUtils.writeToFile(file, code)
+    IOUtils.writeToFile(file, code, None)
     file.deleteOnExit()
     file
   }

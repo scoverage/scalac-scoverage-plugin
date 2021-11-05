@@ -30,7 +30,11 @@ class ScoverageXmlWriter(
 
   def write(coverage: Coverage): Unit = {
     val file = IOUtils.reportFile(outputDir, debug)
-    IOUtils.writeToFile(file, new PrettyPrinter(120, 4).format(xml(coverage)))
+    IOUtils.writeToFile(
+      file,
+      new PrettyPrinter(120, 4).format(xml(coverage)),
+      sourceEncoding
+    )
   }
 
   private def xml(coverage: Coverage): Node = {
