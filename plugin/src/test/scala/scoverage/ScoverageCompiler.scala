@@ -13,7 +13,7 @@ import scala.tools.nsc.transform.TypingTransformers
 
 import scoverage.reporter.IOUtils
 
-object ScoverageCompiler {
+private[scoverage] object ScoverageCompiler {
 
   val ScalaVersion: String = scala.util.Properties.versionNumberString
   val ShortScalaVersion: String = (ScalaVersion split "[.]").toList match {
@@ -142,7 +142,7 @@ class ScoverageCompiler(
 
   def writeCodeSnippetToTempFile(code: String): File = {
     val file = File.createTempFile("scoverage_snippet", ".scala")
-    IOUtils.writeToFile(file, code)
+    IOUtils.writeToFile(file, code, None)
     file.deleteOnExit()
     file
   }

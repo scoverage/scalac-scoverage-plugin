@@ -42,12 +42,12 @@ object IOUtils {
   def writeToFile(
       file: File,
       str: String,
-      encoding: String = Codec.UTF8.name
+      encoding: Option[String]
   ) = {
     val writer = new BufferedWriter(
       new OutputStreamWriter(
         new FileOutputStream(file),
-        encoding
+        encoding.getOrElse(Codec.UTF8.name)
       )
     )
     try {

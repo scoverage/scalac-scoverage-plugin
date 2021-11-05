@@ -53,10 +53,18 @@ class ScoverageHtmlWriter(
       try IOUtils.readStreamAsString(in)
       finally in.close()
     }
-    IOUtils.writeToFile(indexFile, index)
-    IOUtils.writeToFile(cssFile, css)
-    IOUtils.writeToFile(packageFile, packageList(coverage).toString())
-    IOUtils.writeToFile(overviewFile, overview(coverage).toString())
+    IOUtils.writeToFile(indexFile, index, sourceEncoding)
+    IOUtils.writeToFile(cssFile, css, sourceEncoding)
+    IOUtils.writeToFile(
+      packageFile,
+      packageList(coverage).toString(),
+      sourceEncoding
+    )
+    IOUtils.writeToFile(
+      overviewFile,
+      overview(coverage).toString(),
+      sourceEncoding
+    )
 
     coverage.packages.foreach(writePackage)
   }
@@ -67,7 +75,7 @@ class ScoverageHtmlWriter(
     // to com.example.html
     val file = new File(outputDir, packageOverviewRelativePath(pkg))
     file.getParentFile.mkdirs()
-    IOUtils.writeToFile(file, packageOverview(pkg).toString())
+    IOUtils.writeToFile(file, packageOverview(pkg).toString(), sourceEncoding)
     pkg.files.foreach(writeFile)
   }
 
@@ -75,7 +83,7 @@ class ScoverageHtmlWriter(
     // each highlighted file is written out using the same structure as the original file.
     val file = new File(outputDir, relativeSource(mfile.source) + ".html")
     file.getParentFile.mkdirs()
-    IOUtils.writeToFile(file, filePage(mfile).toString())
+    IOUtils.writeToFile(file, filePage(mfile).toString(), sourceEncoding)
   }
 
   private def packageOverviewRelativePath(pkg: MeasuredPackage) =

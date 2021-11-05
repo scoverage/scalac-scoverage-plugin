@@ -27,7 +27,8 @@ class CoberturaXmlWriter(
     IOUtils.writeToFile(
       file,
       "<?xml version=\"1.0\"?>\n<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-04.dtd\">\n" +
-        new PrettyPrinter(120, 4).format(xml(coverage))
+        new PrettyPrinter(120, 4).format(xml(coverage)),
+      sourceEncoding
     )
   }
 
