@@ -23,9 +23,9 @@ jobs:
             { version: '2.12.15' },
             { version: '2.12.14' },
             { version: '2.12.13' },
+            { version: '2.13.8' },
+            { version: '2.13.7' },
             { version: '2.13.6' },
-            { version: '2.13.5' },
-            { version: '2.13.4' }
           ]
     steps:
       - name: checkout the repo
