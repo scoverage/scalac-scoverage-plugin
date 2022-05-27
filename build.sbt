@@ -94,7 +94,15 @@ lazy val root = Project("scalac-scoverage", file("."))
     publishArtifact := false,
     publishLocal := {}
   )
-  .aggregate(plugin, runtime.jvm, runtime.js, reporter, domain, serializer)
+  .aggregate(
+    plugin,
+    runtime.jvm,
+    runtime.js,
+    runtimeJSDOMTest,
+    reporter,
+    domain,
+    serializer
+  )
 
 lazy val runtime = CrossProject(
   "runtime",
