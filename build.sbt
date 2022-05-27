@@ -85,7 +85,7 @@ lazy val sharedSettings = List(
       scalacOptions.value
     }
   },
-  libraryDependencies += "org.scalameta" %% "munit" % munitVersion % Test
+  libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test
 )
 
 lazy val root = Project("scalac-scoverage", file("."))
