@@ -71,6 +71,14 @@ object File {
       RhinoFile
     else if (globalObject.hasOwnProperty("callPhantom").asInstanceOf[Boolean])
       PhantomFile
+    else if (
+      globalObject
+        .hasOwnProperty("navigator")
+        .asInstanceOf[Boolean] && globalObject.navigator.userAgent
+        .asInstanceOf[js.UndefOr[String]]
+        .exists(_.contains("jsdom"))
+    )
+      JSDOMFile
     else
       NodeFile
   // Factorize this

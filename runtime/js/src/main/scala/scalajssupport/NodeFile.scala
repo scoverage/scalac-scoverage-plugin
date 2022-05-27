@@ -2,8 +2,9 @@ package scalajssupport
 
 import scala.scalajs.js
 
-class NodeFile(path: String) extends JsFile {
-  def this(path: String, child: String) = {
+class NodeFile(path: String)(implicit fs: FS, nodePath: NodePath)
+    extends JsFile {
+  def this(path: String, child: String)(implicit fs: FS, nodePath: NodePath) = {
     this(NodeFile.nodePath.join(path, child))
   }
 
@@ -91,10 +92,10 @@ trait NodePath extends js.Object {
   def join(paths: String*): String = js.native
 }
 
-private[scalajssupport] object NodeFile extends JsFileObject {
-  val fs: FS = js.Dynamic.global.require("fs").asInstanceOf[FS]
-  val nodePath: NodePath =
-    js.Dynamic.global.require("path").asInstanceOf[NodePath]
+private[scalajssupport] trait NodeLikeFile extends JsFileObject {
+  implicit def fs: FS
+  implicit def nodePath: NodePath
+
   def write(path: String, data: String, mode: String = "a") = {
     fs.writeFileSync(path, data, js.Dynamic.literal(flag = mode))
   }
@@ -106,4 +107,17 @@ private[scalajssupport] object NodeFile extends JsFileObject {
   def apply(path: String) = {
     new NodeFile(path)
   }
+}
+
+private[scalajssupport] object NodeFile extends NodeLikeFile {
+  val fs: FS = js.Dynamic.global.require("fs").asInstanceOf[FS]
+  val nodePath: NodePath =
+    js.Dynamic.global.require("path").asInstanceOf[NodePath]
+}
+
+private[scalajssupport] object JSDOMFile extends NodeLikeFile {
+  val require = js.Dynamic.global.Node.constructor("return require")()
+
+  val fs: FS = require("fs").asInstanceOf[FS]
+  val nodePath: NodePath = require("path").asInstanceOf[NodePath]
 }
