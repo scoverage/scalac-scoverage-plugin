@@ -113,12 +113,20 @@ lazy val runtime = CrossProject(
   )
   .jsSettings(
     scalaJSStage := FastOptStage
-    // Uncomment to test JSDOM
-    // jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
   )
 
 lazy val `runtimeJVM` = runtime.jvm
 lazy val `runtimeJS` = runtime.js
+
+lazy val runtimeJSDOMTest =
+  project
+    .enablePlugins(ScalaJSPlugin)
+    .dependsOn(runtimeJS % "test->test")
+    .settings(
+      publishArtifact := false,
+      publishLocal := {},
+      jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
+    )
 
 lazy val plugin =
   project

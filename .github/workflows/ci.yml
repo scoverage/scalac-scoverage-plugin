@@ -39,6 +39,9 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ matrix.java }}
 
+      - name: Install JSDOM
+        run: npm install
+
       - name: run tests
         run: sbt ++${{ matrix.scala.version }} plugin/test
 
