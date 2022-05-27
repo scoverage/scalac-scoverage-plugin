@@ -112,7 +112,7 @@ lazy val runtime = CrossProject(
     Test / fork := true
   )
   .jsSettings(
-    scalaJSStage := FastOptStage,
+    scalaJSStage := FastOptStage
     // Uncomment to test JSDOM
     // jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
   )
