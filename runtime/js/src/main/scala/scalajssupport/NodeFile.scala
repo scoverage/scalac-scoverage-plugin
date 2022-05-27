@@ -93,8 +93,10 @@ trait NodePath extends js.Object {
 }
 
 private[scalajssupport] trait NodeLikeFile extends JsFileObject {
-  implicit def fs: FS
-  implicit def nodePath: NodePath
+  def require: js.Dynamic
+
+  implicit lazy val fs: FS = require("fs").asInstanceOf[FS]
+  implicit lazy val nodePath: NodePath = require("path").asInstanceOf[NodePath]
 
   def write(path: String, data: String, mode: String = "a") = {
     fs.writeFileSync(path, data, js.Dynamic.literal(flag = mode))
@@ -110,14 +112,12 @@ private[scalajssupport] trait NodeLikeFile extends JsFileObject {
 }
 
 private[scalajssupport] object NodeFile extends NodeLikeFile {
-  val fs: FS = js.Dynamic.global.require("fs").asInstanceOf[FS]
-  val nodePath: NodePath =
-    js.Dynamic.global.require("path").asInstanceOf[NodePath]
+  lazy val require = js.Dynamic.global.require
 }
 
 private[scalajssupport] object JSDOMFile extends NodeLikeFile {
-  val require = js.Dynamic.global.Node.constructor("return require")()
-
-  val fs: FS = require("fs").asInstanceOf[FS]
-  val nodePath: NodePath = require("path").asInstanceOf[NodePath]
+  lazy val require = {
+    val process = js.Dynamic.global.Node.constructor("return process")()
+    process.mainModule.require
+  }
 }
