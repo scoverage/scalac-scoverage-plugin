@@ -1,5 +1,8 @@
 # Contributing
 
+To run the tests, you will first need to run `npm install`. This will
+install the JSDOM dependency used to run some of the Scala.js tests.
+
 When working in the code base it's a good idea to utilize the
 `.git-blame-ignore-revs` file at the root of this project. You can add it
 locally by doing a:

@@ -19,3 +19,6 @@ credentials.sbt
 .idea
 .idea_modules
 *.iml
+
+# npm specific
+node_modules/
