@@ -2,22 +2,23 @@ package scalajssupport
 
 import scala.scalajs.js
 
-class NodeFile(path: String) extends JsFile {
-  def this(path: String, child: String) = {
-    this(NodeFile.nodePath.join(path, child))
+class NodeFile(path: String)(implicit fs: FS, nodePath: NodePath)
+    extends JsFile {
+  def this(path: String, child: String)(implicit fs: FS, nodePath: NodePath) = {
+    this(nodePath.join(path, child))
   }
 
   def delete(): Unit = {
-    if (isDirectory()) NodeFile.fs.rmdirSync(path)
-    else NodeFile.fs.unlinkSync(path)
+    if (isDirectory()) fs.rmdirSync(path)
+    else fs.unlinkSync(path)
   }
 
   def getAbsolutePath(): String = {
-    NodeFile.fs.realpathSync(path)
+    fs.realpathSync(path)
   }
 
   def getName(): String = {
-    NodeFile.nodePath.basename(path)
+    nodePath.basename(path)
   }
 
   def getPath(): String = {
@@ -26,7 +27,7 @@ class NodeFile(path: String) extends JsFile {
 
   def isDirectory(): Boolean = {
     try {
-      NodeFile.fs.lstatSync(path).isDirectory()
+      fs.lstatSync(path).isDirectory()
     } catch {
       // return false if the file does not exist
       case e: Exception => false
@@ -37,9 +38,9 @@ class NodeFile(path: String) extends JsFile {
     path
       .split("/")
       .foldLeft("")((acc: String, x: String) => {
-        val new_acc = NodeFile.nodePath.join(acc, x)
+        val new_acc = nodePath.join(acc, x)
         try {
-          NodeFile.fs.mkdirSync(new_acc)
+          fs.mkdirSync(new_acc)
         } catch {
           case e: Exception =>
         }
@@ -48,16 +49,16 @@ class NodeFile(path: String) extends JsFile {
   }
 
   def listFiles(): Array[File] = {
-    val files = NodeFile.fs.readdirSync(path)
+    val files = fs.readdirSync(path)
     val filesArray = new Array[File](files.length)
     for ((item, i) <- filesArray.zipWithIndex) {
-      filesArray(i) = new File(NodeFile.nodePath.join(this.getPath(), files(i)))
+      filesArray(i) = new File(nodePath.join(this.getPath(), files(i)))
     }
     filesArray
   }
 
   def readFile(): String = {
-    NodeFile.fs.readFileSync(path, js.Dynamic.literal(encoding = "utf-8"))
+    fs.readFileSync(path, js.Dynamic.literal(encoding = "utf-8"))
   }
 
 }
@@ -91,10 +92,12 @@ trait NodePath extends js.Object {
   def join(paths: String*): String = js.native
 }
 
-private[scalajssupport] object NodeFile extends JsFileObject {
-  val fs: FS = js.Dynamic.global.require("fs").asInstanceOf[FS]
-  val nodePath: NodePath =
-    js.Dynamic.global.require("path").asInstanceOf[NodePath]
+private[scalajssupport] trait NodeLikeFile extends JsFileObject {
+  def require: js.Dynamic
+
+  implicit lazy val fs: FS = require("fs").asInstanceOf[FS]
+  implicit lazy val nodePath: NodePath = require("path").asInstanceOf[NodePath]
+
   def write(path: String, data: String, mode: String = "a") = {
     fs.writeFileSync(path, data, js.Dynamic.literal(flag = mode))
   }
@@ -106,4 +109,12 @@ private[scalajssupport] object NodeFile extends JsFileObject {
   def apply(path: String) = {
     new NodeFile(path)
   }
+}
+
+private[scalajssupport] object NodeFile extends NodeLikeFile {
+  lazy val require = js.Dynamic.global.require
+}
+
+private[scalajssupport] object JSDOMFile extends NodeLikeFile {
+  lazy val require = js.Dynamic.global.Node.constructor("return require")()
 }

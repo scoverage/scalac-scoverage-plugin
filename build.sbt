@@ -85,7 +85,7 @@ lazy val sharedSettings = List(
       scalacOptions.value
     }
   },
-  libraryDependencies += "org.scalameta" %% "munit" % munitVersion % Test
+  libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test
 )
 
 lazy val root = Project("scalac-scoverage", file("."))
@@ -94,7 +94,15 @@ lazy val root = Project("scalac-scoverage", file("."))
     publishArtifact := false,
     publishLocal := {}
   )
-  .aggregate(plugin, runtime.jvm, runtime.js, reporter, domain, serializer)
+  .aggregate(
+    plugin,
+    runtime.jvm,
+    runtime.js,
+    runtimeJSDOMTest,
+    reporter,
+    domain,
+    serializer
+  )
 
 lazy val runtime = CrossProject(
   "runtime",
@@ -117,6 +125,16 @@ lazy val runtime = CrossProject(
 
 lazy val `runtimeJVM` = runtime.jvm
 lazy val `runtimeJS` = runtime.js
+
+lazy val runtimeJSDOMTest =
+  project
+    .enablePlugins(ScalaJSPlugin)
+    .dependsOn(runtimeJS % "test->test")
+    .settings(
+      publishArtifact := false,
+      publishLocal := {},
+      jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
+    )
 
 lazy val plugin =
   project
