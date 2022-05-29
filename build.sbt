@@ -120,7 +120,14 @@ lazy val runtime = CrossProject(
     Test / fork := true
   )
   .jsSettings(
-    scalaJSStage := FastOptStage
+    scalaJSStage := FastOptStage,
+    // While not exactlu ideal, this is only used in the invoker to assign a
+    // unique id to ensure measurements have unique ids. It's never exposed to
+    // the user and doesn't touch anything sensitve, so we should have no
+    // issues here. Still, I don't like having this, so we should try to
+    // replace it.
+    libraryDependencies += ("org.scala-js" %%% "scalajs-fake-insecure-java-securerandom" % "1.0.0")
+      .cross(CrossVersion.for3Use2_13)
   )
 
 lazy val `runtimeJVM` = runtime.jvm
