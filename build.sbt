@@ -133,7 +133,8 @@ lazy val runtimeJSDOMTest =
     .settings(
       publishArtifact := false,
       publishLocal := {},
-      jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
+      jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv(),
+      sharedSettings
     )
 
 lazy val plugin =
