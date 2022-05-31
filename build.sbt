@@ -183,6 +183,7 @@ lazy val reporter =
 lazy val buildInfo =
   project
     .settings(
+      crossScalaVersions := bin212 ++ bin213,
       buildInfoKeys += BuildInfoKey("scalaJSVersion", scalaJSVersion),
       publishArtifact := false,
       publishLocal := {}
