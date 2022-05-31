@@ -16,4 +16,7 @@ object Platform {
   type FileFilter = SupportFileFilter
 
   lazy val Source = SupportSource
+
+  def insecureRandomUUID() = java.util.UUID.randomUUID()
+
 }
