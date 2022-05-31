@@ -55,7 +55,7 @@ private[scoverage] object ScoverageCompiler {
     new ScoverageCompiler(settings, reporter)
   }
 
-  def defaultScalaJs: ScoverageCompiler = {
+  def defaultJS: ScoverageCompiler = {
     val reporter = new scala.tools.nsc.reporters.ConsoleReporter(jsSettings)
     new ScoverageCompiler(jsSettings, reporter)
   }
@@ -71,9 +71,7 @@ private[scoverage] object ScoverageCompiler {
   }
 
   private def getScalaJsJars: List[File] = {
-    List(
-      findJar("org.scala-lang", "scala-compiler", ScalaVersion),
-      findJar("org.scala-lang", "scala-reflect", ScalaVersion),
+    getScalaJars ++ List(
       findJar(
         "org.scala-js",
         s"scalajs-compiler_$ScalaVersion",
@@ -81,7 +79,7 @@ private[scoverage] object ScoverageCompiler {
       ),
       findJar(
         "org.scala-js",
-        s"scalajs-library_$ScalaVersion",
+        s"scalajs-library_$ShortScalaVersion",
         BuildInfo.scalaJSVersion
       )
     )
