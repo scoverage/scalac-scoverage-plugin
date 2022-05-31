@@ -101,7 +101,8 @@ lazy val root = Project("scalac-scoverage", file("."))
     runtimeJSDOMTest,
     reporter,
     domain,
-    serializer
+    serializer,
+    buildInfo
   )
 
 lazy val runtime = CrossProject(
