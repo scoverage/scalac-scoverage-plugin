@@ -155,7 +155,8 @@ lazy val plugin =
       crossVersion := CrossVersion.full,
       libraryDependencies ++= Seq(
         "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided,
-        "org.scala-js" %% "scalajs-compiler" % scalaJSVersion % Test cross CrossVersion.full
+        "org.scala-js" %% "scalajs-compiler" % scalaJSVersion % Test cross CrossVersion.full,
+        "org.scala-js" %% "scalajs-library" % scalaJSVersion % Test
       ),
       sharedSettings
     )
