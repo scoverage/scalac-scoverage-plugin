@@ -33,7 +33,12 @@ private[scoverage] object ScoverageCompiler {
     ) :+ sbtCompileDir.getAbsolutePath :+ runtimeClasses("js").getAbsolutePath
 
   def settings: Settings = settings(classPath)
-  def jsSettings: Settings = settings(jsClassPath)
+
+  def jsSettings: Settings = {
+    val s = settings(jsClassPath)
+    s.plugin.value = List(getScalaJsCompilerJar.getAbsolutePath)
+    s
+  }
 
   def settings(classPath: Seq[String]): Settings = {
     val s = new scala.tools.nsc.Settings
@@ -70,20 +75,18 @@ private[scoverage] object ScoverageCompiler {
     scalaJars.map(findScalaJar)
   }
 
-  private def getScalaJsJars: List[File] = {
-    getScalaJars ++ List(
-      findJar(
-        "org.scala-js",
-        s"scalajs-compiler_$ScalaVersion",
-        BuildInfo.scalaJSVersion
-      ),
-      findJar(
-        "org.scala-js",
-        s"scalajs-library_$ShortScalaVersion",
-        BuildInfo.scalaJSVersion
-      )
-    )
-  }
+  private def getScalaJsJars: List[File] =
+    findJar(
+      "org.scala-js",
+      s"scalajs-library_$ShortScalaVersion",
+      BuildInfo.scalaJSVersion
+    ) :: getScalaJars
+
+  private def getScalaJsCompilerJar: File = findJar(
+    "org.scala-js",
+    s"scalajs-compiler_$ScalaVersion",
+    BuildInfo.scalaJSVersion
+  )
 
   private def sbtCompileDir: File = {
     val dir = new File(
