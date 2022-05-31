@@ -16,6 +16,6 @@ class PluginCoverageScalaJsTest extends FunSuite with MacroSupport {
         |}""".stripMargin
     )
     assert(!compiler.reporter.hasErrors)
-    compiler.assertNMeasuredStatements(4)
+    compiler.assertNMeasuredStatements(2)
   }
 }
