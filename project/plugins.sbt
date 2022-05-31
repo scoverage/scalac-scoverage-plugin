@@ -6,4 +6,6 @@ addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.6")
 
 addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.9.33")
 
+addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.11.0")
+
 libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.1.0"

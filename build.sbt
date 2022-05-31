@@ -161,7 +161,7 @@ lazy val plugin =
     .settings(
       Test / unmanagedSourceDirectories += (Test / sourceDirectory).value / "scala-2.12+"
     )
-    .dependsOn(domain, reporter % "test->compile", serializer)
+    .dependsOn(domain, reporter % "test->compile", serializer, buildInfo % Test)
 
 lazy val reporter =
   project
@@ -181,6 +181,15 @@ lazy val reporter =
       crossScalaVersions := Seq(defaultScala212, defaultScala213, defaultScala3)
     )
     .dependsOn(domain, serializer)
+
+lazy val buildInfo =
+  project
+    .settings(
+      buildInfoKeys += BuildInfoKey("scalaJSVersion", scalaJSVersion),
+      publishArtifact := false,
+      publishLocal := {}
+    )
+    .enablePlugins(BuildInfoPlugin)
 
 lazy val domain =
   project
