@@ -147,7 +147,8 @@ lazy val runtimeJSDOMTest =
 
 lazy val plugin =
   project
-    .dependsOn(runtimeJVM % Test)
+    // we need both runtimes compiled prior to running tests
+    .dependsOn(runtimeJVM % Test, runtimeJS % Test)
     .settings(
       name := "scalac-scoverage-plugin",
       crossTarget := target.value / s"scala-${scalaVersion.value}",
