@@ -154,11 +154,7 @@ lazy val plugin =
       crossTarget := target.value / s"scala-${scalaVersion.value}",
       crossScalaVersions := bin212 ++ bin213,
       crossVersion := CrossVersion.full,
-      libraryDependencies ++= Seq(
-        "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided,
-        "org.scala-js" %% "scalajs-compiler" % scalaJSVersion % Test cross CrossVersion.full,
-        "org.scala-js" %% "scalajs-library" % scalaJSVersion % Test
-      ),
+      libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided,
       sharedSettings
     )
     .settings(
