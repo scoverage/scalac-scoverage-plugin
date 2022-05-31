@@ -8,7 +8,7 @@ import scoverage.Platform._
 /** @author Stephen Samuel */
 object Invoker {
 
-  private val runtimeUUID = java.util.UUID.randomUUID()
+  private val runtimeUUID = Platform.insecureRandomUUID()
 
   private val MeasurementsPrefix = "scoverage.measurements."
   private val threadFiles = new ThreadLocal[mutable.HashMap[String, FileWriter]]
