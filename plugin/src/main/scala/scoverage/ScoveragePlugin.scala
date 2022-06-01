@@ -98,7 +98,7 @@ class ScoverageInstrumentationComponent(
   private var options: ScoverageOptions = ScoverageOptions.default()
   private var coverageFilter: CoverageFilter = AllCoverageFilter
 
-  private val isScalaJsEnabled: Boolean = {
+  private lazy val isScalaJsEnabled: Boolean = {
     try {
       rootMirror.getClassIfDefined("scala.scalajs.js.Any") != NoSymbol
     } catch {
