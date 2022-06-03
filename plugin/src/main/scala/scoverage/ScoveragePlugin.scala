@@ -10,6 +10,7 @@ import scala.tools.nsc.plugins.Plugin
 import scala.tools.nsc.plugins.PluginComponent
 import scala.tools.nsc.transform.Transform
 import scala.tools.nsc.transform.TypingTransformers
+import scala.util.control.NonFatal
 
 import scoverage.domain.Coverage
 import scoverage.domain.Statement
@@ -102,7 +103,7 @@ class ScoverageInstrumentationComponent(
     try {
       rootMirror.getClassIfDefined("scala.scalajs.js.Any") != NoSymbol
     } catch {
-      case _: Throwable => false
+      case NonFatal(_) => false
     }
   }
 

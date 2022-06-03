@@ -6,8 +6,8 @@ import munit.FunSuite
   */
 class PluginCoverageScalaJsTest extends FunSuite with MacroSupport {
 
-  test("scoverage should ignore default undefined parameter".ignore) {
-    val compiler = ScoverageCompiler.default
+  test("scoverage should ignore default undefined parameter") {
+    val compiler = ScoverageCompiler.defaultJS
     compiler.compileCodeSnippet(
       """import scala.scalajs.js
         |
@@ -16,6 +16,6 @@ class PluginCoverageScalaJsTest extends FunSuite with MacroSupport {
         |}""".stripMargin
     )
     assert(!compiler.reporter.hasErrors)
-    compiler.assertNMeasuredStatements(4)
+    compiler.assertNMeasuredStatements(2)
   }
 }

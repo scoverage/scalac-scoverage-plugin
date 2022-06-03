@@ -101,7 +101,8 @@ lazy val root = Project("scalac-scoverage", file("."))
     runtimeJSDOMTest,
     reporter,
     domain,
-    serializer
+    serializer,
+    buildInfo
   )
 
 lazy val runtime = CrossProject(
@@ -136,7 +137,8 @@ lazy val runtimeJSDOMTest =
 
 lazy val plugin =
   project
-    .dependsOn(runtimeJVM % Test)
+    // we need both runtimes compiled prior to running tests
+    .dependsOn(runtimeJVM % Test, runtimeJS % Test)
     .settings(
       name := "scalac-scoverage-plugin",
       crossTarget := target.value / s"scala-${scalaVersion.value}",
@@ -148,7 +150,7 @@ lazy val plugin =
     .settings(
       Test / unmanagedSourceDirectories += (Test / sourceDirectory).value / "scala-2.12+"
     )
-    .dependsOn(domain, reporter % "test->compile", serializer)
+    .dependsOn(domain, reporter % "test->compile", serializer, buildInfo % Test)
 
 lazy val reporter =
   project
@@ -168,6 +170,16 @@ lazy val reporter =
       crossScalaVersions := Seq(defaultScala212, defaultScala213, defaultScala3)
     )
     .dependsOn(domain, serializer)
+
+lazy val buildInfo =
+  project
+    .settings(
+      crossScalaVersions := bin212 ++ bin213,
+      buildInfoKeys += BuildInfoKey("scalaJSVersion", scalaJSVersion),
+      publishArtifact := false,
+      publishLocal := {}
+    )
+    .enablePlugins(BuildInfoPlugin)
 
 lazy val domain =
   project

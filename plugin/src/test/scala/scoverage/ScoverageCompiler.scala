@@ -11,6 +11,7 @@ import scala.tools.nsc.plugins.PluginComponent
 import scala.tools.nsc.transform.Transform
 import scala.tools.nsc.transform.TypingTransformers
 
+import buildinfo.BuildInfo
 import scoverage.reporter.IOUtils
 
 private[scoverage] object ScoverageCompiler {
@@ -24,9 +25,22 @@ private[scoverage] object ScoverageCompiler {
   def classPath: Seq[String] =
     getScalaJars.map(
       _.getAbsolutePath
-    ) :+ sbtCompileDir.getAbsolutePath :+ runtimeClasses.getAbsolutePath
+    ) :+ sbtCompileDir.getAbsolutePath :+ runtimeClasses("jvm").getAbsolutePath
 
-  def settings: Settings = {
+  def jsClassPath: Seq[String] =
+    getScalaJsJars.map(
+      _.getAbsolutePath
+    ) :+ sbtCompileDir.getAbsolutePath :+ runtimeClasses("js").getAbsolutePath
+
+  def settings: Settings = settings(classPath)
+
+  def jsSettings: Settings = {
+    val s = settings(jsClassPath)
+    s.plugin.value = List(getScalaJsCompilerJar.getAbsolutePath)
+    s
+  }
+
+  def settings(classPath: Seq[String]): Settings = {
     val s = new scala.tools.nsc.Settings
     s.Xprint.value = List("all", "_")
     s.deprecation.value = true
@@ -46,6 +60,11 @@ private[scoverage] object ScoverageCompiler {
     new ScoverageCompiler(settings, reporter)
   }
 
+  def defaultJS: ScoverageCompiler = {
+    val reporter = new scala.tools.nsc.reporters.ConsoleReporter(jsSettings)
+    new ScoverageCompiler(jsSettings, reporter)
+  }
+
   def locationCompiler: LocationCompiler = {
     val reporter = new scala.tools.nsc.reporters.ConsoleReporter(settings)
     new LocationCompiler(settings, reporter)
@@ -55,6 +74,19 @@ private[scoverage] object ScoverageCompiler {
     val scalaJars = List("scala-compiler", "scala-library", "scala-reflect")
     scalaJars.map(findScalaJar)
   }
+
+  private def getScalaJsJars: List[File] =
+    findJar(
+      "org.scala-js",
+      s"scalajs-library_$ShortScalaVersion",
+      BuildInfo.scalaJSVersion
+    ) :: getScalaJars
+
+  private def getScalaJsCompilerJar: File = findJar(
+    "org.scala-js",
+    s"scalajs-compiler_$ScalaVersion",
+    BuildInfo.scalaJSVersion
+  )
 
   private def sbtCompileDir: File = {
     val dir = new File(
@@ -67,20 +99,28 @@ private[scoverage] object ScoverageCompiler {
     dir
   }
 
-  private def runtimeClasses: File = new File(
-    s"./runtime/jvm/target/scala-$ScalaVersion/classes"
+  private def runtimeClasses(platform: String): File = new File(
+    s"./runtime/$platform/target/scala-$ScalaVersion/classes"
   )
 
   private def findScalaJar(artifactId: String): File =
-    findIvyJar("org.scala-lang", artifactId, ScalaVersion)
-      .orElse(findCoursierJar(artifactId, ScalaVersion))
+    findJar("org.scala-lang", artifactId, ScalaVersion)
+
+  private def findJar(
+      groupId: String,
+      artifactId: String,
+      version: String
+  ): File =
+    findIvyJar(groupId, artifactId, version)
+      .orElse(findCoursierJar(groupId, artifactId, version))
       .getOrElse {
         throw new FileNotFoundException(
-          s"Could not locate $artifactId/$ScalaVersion"
+          s"Could not locate $groupId:$artifactId:$version"
         )
       }
 
   private def findCoursierJar(
+      groupId: String,
       artifactId: String,
       version: String
   ): Option[File] = {
@@ -89,9 +129,10 @@ private[scoverage] object ScoverageCompiler {
       ".cache/coursier", // Linux
       "Library/Caches/Coursier", // MacOSX
       "AppData/Local/Coursier/cache" // Windows
-    ).map(loc =>
-      s"$userHome/$loc/v1/https/repo1.maven.org/maven2/org/scala-lang/$artifactId/$version/$artifactId-$version.jar"
-    )
+    ).map { loc =>
+      val gid = groupId.replace('.', '/')
+      s"$userHome/$loc/v1/https/repo1.maven.org/maven2/$gid/$artifactId/$version/$artifactId-$version.jar"
+    }
     jarPaths.map(new File(_)).find(_.exists())
   }
 
