@@ -99,6 +99,7 @@ lazy val root = Project("scalac-scoverage", file("."))
     plugin,
     runtime.jvm,
     runtime.js,
+    runtime.native,
     runtimeJSDOMTest,
     reporter,
     domain,
@@ -109,7 +110,7 @@ lazy val root = Project("scalac-scoverage", file("."))
 lazy val runtime = CrossProject(
   "runtime",
   file("runtime")
-)(JVMPlatform, JSPlatform)
+)(JVMPlatform, JSPlatform, NativePlatform)
   .crossType(CrossType.Full)
   .withoutSuffixFor(JVMPlatform)
   .settings(
