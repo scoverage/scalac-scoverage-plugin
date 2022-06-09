@@ -8,7 +8,7 @@ import scala.collection.mutable.HashMap
 import scala.io.{Source => SupportSource}
 
 object Platform {
- type ThreadSafeMap[A, B] = HashMap[A, B]
+  type ThreadSafeMap[A, B] = HashMap[A, B]
   lazy val ThreadSafeMap = HashMap
 
   type File = SupportFile
