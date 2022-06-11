@@ -38,9 +38,6 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ matrix.java }}
 
-      - name: Install JSDOM
-        run: npm install
-
       - name: run tests
         run: sbt ++${{ matrix.scala.version }} plugin/test
 
@@ -51,7 +48,7 @@ jobs:
       matrix:
         os: [ 'ubuntu-latest', 'windows-latest' ]
         java: ['8', '17' ]
-        module: ['runtime', 'runtimeJS', 'reporter', 'domain', 'serializer']
+        module: ['runtime', 'runtimeJS', 'runtimeJSDOMTest', 'runtimeNative', 'reporter', 'domain', 'serializer']
     steps:
       - name: checkout the repo
         uses: actions/checkout@v3
@@ -63,6 +60,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java }}
+
+      - name: Install JSDOM
+        run: npm install
+        if: matrix.module == 'runtimeJSDOMTest'
 
       - name: run tests
         run: sbt +${{ matrix.module }}/test
