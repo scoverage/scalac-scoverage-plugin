@@ -2,10 +2,10 @@
 
 ![build](https://github.com/scoverage/scalac-scoverage-plugin/workflows/build/badge.svg)
 [![Gitter](https://img.shields.io/gitter/room/scoverage/scoverage.svg)](https://gitter.im/scoverage/scoverage)
-[![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.10.svg?label=latest%20release%20for%202.10)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.10%22)
 [![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.11.12.svg?label=latest%202.11%20Scala%20support%20[2.11.12]%20and%20latest%20version)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.11.12%22)
-[![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.12.14.svg?label=2.12%20Scala%20support%20)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.12.15%22)
-[![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.13.6.svg?label=2.13%20Scala%20support%20)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.13.6%22)
+[![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.12.16.svg?label=2.12%20Scala%20support%20)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.12.16%22)
+[![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-plugin_2.13.8.svg?label=2.13%20Scala%20support%20)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-plugin_2.13.8%22)
+[![Maven Central](https://img.shields.io/maven-central/v/org.scoverage/scalac-scoverage-domain_3.svg?label=3%20Scala%20support%20)](http://search.maven.org/#search|ga|1|g%3A%22org.scoverage%22%20AND%20a%3A%22scalac-scoverage-domain_3%22)
 [![License](http://img.shields.io/:license-Apache%202-red.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 scoverage is a free Apache licensed code coverage tool for Scala that offers
@@ -14,12 +14,14 @@ statement and branch coverage.  scoverage is available for
 [Maven](https://github.com/scoverage/scoverage-maven-plugin), and
 [Gradle](https://github.com/scoverage/gradle-scoverage).
 
-To see scoverage in action check out the
-[samples](https://github.com/scoverage/scoverage-samples) project which shows
-you covered and non-covered statements, along with an upload to coveralls.
+
+**NOTE**: That this repository contains the Scala compiler plugin for Code coverage
+in Scala 2 and other coverage utilities for generating reports. For Scala 3 code
+coverage the [compiler](https://github.com/lampepfl/dotty) natively produces
+code coverage output, but the reporting logic utilities are then shared with the
+Scala 2 code coverage utilities in this repo.
 
 ![Screenshot of scoverage report html](misc/screenshot2.png)
-
 
 ### Statement Coverage
 
@@ -31,19 +33,19 @@ In powerful, expressive languages like Scala, quite often multiple statements, o
 are included on a single line, eg a very simple example:
 
 ```
-val status = if (age < 18) "No beer" else "Beer for you"
+val status = if (Color == Red) Stop else Go
 ```
 
-If you had a unit test that ran through the value 18 you would get 100% line coverage
+If you had a unit test that ran through the Color Red you would get 100% line coverage
 yet you only have 50% statement coverage.
 
 Let's expand this example out to be multifacted, albeit somewhat contrived:
 
 ```
-val status = if (religion == "Pentecostalist") "Beer forbidden" else if (age < 18) "Underage" else "Beer for you"
+val status = if (Color == Red) Stop else if (Sign == Stop) Stop else Go
 ```
 
-Now we would get 100% code coverage for passing in the values ("Buddhist", 34).
+Now we would get 100% code coverage for passing in the values (Green, SpeedLimit).
 
 That's why in scoverage we focus on statement coverage, and don't even include line coverage as a metric.
 This is a paradigm shift that we hope will take hold.
