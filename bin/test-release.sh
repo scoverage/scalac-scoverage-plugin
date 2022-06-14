@@ -26,6 +26,8 @@ coursier fetch \
   org.scoverage:scalac-scoverage-runtime_2.13:$version \
   org.scoverage:scalac-scoverage-runtime_sjs1_2.12:$version \
   org.scoverage:scalac-scoverage-runtime_sjs1_2.13:$version \
+  org.scoverage:scalac-scoverage-runtime_native0.4_2.12:$version \
+  org.scoverage:scalac-scoverage-runtime_native0.4_2.13:$version \
   org.scoverage:scalac-scoverage-domain_2.12:$version \
   org.scoverage:scalac-scoverage-domain_2.13:$version \
   org.scoverage:scalac-scoverage-domain_3:$version \
