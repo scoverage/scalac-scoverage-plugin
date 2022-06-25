@@ -1,0 +1,45 @@
+name: Bug Report
+description: Create a bug report for Scala 2 or reports. For Scala 3 issues please report to https://github.com/lampepfl/dotty.
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+      placeholder: |
+        Description ...
+
+        Reproduction steps
+        1. Go to ...
+        2. Click on ...
+        3. Scroll down to ...
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expectation
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+
+  - type: dropdown
+    id: build-tool
+    attributes:
+      label: What build tool are you using?
+      options:
+        - sbt
+        - Mill
+        - Gradle
+        - Maven
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version of scoverage
+      placeholder: v2.0.0
+    validations:
+      required: true
