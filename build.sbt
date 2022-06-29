@@ -165,7 +165,7 @@ lazy val reporter =
         .map {
           // Lock this for 2.12 to align with the compiler
           // https://github.com/scala/scala/pull/9743
-          case ((2, 12)) => "org.scala-lang.modules" %% "scala-xml" % "1.0.6"
+          case ((2, 12)) => "org.scala-lang.modules" %% "scala-xml" % "1.3.0"
           case _         => "org.scala-lang.modules" %% "scala-xml" % "2.1.0"
         },
       sharedSettings,
