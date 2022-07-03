@@ -112,7 +112,8 @@ class ScoverageInstrumentationComponent(
     coverageFilter = new RegexCoverageFilter(
       options.excludedPackages,
       options.excludedFiles,
-      options.excludedSymbols
+      options.excludedSymbols,
+      reporter
     )
     new File(options.dataDir).mkdirs() // ensure data directory is created
   }
@@ -230,8 +231,8 @@ class ScoverageInstrumentationComponent(
     ): Tree = {
       safeSource(tree) match {
         case None =>
-          reporter.echo(
-            s"[warn] Could not instrument [${tree.getClass.getSimpleName}/${tree.symbol}]. No pos."
+          reporter.warning(
+            NoPosition(), s"Could not instrument [${tree.getClass.getSimpleName}/${tree.symbol}]."
           )
           tree
         case Some(source) =>
@@ -361,7 +362,7 @@ class ScoverageInstrumentationComponent(
       Location.fromGlobal(global)(t) match {
         case Some(loc) => this.location = loc
         case _ =>
-          reporter.warning(t.pos, s"[warn] Cannot update location for $t")
+          reporter.warning(t.pos, s"Cannot update location for $t")
       }
     }
 

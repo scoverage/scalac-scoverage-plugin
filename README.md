@@ -88,7 +88,7 @@ Search for scalac-scoverage-plugin.
 #### Excluding code from coverage stats
 
 You can exclude whole classes or packages by name. Pass a semicolon separated
-list of regexes to the 'excludedPackages' option.
+list of regexes to the `excludedPackages` option.
 
 For example:
 
@@ -97,6 +97,13 @@ For example:
 The regular expressions are matched against the fully qualified class name, and must match the entire string to take effect.
 
 Any matched classes will not be instrumented or included in the coverage report.
+
+You can also exclude files from being considered for instrumentation.
+
+    -P:scoverage:excludedFiles:.*\/two\/GoodCoverage\.scala;.*\/three\/.*
+
+Note: This only works for Scala2. Right now Scala3 does not support
+a way to exclude packages or files from being instrumented.
 
 You can also mark sections of code with comments like:
 
