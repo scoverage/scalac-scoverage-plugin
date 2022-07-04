@@ -4,50 +4,54 @@ import scala.reflect.internal.util.BatchSourceFile
 import scala.reflect.internal.util.NoFile
 import scala.reflect.internal.util.SourceFile
 import scala.reflect.io.VirtualFile
+import scala.tools.nsc.reporters.ConsoleReporter
+import scala.tools.nsc.Settings
 
 import munit.FunSuite
 
 class RegexCoverageFilterTest extends FunSuite {
 
+  val reporter = new ConsoleReporter(new Settings())
+
   test("isClassIncluded should return true for empty excludes") {
-    assert(new RegexCoverageFilter(Nil, Nil, Nil).isClassIncluded("x"))
+    assert(new RegexCoverageFilter(Nil, Nil, Nil, reporter).isClassIncluded("x"))
   }
 
   test("should not crash for empty input") {
-    assert(new RegexCoverageFilter(Nil, Nil, Nil).isClassIncluded(""))
+    assert(new RegexCoverageFilter(Nil, Nil, Nil, reporter).isClassIncluded(""))
   }
 
   test("should exclude scoverage -> scoverage") {
     assert(
-      !new RegexCoverageFilter(Seq("scoverage"), Nil, Nil)
+      !new RegexCoverageFilter(Seq("scoverage"), Nil, Nil, reporter)
         .isClassIncluded("scoverage")
     )
   }
 
   test("should include scoverage -> scoverageeee") {
     assert(
-      new RegexCoverageFilter(Seq("scoverage"), Nil, Nil)
+      new RegexCoverageFilter(Seq("scoverage"), Nil, Nil, reporter)
         .isClassIncluded("scoverageeee")
     )
   }
 
   test("should exclude scoverage* -> scoverageeee") {
     assert(
-      !new RegexCoverageFilter(Seq("scoverage*"), Nil, Nil)
+      !new RegexCoverageFilter(Seq("scoverage*"), Nil, Nil, reporter)
         .isClassIncluded("scoverageeee")
     )
   }
 
   test("should include eee -> scoverageeee") {
     assert(
-      new RegexCoverageFilter(Seq("eee"), Nil, Nil)
+      new RegexCoverageFilter(Seq("eee"), Nil, Nil, reporter)
         .isClassIncluded("scoverageeee")
     )
   }
 
   test("should exclude .*eee -> scoverageeee") {
     assert(
-      !new RegexCoverageFilter(Seq(".*eee"), Nil, Nil)
+      !new RegexCoverageFilter(Seq(".*eee"), Nil, Nil, reporter)
         .isClassIncluded("scoverageeee")
     )
   }
@@ -56,13 +60,13 @@ class RegexCoverageFilterTest extends FunSuite {
 
   test("isFileIncluded should return true for empty excludes") {
     val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
-    assert(new RegexCoverageFilter(Nil, Nil, Nil).isFileIncluded(file))
+    assert(new RegexCoverageFilter(Nil, Nil, Nil, reporter).isFileIncluded(file))
   }
 
   test("should exclude by filename") {
     val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
     assert(
-      !new RegexCoverageFilter(Nil, Seq("sammy"), Nil)
+      !new RegexCoverageFilter(Nil, Seq("sammy\\.scala"), Nil, reporter)
         .isFileIncluded(file)
     )
   }
@@ -70,7 +74,7 @@ class RegexCoverageFilterTest extends FunSuite {
   test("should exclude by regex wildcard") {
     val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
     assert(
-      !new RegexCoverageFilter(Nil, Seq("sam.*"), Nil)
+      !new RegexCoverageFilter(Nil, Seq("sam.*"), Nil, reporter)
         .isFileIncluded(file)
     )
   }
@@ -78,7 +82,7 @@ class RegexCoverageFilterTest extends FunSuite {
   test("should not exclude non matching regex") {
     val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
     assert(
-      new RegexCoverageFilter(Nil, Seq("qweqeqwe"), Nil)
+      new RegexCoverageFilter(Nil, Seq("qweqeqwe"), Nil, reporter)
         .isFileIncluded(file)
     )
   }
@@ -86,61 +90,61 @@ class RegexCoverageFilterTest extends FunSuite {
   val options = ScoverageOptions.default()
 
   test("isSymbolIncluded should return true for empty excludes") {
-    assert(new RegexCoverageFilter(Nil, Nil, Nil).isSymbolIncluded("x"))
+    assert(new RegexCoverageFilter(Nil, Nil, Nil, reporter).isSymbolIncluded("x"))
   }
 
   test("should not crash for empty input") {
-    assert(new RegexCoverageFilter(Nil, Nil, Nil).isSymbolIncluded(""))
+    assert(new RegexCoverageFilter(Nil, Nil, Nil, reporter).isSymbolIncluded(""))
   }
 
   test("should exclude scoverage -> scoverage") {
     assert(
-      !new RegexCoverageFilter(Nil, Nil, Seq("scoverage"))
+      !new RegexCoverageFilter(Nil, Nil, Seq("scoverage"), reporter)
         .isSymbolIncluded("scoverage")
     )
   }
 
   test("should include scoverage -> scoverageeee") {
     assert(
-      new RegexCoverageFilter(Nil, Nil, Seq("scoverage"))
+      new RegexCoverageFilter(Nil, Nil, Seq("scoverage"), reporter)
         .isSymbolIncluded("scoverageeee")
     )
   }
   test("should exclude scoverage* -> scoverageeee") {
     assert(
-      !new RegexCoverageFilter(Nil, Nil, Seq("scoverage*"))
+      !new RegexCoverageFilter(Nil, Nil, Seq("scoverage*"), reporter)
         .isSymbolIncluded("scoverageeee")
     )
   }
 
   test("should include eee -> scoverageeee") {
     assert(
-      new RegexCoverageFilter(Nil, Nil, Seq("eee"))
+      new RegexCoverageFilter(Nil, Nil, Seq("eee"), reporter)
         .isSymbolIncluded("scoverageeee")
     )
   }
 
   test("should exclude .*eee -> scoverageeee") {
     assert(
-      !new RegexCoverageFilter(Nil, Nil, Seq(".*eee"))
+      !new RegexCoverageFilter(Nil, Nil, Seq(".*eee"), reporter)
         .isSymbolIncluded("scoverageeee")
     )
   }
   test("should exclude scala.reflect.api.Exprs.Expr") {
     assert(
-      !new RegexCoverageFilter(Nil, Nil, options.excludedSymbols)
+      !new RegexCoverageFilter(Nil, Nil, options.excludedSymbols, reporter)
         .isSymbolIncluded("scala.reflect.api.Exprs.Expr")
     )
   }
   test("should exclude scala.reflect.macros.Universe.Tree") {
     assert(
-      !new RegexCoverageFilter(Nil, Nil, options.excludedSymbols)
+      !new RegexCoverageFilter(Nil, Nil, options.excludedSymbols, reporter)
         .isSymbolIncluded("scala.reflect.macros.Universe.Tree")
     )
   }
   test("should exclude scala.reflect.api.Trees.Tree") {
     assert(
-      !new RegexCoverageFilter(Nil, Nil, options.excludedSymbols)
+      !new RegexCoverageFilter(Nil, Nil, options.excludedSymbols, reporter)
         .isSymbolIncluded("scala.reflect.api.Trees.Tree")
     )
   }
@@ -158,7 +162,7 @@ class RegexCoverageFilterTest extends FunSuite {
         |8
         """.stripMargin
 
-    val numbers = new RegexCoverageFilter(Nil, Nil, Nil)
+    val numbers = new RegexCoverageFilter(Nil, Nil, Nil, reporter)
       .getExcludedLineNumbers(mockSourceFile(file))
     assertEquals(numbers, List.empty)
   }
@@ -182,7 +186,7 @@ class RegexCoverageFilterTest extends FunSuite {
         |16
         """.stripMargin
 
-    val numbers = new RegexCoverageFilter(Nil, Nil, Nil)
+    val numbers = new RegexCoverageFilter(Nil, Nil, Nil, reporter)
       .getExcludedLineNumbers(mockSourceFile(file))
     assertEquals(numbers, List(Range(4, 9), Range(12, 14)))
   }
@@ -205,7 +209,7 @@ class RegexCoverageFilterTest extends FunSuite {
         |15
         """.stripMargin
 
-    val numbers = new RegexCoverageFilter(Nil, Nil, Nil)
+    val numbers = new RegexCoverageFilter(Nil, Nil, Nil, reporter)
       .getExcludedLineNumbers(mockSourceFile(file))
     assertEquals(numbers, List(Range(4, 9), Range(12, 16)))
   }
@@ -228,7 +232,7 @@ class RegexCoverageFilterTest extends FunSuite {
         |15
         """.stripMargin
 
-    val numbers = new RegexCoverageFilter(Nil, Nil, Nil)
+    val numbers = new RegexCoverageFilter(Nil, Nil, Nil, reporter)
       .getExcludedLineNumbers(mockSourceFile(file))
     assertEquals(numbers, List(Range(4, 9), Range(12, 16)))
   }
