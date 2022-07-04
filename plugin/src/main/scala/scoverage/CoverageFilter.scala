@@ -31,7 +31,6 @@ class RegexCoverageFilter(
     excludedFiles: Seq[String],
     excludedSymbols: Seq[String],
     reporter: Reporter
-
 ) extends CoverageFilter {
   reporter.echo(s"scoverage excludedPackages: ${excludedPackages}")
   reporter.echo(s"scoverage excludedFiles: ${excludedFiles}")

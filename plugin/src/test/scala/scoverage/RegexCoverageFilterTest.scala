@@ -14,7 +14,9 @@ class RegexCoverageFilterTest extends FunSuite {
   val reporter = new ConsoleReporter(new Settings())
 
   test("isClassIncluded should return true for empty excludes") {
-    assert(new RegexCoverageFilter(Nil, Nil, Nil, reporter).isClassIncluded("x"))
+    assert(
+      new RegexCoverageFilter(Nil, Nil, Nil, reporter).isClassIncluded("x")
+    )
   }
 
   test("should not crash for empty input") {
@@ -60,7 +62,9 @@ class RegexCoverageFilterTest extends FunSuite {
 
   test("isFileIncluded should return true for empty excludes") {
     val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
-    assert(new RegexCoverageFilter(Nil, Nil, Nil, reporter).isFileIncluded(file))
+    assert(
+      new RegexCoverageFilter(Nil, Nil, Nil, reporter).isFileIncluded(file)
+    )
   }
 
   test("should exclude by filename") {
@@ -90,11 +94,15 @@ class RegexCoverageFilterTest extends FunSuite {
   val options = ScoverageOptions.default()
 
   test("isSymbolIncluded should return true for empty excludes") {
-    assert(new RegexCoverageFilter(Nil, Nil, Nil, reporter).isSymbolIncluded("x"))
+    assert(
+      new RegexCoverageFilter(Nil, Nil, Nil, reporter).isSymbolIncluded("x")
+    )
   }
 
   test("should not crash for empty input") {
-    assert(new RegexCoverageFilter(Nil, Nil, Nil, reporter).isSymbolIncluded(""))
+    assert(
+      new RegexCoverageFilter(Nil, Nil, Nil, reporter).isSymbolIncluded("")
+    )
   }
 
   test("should exclude scoverage -> scoverage") {

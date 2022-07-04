@@ -232,7 +232,8 @@ class ScoverageInstrumentationComponent(
       safeSource(tree) match {
         case None =>
           reporter.warning(
-            NoPosition, s"Could not instrument [${tree.getClass.getSimpleName}/${tree.symbol}]."
+            NoPosition,
+            s"Could not instrument [${tree.getClass.getSimpleName}/${tree.symbol}]."
           )
           tree
         case Some(source) =>
