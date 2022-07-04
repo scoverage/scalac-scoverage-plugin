@@ -3,6 +3,7 @@ package scoverage
 import scala.collection.mutable
 import scala.reflect.internal.util.Position
 import scala.reflect.internal.util.SourceFile
+import scala.tools.nsc.reporters.Reporter
 import scala.util.matching.Regex
 
 /** Methods related to filtering the instrumentation and coverage.
@@ -29,7 +30,7 @@ class RegexCoverageFilter(
     excludedPackages: Seq[String],
     excludedFiles: Seq[String],
     excludedSymbols: Seq[String],
-    reporter: scala.tools.nsc.reporters.Reporter
+    reporter: Reporter
 
 ) extends CoverageFilter {
   reporter.echo(s"scoverage excludedPackages: ${excludedPackages}")
