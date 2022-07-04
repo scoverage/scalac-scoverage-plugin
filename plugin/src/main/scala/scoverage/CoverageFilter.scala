@@ -32,9 +32,9 @@ class RegexCoverageFilter(
     excludedSymbols: Seq[String],
     reporter: Reporter
 ) extends CoverageFilter {
-  reporter.echo(s"scoverage excludedPackages: ${excludedPackages}")
-  reporter.echo(s"scoverage excludedFiles: ${excludedFiles}")
-  reporter.echo(s"scoverage excludedSymbols: ${excludedSymbols}")
+  if (excludedPackages.nonEmpty) reporter.echo(s"scoverage excludedPackages: ${excludedPackages}")
+  if (excludedFiles.nonEmpty) reporter.echo(s"scoverage excludedFiles: ${excludedFiles}")
+  if (excludedSymbols.nonEmpty) reporter.echo(s"scoverage excludedSymbols: ${excludedSymbols}")
 
   val excludedClassNamePatterns = excludedPackages.map(_.r.pattern)
   val excludedFilePatterns = excludedFiles.map(_.r.pattern)
@@ -61,7 +61,7 @@ class RegexCoverageFilter(
 
   override def isFileIncluded(file: SourceFile): Boolean = {
     def isFileMatch(file: SourceFile) = excludedFilePatterns.exists(
-      _.matcher(file.path).matches
+      _.matcher(file.path.replace(".scala", "")).matches
     )
     excludedFilePatterns.isEmpty || !isFileMatch(file)
   }

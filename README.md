@@ -100,9 +100,11 @@ Any matched classes will not be instrumented or included in the coverage report.
 
 You can also exclude files from being considered for instrumentation.
 
-    -P:scoverage:excludedFiles:.*\/two\/GoodCoverage\.scala;.*\/three\/.*
+    -P:scoverage:excludedFiles:.*\/two\/GoodCoverage;.*\/three\/.*
 
-Note: This only works for Scala2. Right now Scala3 does not support
+Note: The `.scala` file extension needs to be omitted from the filename, if one is given.
+
+Note: These two options only work for Scala2. Right now Scala3 does not support
 a way to exclude packages or files from being instrumented.
 
 You can also mark sections of code with comments like:

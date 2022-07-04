@@ -70,7 +70,7 @@ class RegexCoverageFilterTest extends FunSuite {
   test("should exclude by filename") {
     val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
     assert(
-      !new RegexCoverageFilter(Nil, Seq("sammy\\.scala"), Nil, reporter)
+      !new RegexCoverageFilter(Nil, Seq("sammy"), Nil, reporter)
         .isFileIncluded(file)
     )
   }
