@@ -15,6 +15,7 @@ case class Coverage()
   private val statementsById = mutable.Map[Int, Statement]()
   override def statements = statementsById.values
   def add(stmt: Statement): Unit = statementsById.put(stmt.id, stmt)
+  def remove(id: Int): Unit = statementsById.remove(id)
 
   private val ignoredStatementsById = mutable.Map[Int, Statement]()
   override def ignoredStatements = ignoredStatementsById.values
