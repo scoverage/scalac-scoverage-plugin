@@ -32,9 +32,12 @@ class RegexCoverageFilter(
     excludedSymbols: Seq[String],
     reporter: Reporter
 ) extends CoverageFilter {
-  if (excludedPackages.nonEmpty) reporter.echo(s"scoverage excludedPackages: ${excludedPackages}")
-  if (excludedFiles.nonEmpty) reporter.echo(s"scoverage excludedFiles: ${excludedFiles}")
-  if (excludedSymbols.nonEmpty) reporter.echo(s"scoverage excludedSymbols: ${excludedSymbols}")
+  if (excludedPackages.nonEmpty)
+    reporter.echo(s"scoverage excludedPackages: ${excludedPackages}")
+  if (excludedFiles.nonEmpty)
+    reporter.echo(s"scoverage excludedFiles: ${excludedFiles}")
+  if (excludedSymbols.nonEmpty)
+    reporter.echo(s"scoverage excludedSymbols: ${excludedSymbols}")
 
   val excludedClassNamePatterns = excludedPackages.map(_.r.pattern)
   val excludedFilePatterns = excludedFiles.map(_.r.pattern)
