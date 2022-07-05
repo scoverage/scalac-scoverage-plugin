@@ -353,7 +353,7 @@ class ScoverageInstrumentationComponent(
     def isClassIncluded(symbol: Symbol): Boolean =
       coverageFilter.isClassIncluded(symbol.fullNameString)
     def isFileIncluded(source: SourceFile): Boolean =
-      coverageFilter.isFileIncluded(source)
+      coverageFilter.isFileIncluded(source.path)
     def isStatementIncluded(pos: Position): Boolean =
       coverageFilter.isLineIncluded(pos)
     def isSymbolIncluded(symbol: Symbol): Boolean =

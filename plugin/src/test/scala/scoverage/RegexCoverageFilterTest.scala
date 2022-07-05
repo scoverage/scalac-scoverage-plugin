@@ -63,7 +63,8 @@ class RegexCoverageFilterTest extends FunSuite {
   test("isFileIncluded should return true for empty excludes") {
     val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
     assert(
-      new RegexCoverageFilter(Nil, Nil, Nil, reporter).isFileIncluded(file)
+      new RegexCoverageFilter(Nil, Nil, Nil, reporter)
+        .isFileIncluded(file.path)
     )
   }
 
@@ -71,7 +72,7 @@ class RegexCoverageFilterTest extends FunSuite {
     val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
     assert(
       !new RegexCoverageFilter(Nil, Seq("sammy"), Nil, reporter)
-        .isFileIncluded(file)
+        .isFileIncluded(file.path)
     )
   }
 
@@ -79,7 +80,7 @@ class RegexCoverageFilterTest extends FunSuite {
     val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
     assert(
       !new RegexCoverageFilter(Nil, Seq("sam.*"), Nil, reporter)
-        .isFileIncluded(file)
+        .isFileIncluded(file.path)
     )
   }
 
@@ -87,7 +88,7 @@ class RegexCoverageFilterTest extends FunSuite {
     val file = new BatchSourceFile(abstractFile, Array.emptyCharArray)
     assert(
       new RegexCoverageFilter(Nil, Seq("qweqeqwe"), Nil, reporter)
-        .isFileIncluded(file)
+        .isFileIncluded(file.path)
     )
   }
 
@@ -95,13 +96,15 @@ class RegexCoverageFilterTest extends FunSuite {
 
   test("isSymbolIncluded should return true for empty excludes") {
     assert(
-      new RegexCoverageFilter(Nil, Nil, Nil, reporter).isSymbolIncluded("x")
+      new RegexCoverageFilter(Nil, Nil, Nil, reporter)
+        .isSymbolIncluded("x")
     )
   }
 
   test("should not crash for empty input") {
     assert(
-      new RegexCoverageFilter(Nil, Nil, Nil, reporter).isSymbolIncluded("")
+      new RegexCoverageFilter(Nil, Nil, Nil, reporter)
+        .isSymbolIncluded("")
     )
   }
 

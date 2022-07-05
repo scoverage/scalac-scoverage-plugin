@@ -12,7 +12,7 @@ import scala.util.matching.Regex
   */
 trait CoverageFilter {
   def isClassIncluded(className: String): Boolean
-  def isFileIncluded(file: SourceFile): Boolean
+  def isFileIncluded(path: String): Boolean
   def isLineIncluded(position: Position): Boolean
   def isSymbolIncluded(symbolName: String): Boolean
   def getExcludedLineNumbers(sourceFile: SourceFile): List[Range]
@@ -22,7 +22,7 @@ object AllCoverageFilter extends CoverageFilter {
   override def getExcludedLineNumbers(sourceFile: SourceFile): List[Range] = Nil
   override def isLineIncluded(position: Position): Boolean = true
   override def isClassIncluded(className: String): Boolean = true
-  override def isFileIncluded(file: SourceFile): Boolean = true
+  override def isFileIncluded(path: String): Boolean = true
   override def isSymbolIncluded(symbolName: String): Boolean = true
 }
 
@@ -62,11 +62,11 @@ class RegexCoverageFilter(
     )
   }
 
-  override def isFileIncluded(file: SourceFile): Boolean = {
-    def isFileMatch(file: SourceFile) = excludedFilePatterns.exists(
-      _.matcher(file.path.replace(".scala", "")).matches
+  override def isFileIncluded(path: String): Boolean = {
+    def isFileMatch(path: String) = excludedFilePatterns.exists(
+      _.matcher(path.replace(".scala", "")).matches
     )
-    excludedFilePatterns.isEmpty || !isFileMatch(file)
+    excludedFilePatterns.isEmpty || !isFileMatch(path)
   }
 
   /** True if the line containing `position` has not been excluded by a magic comment.
