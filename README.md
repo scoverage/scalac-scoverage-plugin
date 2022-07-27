@@ -11,7 +11,8 @@
 scoverage is a free Apache licensed code coverage tool for Scala that offers
 statement and branch coverage.  scoverage is available for
 [sbt](https://github.com/scoverage/sbt-scoverage),
-[Maven](https://github.com/scoverage/scoverage-maven-plugin), and
+[Maven](https://github.com/scoverage/scoverage-maven-plugin),
+[Mill](https://com-lihaoyi.github.io/mill/mill/Plugin_Scoverage.html), and
 [Gradle](https://github.com/scoverage/gradle-scoverage).
 
 
