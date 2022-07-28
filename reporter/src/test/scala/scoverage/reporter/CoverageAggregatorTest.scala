@@ -77,11 +77,19 @@ class CoverageAggregatorTest extends FunSuite {
     measurementsFile3Writer.write("2\n")
     measurementsFile3Writer.close()
 
+    val aggregatedForGradle = CoverageAggregator.aggregate(
+      Array(dir1, dir2, dir3),
+      new File(sourceRoot)
+    )
+
+    assert(aggregatedForGradle.nonEmpty)
+
     val aggregated =
       CoverageAggregator.aggregatedCoverage(
         Seq(dir1, dir2, dir3),
         new File(sourceRoot)
       )
+
     assertEquals(aggregated.statements.toSet.size, 4)
     assertEquals(
       aggregated.statements.map(_.copy(id = 0)).toSet,
