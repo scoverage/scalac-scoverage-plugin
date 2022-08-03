@@ -79,9 +79,9 @@ class PluginCoverageTest extends FunSuite with MacroSupport {
     assert(!compiler.reporter.hasWarnings)
 
     /** should have the following statements instrumented:
-      * the selector, clause 1
+      * the selector, clause/skip 1
       */
-    compiler.assertNMeasuredStatements(2)
+    compiler.assertNMeasuredStatements(3)
   }
   test("scoverage should instrument match guards") {
     val compiler = ScoverageCompiler.default
@@ -98,7 +98,7 @@ class PluginCoverageTest extends FunSuite with MacroSupport {
     /** should have the following statements instrumented:
       * the selector, guard 1, clause 1, guard 2, clause 2, clause 3
       */
-    compiler.assertNMeasuredStatements(6)
+    compiler.assertNMeasuredStatements(9)
   }
 
   test("scoverage should instrument non basic selector") {
@@ -114,7 +114,8 @@ class PluginCoverageTest extends FunSuite with MacroSupport {
     // the someValue method entry
     // the selector call
     // case block "yes" literal
-    compiler.assertNMeasuredStatements(3)
+    // skip case block
+    compiler.assertNMeasuredStatements(4)
   }
 
   test("scoverage should instrument conditional selectors in a match") {
@@ -134,7 +135,8 @@ class PluginCoverageTest extends FunSuite with MacroSupport {
     // elsep block,
     // elsep literal "2",
     // case block "yes" literal
-    compiler.assertNMeasuredStatements(6)
+    // skip case block "yes" literal
+    compiler.assertNMeasuredStatements(7)
   }
 
   // https://github.com/scoverage/sbt-scoverage/issues/16
@@ -261,8 +263,9 @@ class PluginCoverageTest extends FunSuite with MacroSupport {
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
     // should have one statement for each case body
+    // and one statement for each case skipped
     // selector is a constant so would be ignored.
-    compiler.assertNMeasuredStatements(3)
+    compiler.assertNMeasuredStatements(6)
   }
 
   test("plugin should support yields") {

@@ -213,13 +213,17 @@ class ScoverageInstrumentationComponent(
         }) ++ cases.takeRight(1)
     }
 
-    def transformCases(cases: List[CaseDef]): List[CaseDef] = {
+    def transformCases(
+        cases: List[CaseDef],
+        branch: Boolean = false
+    ): List[CaseDef] = {
       cases.map(c => {
         treeCopy.CaseDef(
           c,
           c.pat,
           process(c.guard),
-          process(c.body)
+          if (branch) instrument(process(c.body), c.body, branch = true)
+          else process(c.body)
         )
       })
     }
@@ -392,7 +396,7 @@ class ScoverageInstrumentationComponent(
                       // note: do not transform last case as that is the default handling
                       d.rhs,
                       selector,
-                      transformCases(cases.init) :+ cases.last
+                      transformCases(cases.init, branch = true) :+ cases.last
                     )
                   )
                 case _ =>
@@ -697,7 +701,11 @@ class ScoverageInstrumentationComponent(
               treeCopy.Match(tree, selector, transformCases(cases))
             else
               // .. but we will if it was a user match
-              treeCopy.Match(tree, process(selector), transformCases(cases))
+              treeCopy.Match(
+                tree,
+                process(selector),
+                transformCases(cases, branch = true)
+              )
           }
 
         // a synthetic object is a generated object, such as case class companion
@@ -791,7 +799,7 @@ class ScoverageInstrumentationComponent(
           treeCopy.Try(
             tree,
             instrument(process(t), t, branch = true),
-            transformCases(cases),
+            transformCases(cases, branch = true),
             if (f.isEmpty) f else instrument(process(f), f, branch = true)
           )
 
