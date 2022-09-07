@@ -98,12 +98,16 @@ class CoberturaXmlWriterTest extends FunSuite {
     val xml = customXML.loadFile(fileIn(dir))
 
     assertEquals(
-      ((xml \\ "coverage" \ "packages" \ "package" \ "classes" \ "class")(0) \ "@filename").text,
+      ((xml \\ "coverage" \ "packages" \ "package" \ "classes" \ "class")(
+        0
+      ) \ "@filename").text,
       "a.scala"
     )
 
     assertEquals(
-      ((xml \\ "coverage" \ "packages" \ "package" \ "classes" \ "class")(1) \ "@filename").text,
+      ((xml \\ "coverage" \ "packages" \ "package" \ "classes" \ "class")(
+        1
+      ) \ "@filename").text,
       "a/b.scala"
     )
   }
