@@ -101,14 +101,14 @@ class CoberturaXmlWriterTest extends FunSuite {
       ((xml \\ "coverage" \ "packages" \ "package" \ "classes" \ "class")(
         0
       ) \ "@filename").text,
-      "a.scala"
+      new File("a.scala").getPath()
     )
 
     assertEquals(
       ((xml \\ "coverage" \ "packages" \ "package" \ "classes" \ "class")(
         1
       ) \ "@filename").text,
-      "a/b.scala"
+      new File("a", "b.scala").getPath()
     )
   }
 
