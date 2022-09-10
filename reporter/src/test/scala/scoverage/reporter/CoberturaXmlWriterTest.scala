@@ -34,6 +34,84 @@ class CoberturaXmlWriterTest extends FunSuite {
   private def canonicalPath(fileName: String) =
     new File(sourceRoot, fileName).getCanonicalPath
 
+  test("cobertura output has relative file path") {
+
+    val dir = tempDir()
+
+    val coverage = Coverage()
+    coverage.add(
+      Statement(
+        Location(
+          "com.sksamuel.scoverage",
+          "A",
+          "com.sksamuel.scoverage.A",
+          ClassType.Object,
+          "create",
+          canonicalPath("a.scala")
+        ),
+        1,
+        2,
+        3,
+        12,
+        "",
+        "",
+        "",
+        false,
+        3
+      )
+    )
+    coverage.add(
+      Statement(
+        Location(
+          "com.sksamuel.scoverage.A",
+          "B",
+          "com.sksamuel.scoverage.A.B",
+          ClassType.Object,
+          "create",
+          canonicalPath("a/b.scala")
+        ),
+        2,
+        2,
+        3,
+        12,
+        "",
+        "",
+        "",
+        false,
+        3
+      )
+    )
+
+    val writer = new CoberturaXmlWriter(sourceRoot, dir, None)
+    writer.write(coverage)
+
+    // Needed to acount for https://github.com/scala/scala-xml/pull/177
+    val customXML: XMLLoader[Elem] = XML.withSAXParser {
+      val factory = SAXParserFactory.newInstance()
+      factory.setFeature(
+        "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+        false
+      )
+      factory.newSAXParser()
+    }
+
+    val xml = customXML.loadFile(fileIn(dir))
+
+    assertEquals(
+      ((xml \\ "coverage" \ "packages" \ "package" \ "classes" \ "class")(
+        0
+      ) \ "@filename").text,
+      new File("a.scala").getPath()
+    )
+
+    assertEquals(
+      ((xml \\ "coverage" \ "packages" \ "package" \ "classes" \ "class")(
+        1
+      ) \ "@filename").text,
+      new File("a", "b.scala").getPath()
+    )
+  }
+
   test("cobertura output validates") {
 
     val dir = tempDir()

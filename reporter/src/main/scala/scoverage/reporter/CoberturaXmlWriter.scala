@@ -51,7 +51,7 @@ class CoberturaXmlWriter(
 
   def klass(klass: MeasuredClass): Node = {
     <class name={klass.fullClassName}
-           filename={klass.source}
+           filename={relativeSource(klass.source)}
            line-rate={DoubleFormat.twoFractionDigits(klass.statementCoverage)}
            branch-rate={DoubleFormat.twoFractionDigits(klass.branchCoverage)}
            complexity="0">
