@@ -22,9 +22,9 @@ jobs:
             { version: '2.12.17' },
             { version: '2.12.16' },
             { version: '2.12.15' },
+            { version: '2.13.10' },
             { version: '2.13.9' },
             { version: '2.13.8' },
-            { version: '2.13.7' },
           ]
     steps:
       - name: checkout the repo
