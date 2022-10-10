@@ -4,8 +4,6 @@ set -eux
 version=$1
 
 coursier fetch \
-  org.scoverage:scalac-scoverage-plugin_2.12.8:$version \
-  org.scoverage:scalac-scoverage-plugin_2.12.9:$version \
   org.scoverage:scalac-scoverage-plugin_2.12.10:$version \
   org.scoverage:scalac-scoverage-plugin_2.12.11:$version \
   org.scoverage:scalac-scoverage-plugin_2.12.12:$version \
