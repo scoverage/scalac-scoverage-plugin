@@ -112,7 +112,7 @@ class CoberturaXmlWriterTest extends FunSuite {
     )
   }
 
-  test("cobertura output validates".ignore) {
+  test("cobertura output validates") {
 
     val dir = tempDir()
 
@@ -298,8 +298,6 @@ class CoberturaXmlWriterTest extends FunSuite {
     writer.write(coverage)
 
     val domFactory = DocumentBuilderFactory.newInstance()
-    // TODO set validating here is no longer working as of 2.13.10. Not fully sure why but I don't use
-    // cobertura, so if someone wants to fix this, please do. I'll move forward with this not to block the release.
     domFactory.setValidating(true)
     val builder = domFactory.newDocumentBuilder()
     builder.setErrorHandler(new ErrorHandler() {
