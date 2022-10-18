@@ -26,7 +26,7 @@ class CoberturaXmlWriter(
     val file = new File(outputDir, "cobertura.xml")
     IOUtils.writeToFile(
       file,
-      "<?xml version=\"1.0\"?>\n<!DOCTYPE coverage SYSTEM \"http://cobertura.sourceforge.net/xml/coverage-04.dtd\">\n" +
+      "<?xml version=\"1.0\"?>\n<!DOCTYPE coverage SYSTEM \"https://cobertura.sourceforge.net/xml/coverage-04.dtd\">\n" +
         new PrettyPrinter(120, 4).format(xml(coverage)),
       sourceEncoding
     )
