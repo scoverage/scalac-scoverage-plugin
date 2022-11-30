@@ -16,16 +16,23 @@ class ScoverageXmlWriter(
     sourceDirectories: Seq[File],
     outputDir: File,
     debug: Boolean,
-    sourceEncoding: Option[String]
-) extends BaseReportWriter(sourceDirectories, outputDir, sourceEncoding) {
+    sourceEncoding: Option[String],
+    recoverNoSourceRoot: BaseReportWriter.PathRecoverer
+) extends BaseReportWriter(
+      sourceDirectories,
+      outputDir,
+      sourceEncoding,
+      recoverNoSourceRoot
+    ) {
 
   def this(
       sourceDir: File,
       outputDir: File,
       debug: Boolean,
-      sourceEncoding: Option[String]
+      sourceEncoding: Option[String],
+      recoverNoSourceRoot: BaseReportWriter.PathRecoverer
   ) = {
-    this(Seq(sourceDir), outputDir, debug, sourceEncoding)
+    this(Seq(sourceDir), outputDir, debug, sourceEncoding, recoverNoSourceRoot)
   }
 
   def write(coverage: Coverage): Unit = {
@@ -97,17 +104,19 @@ class ScoverageXmlWriter(
     </method>
   }
 
-  private def klass(klass: MeasuredClass): Node = {
-    <class name={klass.fullClassName}
-           filename={relativeSource(klass.source)}
-           statement-count={klass.statementCount.toString}
-           statements-invoked={klass.invokedStatementCount.toString}
-           statement-rate={klass.statementCoverageFormatted}
-           branch-rate={klass.branchCoverageFormatted}>
-      <methods>
-        {klass.methods.map(method)}
-      </methods>
-    </class>
+  private def klass(klass: MeasuredClass): Option[Node] = {
+    relativeSource(klass.source).map(sourcePath => {
+      <class name={klass.fullClassName}
+             filename={sourcePath}
+             statement-count={klass.statementCount.toString}
+             statements-invoked={klass.invokedStatementCount.toString}
+             statement-rate={klass.statementCoverageFormatted}
+             branch-rate={klass.branchCoverageFormatted}>
+        <methods>
+          {klass.methods.map(method)}
+        </methods>
+      </class>
+    })
   }
 
   private def pack(pack: MeasuredPackage): Node = {
@@ -116,7 +125,7 @@ class ScoverageXmlWriter(
              statements-invoked={pack.invokedStatementCount.toString}
              statement-rate={pack.statementCoverageFormatted}>
       <classes>
-        {pack.classes.map(klass)}
+        {pack.classes.flatMap(klass)}
       </classes>
     </package>
   }
