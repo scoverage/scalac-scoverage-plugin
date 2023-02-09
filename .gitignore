@@ -1,5 +1,8 @@
 *.log
 
+# Build Server Protocol
+.bsp/
+
 # SBT specific
 target/
 project/boot/
