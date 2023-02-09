@@ -158,7 +158,11 @@ class PluginCoverageTest extends FunSuite with MacroSupport {
     // case block expression
     // case none,
     // case block literal "0"
-    compiler.assertNMeasuredStatements(5)
+
+    // account for canbuildfrom statement
+    val expectedStatementsCount =
+      if (ScoverageCompiler.ShortScalaVersion < "2.13") 6 else 5
+    compiler.assertNMeasuredStatements(expectedStatementsCount)
   }
 
   // https://github.com/scoverage/sbt-scoverage/issues/16
