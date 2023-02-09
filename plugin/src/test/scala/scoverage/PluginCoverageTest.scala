@@ -130,13 +130,35 @@ class PluginCoverageTest extends FunSuite with MacroSupport {
     assert(!compiler.reporter.hasErrors)
     // should instrument:
     // the if clause,
-    // thenp block,
-    // thenp literal "1",
-    // elsep block,
-    // elsep literal "2",
+    // then block,
+    // then literal "1",
+    // else block,
+    // else literal "2",
     // case block "yes" literal
     // skip case block "yes" literal
     compiler.assertNMeasuredStatements(7)
+  }
+
+  test(
+    "scoverage should instrument anonymous function with pattern matching body"
+  ) {
+    val compiler = ScoverageCompiler.default
+    compiler.compileCodeSnippet(
+      """ object A {
+        |  def foo(a: List[Option[Int]]) = a.map {
+        |    case Some(value) => value + 1
+        |    case None => 0
+        |  }
+        |} """.stripMargin
+    )
+    assert(!compiler.reporter.hasErrors)
+    // should instrument:
+    // the def method entry,
+    // case Some,
+    // case block expression
+    // case none,
+    // case block literal "0"
+    compiler.assertNMeasuredStatements(5)
   }
 
   // https://github.com/scoverage/sbt-scoverage/issues/16
@@ -246,9 +268,9 @@ class PluginCoverageTest extends FunSuite with MacroSupport {
 
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
-    // should have 4 profiled statements: the outer apply, the true, the a < b, the false
+    // should have 7 profiled statements: the outer apply, and three pairs of case patterns & blocks
     // we are testing that we don't instrument the tuple2 call used here
-    compiler.assertNMeasuredStatements(4)
+    compiler.assertNMeasuredStatements(7)
   }
 
   test("scoverage should instrument all case statements in an explicit match") {

@@ -660,7 +660,20 @@ class ScoverageInstrumentationComponent(
 
         // handle function bodies. This AST node corresponds to the following Scala code: vparams => body
         case f: Function =>
-          treeCopy.Function(tree, f.vparams, process(f.body))
+          f.body match {
+            case b: Match =>
+              // anonymous function bodies with pattern matching needs to account for branches
+              treeCopy.Function(
+                tree,
+                f.vparams,
+                treeCopy.Match(
+                  b,
+                  b.selector,
+                  transformCases(b.cases, branch = true)
+                )
+              )
+            case _ => treeCopy.Function(tree, f.vparams, process(f.body))
+          }
 
         case _: Ident => tree
 
