@@ -57,12 +57,17 @@ private[scoverage] object ScoverageCompiler {
 
   def default: ScoverageCompiler = {
     val reporter = new scala.tools.nsc.reporters.ConsoleReporter(settings)
-    new ScoverageCompiler(settings, reporter)
+    new ScoverageCompiler(settings, reporter, validatePositions = true)
+  }
+
+  def noPositionValidation: ScoverageCompiler = {
+    val reporter = new scala.tools.nsc.reporters.ConsoleReporter(settings)
+    new ScoverageCompiler(settings, reporter, validatePositions = false)
   }
 
   def defaultJS: ScoverageCompiler = {
     val reporter = new scala.tools.nsc.reporters.ConsoleReporter(jsSettings)
-    new ScoverageCompiler(jsSettings, reporter)
+    new ScoverageCompiler(jsSettings, reporter, validatePositions = true)
   }
 
   def locationCompiler: LocationCompiler = {
@@ -152,7 +157,8 @@ private[scoverage] object ScoverageCompiler {
 
 class ScoverageCompiler(
     settings: scala.tools.nsc.Settings,
-    rep: scala.tools.nsc.reporters.Reporter
+    rep: scala.tools.nsc.reporters.Reporter,
+    validatePositions: Boolean
 ) extends scala.tools.nsc.Global(settings, rep) {
 
   def addToClassPath(file: File): Unit = {
@@ -268,7 +274,8 @@ class ScoverageCompiler(
 
   override def computeInternalPhases(): Unit = {
     super.computeInternalPhases()
-    addToPhasesSet(validator, "scoverage validator")
+    if (validatePositions)
+      addToPhasesSet(validator, "scoverage validator")
     addToPhasesSet(
       instrumentationComponent,
       "scoverage instrumentationComponent"
