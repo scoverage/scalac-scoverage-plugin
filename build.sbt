@@ -151,7 +151,14 @@ lazy val plugin =
       sharedSettings
     )
     .settings(
-      Test / unmanagedSourceDirectories += (Test / sourceDirectory).value / "scala-2.12+"
+      Test / unmanagedSourceDirectories += (Test / sourceDirectory).value / "scala-2.12+",
+      Test / unmanagedSourceDirectories ++= {
+        val sourceDir = (Test / sourceDirectory).value
+        CrossVersion.partialVersion(scalaVersion.value) match {
+          case Some((2, n)) if n >= 13 => Seq(sourceDir / "scala-2.13+")
+          case _                       => Seq.empty
+        }
+      }
     )
     .dependsOn(domain, reporter % "test->compile", serializer, buildInfo % Test)
 
