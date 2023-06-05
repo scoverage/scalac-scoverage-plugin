@@ -4,8 +4,8 @@ import scala.reflect.internal.util.BatchSourceFile
 import scala.reflect.internal.util.NoFile
 import scala.reflect.internal.util.SourceFile
 import scala.reflect.io.VirtualFile
-import scala.tools.nsc.reporters.ConsoleReporter
 import scala.tools.nsc.Settings
+import scala.tools.nsc.reporters.ConsoleReporter
 
 import munit.FunSuite
 
