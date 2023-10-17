@@ -15,8 +15,14 @@ import scoverage.domain.MeasuredPackage
 class ScoverageHtmlWriter(
     sourceDirectories: Seq[File],
     outputDir: File,
-    sourceEncoding: Option[String]
-) extends BaseReportWriter(sourceDirectories, outputDir, sourceEncoding) {
+    sourceEncoding: Option[String],
+    recoverNoSourceRoot: BaseReportWriter.PathRecoverer
+) extends BaseReportWriter(
+      sourceDirectories,
+      outputDir,
+      sourceEncoding,
+      recoverNoSourceRoot
+    ) {
 
   // to be used by gradle-scoverage plugin
   def this(
@@ -24,17 +30,34 @@ class ScoverageHtmlWriter(
       outputDir: File,
       sourceEncoding: Option[String]
   ) = {
-    this(sourceDirectories.toSeq, outputDir, sourceEncoding)
+    this(
+      sourceDirectories.toSeq,
+      outputDir,
+      sourceEncoding,
+      BaseReportWriter.failIfNoSourceRoot
+    )
   }
 
   // for backward compatibility only
+  @deprecated
   def this(sourceDirectories: Seq[File], outputDir: File) = {
-    this(sourceDirectories, outputDir, None);
+    this(
+      sourceDirectories,
+      outputDir,
+      None,
+      BaseReportWriter.failIfNoSourceRoot
+    );
   }
 
   // for backward compatibility only
+  @deprecated
   def this(sourceDirectory: File, outputDir: File) = {
-    this(Seq(sourceDirectory), outputDir)
+    this(
+      Seq(sourceDirectory),
+      outputDir,
+      None,
+      BaseReportWriter.failIfNoSourceRoot
+    )
   }
 
   def write(coverage: Coverage): Unit = {
@@ -81,16 +104,25 @@ class ScoverageHtmlWriter(
 
   private def writeFile(mfile: MeasuredFile): Unit = {
     // each highlighted file is written out using the same structure as the original file.
-    val file = new File(outputDir, relativeSource(mfile.source) + ".html")
+    val sourcePath = relativeSource(mfile.source).getOrElse(
+      throw new RuntimeException(
+        s"Expected the file $mfile to be in the source roots"
+      )
+    )
+    val htmlPath = sourcePath + ".html"
+    val file = new File(outputDir, htmlPath)
     file.getParentFile.mkdirs()
-    IOUtils.writeToFile(file, filePage(mfile).toString(), sourceEncoding)
+    IOUtils.writeToFile(
+      file,
+      filePage(mfile, htmlPath).toString(),
+      sourceEncoding
+    )
   }
 
   private def packageOverviewRelativePath(pkg: MeasuredPackage) =
     pkg.name.replace("<empty>", "(empty)") + ".html"
 
-  private def filePage(mfile: MeasuredFile): Node = {
-    val filename = relativeSource(mfile.source) + ".html"
+  private def filePage(mfile: MeasuredFile, filename: String): Node = {
     val css =
       "table.codegrid { font-family: monospace; font-size: 12px; width: auto!important; }" +
         "table.statementlist { width: auto!important; font-size: 13px; } " +
@@ -236,18 +268,18 @@ class ScoverageHtmlWriter(
         </tr>
       </thead>
       <tbody>
-        {classes.toSeq.sortBy(_.fullClassName) map classRow}
+        {classes.toSeq.sortBy(_.fullClassName).flatMap(classRow)}
       </tbody>
     </table>
   }
 
-  def classRow(klass: MeasuredClass): Node = {
+  def classRow(klass: MeasuredClass): Option[Node] = {
+    relativeSource(klass.source).map(path => classRow(klass, path))
+  }
 
+  def classRow(klass: MeasuredClass, relativeSourcePath: String): Node = {
     val filename: String = {
-
-      val fileRelativeToSource = new File(
-        relativeSource(klass.source) + ".html"
-      )
+      val fileRelativeToSource = new File(relativeSourcePath + ".html")
       val path = fileRelativeToSource.getParent
       val value = fileRelativeToSource.getName
 
