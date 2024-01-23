@@ -40,7 +40,7 @@ val status = if (Color == Red) Stop else Go
 If you had a unit test that ran through the Color Red you would get 100% line coverage
 yet you only have 50% statement coverage.
 
-Let's expand this example out to be multifacted, albeit somewhat contrived:
+Let's expand this example out to be multifaceted, albeit somewhat contrived:
 
 ```
 val status = if (Color == Red) Stop else if (Sign == Stop) Stop else Go
