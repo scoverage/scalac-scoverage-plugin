@@ -154,7 +154,7 @@ lazy val reporter =
   project
     .settings(
       name := "scalac-scoverage-reporter",
-      libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "2.2.0",
+      libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "2.3.0",
       sharedSettings,
       crossScalaVersions := Seq(defaultScala212, defaultScala213, defaultScala3)
     )
