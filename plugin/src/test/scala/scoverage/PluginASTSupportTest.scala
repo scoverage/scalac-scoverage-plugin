@@ -3,12 +3,12 @@ package scoverage
 import scala.concurrent.Future
 
 import munit.FunSuite
-import munit.GenericAfterEach
+import munit.AfterEach
 
 /** @author Stephen Samuel */
 class PluginASTSupportTest extends FunSuite with MacroSupport {
 
-  override def afterEach(context: GenericAfterEach[Future[Any]]): Unit = {
+  override def afterEach(context: AfterEach): Unit = {
     val compiler = ScoverageCompiler.default
     assert(!compiler.reporter.hasErrors)
   }

@@ -2,6 +2,8 @@
 
 # Build Server Protocol
 .bsp/
+.metals/
+metals.sbt
 
 # SBT specific
 target/
