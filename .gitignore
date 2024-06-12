@@ -25,5 +25,12 @@ credentials.sbt
 .idea_modules
 *.iml
 
+# VSCode with Metals specific
+.bsp
+.bloop
+.metals
+.vscode
+metals.sbt
+
 # npm specific
 node_modules/

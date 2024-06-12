@@ -1,7 +1,8 @@
 package scoverage.reporter
 
 import java.io.File
-import java.util.UUID
+import java.nio.file.Files
+import java.nio.file.Path
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.parsers.SAXParserFactory
 
@@ -12,79 +13,35 @@ import scala.xml.factory.XMLLoader
 import munit.FunSuite
 import org.xml.sax.ErrorHandler
 import org.xml.sax.SAXParseException
-import scoverage.domain.ClassType
 import scoverage.domain.Coverage
-import scoverage.domain.Location
-import scoverage.domain.Statement
+
+import TestUtils._
+import BaseReportWriter.failIfNoSourceRoot
 
 /** @author Stephen Samuel */
 class CoberturaXmlWriterTest extends FunSuite {
 
-  def tempDir(): File = {
-    val dir = new File(IOUtils.getTempDirectory, UUID.randomUUID.toString)
-    dir.mkdirs()
-    dir.deleteOnExit()
-    dir
-  }
+  val xmlOutputPath = FunFixture[Path](
+    setup = test => {
+      val dir = Files.createTempDirectory("test-cobertura")
+      dir.resolve("cobertura.xml")
+    },
+    teardown = file => {
+      Files.deleteIfExists(file)
+      Files.deleteIfExists(file.getParent())
+    }
+  )
 
-  def fileIn(dir: File) = new File(dir, "cobertura.xml")
+  // Let the current directory be our source root (any dir would do)
+  val sourceRoot = new File(".")
 
-  // Let current directory be our source root
-  private val sourceRoot = new File(".")
-  private def canonicalPath(fileName: String) =
+  def canonicalPath(fileName: String) =
     new File(sourceRoot, fileName).getCanonicalPath
 
-  test("cobertura output has relative file path") {
+  def relativePath(fileName: String) =
+    new File(sourceRoot, fileName).getPath.replace("./", "")
 
-    val dir = tempDir()
-
-    val coverage = Coverage()
-    coverage.add(
-      Statement(
-        Location(
-          "com.sksamuel.scoverage",
-          "A",
-          "com.sksamuel.scoverage.A",
-          ClassType.Object,
-          "create",
-          canonicalPath("a.scala")
-        ),
-        1,
-        2,
-        3,
-        12,
-        "",
-        "",
-        "",
-        false,
-        3
-      )
-    )
-    coverage.add(
-      Statement(
-        Location(
-          "com.sksamuel.scoverage.A",
-          "B",
-          "com.sksamuel.scoverage.A.B",
-          ClassType.Object,
-          "create",
-          canonicalPath("a/b.scala")
-        ),
-        2,
-        2,
-        3,
-        12,
-        "",
-        "",
-        "",
-        false,
-        3
-      )
-    )
-
-    val writer = new CoberturaXmlWriter(sourceRoot, dir, None)
-    writer.write(coverage)
-
+  def parseXML(file: Path): Elem = {
     // Needed to acount for https://github.com/scala/scala-xml/pull/177
     val customXML: XMLLoader[Elem] = XML.withSAXParser {
       val factory = SAXParserFactory.newInstance()
@@ -94,316 +51,109 @@ class CoberturaXmlWriterTest extends FunSuite {
       )
       factory.newSAXParser()
     }
+    customXML.loadFile(file.toFile())
+  }
 
-    val xml = customXML.loadFile(fileIn(dir))
+  xmlOutputPath.test("cobertura output has relative file path") { xmlPath =>
+    val coverage = Coverage()
+    val outputDir = xmlPath.getParent().toFile()
+    coverage.add(
+      testStatement(
+        testLocation(canonicalPath("a.scala"))
+      )
+    )
+    coverage.add(
+      testStatement(
+        testLocation(canonicalPath("a/b.scala"))
+      )
+    )
+    val writer =
+      new CoberturaXmlWriter(sourceRoot, outputDir, None, failIfNoSourceRoot)
+    writer.write(coverage)
+
+    val xml = parseXML(xmlPath)
 
     assertEquals(
       ((xml \\ "coverage" \ "packages" \ "package" \ "classes" \ "class")(
         0
       ) \ "@filename").text,
-      new File("a.scala").getPath()
+      relativePath("a.scala")
     )
 
     assertEquals(
       ((xml \\ "coverage" \ "packages" \ "package" \ "classes" \ "class")(
         1
       ) \ "@filename").text,
-      new File("a", "b.scala").getPath()
+      relativePath("a/b.scala")
     )
   }
 
-  test("cobertura output validates") {
-
-    val dir = tempDir()
-
+  xmlOutputPath.test("cobertura output validates") { xmlPath =>
     val coverage = Coverage()
-    coverage
-      .add(
-        Statement(
-          Location(
-            "com.sksamuel.scoverage",
-            "A",
-            "com.sksamuel.scoverage.A",
-            ClassType.Object,
-            "create",
-            canonicalPath("a.scala")
-          ),
-          1,
-          2,
-          3,
-          12,
-          "",
-          "",
-          "",
-          false,
-          3
-        )
-      )
-    coverage
-      .add(
-        Statement(
-          Location(
-            "com.sksamuel.scoverage",
-            "A",
-            "com.sksamuel.scoverage.A",
-            ClassType.Object,
-            "create2",
-            canonicalPath("a.scala")
-          ),
-          2,
-          2,
-          3,
-          16,
-          "",
-          "",
-          "",
-          false,
-          3
-        )
-      )
-    coverage
-      .add(
-        Statement(
-          Location(
-            "com.sksamuel.scoverage2",
-            "B",
-            "com.sksamuel.scoverage2.B",
-            ClassType.Object,
-            "retrieve",
-            canonicalPath("b.scala")
-          ),
-          3,
-          2,
-          3,
-          21,
-          "",
-          "",
-          "",
-          false,
-          0
-        )
-      )
-    coverage
-      .add(
-        Statement(
-          Location(
-            "com.sksamuel.scoverage2",
-            "B",
-            "B",
-            ClassType.Object,
-            "retrieve2",
-            canonicalPath("b.scala")
-          ),
-          4,
-          2,
-          3,
-          9,
-          "",
-          "",
-          "",
-          false,
-          3
-        )
-      )
-    coverage
-      .add(
-        Statement(
-          Location(
-            "com.sksamuel.scoverage3",
-            "C",
-            "com.sksamuel.scoverage3.C",
-            ClassType.Object,
-            "update",
-            canonicalPath("c.scala")
-          ),
-          5,
-          2,
-          3,
-          66,
-          "",
-          "",
-          "",
-          true,
-          3
-        )
-      )
-    coverage
-      .add(
-        Statement(
-          Location(
-            "com.sksamuel.scoverage3",
-            "C",
-            "com.sksamuel.scoverage3.C",
-            ClassType.Object,
-            "update2",
-            canonicalPath("c.scala")
-          ),
-          6,
-          2,
-          3,
-          6,
-          "",
-          "",
-          "",
-          true,
-          3
-        )
-      )
-    coverage
-      .add(
-        Statement(
-          Location(
-            "com.sksamuel.scoverage4",
-            "D",
-            "com.sksamuel.scoverage4.D",
-            ClassType.Object,
-            "delete",
-            canonicalPath("d.scala")
-          ),
-          7,
-          2,
-          3,
-          4,
-          "",
-          "",
-          "",
-          false,
-          0
-        )
-      )
-    coverage
-      .add(
-        Statement(
-          Location(
-            "com.sksamuel.scoverage4",
-            "D",
-            "com.sksamuel.scoverage4.D",
-            ClassType.Object,
-            "delete2",
-            canonicalPath("d.scala")
-          ),
-          8,
-          2,
-          3,
-          14,
-          "",
-          "",
-          "",
-          false,
-          0
-        )
-      )
+    val outputDir = xmlPath.getParent().toFile()
 
-    val writer = new CoberturaXmlWriter(sourceRoot, dir, None)
+    val fakeSources = Seq("a.scala", "b.scala", "c.scala", "d.scala")
+    for {
+      s <- fakeSources
+      loc = testLocation(canonicalPath(s))
+      isBranch <- Seq(true, false)
+      invokeCount <- Seq(0, 3)
+    } coverage.add(testStatement(loc, isBranch, invokeCount))
+
+    val writer =
+      new CoberturaXmlWriter(sourceRoot, outputDir, None, failIfNoSourceRoot)
     writer.write(coverage)
 
     val domFactory = DocumentBuilderFactory.newInstance()
     domFactory.setValidating(true)
     val builder = domFactory.newDocumentBuilder()
     builder.setErrorHandler(new ErrorHandler() {
-      @Override
-      def error(e: SAXParseException): Unit = {
+      override def error(e: SAXParseException): Unit = {
         fail(e.getMessage(), e.getCause())
       }
-      @Override
-      def fatalError(e: SAXParseException): Unit = {
+      override def fatalError(e: SAXParseException): Unit = {
         fail(e.getMessage(), e.getCause())
       }
-
-      @Override
-      def warning(e: SAXParseException): Unit = {
+      override def warning(e: SAXParseException): Unit = {
         fail(e.getMessage(), e.getCause())
       }
     })
-    builder.parse(fileIn(dir))
+    builder.parse(xmlPath.toFile())
   }
 
-  test(
+  xmlOutputPath.test(
     "coverage rates are written as 2dp decimal values rather than percentage"
-  ) {
-
-    val dir = tempDir()
-
+  ) { xmlPath =>
     val coverage = Coverage()
-    coverage
-      .add(
-        Statement(
-          Location(
-            "com.sksamuel.scoverage",
-            "A",
-            "com.sksamuel.scoverage.A",
-            ClassType.Object,
-            "create",
-            canonicalPath("a.scala")
-          ),
-          1,
-          2,
-          3,
-          12,
-          "",
-          "",
-          "",
-          false
-        )
+    val outputDir = xmlPath.getParent().toFile()
+    val fakeSourcePath = canonicalPath("a.scala")
+    coverage.add(
+      testStatement(
+        testLocation(fakeSourcePath),
+        isBranch = false,
+        invokeCount = 0 // not covered
       )
-    coverage
-      .add(
-        Statement(
-          Location(
-            "com.sksamuel.scoverage",
-            "A",
-            "com.sksamuel.scoverage.A",
-            ClassType.Object,
-            "create2",
-            canonicalPath("a.scala")
-          ),
-          2,
-          2,
-          3,
-          16,
-          "",
-          "",
-          "",
-          true
-        )
+    )
+    coverage.add(
+      testStatement(
+        testLocation(fakeSourcePath),
+        isBranch = true,
+        invokeCount = 0 // not covered
       )
-    coverage
-      .add(
-        Statement(
-          Location(
-            "com.sksamuel.scoverage",
-            "A",
-            "com.sksamuel.scoverage.A",
-            ClassType.Object,
-            "create3",
-            canonicalPath("a.scala")
-          ),
-          3,
-          3,
-          3,
-          20,
-          "",
-          "",
-          "",
-          true,
-          1
-        )
+    )
+    coverage.add(
+      testStatement(
+        testLocation(fakeSourcePath),
+        isBranch = true,
+        invokeCount = 1 // covered
       )
+    )
 
-    val writer = new CoberturaXmlWriter(sourceRoot, dir, None)
+    val writer =
+      new CoberturaXmlWriter(sourceRoot, outputDir, None, failIfNoSourceRoot)
     writer.write(coverage)
 
-    // Needed to acount for https://github.com/scala/scala-xml/pull/177
-    val customXML: XMLLoader[Elem] = XML.withSAXParser {
-      val factory = SAXParserFactory.newInstance()
-      factory.setFeature(
-        "http://apache.org/xml/features/nonvalidating/load-external-dtd",
-        false
-      )
-      factory.newSAXParser()
-    }
-
-    val xml = customXML.loadFile(fileIn(dir))
+    val xml = parseXML(xmlPath)
 
     assertEquals((xml \\ "coverage" \ "@line-rate").text, "0.33", "line-rate")
     assertEquals(
@@ -412,5 +162,68 @@ class CoberturaXmlWriterTest extends FunSuite {
       "branch-rate"
     )
 
+  }
+
+  def testPathRecovery(name: String, policy: BaseReportWriter.PathRecoverer)(checks: Elem => Unit)(implicit loc: munit.Location) = {
+    xmlOutputPath.test(name) { xmlPath =>
+      val outputDir = xmlPath.getParent().toFile()
+      val coverage = Coverage()
+
+      val notInRoot = "/*not*/in/root.scala"
+      val inRoot = "in-root.sc"
+
+      coverage.add(
+        testStatement(
+          testLocation(notInRoot, className = "A") // should be replaced
+        )
+      )
+      coverage.add(
+        testStatement(
+          testLocation(
+            canonicalPath(inRoot),
+            className = "B"
+          ) // should be unchanged
+        )
+      )
+      val writer = new CoberturaXmlWriter(
+        sourceRoot,
+        outputDir,
+        None,
+        policy
+      )
+      writer.write(coverage)
+
+      val xml = parseXML(xmlPath)
+      checks(xml)
+    }
+  }
+
+  testPathRecovery("path recovery replace", (f, roots) => Some("recovered/path")) { xml =>
+    val classes =
+      (xml \\ "coverage" \ "packages" \ "package" \ "classes" \ "class")
+
+    assertEquals(
+      (classes(0) \ "@filename").text,
+      "recovered/path"
+    )
+    assertEquals(
+      (classes(1) \ "@filename").text,
+      relativePath("in-root.sc")
+    )
+  }
+
+  testPathRecovery("path recovery: skip", (f, roots) => None) { xml =>
+    val classes =
+      (xml \\ "coverage" \ "packages" \ "package" \ "classes" \ "class")
+
+    println(classes)
+    assertEquals(
+      (classes(0) \ "@filename").text,
+      "in-root.sc"
+    )
+    assertEquals(
+      classes.length,
+      1
+    )
   }
 }
