@@ -1,9 +1,6 @@
 package scoverage
 
-import scala.concurrent.Future
-
 import munit.FunSuite
-import munit.AfterEach
 
 /** @author Stephen Samuel */
 class PluginASTSupportTest extends FunSuite with MacroSupport {
