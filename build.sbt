@@ -1,7 +1,7 @@
 import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
-lazy val munitVersion = "1.0.2"
+lazy val munitVersion = "1.0.3"
 lazy val scalametaVersion = "4.9.9"
 lazy val defaultScala212 = "2.12.20"
 lazy val defaultScala213 = "2.13.15"
