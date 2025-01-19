@@ -4,3 +4,6 @@
 #
 # Added scallafix and scalafmt
 03aeb373675b76d3fd021854fda776aafef07bd7
+
+# Scala Steward: Reformat with scalafmt 3.8.5
+6c5f5c6d874d7c9e15bfc78f3c847829297fb8ae
