@@ -383,7 +383,8 @@ class ScoverageHtmlWriter(
         {
           coverage
             .risks(limit)
-            .map(klass => <tr>
+            .map(klass =>
+              <tr>
           <td>
             {klass.displayClassName}
           </td>
@@ -407,7 +408,8 @@ class ScoverageHtmlWriter(
             {klass.branchCoverageFormatted}
             %
           </td>
-        </tr>)
+        </tr>
+            )
         }
       </tbody>
     </table>
