@@ -11,8 +11,8 @@ class ScoverageOptionsTest extends FunSuite {
     "excludedPackages:some.package;another.package*",
     "excludedFiles:*.proto;iHateThisFile.scala",
     "excludedSymbols:someSymbol;anotherSymbol;aThirdSymbol",
-    "extraAfterPhase:extarAfter",
-    "extraBeforePhase:extraBefore",
+    "extraAfterPhase:extarAfter;extraAfter2",
+    "extraBeforePhase:extraBefore;extraBefore2",
     "reportTestName"
   )
 
