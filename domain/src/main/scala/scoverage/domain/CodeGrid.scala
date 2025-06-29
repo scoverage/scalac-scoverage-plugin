@@ -34,7 +34,7 @@ class CodeGrid(mFile: MeasuredFile, sourceEncoding: Option[String]) {
         // in that block were executed
         cells(k).status match {
           case Invoked => if (!stmt.isInvoked) cells(k).status = NotInvoked
-          case NoData =>
+          case NoData  =>
             if (!stmt.isInvoked) cells(k).status = NotInvoked
             else if (stmt.isInvoked) cells(k).status = Invoked
           case NotInvoked =>

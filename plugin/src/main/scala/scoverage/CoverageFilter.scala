@@ -105,7 +105,7 @@ class RegexCoverageFilter(
   def getExcludedLineNumbers(sourceFile: SourceFile): List[Range] = {
     linesExcludedByScoverageCommentsCache.get(sourceFile) match {
       case Some(lineNumbers) => lineNumbers
-      case None =>
+      case None              =>
         val lineNumbers = compatFindAllIn(
           scoverageExclusionCommentsRegex,
           sourceFile.content
