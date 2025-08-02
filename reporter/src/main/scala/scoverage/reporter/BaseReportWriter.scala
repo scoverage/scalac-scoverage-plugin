@@ -29,7 +29,7 @@ class BaseReportWriter(
       sourcePaths.find(sourcePath => canonicalSrc.startsWith(sourcePath))
     sourceRoot match {
       case Some(path: String) => canonicalSrc.replace(path, "")
-      case _ =>
+      case _                  =>
         val fmtSourcePaths: String = sourcePaths.mkString("'", "', '", "'")
         throw new RuntimeException(
           s"No source root found for '$canonicalSrc' (source roots: $fmtSourcePaths)"

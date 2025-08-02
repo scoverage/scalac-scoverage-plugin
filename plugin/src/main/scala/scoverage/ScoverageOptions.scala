@@ -105,7 +105,7 @@ object ScoverageOptions {
       // we just ignore them here
       case ExtraAfterPhase(afterPhase)   => ()
       case ExtraBeforePhase(beforePhase) => ()
-      case "reportTestName" =>
+      case "reportTestName"              =>
         options = options.copy(reportTestName = true)
       case opt => errFn("Unknown option: " + opt)
     }
