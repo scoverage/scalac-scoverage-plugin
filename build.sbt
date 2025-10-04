@@ -4,7 +4,7 @@ import sbtcrossproject.CrossType
 lazy val munitVersion = "1.1.1"
 lazy val scalametaVersion = "4.9.9"
 lazy val defaultScala212 = "2.12.20"
-lazy val defaultScala213 = "2.13.16"
+lazy val defaultScala213 = "2.13.17"
 lazy val defaultScala3 = "3.3.0"
 lazy val bin212 =
   Seq(
@@ -17,6 +17,7 @@ lazy val bin212 =
 lazy val bin213 =
   Seq(
     defaultScala213,
+    "2.13.16",
     "2.13.15",
     "2.13.14",
     "2.13.13",
