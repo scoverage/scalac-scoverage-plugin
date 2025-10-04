@@ -366,7 +366,7 @@ class ScoverageInstrumentationComponent(
     def updateLocation(t: Tree): Unit = {
       Location.fromGlobal(global)(t) match {
         case Some(loc) => this.location = loc
-        case _ =>
+        case _         =>
           reporter.warning(t.pos, s"Cannot update location for $t")
       }
     }
