@@ -5,7 +5,7 @@ lazy val munitVersion = "1.1.1"
 lazy val scalametaVersion = "4.9.9"
 lazy val defaultScala212 = "2.12.20"
 lazy val defaultScala213 = "2.13.16"
-lazy val defaultScala3 = "3.3.0"
+lazy val defaultScala3 = "3.3.6"
 lazy val bin212 =
   Seq(
     defaultScala212,
@@ -107,9 +107,12 @@ lazy val runtime = CrossProject(
   .withoutSuffixFor(JVMPlatform)
   .settings(
     name := "scalac-scoverage-runtime",
-    crossScalaVersions := Seq(defaultScala212, defaultScala213),
+    crossScalaVersions := bin212 ++ bin213,
     crossTarget := target.value / s"scala-${scalaVersion.value}",
-    sharedSettings
+    sharedSettings,
+    publish / skip := !List(defaultScala212, defaultScala213)
+      .contains(scalaVersion.value),
+    publishLocal / skip := (publish / skip).value
   )
   .jvmSettings(
     Test / fork := true
@@ -139,7 +142,8 @@ lazy val plugin =
       crossScalaVersions := bin212 ++ bin213,
       crossVersion := CrossVersion.full,
       libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided,
-      sharedSettings
+      sharedSettings,
+      allowUnsafeScalaLibUpgrade := true
     )
     .settings(
       Test / unmanagedSourceDirectories += (Test / sourceDirectory).value / "scala-2.12+",
