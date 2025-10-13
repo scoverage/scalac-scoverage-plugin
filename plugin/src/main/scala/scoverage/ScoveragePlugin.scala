@@ -74,8 +74,8 @@ class ScoveragePlugin(val global: Global) extends Plugin {
 
 class ScoverageInstrumentationComponent(
     val global: Global,
-    extraAfterPhase: Option[String],
-    extraBeforePhase: Option[String]
+    extraAfterPhase: Option[List[String]],
+    extraBeforePhase: Option[List[String]]
 ) extends PluginComponent
     with TypingTransformers
     with Transform {
@@ -87,9 +87,9 @@ class ScoverageInstrumentationComponent(
 
   override val phaseName: String = ScoveragePlugin.phaseName
   override val runsAfter: List[String] =
-    List("typer") ::: extraAfterPhase.toList
+    List("typer") ::: extraAfterPhase.getOrElse(Nil)
   override val runsBefore: List[String] =
-    List("patmat") ::: extraBeforePhase.toList
+    List("patmat") ::: extraBeforePhase.getOrElse(Nil)
 
   /** Our options are not provided at construction time, but shortly after,
     * so they start as None.
