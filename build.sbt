@@ -3,8 +3,8 @@ import sbtcrossproject.CrossType
 
 lazy val latestMunitVersion = "1.2.1"
 lazy val scalametaVersion = "4.9.9"
-lazy val defaultScala212 = "2.12.16"
-lazy val defaultScala213 = "2.13.11"
+lazy val defaultScala212 = "2.12.20"
+lazy val defaultScala213 = "2.13.16"
 lazy val defaultScala3 = "3.3.6"
 lazy val bin212 =
   Seq(
@@ -16,12 +16,7 @@ lazy val bin212 =
   )
 lazy val bin213 =
   Seq(
-    defaultScala213,
-    "2.13.15",
-    "2.13.14",
-    "2.13.13",
-    "2.13.12",
-    "2.13.11"
+    defaultScala213
   )
 
 inThisBuild(
@@ -79,16 +74,11 @@ lazy val sharedSettings = List(
     }
   },
   libraryDependencies += {
-  val munitVersion = scalaVersion.value match {
-    case "2.13.11" => "1.0.0-M10"
-    case "2.13.12" => "1.0.0-M11"
-    case "2.13.13" => "1.0.0"
-    case "2.13.14" => "1.0.2"
-    case "2.13.15" => "1.0.4"
-    case "2.13.16" => "1.2.0"
-    case _ => latestMunitVersion
-  }
-  "org.scalameta" %%% "munit" % munitVersion % Test
+    val munitVersion = scalaVersion.value match {
+      case "2.13.16" => "1.2.0"
+      case _         => latestMunitVersion
+    }
+    "org.scalameta" %%% "munit" % munitVersion % Test
   }
 )
 
@@ -119,7 +109,6 @@ lazy val runtime = CrossProject(
   .settings(
     name := "scalac-scoverage-runtime",
     crossScalaVersions := bin212 ++ bin213,
-    allowUnsafeScalaLibUpgrade := true,
     crossTarget := target.value / s"scala-${scalaVersion.value}",
     sharedSettings,
     publish / skip := !List(defaultScala212, defaultScala213)
@@ -156,8 +145,7 @@ lazy val plugin =
       libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided,
       sharedSettings,
       buildInfoPackage := "scoverage",
-      buildInfoKeys := Seq[BuildInfoKey](scalaVersion),
-      allowUnsafeScalaLibUpgrade := true
+      buildInfoKeys := Seq[BuildInfoKey](scalaVersion)
     )
     .settings(
       Test / unmanagedSourceDirectories += (Test / sourceDirectory).value / "scala-2.12+",
@@ -175,11 +163,7 @@ lazy val reporter =
   project
     .settings(
       name := "scalac-scoverage-reporter",
-      libraryDependencies += {
-        if (scalaVersion.value == "2.13.11" || scalaVersion.value == "2.13.12")
-          "org.scala-lang.modules" %% "scala-xml" % "2.2.0"
-        else "org.scala-lang.modules" %% "scala-xml" % "2.3.0"
-      },
+      libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "2.3.0",
       sharedSettings,
       crossScalaVersions := Seq(defaultScala212, defaultScala213, defaultScala3)
     )
