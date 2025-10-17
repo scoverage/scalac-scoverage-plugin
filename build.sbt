@@ -108,6 +108,7 @@ lazy val runtime = CrossProject(
   .settings(
     name := "scalac-scoverage-runtime",
     crossScalaVersions := bin212 ++ bin213,
+    allowUnsafeScalaLibUpgrade := true,
     crossTarget := target.value / s"scala-${scalaVersion.value}",
     sharedSettings,
     publish / skip := !List(defaultScala212, defaultScala213)
