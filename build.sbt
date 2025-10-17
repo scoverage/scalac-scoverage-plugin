@@ -2,7 +2,7 @@ import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
 lazy val latestMunitVersion = "1.2.1"
-lazy val scalametaVersion = "4.9.9"
+lazy val scalametaVersion = "4.14.0"
 lazy val defaultScala212 = "2.12.20"
 lazy val defaultScala213 = "2.13.16"
 lazy val defaultScala3 = "3.3.6"
@@ -16,6 +16,7 @@ lazy val bin212 =
   )
 lazy val bin213 =
   Seq(
+    "2.13.17",
     defaultScala213
   )
 
