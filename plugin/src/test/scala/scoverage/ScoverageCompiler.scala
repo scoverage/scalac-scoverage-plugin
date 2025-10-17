@@ -16,7 +16,7 @@ import scoverage.reporter.IOUtils
 
 private[scoverage] object ScoverageCompiler {
 
-  val ScalaVersion: String = scala.util.Properties.versionNumberString
+  val ScalaVersion: String = BuildInfo.scalaVersion
   val ShortScalaVersion: String = (ScalaVersion split "[.]").toList match {
     case init :+ last if last forall (_.isDigit) => init mkString "."
     case _                                       => ScalaVersion

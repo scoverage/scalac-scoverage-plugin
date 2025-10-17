@@ -1,11 +1,11 @@
 import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
-lazy val munitVersion = "1.1.1"
+lazy val latestMunitVersion = "1.2.1"
 lazy val scalametaVersion = "4.9.9"
 lazy val defaultScala212 = "2.12.20"
 lazy val defaultScala213 = "2.13.16"
-lazy val defaultScala3 = "3.3.0"
+lazy val defaultScala3 = "3.3.6"
 lazy val bin212 =
   Seq(
     defaultScala212,
@@ -16,12 +16,7 @@ lazy val bin212 =
   )
 lazy val bin213 =
   Seq(
-    defaultScala213,
-    "2.13.15",
-    "2.13.14",
-    "2.13.13",
-    "2.13.12",
-    "2.13.11"
+    defaultScala213
   )
 
 inThisBuild(
@@ -78,7 +73,13 @@ lazy val sharedSettings = List(
       scalacOptions.value
     }
   },
-  libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test
+  libraryDependencies += {
+    val munitVersion = scalaVersion.value match {
+      case "2.13.16" => "1.2.0"
+      case _         => latestMunitVersion
+    }
+    "org.scalameta" %%% "munit" % munitVersion % Test
+  }
 )
 
 lazy val root = Project("scalac-scoverage", file("."))
@@ -107,9 +108,12 @@ lazy val runtime = CrossProject(
   .withoutSuffixFor(JVMPlatform)
   .settings(
     name := "scalac-scoverage-runtime",
-    crossScalaVersions := Seq(defaultScala212, defaultScala213),
+    crossScalaVersions := bin212 ++ bin213,
     crossTarget := target.value / s"scala-${scalaVersion.value}",
-    sharedSettings
+    sharedSettings,
+    publish / skip := !List(defaultScala212, defaultScala213)
+      .contains(scalaVersion.value),
+    publishLocal / skip := (publish / skip).value
   )
   .jvmSettings(
     Test / fork := true
@@ -139,7 +143,9 @@ lazy val plugin =
       crossScalaVersions := bin212 ++ bin213,
       crossVersion := CrossVersion.full,
       libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided,
-      sharedSettings
+      sharedSettings,
+      buildInfoPackage := "scoverage",
+      buildInfoKeys := Seq[BuildInfoKey](scalaVersion)
     )
     .settings(
       Test / unmanagedSourceDirectories += (Test / sourceDirectory).value / "scala-2.12+",
