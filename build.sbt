@@ -1,10 +1,10 @@
 import sbtcrossproject.CrossProject
 import sbtcrossproject.CrossType
 
-lazy val munitVersion = "1.1.1"
+lazy val latestMunitVersion = "1.2.1"
 lazy val scalametaVersion = "4.9.9"
-lazy val defaultScala212 = "2.12.20"
-lazy val defaultScala213 = "2.13.16"
+lazy val defaultScala212 = "2.12.16"
+lazy val defaultScala213 = "2.13.11"
 lazy val defaultScala3 = "3.3.6"
 lazy val bin212 =
   Seq(
@@ -78,7 +78,18 @@ lazy val sharedSettings = List(
       scalacOptions.value
     }
   },
-  libraryDependencies += "org.scalameta" %%% "munit" % munitVersion % Test
+  libraryDependencies += {
+  val munitVersion = scalaVersion.value match {
+    case "2.13.11" => "1.0.0-M10"
+    case "2.13.12" => "1.0.0-M11"
+    case "2.13.13" => "1.0.0"
+    case "2.13.14" => "1.0.2"
+    case "2.13.15" => "1.0.4"
+    case "2.13.16" => "1.2.0"
+    case _ => latestMunitVersion
+  }
+  "org.scalameta" %%% "munit" % munitVersion % Test
+  }
 )
 
 lazy val root = Project("scalac-scoverage", file("."))
@@ -144,6 +155,8 @@ lazy val plugin =
       crossVersion := CrossVersion.full,
       libraryDependencies += "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided,
       sharedSettings,
+      buildInfoPackage := "scoverage",
+      buildInfoKeys := Seq[BuildInfoKey](scalaVersion),
       allowUnsafeScalaLibUpgrade := true
     )
     .settings(
@@ -162,7 +175,11 @@ lazy val reporter =
   project
     .settings(
       name := "scalac-scoverage-reporter",
-      libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "2.3.0",
+      libraryDependencies += {
+        if (scalaVersion.value == "2.13.11" || scalaVersion.value == "2.13.12")
+          "org.scala-lang.modules" %% "scala-xml" % "2.2.0"
+        else "org.scala-lang.modules" %% "scala-xml" % "2.3.0"
+      },
       sharedSettings,
       crossScalaVersions := Seq(defaultScala212, defaultScala213, defaultScala3)
     )
