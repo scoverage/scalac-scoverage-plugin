@@ -11,8 +11,7 @@ lazy val bin212 =
     defaultScala212,
     "2.12.19",
     "2.12.18",
-    "2.12.17",
-    "2.12.16"
+    "2.12.17"
   )
 lazy val bin213 =
   Seq(
