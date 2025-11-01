@@ -842,6 +842,20 @@ class ScoverageInstrumentationComponent(
           */
         case v: ValDef if v.symbol.isLazy => tree
 
+        /** Pattern matching assignment instrumentation (see https://github.com/scoverage/scalac-scoverage-plugin/issues/123)
+          *
+          * User code: val (a, b) = { if (c) 1 -> 1 else 2 -> 2 }
+          *
+          * After typer, this desugars to:
+          *   <synthetic> val x$1 = (if (c) 1 -> 1 else 2 -> 2) match { case (a, b) => Tuple2(a, b) }
+          *   val a = x$1._1
+          *   val b = x$1._2
+          *
+          * This will instrument the user expression (if-else with arrow calls).
+          */
+        case v: ValDef if v.symbol.isSynthetic && v.rhs.pos.isDefined && containsNonSynthetic(v.rhs) =>
+          treeCopy.ValDef(tree, v.mods, v.name, v.tpt, process(v.rhs))
+
         /** <synthetic> val default: A1 => B1 =
           * <synthetic> val x1: Any = _
           */
