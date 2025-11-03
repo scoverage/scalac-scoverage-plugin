@@ -853,7 +853,10 @@ class ScoverageInstrumentationComponent(
           *
           * This will instrument the user expression (if-else with arrow calls).
           */
-        case v: ValDef if v.symbol.isSynthetic && v.rhs.pos.isDefined && containsNonSynthetic(v.rhs) =>
+        case v: ValDef
+            if v.symbol.isSynthetic && v.rhs.pos.isDefined && containsNonSynthetic(
+              v.rhs
+            ) =>
           treeCopy.ValDef(tree, v.mods, v.name, v.tpt, process(v.rhs))
 
         /** <synthetic> val default: A1 => B1 =

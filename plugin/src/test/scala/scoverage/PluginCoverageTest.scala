@@ -381,7 +381,9 @@ class PluginCoverageTest extends FunSuite with MacroSupport {
     compiler.assertNMeasuredStatements(11)
   }
 
-  test("plugin should handle return pattern matching assignment https://github.com/scoverage/scalac-scoverage-plugin/issues/123") {
+  test(
+    "plugin should handle return pattern matching assignment https://github.com/scoverage/scalac-scoverage-plugin/issues/123"
+  ) {
     val compiler = ScoverageCompiler.default
     compiler.compileCodeSnippet(
       """
@@ -396,15 +398,15 @@ class PluginCoverageTest extends FunSuite with MacroSupport {
     )
     assert(!compiler.reporter.hasErrors)
     assert(!compiler.reporter.hasWarnings)
-    /**
-     * WITHOUT the bugfix:
-     * 2 when assigning value to "a" and "b"
-     * 1 at the end of the function
-     * WITH the bugfix, it will additionally include
-     * 2 from then branch
-     * 2 from else branch
-     * 2 from synthetic code generated for pattern matching assignment
-     */
+
+    /** WITHOUT the bugfix:
+      * 2 when assigning value to "a" and "b"
+      * 1 at the end of the function
+      * WITH the bugfix, it will additionally include
+      * 2 from then branch
+      * 2 from else branch
+      * 2 from synthetic code generated for pattern matching assignment
+      */
     compiler.assertNMeasuredStatements(9)
   }
 
