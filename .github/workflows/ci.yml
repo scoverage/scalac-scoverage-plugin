@@ -24,6 +24,7 @@ jobs:
             { version: '2.12.18' },
             { version: '2.13.16' },
             { version: '2.13.17' },
+            { version: '2.13.18' },
           ]
     steps:
       - name: checkout the repo
