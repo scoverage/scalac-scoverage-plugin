@@ -15,6 +15,7 @@ lazy val bin212 =
   )
 lazy val bin213 =
   Seq(
+    "2.13.18",
     "2.13.17",
     defaultScala213
   )
