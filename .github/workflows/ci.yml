@@ -19,6 +19,7 @@ jobs:
         os: [ 'ubuntu-latest', 'windows-latest' ]
         java: ['8', '17']
         scala: [
+            { version: '2.12.21' },
             { version: '2.12.20' },
             { version: '2.12.19' },
             { version: '2.12.18' },
