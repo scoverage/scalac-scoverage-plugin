@@ -3,6 +3,7 @@ package scoverage
 import java.io.File
 import java.io.FileNotFoundException
 import java.net.URL
+import java.util.UUID
 
 import scala.collection.mutable.ListBuffer
 import scala.tools.nsc.Global
@@ -55,20 +56,30 @@ private[scoverage] object ScoverageCompiler {
     s
   }
 
-  def default: ScoverageCompiler = {
-    val reporter = new scala.tools.nsc.reporters.ConsoleReporter(settings)
-    new ScoverageCompiler(settings, reporter, validatePositions = true)
+  def tempBasePath(): File =
+    new File(IOUtils.getTempPath, UUID.randomUUID.toString)
+
+  def apply(
+      settings: scala.tools.nsc.Settings = settings,
+      reporter: scala.tools.nsc.reporters.Reporter =
+        new scala.tools.nsc.reporters.ConsoleReporter(settings),
+      validatePositions: Boolean = true,
+      basePath: File = tempBasePath()
+  ) = {
+    new ScoverageCompiler(
+      settings,
+      reporter,
+      validatePositions,
+      basePath
+    )
   }
 
-  def noPositionValidation: ScoverageCompiler = {
-    val reporter = new scala.tools.nsc.reporters.ConsoleReporter(settings)
-    new ScoverageCompiler(settings, reporter, validatePositions = false)
-  }
+  def default = ScoverageCompiler()
 
-  def defaultJS: ScoverageCompiler = {
-    val reporter = new scala.tools.nsc.reporters.ConsoleReporter(jsSettings)
-    new ScoverageCompiler(jsSettings, reporter, validatePositions = true)
-  }
+  def noPositionValidation: ScoverageCompiler =
+    ScoverageCompiler(validatePositions = false)
+
+  def defaultJS: ScoverageCompiler = ScoverageCompiler(settings = jsSettings)
 
   def locationCompiler: LocationCompiler = {
     val reporter = new scala.tools.nsc.reporters.ConsoleReporter(settings)
@@ -158,7 +169,8 @@ private[scoverage] object ScoverageCompiler {
 class ScoverageCompiler(
     settings: scala.tools.nsc.Settings,
     rep: scala.tools.nsc.reporters.Reporter,
-    validatePositions: Boolean
+    validatePositions: Boolean,
+    basePath: File
 ) extends scala.tools.nsc.Global(settings, rep) {
 
   def addToClassPath(file: File): Unit = {
@@ -171,8 +183,8 @@ class ScoverageCompiler(
 
   val coverageOptions = ScoverageOptions
     .default()
-    .copy(dataDir = IOUtils.getTempPath)
-    .copy(sourceRoot = IOUtils.getTempPath)
+    .copy(dataDir = basePath.getAbsolutePath)
+    .copy(sourceRoot = basePath.getAbsolutePath)
 
   instrumentationComponent.setOptions(coverageOptions)
   val testStore = new ScoverageTestStoreComponent(this)
@@ -188,7 +200,7 @@ class ScoverageCompiler(
   }
 
   def writeCodeSnippetToTempFile(code: String): File = {
-    val file = File.createTempFile("scoverage_snippet", ".scala")
+    val file = File.createTempFile("scoverage_snippet", ".scala", basePath)
     IOUtils.writeToFile(file, code, None)
     file.deleteOnExit()
     file

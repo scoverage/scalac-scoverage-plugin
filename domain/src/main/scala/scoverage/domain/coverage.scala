@@ -12,14 +12,23 @@ case class Coverage()
     with PackageBuilders
     with FileBuilders {
 
+  private var _maxId: Int = 0
   private val statementsById = mutable.Map[Int, Statement]()
   override def statements = statementsById.values
-  def add(stmt: Statement): Unit = statementsById.put(stmt.id, stmt)
-
+  def add(stmt: Statement): Unit = {
+    if (stmt.id > _maxId) {
+      _maxId = stmt.id
+    }
+    statementsById.put(stmt.id, stmt)
+  }
   private val ignoredStatementsById = mutable.Map[Int, Statement]()
   override def ignoredStatements = ignoredStatementsById.values
-  def addIgnoredStatement(stmt: Statement): Unit =
+  def addIgnoredStatement(stmt: Statement): Unit = {
+    if (stmt.id > _maxId) {
+      _maxId = stmt.id
+    }
     ignoredStatementsById.put(stmt.id, stmt)
+  }
 
   def avgClassesPerPackage = classCount / packageCount.toDouble
   def avgClassesPerPackageFormatted: String = DoubleFormat.twoFractionDigits(
@@ -46,6 +55,8 @@ case class Coverage()
   def apply(ids: Iterable[(Int, String)]): Unit = ids foreach invoked
   def invoked(id: (Int, String)): Unit =
     statementsById.get(id._1).foreach(_.invoked(id._2))
+
+  def maxId: Int = _maxId
 }
 
 trait ClassBuilders {
