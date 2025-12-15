@@ -84,6 +84,7 @@ class ScoverageInstrumentationComponent(
 
   val statementIds = new AtomicInteger(0)
   val coverage = new Coverage
+  val compiledFiles = Set.newBuilder[String]
 
   override val phaseName: String = ScoveragePlugin.phaseName
   override val runsAfter: List[String] =
@@ -121,11 +122,22 @@ class ScoverageInstrumentationComponent(
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
 
     override def run(): Unit = {
-      reporter.echo(s"Cleaning datadir [${options.dataDir}]")
-      // we clean the data directory, because if the code has changed, then the number / order of
-      // statements has changed by definition. So the old data would reference statements incorrectly
-      // and thus skew the results.
+      reporter.echo(
+        s"Cleaning measurements files in datadir [${options.dataDir}]"
+      )
       Serializer.clean(options.dataDir)
+
+      val coverageFile = Serializer.coverageFile(options.dataDir)
+      val sourceRootFile = new File(options.sourceRoot)
+      val previousCoverage =
+        if (coverageFile.exists())
+          Serializer.deserialize(
+            coverageFile,
+            sourceRootFile
+          )
+        else Coverage()
+
+      statementIds.set(previousCoverage.maxId)
 
       reporter.echo("Beginning coverage instrumentation")
       super.run()
@@ -133,10 +145,16 @@ class ScoverageInstrumentationComponent(
         s"Instrumentation completed [${coverage.statements.size} statements]"
       )
 
+      val mergedCoverage = CoverageMerge.mergePreviousAndCurrentCoverage(
+        lastCompiledFiles = compiledFiles.result(),
+        previousCoverage = previousCoverage,
+        currentCoverage = coverage
+      )
+
       Serializer.serialize(
-        coverage,
-        Serializer.coverageFile(options.dataDir),
-        new File(options.sourceRoot)
+        mergedCoverage,
+        coverageFile,
+        sourceRootFile
       )
       reporter.echo(
         s"Wrote instrumentation file [${Serializer.coverageFile(options.dataDir)}]"
@@ -152,6 +170,8 @@ class ScoverageInstrumentationComponent(
       extends TypingTransformer(unit) {
 
     import global._
+
+    compiledFiles += unit.source.file.absolute.canonicalPath
 
     // contains the location of the last node
     var location: domain.Location = _
