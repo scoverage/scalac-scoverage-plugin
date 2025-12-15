@@ -19,17 +19,13 @@ class IncrementalCoverageTest extends FunSuite {
     "should keep coverage from previous compilation when compiling incrementally"
   ) {
     val basePath = ScoverageCompiler.tempBasePath()
-    val coverageFile = serialize.Serializer.coverageFile(basePath)
 
     val compilation1 =
       Compilation(basePath, """object First { def test(): Int = 42 }""")
 
     locally {
       val sourceFiles = compilation1.coverage.files.map(_.source).toSet
-      assert(
-        sourceFiles.contains(compilation1.file.getCanonicalPath),
-        s"First file should be in coverage, but found: ${sourceFiles.mkString(", ")}"
-      )
+      assertEquals(sourceFiles, Set(compilation1.file.getCanonicalPath))
     }
 
     val compilation2 =
@@ -40,9 +36,9 @@ class IncrementalCoverageTest extends FunSuite {
 
     locally {
       val sourceFiles = compilation2.coverage.files.map(_.source).toSet
-      assert(
-        sourceFiles.contains(compilation2.file.getCanonicalPath),
-        s"Second file should be in coverage, but found: ${sourceFiles.mkString(", ")}"
+      assertEquals(
+        sourceFiles,
+        Set(compilation1.file, compilation2.file).map(_.getCanonicalPath)
       )
     }
   }
@@ -58,10 +54,7 @@ class IncrementalCoverageTest extends FunSuite {
     locally {
       val sourceFiles = compilation1.coverage.files.map(_.source).toSet
 
-      assert(
-        sourceFiles.contains(compilation1.file.getCanonicalPath),
-        s"First file should be in coverage, but found: ${sourceFiles.mkString(", ")}"
-      )
+      assertEquals(sourceFiles, Set(compilation1.file.getCanonicalPath))
     }
 
     compilation1.file.delete()
@@ -70,10 +63,7 @@ class IncrementalCoverageTest extends FunSuite {
 
     locally {
       val sourceFiles = compilation2.coverage.files.map(_.source).toSet
-      assert(
-        sourceFiles.isEmpty,
-        s"Coverage should be empty, but found: ${sourceFiles.mkString(", ")}"
-      )
+      assertEquals(sourceFiles, Set.empty[String])
     }
   }
 
