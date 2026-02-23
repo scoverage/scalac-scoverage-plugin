@@ -27,8 +27,8 @@ object ScoverageOptions {
       "-P:scoverage:excludedPackages:<regex>;<regex>         semicolon separated list of regexs for packages to exclude",
       "-P:scoverage:excludedFiles:<regex>;<regex>            semicolon separated list of regexs for paths to exclude",
       "-P:scoverage:excludedSymbols:<regex>;<regex>          semicolon separated list of regexs for symbols to exclude",
-      "-P:scoverage:extraAfterPhase:<phaseName>              phase after which scoverage phase runs (must be after typer phase)",
-      "-P:scoverage:extraBeforePhase:<phaseName>             phase before which scoverage phase runs (must be before patmat phase)",
+      "-P:scoverage:extraAfterPhase:<phaseName>;<phaseName>  phase after which scoverage phase runs (must be after typer phase)",
+      "-P:scoverage:extraBeforePhase:<phaseName>;<phaseName> phase before which scoverage phase runs (must be before patmat phase)",
       "                                                      Any classes whose fully qualified name matches the regex will",
       "                                                      be excluded from coverage."
     ).mkString("\n")
@@ -72,12 +72,16 @@ object ScoverageOptions {
 
   def processPhaseOptions(
       opts: List[String]
-  ): (Option[String], Option[String]) = {
+  ): (Option[List[String]], Option[List[String]]) = {
 
-    val afterPhase: Option[String] =
-      opts.collectFirst { case ExtraAfterPhase(phase) => phase }
-    val beforePhase: Option[String] =
-      opts.collectFirst { case ExtraBeforePhase(phase) => phase }
+    val afterPhase: Option[List[String]] =
+      opts.collectFirst { case ExtraAfterPhase(phase) =>
+        phase.split(";").toList
+      }
+    val beforePhase: Option[List[String]] =
+      opts.collectFirst { case ExtraBeforePhase(phase) =>
+        phase.split(";").toList
+      }
 
     (afterPhase, beforePhase)
   }
