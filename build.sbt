@@ -5,7 +5,7 @@ lazy val latestMunitVersion = "1.2.1"
 lazy val scalametaVersion = "4.14.0"
 lazy val defaultScala212 = "2.12.21"
 lazy val defaultScala213 = "2.13.16"
-lazy val defaultScala3 = "3.3.7"
+lazy val defaultScala3 = "3.3.8"
 lazy val bin212 =
   Seq(
     defaultScala212,
