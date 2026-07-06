@@ -61,8 +61,7 @@ inThisBuild(
       "utf8"
     ),
     semanticdbEnabled := true,
-    semanticdbVersion := scalametaVersion,
-    scalafixScalaBinaryVersion := scalaBinaryVersion.value
+    semanticdbVersion := scalametaVersion
   )
 )
 
