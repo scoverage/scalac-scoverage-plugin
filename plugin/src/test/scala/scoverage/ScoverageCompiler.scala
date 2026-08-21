@@ -3,6 +3,8 @@ package scoverage
 import java.io.File
 import java.io.FileNotFoundException
 import java.net.URL
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.UUID
 
 import scala.collection.mutable.ListBuffer
@@ -76,6 +78,19 @@ private[scoverage] object ScoverageCompiler {
 
   def default = ScoverageCompiler()
 
+  /** Create a compiler whose instrumentation options are customised via [f].
+    * The base options already have [[ScoverageOptions.dataDir]] and
+    * [[ScoverageOptions.sourceRoot]] set to a fresh temp directory; [f] can
+    * then override any other fields (e.g. measurementDir).
+    */
+  def withOptions(
+      f: ScoverageOptions => ScoverageOptions
+  ): ScoverageCompiler = {
+    val c = ScoverageCompiler()
+    c.instrumentationComponent.setOptions(f(c.coverageOptions))
+    c
+  }
+
   def noPositionValidation: ScoverageCompiler =
     ScoverageCompiler(validatePositions = false)
 
@@ -141,15 +156,29 @@ private[scoverage] object ScoverageCompiler {
       version: String
   ): Option[File] = {
     val userHome = System.getProperty("user.home")
-    val jarPaths = Iterator(
-      ".cache/coursier", // Linux
-      "Library/Caches/Coursier", // MacOSX
-      "AppData/Local/Coursier/cache" // Windows
-    ).map { loc =>
-      val gid = groupId.replace('.', '/')
-      s"$userHome/$loc/v1/https/repo1.maven.org/maven2/$gid/$artifactId/$version/$artifactId-$version.jar"
-    }
-    jarPaths.map(new File(_)).find(_.exists())
+    val gid = groupId.replace('.', '/')
+    // The tail of the path is always fixed; only the repository URL prefix varies
+    // (e.g. repo1.maven.org/maven2/ vs nexus.host/repository/central/).
+    val jarTail =
+      Paths.get(gid, artifactId, version, s"$artifactId-$version.jar")
+    Iterator(
+      s"$userHome/.cache/coursier", // Linux
+      s"$userHome/Library/Caches/Coursier", // macOS
+      s"$userHome/AppData/Local/Coursier/cache" // Windows
+    ).flatMap { cacheRoot =>
+      val httpsDir = Paths.get(cacheRoot, "v1", "https")
+      if (Files.isDirectory(httpsDir)) {
+        val stream = Files.find(
+          httpsDir,
+          /* maxDepth = */ 10,
+          (path, _) => path.endsWith(jarTail)
+        )
+        try {
+          import scala.collection.JavaConverters._
+          stream.iterator().asScala.map(_.toFile).toList.iterator
+        } finally stream.close()
+      } else Iterator.empty
+    }.find(_ => true)
   }
 
   private def findIvyJar(

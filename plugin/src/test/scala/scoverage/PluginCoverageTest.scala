@@ -410,4 +410,25 @@ class PluginCoverageTest extends FunSuite with MacroSupport {
     compiler.assertNMeasuredStatements(9)
   }
 
+  test(
+    "plugin should emit a static string for the measurement dir when measurementDir is set"
+  ) {
+    val customDir = ScoverageCompiler.tempBasePath()
+    customDir.mkdirs()
+    val compiler = ScoverageCompiler.withOptions(
+      _.copy(measurementDir = Some(customDir.getAbsolutePath))
+    )
+    compiler.compileCodeSnippet("""object Foo { val x = 1 }""")
+    assert(!compiler.reporter.hasErrors)
+    val source = compiler.testStore.sources.mkString(" ")
+    // The static path should appear literally in the emitted AST.
+    // tree.toString escapes backslashes in string literals (e.g. on Windows
+    // "C:\foo" is printed as "C:\\foo"), so we must escape the expected path too.
+    val escapedPath = customDir.getAbsolutePath.replace("\\", "\\\\")
+    assert(
+      source.contains(escapedPath),
+      "Expected static measurement dir literal in instrumented code"
+    )
+  }
+
 }
