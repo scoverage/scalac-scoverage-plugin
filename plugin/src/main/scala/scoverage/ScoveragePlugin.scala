@@ -117,15 +117,18 @@ class ScoverageInstrumentationComponent(
       reporter
     )
     new File(options.dataDir).mkdirs() // ensure data directory is created
+    if (options.effectiveMeasurementDir != options.dataDir)
+      new File(options.effectiveMeasurementDir)
+        .mkdirs() // ensure measurement directory is created
   }
 
   override def newPhase(prev: scala.tools.nsc.Phase): Phase = new Phase(prev) {
 
     override def run(): Unit = {
       reporter.echo(
-        s"Cleaning measurements files in datadir [${options.dataDir}]"
+        s"Cleaning measurements files in [${options.effectiveMeasurementDir}]"
       )
-      Serializer.clean(options.dataDir)
+      Serializer.clean(options.effectiveMeasurementDir)
 
       val coverageFile = Serializer.coverageFile(options.dataDir)
       val sourceRootFile = new File(options.sourceRoot)
@@ -159,7 +162,9 @@ class ScoverageInstrumentationComponent(
       reporter.echo(
         s"Wrote instrumentation file [${Serializer.coverageFile(options.dataDir)}]"
       )
-      reporter.echo(s"Will write measurement data to [${options.dataDir}]")
+      reporter.echo(
+        s"Will write measurement data to [${options.effectiveMeasurementDir}]"
+      )
     }
   }
 
@@ -201,9 +206,7 @@ class ScoverageInstrumentationComponent(
         Literal(
           Constant(id)
         ) ::
-          Literal(
-            Constant(options.dataDir)
-          ) ::
+          Literal(Constant(options.effectiveMeasurementDir)) ::
           (if (options.reportTestName)
              List(
                Literal(
