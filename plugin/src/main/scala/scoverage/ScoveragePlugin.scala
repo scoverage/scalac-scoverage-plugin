@@ -718,6 +718,15 @@ class ScoverageInstrumentationComponent(
         case l: LabelDef =>
           treeCopy.LabelDef(tree, l.name, l.params, transform(l.rhs))
 
+        // A null literal has to stay a bare Literal(Constant(null)). The backend compiles
+        // `x == null` and `x != null` into a direct ifnull/ifnonnull reference check, but only
+        // when it recognises that exact shape as the argument. Wrapping the literal in a
+        // Block, as the case below does for every literal, defeats that match and the
+        // comparison falls back to Any.equals, turning `other != null` into
+        // `other.equals(null)`. If the type overrides equals and dereferences its argument,
+        // that recursive call then throws a NullPointerException. See #680.
+        case l: Literal if l.value.value == null => l
+
         // profile access to a literal for function args todo do we need to do this?
         case l: Literal => instrument(l, l)
 
