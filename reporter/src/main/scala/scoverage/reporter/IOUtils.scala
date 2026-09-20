@@ -106,8 +106,8 @@ object IOUtils {
       for (line <- reader.getLines()) {
         if (!line.isEmpty) {
           acc += (line.split(" ").toList match {
-            case List(idx, clazz) => (idx.toInt, clazz)
-            case List(idx)        => (idx.toInt, "")
+            case List(idx, clazz) => (parseIdx(idx), clazz)
+            case List(idx)        => (parseIdx(idx), "")
             // This should never really happen but to avoid a match error we'll default to a 0
             // index here since we start with 1 anyways.
             case _ => (0, "")
@@ -118,5 +118,14 @@ object IOUtils {
     }
     acc
   }
+
+  // A measurement file is appended to by every instrumented thread/JVM that hits a statement
+  // (see Invoker.invoked). Two lines written without an atomic append can interleave into one
+  // token that still looks numeric but no longer fits in an Int (#476, e.g. "2849015114" >
+  // Int.MaxValue). Same fallback the caller already uses for a line with the wrong number of
+  // fields: don't fail the whole aggregation over one corrupted line.
+  private def parseIdx(idx: String): Int =
+    try idx.toInt
+    catch { case _: NumberFormatException => 0 }
 
 }
