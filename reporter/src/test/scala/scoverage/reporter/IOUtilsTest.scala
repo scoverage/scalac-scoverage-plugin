@@ -54,6 +54,25 @@ class IOUtilsTest extends FunSuite {
     file1.delete()
     file2.delete()
   }
+  test(
+    "should not throw NumberFormatException on a corrupted measurement line (#476)"
+  ) {
+    // Concurrent, non-atomic appends from multiple instrumented threads/JVMs to the same
+    // measurement file can interleave two lines into one token that looks numeric but doesn't
+    // fit in an Int - e.g. "2849015114" from the report, which is larger than Int.MaxValue
+    // (2147483647). Same defensive intent as the "wrong number of fields" case below: don't
+    // fail the whole aggregation over one bad line.
+    val file = File.createTempFile("scoveragemeasurementtest476", "txt")
+    val writer = new FileWriter(file)
+    writer.write("1\n2849015114\n9\n")
+    writer.close()
+
+    val invoked = IOUtils.invoked(Seq(file))
+    assertEquals(invoked, Set((1, ""), (0, ""), (9, "")))
+
+    file.delete()
+  }
+
   test("should deep search for scoverage-data directories") {
     // create new folder to hold all our data
     val base = new File(IOUtils.getTempDirectory, UUID.randomUUID.toString)
