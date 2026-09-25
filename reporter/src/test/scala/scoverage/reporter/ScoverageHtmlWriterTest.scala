@@ -127,6 +127,35 @@ class ScoverageHtmlWriterTest extends FunSuite {
     }
   }
 
+  test("HTML coverage report gives each coverage meter a value to sort by") {
+
+    val coverage = Coverage()
+    coverage.add(statementForClassInSubDir)
+    coverage.add(statementForClassInMainDir.copy(count = 1))
+
+    val outputDir = writeCoverageToTemporaryDir(coverage)
+
+    val htmls = List("overview.html", "coverage.sample.html")
+
+    for (html <- htmls) {
+      val xml = XML.loadString(
+        Source.fromFile(new File(outputDir, html)).getLines().mkString
+      )
+      // The meter cells hold no text, so tablesorter sorts them by data-text
+      val meterValues = for {
+        table <- xml \\ "table"
+        if (table \@ "class").split(" ").contains("tablesorter")
+        td <- table \\ "td"
+        if (td \ "div").exists(div => (div \@ "class") == "meter")
+      } yield td \@ "data-text"
+
+      assertEquals(
+        meterValues.sorted.toList,
+        List("0.00", "0.00", "100.00", "100.00")
+      )
+    }
+  }
+
   test("HTML coverage report escapes HTML") {
 
     val coverage = Coverage()

@@ -287,7 +287,7 @@ class ScoverageHtmlWriter(
       <td>
         {klass.invokedStatementCount.toString}
       </td>
-      <td>
+      <td data-text={klass.statementCoverageFormatted}>
         <div class="meter">
           <span style={s"width: $statement0f%"}></span>
         </div>
@@ -302,7 +302,7 @@ class ScoverageHtmlWriter(
       <td>
         {klass.invokedBranchesCount.toString}
       </td>
-      <td>
+      <td data-text={klass.branchCoverageFormatted}>
         <div class="meter">
           <span style={s"width: $branch0f%"}></span>
         </div>
