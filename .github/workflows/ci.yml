@@ -52,6 +52,13 @@ jobs:
         os: [ 'ubuntu-latest', 'windows-latest' ]
         java: ['8', '17' ]
         module: ['runtime', 'runtimeJS', 'runtimeJSDOMTest', 'runtimeNative', 'reporter', 'domain', 'serializer']
+        exclude:
+          - java: 8
+            module: domain
+          - java: 8
+            module: reporter
+          - java: 8
+            module: serializer
     steps:
       - name: checkout the repo
         uses: actions/checkout@v7

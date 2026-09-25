@@ -73,6 +73,20 @@ lazy val sharedSettings = List(
       scalacOptions.value
     }
   },
+  scalacOptions ++= {
+    if (scalaVersion.value.startsWith("3.3.")) {
+      Seq(
+        "-release:11",
+        "-Yfuture-lazy-vals"
+      )
+    } else if (scalaBinaryVersion.value == "3") {
+      Nil
+    } else {
+      Seq(
+        "-release:8"
+      )
+    }
+  },
   libraryDependencies += {
     val munitVersion = scalaVersion.value match {
       case "2.13.16" => "1.2.0"
