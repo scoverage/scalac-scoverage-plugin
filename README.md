@@ -18,7 +18,7 @@ statement and branch coverage.  scoverage is available for
 
 **NOTE**: That this repository contains the Scala compiler plugin for Code coverage
 in Scala 2 and other coverage utilities for generating reports. For Scala 3 code
-coverage the [compiler](https://github.com/lampepfl/dotty) natively produces
+coverage the [compiler](https://github.com/lampepfl/dotty) natively [produces](https://www.scala-lang.org/api/3.3_LTS/docs/docs/internals/coverage.html)
 code coverage output, but the reporting logic utilities are then shared with the
 Scala 2 code coverage utilities in this repo.
 
