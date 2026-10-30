@@ -12,9 +12,8 @@ object Invoker {
   private val runtimeUUID = Platform.insecureRandomUUID()
 
   private val MeasurementsPrefix = "scoverage.measurements."
-  private val threadFiles = new ThreadLocal[mutable.HashMap[String, FileWriter]]
-  private val threadMeasurementFiles =
-    new ThreadLocal[mutable.HashMap[String, File]]
+  private val threadFiles =
+    new ThreadLocal[mutable.HashMap[String, FileWriter]]
 
   // For each data directory we maintain a thread-safe set tracking the ids that we've already
   // seen and recorded. We're using a map as a set. The value is the recorded test name, or ""
@@ -22,18 +21,15 @@ object Invoker {
   private val dataDirToIds =
     ThreadSafeMap.empty[String, ThreadSafeMap[Int, Any]]
 
-  private var measurementFileCounter = 0L
-
   @volatile private var shutdownHookInstalled = false
 
   /** We record that the given id has been invoked by appending its id to the coverage
     * data file.
     *
     * This will happen concurrently on as many threads as the application is using,
-    * so we use one file per thread. The name includes a counter as well as the thread
-    * id: thread ids are reused after a thread dies, and a second [[FileWriter]] opened
-    * on the same path can drop or corrupt ids already flushed by the previous thread.
-    * Because each id is written at most once, that loss cannot be repaired by a later call.
+    * so we use one file per thread, named for the thread id.
+    * Because each id is written at most once, a lost per-thread write cannot be
+    * repaired by a later call.
     *
     * The in-memory id set is therefore also written to
     * `scoverage.measurements.<uuid>.shutdown` from a shutdown hook. The reporter unions
@@ -70,15 +66,7 @@ object Invoker {
     if (!ids.contains(id)) {
       // Each thread writes to a separate measurement file, to reduce contention
       // and because file appends via FileWriter are not atomic on Windows.
-      var files = threadFiles.get()
-      if (files == null) {
-        files = mutable.HashMap.empty[String, FileWriter]
-        threadFiles.set(files)
-      }
-      val writer = files.getOrElseUpdate(
-        dataDir,
-        new FileWriter(measurementFile(dataDir), true)
-      )
+      val writer = writerFor(dataDir)
       val testName = if (reportTestName) getCallingScalaTest else ""
 
       if (reportTestName)
@@ -151,26 +139,20 @@ object Invoker {
   def measurementFile(dataDir: File): File = measurementFile(
     dataDir.getAbsolutePath()
   )
-  def measurementFile(dataDir: String): File = {
-    var files = threadMeasurementFiles.get()
-    if (files == null) {
-      files = mutable.HashMap.empty[String, File]
-      threadMeasurementFiles.set(files)
-    }
-    files.getOrElseUpdate(dataDir, allocateMeasurementFile(dataDir))
-  }
+  def measurementFile(dataDir: String): File = new File(
+    dataDir,
+    MeasurementsPrefix + runtimeUUID + "." + Thread.currentThread.getId
+  )
 
-  // Thread ids are reused after a thread terminates. Keep a unique suffix so a
-  // new thread never opens a FileWriter on a file another thread still has open.
-  private def allocateMeasurementFile(dataDir: String): File = {
-    val unique = synchronized {
-      measurementFileCounter += 1
-      measurementFileCounter
+  private def writerFor(dataDir: String): FileWriter = {
+    var files = threadFiles.get()
+    if (files == null) {
+      files = mutable.HashMap.empty[String, FileWriter]
+      threadFiles.set(files)
     }
-    new File(
+    files.getOrElseUpdate(
       dataDir,
-      MeasurementsPrefix + runtimeUUID + "." +
-        Thread.currentThread.getId + "." + unique
+      new FileWriter(measurementFile(dataDir), true)
     )
   }
 
