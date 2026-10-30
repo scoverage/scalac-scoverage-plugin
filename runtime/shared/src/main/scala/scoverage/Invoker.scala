@@ -2,6 +2,7 @@ package scoverage
 
 import scala.collection.Set
 import scala.collection.mutable
+import scala.util.control.NonFatal
 
 import scoverage.Platform._
 
@@ -12,18 +13,31 @@ object Invoker {
 
   private val MeasurementsPrefix = "scoverage.measurements."
   private val threadFiles = new ThreadLocal[mutable.HashMap[String, FileWriter]]
+  private val threadMeasurementFiles =
+    new ThreadLocal[mutable.HashMap[String, File]]
 
   // For each data directory we maintain a thread-safe set tracking the ids that we've already
-  // seen and recorded. We're using a map as a set, so we only care about its keys and can ignore
-  // its values.
+  // seen and recorded. We're using a map as a set. The value is the recorded test name, or ""
+  // when test names are not reported.
   private val dataDirToIds =
     ThreadSafeMap.empty[String, ThreadSafeMap[Int, Any]]
+
+  private var measurementFileCounter = 0L
+
+  @volatile private var shutdownHookInstalled = false
 
   /** We record that the given id has been invoked by appending its id to the coverage
     * data file.
     *
     * This will happen concurrently on as many threads as the application is using,
-    * so we use one file per thread, named for the thread id.
+    * so we use one file per thread. The name includes a counter as well as the thread
+    * id: thread ids are reused after a thread dies, and a second [[FileWriter]] opened
+    * on the same path can drop or corrupt ids already flushed by the previous thread.
+    * Because each id is written at most once, that loss cannot be repaired by a later call.
+    *
+    * The in-memory id set is therefore also written to
+    * `scoverage.measurements.<uuid>.shutdown` from a shutdown hook. The reporter unions
+    * every measurement file, and duplicate ids do not change coverage.
     *
     * This method is not thread-safe if the threads are in different JVMs, because
     * the thread IDs may collide.
@@ -38,6 +52,7 @@ object Invoker {
       dataDir: String,
       reportTestName: Boolean = false
   ): Unit = {
+    ensureShutdownHook()
     // [sam] we can do this simple check to save writing out to a file.
     // This won't work across JVMs but since there's no harm in writing out the same id multiple
     // times since for coverage we only care about 1 or more, (it just slows things down to
@@ -64,18 +79,66 @@ object Invoker {
         dataDir,
         new FileWriter(measurementFile(dataDir), true)
       )
+      val testName = if (reportTestName) getCallingScalaTest else ""
 
       if (reportTestName)
         writer
           .append(Integer.toString(id))
           .append(" ")
-          .append(getCallingScalaTest)
+          .append(testName)
           .append("\n")
           .flush()
       else writer.append(Integer.toString(id)).append("\n").flush()
-      ids.put(id, ())
+      ids.put(id, testName)
     }
   }
+
+  private def ensureShutdownHook(): Unit =
+    if (!shutdownHookInstalled) {
+      synchronized {
+        if (!shutdownHookInstalled) {
+          Platform.onShutdown(() => dumpRecordedIds())
+          shutdownHookInstalled = true
+        }
+      }
+    }
+
+  /** Write every id recorded in memory into a measurement file.
+    *
+    * Per-thread files are an optimization. This snapshot is what the reporter
+    * can trust after the instrumented JVM exits: forked tests (the usual sbt
+    * `coverage` / `test` / `coverageReport` sequence) read measurement files
+    * only once that process has shut down.
+    */
+  private[scoverage] def dumpRecordedIds(): Unit =
+    dataDirToIds.foreach { case (dataDir, ids) =>
+      try {
+        val dir = new File(dataDir)
+        if (dir.isDirectory() && ids.nonEmpty) {
+          val content = new mutable.StringBuilder
+          ids.foreach { case (id, rawName) =>
+            content.append(Integer.toString(id))
+            rawName match {
+              case name: String if name.nonEmpty =>
+                content.append(" ").append(name)
+              case _ =>
+            }
+            content.append('\n')
+          }
+          val writer = new FileWriter(
+            new File(
+              dataDir,
+              MeasurementsPrefix + runtimeUUID + ".shutdown"
+            ),
+            true
+          )
+          try writer.append(content).flush()
+          finally writer.close()
+        }
+      } catch {
+        case NonFatal(_) => ()
+      }
+    }
 
   def getCallingScalaTest: String =
     Thread.currentThread.getStackTrace
@@ -88,10 +151,28 @@ object Invoker {
   def measurementFile(dataDir: File): File = measurementFile(
     dataDir.getAbsolutePath()
   )
-  def measurementFile(dataDir: String): File = new File(
-    dataDir,
-    MeasurementsPrefix + runtimeUUID + "." + Thread.currentThread.getId
-  )
+  def measurementFile(dataDir: String): File = {
+    var files = threadMeasurementFiles.get()
+    if (files == null) {
+      files = mutable.HashMap.empty[String, File]
+      threadMeasurementFiles.set(files)
+    }
+    files.getOrElseUpdate(dataDir, allocateMeasurementFile(dataDir))
+  }
+
+  // Thread ids are reused after a thread terminates. Keep a unique suffix so a
+  // new thread never opens a FileWriter on a file another thread still has open.
+  private def allocateMeasurementFile(dataDir: String): File = {
+    val unique = synchronized {
+      measurementFileCounter += 1
+      measurementFileCounter
+    }
+    new File(
+      dataDir,
+      MeasurementsPrefix + runtimeUUID + "." +
+        Thread.currentThread.getId + "." + unique
+    )
+  }
 
   def findMeasurementFiles(dataDir: String): Array[File] = findMeasurementFiles(
     new File(dataDir)

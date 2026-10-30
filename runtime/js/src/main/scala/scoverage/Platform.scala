@@ -28,4 +28,8 @@ object Platform {
     new java.util.UUID(msb, lsb)
   }
 
+  // Scala.js does not run JVM shutdown hooks. Measurement files are still
+  // written from `invoked`, and `dumpRecordedIds` can be called directly.
+  def onShutdown(hook: () => Unit): Unit = ()
+
 }
